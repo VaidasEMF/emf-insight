@@ -1,0 +1,409 @@
+Folder PATH listing
+Volume serial number is 00000044 6233:F390
+C:.
+|   .env
+|   app.db
+|   backend.code-workspace
+|   backend_tree.txt
+|   backend_tree_new.txt
+|   create_tables.py
+|   engine_old.py
+|   engine_tree.txt
+|   fix_db.py
+|   load_data.py
+|   main.py
+|   test_db.py
+|   
++---ai
+|       analyzer.py
+|       __init__.py
+|       
++---auth
+|   |   dependencies.py
+|   |   jwt.py
+|   |   passwords.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           dependencies.cpython-314.pyc
+|           jwt.cpython-314.pyc
+|           passwords.cpython-314.pyc
+|           __init__.cpython-314.pyc
+|           
++---db
+|   |   base.py
+|   |   database.py
+|   |   init_db.py
+|   |   session.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           base.cpython-314.pyc
+|           database.cpython-314.pyc
+|           init_db.cpython-314.pyc
+|           models.cpython-314.pyc
+|           __init__.cpython-314.pyc
+|           
++---engine
+|   |   analysis.py
+|   |   analysis_builder.py
+|   |   certification.py
+|   |   compliance.py
+|   |   confidence.py
+|   |   config.py
+|   |   environment.py
+|   |   exposure.py
+|   |   health.py
+|   |   heatmap.py
+|   |   hotspots.py
+|   |   insights.py
+|   |   mitigation.py
+|   |   narrative.py
+|   |   pdf_builder.py
+|   |   points.py
+|   |   recommendations.py
+|   |   recommendation_rules.py
+|   |   risk.py
+|   |   scoring.py
+|   |   sessions.py
+|   |   sleep.py
+|   |   sources.py
+|   |   source_profiles.py
+|   |   trends.py
+|   |   utils.py
+|   |   zones.py
+|   |   __init__.py
+|   |   
+|   +---assets
+|   |   \---icons
+|   |           coverage.png
+|   |           floors.png
+|   |           measurements.png
+|   |           phi_logo.png
+|   |           phi_logo1.png
+|   |           phi_logo2.png
+|   |           rooms.png
+|   |           zones.png
+|   |           
+|   +---business_analysis
+|   |   |   __init__.py
+|   |   |   
+|   |   +---business
+|   |   |   |   business_analysis.py
+|   |   |   |   coverage.py
+|   |   |   |   room_summary.py
+|   |   |   |   session_comparison.py
+|   |   |   |   source_summary.py
+|   |   |   |   zone_summary.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           business_analysis.cpython-314.pyc
+|   |   |           coverage.cpython-314.pyc
+|   |   |           room_summary.cpython-314.pyc
+|   |   |           source_summary.cpython-314.pyc
+|   |   |           zone_summary.cpython-314.pyc
+|   |   |           __init__.cpython-314.pyc
+|   |   |           
+|   |   +---common
+|   |   |       heatmap.py
+|   |   |       normalization.py
+|   |   |       scoring.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---home
+|   |   |       home_analysis.py
+|   |   |       home_recommendations.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---output
+|   |   |       heatmap.png
+|   |   |       
+|   |   \---__pycache__
+|   |           __init__.cpython-314.pyc
+|   |           
+|   +---pdf_blocks
+|   |   |   ai_insights.py
+|   |   |   assessment_summary.py
+|   |   |   cover_page.py
+|   |   |   cover_v2.py
+|   |   |   executive_score.py
+|   |   |   executive_summary.py
+|   |   |   heatmap_block.py
+|   |   |   hotspots.py
+|   |   |   multi_height.py
+|   |   |   observations.py
+|   |   |   overview.py
+|   |   |   premium_cover.py
+|   |   |   premium_executive.py
+|   |   |   preview_locked.py
+|   |   |   recommendations.py
+|   |   |   room_summary.py
+|   |   |   session_compare.py
+|   |   |   sources.py
+|   |   |   source_analysis.py
+|   |   |   zones.py
+|   |   |   
+|   |   \---__pycache__
+|   |           ai_insights.cpython-314.pyc
+|   |           cover_page.cpython-314.pyc
+|   |           executive_score.cpython-314.pyc
+|   |           executive_summary.cpython-314.pyc
+|   |           executive_summary_v2.cpython-314.pyc
+|   |           floor.cpython-314.pyc
+|   |           heatmap_block.cpython-314.pyc
+|   |           hotspots.cpython-314.pyc
+|   |           multi_height.cpython-314.pyc
+|   |           observations.cpython-314.pyc
+|   |           overview.cpython-314.pyc
+|   |           premium_cover.cpython-314.pyc
+|   |           premium_executive.cpython-314.pyc
+|   |           preview_locked.cpython-314.pyc
+|   |           recommendations.cpython-314.pyc
+|   |           rooms.cpython-314.pyc
+|   |           room_summary.cpython-314.pyc
+|   |           session.cpython-314.pyc
+|   |           session_compare.cpython-314.pyc
+|   |           sources.cpython-314.pyc
+|   |           source_analysis.cpython-314.pyc
+|   |           verdict.cpython-314.pyc
+|   |           zones.cpython-314.pyc
+|   |           
+|   +---pdf_components
+|   |   |   badges.py
+|   |   |   canvas.py
+|   |   |   cards.py
+|   |   |   colors.py
+|   |   |   components.py
+|   |   |   constants.py
+|   |   |   cover.py
+|   |   |   cover_layout.py
+|   |   |   cover_left_panel.py
+|   |   |   cover_logo.py
+|   |   |   dashboard_card.py
+|   |   |   fonts.py
+|   |   |   footer.py
+|   |   |   grid.py
+|   |   |   heatmap_overlay.py
+|   |   |   helpers.py
+|   |   |   icons.py
+|   |   |   info_cards.py
+|   |   |   metric_cards.py
+|   |   |   pdf_framework.py
+|   |   |   plan_enhancer.py
+|   |   |   plan_layout.py
+|   |   |   plan_loader.py
+|   |   |   plan_renderer.py
+|   |   |   property_overview.py
+|   |   |   save_cover.py
+|   |   |   score_dashboard.py
+|   |   |   score_scale.py
+|   |   |   section_title.py
+|   |   |   text.py
+|   |   |   typography.py
+|   |   |   
+|   |   +---header
+|   |   |       report_header.py
+|   |   |       styles.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---verdict
+|   |   |   |   assessment_summary.py
+|   |   |   |   hero.py
+|   |   |   |   key_findings.py
+|   |   |   |   next_step.py
+|   |   |   |   report_status.py
+|   |   |   |   score_scale.py
+|   |   |   |   strings.py
+|   |   |   |   styles.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           hero.cpython-314.pyc
+|   |   |           score_scale.cpython-314.pyc
+|   |   |           strings.cpython-314.pyc
+|   |   |           styles.cpython-314.pyc
+|   |   |           __init__.cpython-314.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           canvas.cpython-314.pyc
+|   |           cards.cpython-314.pyc
+|   |           colors.cpython-314.pyc
+|   |           components.cpython-314.pyc
+|   |           constants.cpython-314.pyc
+|   |           cover_layout.cpython-314.pyc
+|   |           cover_left_panel.cpython-314.pyc
+|   |           fonts.cpython-314.pyc
+|   |           footer.cpython-314.pyc
+|   |           grid.cpython-314.pyc
+|   |           helpers.cpython-314.pyc
+|   |           icons.cpython-314.pyc
+|   |           plan_loader.cpython-314.pyc
+|   |           plan_renderer.cpython-314.pyc
+|   |           property_overview.cpython-314.pyc
+|   |           save_cover.cpython-314.pyc
+|   |           score_dashboard.cpython-314.pyc
+|   |           text.cpython-314.pyc
+|   |           typography.cpython-314.pyc
+|   |           
+|   +---pdf_pages
+|   |       executive.py
+|   |       exposure_zones.py
+|   |       indoor_sources.py
+|   |       overview.py
+|   |       recommendations.py
+|   |       room_priorities.py
+|   |       verdict.py
+|   |       
+|   +---pdf_renderers
+|   |       property_map_renderer.py
+|   |       
+|   +---pdf_ui
+|   |   |   badges.py
+|   |   |   branding.py
+|   |   |   cards.py
+|   |   |   certificates.py
+|   |   |   grids.py
+|   |   |   layout.py
+|   |   |   layouts.py
+|   |   |   legend.py
+|   |   |   pdf_context.py
+|   |   |   sections.py
+|   |   |   section_manager.py
+|   |   |   spacing.py
+|   |   |   theme.py
+|   |   |   themes.py
+|   |   |   tokens.py
+|   |   |   typography.py
+|   |   |   watermark.py
+|   |   |   
+|   |   \---__pycache__
+|   |           branding.cpython-314.pyc
+|   |           cards.cpython-314.pyc
+|   |           certificates.cpython-314.pyc
+|   |           grids.cpython-314.pyc
+|   |           layout.cpython-314.pyc
+|   |           layouts.cpython-314.pyc
+|   |           legend.cpython-314.pyc
+|   |           sections.cpython-314.pyc
+|   |           section_manager.cpython-314.pyc
+|   |           spacing.cpython-314.pyc
+|   |           theme.cpython-314.pyc
+|   |           themes.cpython-314.pyc
+|   |           tokens.cpython-314.pyc
+|   |           typography.cpython-314.pyc
+|   |           watermark.cpython-314.pyc
+|   |           
+|   +---standards
+|   |   |   icnirp.py
+|   |   |   property_score.py
+|   |   |   rf.py
+|   |   |   sbm.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           sbm.cpython-314.pyc
+|   |           __init__.cpython-314.pyc
+|   |           
+|   \---__pycache__
+|           analysis.cpython-314.pyc
+|           analysis_builder.cpython-314.pyc
+|           certification.cpython-314.pyc
+|           compliance.cpython-314.pyc
+|           confidence.cpython-314.pyc
+|           config.cpython-314.pyc
+|           environment.cpython-314.pyc
+|           exposure.cpython-314.pyc
+|           health.cpython-314.pyc
+|           heatmap.cpython-314.pyc
+|           hotspots.cpython-314.pyc
+|           insights.cpython-314.pyc
+|           mitigation.cpython-314.pyc
+|           narrative.cpython-314.pyc
+|           pdf_builder.cpython-314.pyc
+|           points.cpython-314.pyc
+|           recommendations.cpython-314.pyc
+|           recommendation_rules.cpython-314.pyc
+|           risk.cpython-314.pyc
+|           scoring.cpython-314.pyc
+|           sessions.cpython-314.pyc
+|           sleep.cpython-314.pyc
+|           sources.cpython-314.pyc
+|           source_profiles.cpython-314.pyc
+|           trends.cpython-314.pyc
+|           utils.cpython-314.pyc
+|           zones.cpython-314.pyc
+|           __init__.cpython-314.pyc
+|           
++---models
+|   |   project.py
+|   |   project_version.py
+|   |   report.py
+|   |   user.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           project.cpython-314.pyc
+|           project_version.cpython-314.pyc
+|           report.cpython-314.pyc
+|           user.cpython-314.pyc
+|           __init__.cpython-314.pyc
+|           
++---output
+|       2960.pdf
+|       2963.pdf
+|       2968.pdf
+|       2973.pdf
+|       2986.pdf
+|       2991.pdf
+|       2994.pdf
+|       3000.pdf
+|       3018.pdf
+|       3021.pdf
+|       3024.pdf
+|       3027.pdf
+|       3033.pdf
+|       3036.pdf
+|       3039.pdf
+|       3042.pdf
+|       3048.pdf
+|       3051.pdf
+|       3057.pdf
+|       3060.pdf
+|       3063.pdf
+|       3066.pdf
+|       3069.pdf
+|       3072.pdf
+|       3075.pdf
+|       3078.pdf
+|       3081.pdf
+|       3084.pdf
+|       3097.pdf
+|       3105.pdf
+|       3108.pdf
+|       3111.pdf
+|       3127.pdf
+|       3136.pdf
+|       heatmap_icnirp.png
+|       heatmap_sbm.png
+|       premium_cover.png
+|       
++---routes
+|   |   auth.py
+|   |   projects.py
+|   |   reports.py
+|   |   users.py
+|   |   
+|   \---__pycache__
+|           auth.cpython-314.pyc
+|           projects.cpython-314.pyc
+|           reports.cpython-314.pyc
+|           users.cpython-314.pyc
+|           
++---uploads
+|   \---logos
+\---__pycache__
+        auth.cpython-314.pyc
+        engine.cpython-314.pyc
+        main.cpython-314.pyc
+        

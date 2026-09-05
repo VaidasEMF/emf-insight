@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+python-dotenv
+stripe
+reportlab
+matplotlib
+numpy
+pandas
+scipy
+Pillow
+bcrypt

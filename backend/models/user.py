@@ -1,0 +1,68 @@
+from sqlalchemy import (
+    Integer,
+    String,
+)
+
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
+    relationship,
+)
+
+from db.base import Base
+
+
+class User(Base):
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    email: Mapped[str] = mapped_column(
+        String,
+        unique=True,
+        nullable=False,
+    )
+
+    hashed_password: Mapped[str] = mapped_column(
+        String,
+        nullable=False,
+    )
+
+    credits: Mapped[int] = mapped_column(
+        Integer,
+        default=1,
+    )
+
+    plan: Mapped[str] = mapped_column(
+        String,
+        default="free",
+    )
+
+    company_name: Mapped[str] = mapped_column(
+        String,
+        default="",
+    )
+
+    company_email: Mapped[str] = mapped_column(
+        String,
+        default="",
+    )
+
+    logo_path: Mapped[str] = mapped_column(
+        String,
+        default="",
+    )
+
+    # =====================
+    # RELATIONSHIPS
+    # =====================
+
+    projects = relationship(
+        "Project",
+        back_populates="user",
+    )
