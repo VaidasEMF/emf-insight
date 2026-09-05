@@ -13,3 +13,4 @@ pandas
 scipy
 Pillow
 bcrypt
+psycopg2-binary
