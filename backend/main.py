@@ -149,8 +149,8 @@ def create_checkout(body: dict):
             }
         ],
         mode="payment",
-        success_url="http://localhost:5500/success.html",
-        cancel_url="http://localhost:5500/dashboard.html",
+        success_url="https://emf-insight.pages.dev/success.html",
+        cancel_url="https://emf-insight.pages.dev/dashboard.html",
         metadata={"user_id": user_id, "plan": plan},
     )
 
