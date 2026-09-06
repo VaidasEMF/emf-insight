@@ -1,3 +1,5 @@
+from sqlalchemy import text
+
 from .database import engine
 from .base import Base
 
@@ -12,3 +14,20 @@ def init_db():
     Base.metadata.create_all(
         bind=engine,
     )
+
+    # ==================================================
+    # DATABASE MIGRATIONS
+    # ==================================================
+
+    if engine.dialect.name == "postgresql":
+
+        with engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS access_expires_at TIMESTAMP
+                    """
+                )
+            )

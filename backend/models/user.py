@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from sqlalchemy import (
+    DateTime,
     Integer,
     String,
 )
@@ -42,6 +45,12 @@ class User(Base):
         String,
         default="free",
     )
+
+    access_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
 
     company_name: Mapped[str] = mapped_column(
         String,
