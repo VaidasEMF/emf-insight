@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>
+        EMF Dashboard
+    </title>
+
+    <style>
+        body {
+
+            font-family: Arial;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .card {
+
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 4px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .plans {
+
+            display: flex;
+            gap: 20px;
+        }
+
+        .plan {
+
+            flex: 1;
+
+            border: 1px solid #ddd;
+
+            border-radius: 16px;
+
+            padding: 24px;
+
+            background: #fff;
+        }
+
+        .plan h2 {
+
+            margin-top: 0;
+        }
+
+        button {
+
+            background: black;
+            color: white;
+
+            border: none;
+
+            padding: 12px 20px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+        }
+
+        .report {
+
+            border: 1px solid #eee;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            margin-bottom: 14px;
+
+            background: white;
+        }
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 6px 12px;
+
+            border-radius: 999px;
+
+            background: #eee;
+
+            font-size: 12px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- ===================== -->
+        <!-- HEADER -->
+        <!-- ===================== -->
+
+        <div class="card">
+
+            <h1>
+                EMF Dashboard
+            </h1>
+
+            <div id="user"></div>
+
+        </div>
+
+        <!-- ===================== -->
+        <!-- PLANS -->
+        <!-- ===================== -->
+
+        <div class="plans">
+
+            <div class="plan">
+
+                <h2>
+                    Single Report
+                </h2>
+
+                <p>
+                    €9 / report
+                </p>
+
+                <button onclick="buyPlan('single')">
+                    Buy
+                </button>
+
+            </div>
+
+            <div class="plan">
+
+                <h2>
+                    Pro
+                </h2>
+
+                <p>
+                    €29 / month
+                </p>
+
+                <button onclick="buyPlan('pro')">
+                    Upgrade
+                </button>
+
+            </div>
+
+            <div class="plan">
+
+                <h2>
+                    Premium
+                </h2>
+
+                <p>
+                    €99 / month
+                </p>
+
+                <button onclick="buyPlan('premium')">
+                    Upgrade
+                </button>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <!-- ===================== -->
+        <!-- REPORTS -->
+        <!-- ===================== -->
+
+        <div class="card">
+
+            <h2>
+                Reports
+            </h2>
+
+            <div id="reports"></div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>
+                Projects
+            </h2>
+
+            <div id="projects"></div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>
+                Project Versions
+            </h2>
+
+            <div id="versions"></div>
+
+        </div>
+
+        <!-- ===================== -->
+        <!-- BRANDING -->
+        <!-- ===================== -->
+
+        <div class="card">
+
+            <h2>
+                Consultant Branding
+            </h2>
+
+            <input id="company_name" placeholder="Company Name" />
+
+            <br><br>
+
+            <input id="company_email" placeholder="Company Email" />
+
+            <br><br>
+
+            <button onclick="saveProfile()">
+                Save Branding
+            </button>
+
+            <hr>
+
+            <h3>
+                Upload Logo
+            </h3>
+
+            <input type="file" id="logo" />
+
+            <br><br>
+
+            <button onclick="uploadLogo()">
+                Upload Logo
+            </button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const API =
+            "http://127.0.0.1:8000";
+
+        const token =
+            localStorage.getItem(
+                "token"
+            );
+
+        // =====================
+        // USER
+        // =====================
+
+        async function loadUser() {
+
+            const res = await fetch(
+                `${API}/me`,
+                {
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data =
+                await res.json();
+
+            document.getElementById(
+                "user"
+            ).innerHTML = `
+
+            <h3>
+                ${data.email}
+            </h3>
+
+            <p>
+                Plan:
+                <span class="badge">
+                    ${data.plan}
+                </span>
+            </p>
+
+            <p>
+                Credits:
+                ${data.credits}
+            </p>
+        `;
+        }
+
+        // =====================
+        // BUY
+        // =====================
+
+        async function buyPlan(plan) {
+
+            const meRes =
+                await fetch(
+                    `${API}/me`,
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                        },
+                    }
+                );
+
+            const me =
+                await meRes.json();
+
+            const res =
+                await fetch(
+                    `${API}/create-checkout-session`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                        },
+
+                        body: JSON.stringify({
+                            user_id: me.id,
+                            plan: plan,
+                        }),
+                    }
+                );
+
+            const data =
+                await res.json();
+
+            window.location.href =
+                data.url;
+        }
+
+        // =====================
+        // REPORTS
+        // =====================
+
+        async function loadReports() {
+
+            const res = await fetch(
+                `${API}/reports/me`,
+                {
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const reports =
+                await res.json();
+
+            let html = "";
+
+            for (const r of reports) {
+
+                html += `
+
+                <div class="report">
+
+                    <h3>
+                        ${r.project_name}
+                    </h3>
+
+                    <p>
+                        ${r.preview
+                        ? "Preview Report"
+                        : "Full Report"
+                    }
+                    </p>
+
+                    <a href="
+                        ${API}/reports/${r.id}/download
+                    " target="_blank">
+
+                        Download PDF
+
+                    </a>
+
+                </div>
+            `;
+            }
+
+            document.getElementById(
+                "reports"
+            ).innerHTML = html;
+        }
+
+        // =====================================================
+        // 🔥 LOAD PROJECT LIST
+        // =====================================================
+
+        async function loadProjects() {
+
+            console.log(
+                "================================="
+            );
+
+            console.log(
+                "🔥 LOAD PROJECTS START"
+            );
+
+            try {
+
+                // ==================================================
+                // 🔥 USER ID
+                // ==================================================
+
+                const userId =
+                    localStorage.getItem(
+                        "user_id"
+                    );
+
+                if (
+                    !userId
+                ) {
+
+                    console.error(
+                        "🔥 NO USER ID"
+                    );
+
+                    return [];
+                }
+
+                // ==================================================
+                // 🔥 GET PROJECTS
+                // ==================================================
+
+                const res =
+                    await fetch(
+                        `${API}/projects/${userId}`,
+                        {
+                            method:
+                                "GET",
+
+                            headers:
+                                getAuthHeaders()
+                        }
+                    );
+
+                // ==================================================
+                // 🔥 HTTP ERROR
+                // ==================================================
+
+                if (
+                    !res.ok
+                ) {
+
+                    console.error(
+                        "🔥 LOAD PROJECTS FAILED",
+                        {
+                            status:
+                                res.status,
+
+                            statusText:
+                                res.statusText
+                        }
+                    );
+
+                    return [];
+                }
+
+                // ==================================================
+                // 🔥 RESPONSE
+                // ==================================================
+
+                const projects =
+                    await res.json();
+
+                console.log(
+                    "🔥 PROJECT LIST",
+                    projects
+                );
+
+                // ==================================================
+                // 🔥 NORMALIZE
+                // ==================================================
+
+                const list =
+                    Array.isArray(
+                        projects
+                    )
+                        ? projects
+                        : projects.projects ||
+                        projects.data ||
+                        [];
+
+                // ==================================================
+                // 🔥 PROJECT CONTAINER
+                // ==================================================
+
+                const container =
+                    document.getElementById(
+                        "projects"
+                    );
+
+                if (
+                    !container
+                ) {
+
+                    console.warn(
+                        "⚠️ PROJECT CONTAINER NOT FOUND"
+                    );
+
+                    return list;
+                }
+
+                // ==================================================
+                // 🔥 EMPTY STATE
+                // ==================================================
+
+                if (
+                    list.length === 0
+                ) {
+
+                    container.innerHTML = `
+
+                <div class="project-empty-state">
+
+                    <div class="project-empty-icon">
+                        📂
+                    </div>
+
+                    <div class="project-empty-title">
+                        No projects yet
+                    </div>
+
+                    <div class="project-empty-subtitle">
+                        Create your first EMF project.
+                    </div>
+
+                    <button
+                        class="workflow-action-btn"
+                        onclick="createProject?.()"
+                    >
+                        <div class="workflow-action-icon">
+                            ＋
+                        </div>
+
+                        <div>
+                            <div class="workflow-action-title">
+                                New Project
+                            </div>
+
+                            <div class="workflow-action-subtitle">
+                                Start a new EMF assessment
+                            </div>
+                        </div>
+                    </button>
+
+                </div>
+
+            `;
+
+                    return list;
+                }
+
+                // ==================================================
+                // 🔥 RENDER PROJECTS
+                // ==================================================
+
+                container.innerHTML =
+                    list
+                        .map(
+                            project => {
+
+                                const projectId =
+                                    project.id ??
+                                    project.project_id;
+
+                                const projectName =
+                                    project.name ||
+                                    "EMF Project";
+
+                                const createdAt =
+                                    project.created_at ||
+                                    "";
+
+                                return `
+
+                            <div
+                                class="project-list-item"
+                                data-project-id="${projectId}"
+                            >
+
+                                <div class="project-list-info">
+
+                                    <div class="project-list-name">
+
+                                        ${projectName}
+
+                                    </div>
+
+                                    <div class="project-list-meta">
+
+                                        Project #${projectId}
+
+                                        ${createdAt
+                                        ? ` • ${createdAt}`
+                                        : ""
+                                    }
+
+                                    </div>
+
+                                </div>
+
+                                <div class="project-list-actions">
+
+                                    <button
+    class="project-open-btn"
+    onclick="
+        localStorage.setItem(
+            'project_id',
+            '${projectId}'
+        );
+
+        window.location.href =
+            'index.html';
+    "
+>
+    Open
+</button>
+
+                                </div>
+
+                            </div>
+
+                        `;
+                            }
+                        )
+                        .join("");
+
+                console.log(
+                    "🔥 PROJECT LIST RENDERED",
+                    {
+                        count:
+                            list.length
+                    }
+                );
+
+                console.log(
+                    "================================="
+                );
+
+                return list;
+
+            }
+            catch (err) {
+
+                console.error(
+                    "🔥 LOAD PROJECTS ERROR",
+                    err
+                );
+
+                return [];
+            }
+        }
+
+        async function loadProjects() {
+
+            console.log(
+                "================================="
+            );
+
+            console.log(
+                "🔥 LOAD PROJECTS START"
+            );
+
+            try {
+
+                const token =
+                    localStorage.getItem(
+                        "token"
+                    );
+
+                console.log(
+                    "🔥 PROJECT LIST AUTH",
+                    {
+                        hasToken:
+                            !!token
+                    }
+                );
+
+                if (!token) {
+
+                    console.error(
+                        "🔥 LOAD PROJECTS — NO TOKEN"
+                    );
+
+                    return [];
+                }
+
+                const res =
+                    await fetch(
+                        `${API}/projects/me`,
+                        {
+                            method:
+                                "GET",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                Authorization:
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                if (!res.ok) {
+
+                    console.error(
+                        "🔥 LOAD PROJECTS FAILED",
+                        {
+                            status:
+                                res.status,
+
+                            statusText:
+                                res.statusText
+                        }
+                    );
+
+                    return [];
+                }
+
+                const projects =
+                    await res.json();
+
+                console.log(
+                    "🔥 PROJECTS LOADED",
+                    {
+                        count:
+                            projects.length,
+
+                        projects
+                    }
+                );
+
+                const container =
+                    document.getElementById(
+                        "projects"
+                    );
+
+                if (!container) {
+
+                    console.error(
+                        "🔥 PROJECTS CONTAINER NOT FOUND"
+                    );
+
+                    return projects;
+                }
+
+                if (
+                    projects.length === 0
+                ) {
+
+                    container.innerHTML = `
+
+                <div class="project-empty-state">
+
+                    <div class="project-empty-icon">
+                        📂
+                    </div>
+
+                    <div class="project-empty-title">
+                        No projects yet
+                    </div>
+
+                    <div class="project-empty-subtitle">
+                        Create your first EMF project.
+                    </div>
+
+                </div>
+
+            `;
+
+                    return projects;
+                }
+
+                container.innerHTML =
+                    projects
+                        .map(
+                            project => {
+
+                                const projectId =
+                                    project.id ??
+                                    project.project_id;
+
+                                const projectName =
+                                    project.name ||
+                                    "EMF Project";
+
+                                const createdAt =
+                                    project.created_at ||
+                                    "";
+
+                                return `
+
+                            <div
+                                class="project-list-item"
+                                data-project-id="${projectId}"
+                            >
+
+                                <div
+                                    class="project-list-info"
+                                >
+
+                                    <div
+                                        class="project-list-name"
+                                    >
+                                        ${projectName}
+                                    </div>
+
+                                    <div
+                                        class="project-list-meta"
+                                    >
+                                        Project #${projectId}
+
+                                        ${createdAt
+                                        ? ` • ${createdAt}`
+                                        : ""
+                                    }
+                                    </div>
+
+                                </div>
+
+                                <div
+                                    class="project-list-actions"
+                                >
+
+                                    <button
+                                        class="project-open-btn"
+                                        onclick="
+                                            localStorage.setItem(
+                                                'project_id',
+                                                '${projectId}'
+                                            );
+
+                                            window.location.href =
+                                                'index.html';
+                                        "
+                                    >
+                                        Open
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        `;
+                            }
+                        )
+                        .join("");
+
+                console.log(
+                    "🔥 PROJECT LIST RENDERED",
+                    {
+                        count:
+                            projects.length
+                    }
+                );
+
+                return projects;
+
+            }
+            catch (err) {
+
+                console.error(
+                    "🔥 LOAD PROJECTS ERROR",
+                    err
+                );
+
+                return [];
+            }
+        }
+        async function deleteProject(
+            projectId,
+        ) {
+
+            const ok = confirm(
+                "Delete project?"
+            );
+
+            if (!ok) {
+                return;
+            }
+
+            await fetch(
+                `${API}/project/${projectId}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`,
+                    },
+                }
+            );
+
+            loadProjects();
+        }
+
+        async function generatePdf(
+            projectId,
+        ) {
+
+            const meRes =
+                await fetch(
+                    `${API}/me`,
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                        },
+                    }
+                );
+
+            const me =
+                await meRes.json();
+
+            const res =
+                await fetch(
+                    `${API}/generate-pdf`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                        },
+
+                        body: JSON.stringify({
+
+                            project_id:
+                                projectId,
+
+                            user_id:
+                                me.id,
+
+                            sessionA:
+                                "session_1",
+
+                            sessionB:
+                                "session_2",
+
+                            plan:
+                                me.plan,
+                        }),
+                    }
+                );
+
+            const data =
+                await res.json();
+
+            window.open(
+                `${API}${data.pdf_url}`,
+                "_blank",
+            );
+
+            loadReports();
+
+            loadUser();
+        }
+
+        // =====================
+        // PROFILE
+        // =====================
+
+        async function saveProfile() {
+
+            const company_name =
+                document.getElementById(
+                    "company_name"
+                ).value;
+
+            const company_email =
+                document.getElementById(
+                    "company_email"
+                ).value;
+
+            await fetch(
+                `${API}/me/profile`,
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${token}`,
+                    },
+
+                    body: JSON.stringify({
+
+                        company_name,
+
+                        company_email,
+                    }),
+                }
+            );
+
+            alert(
+                "Branding saved"
+            );
+        }
+
+        async function loadVersions() {
+
+            console.log(
+                "================================="
+            );
+
+            console.log(
+                "🔥 DASHBOARD LOAD VERSIONS"
+            );
+
+            try {
+
+                const projectId =
+                    localStorage.getItem(
+                        "project_id"
+                    );
+
+                console.log(
+                    "🔥 VERSION PROJECT ID:",
+                    projectId
+                );
+
+                if (!projectId) {
+
+                    console.warn(
+                        "🔥 LOAD VERSIONS — NO PROJECT ID"
+                    );
+
+                    const container =
+                        document.getElementById(
+                            "versions"
+                        );
+
+                    if (container) {
+
+                        container.innerHTML = `
+                    <div>
+                        Select a project to view versions.
+                    </div>
+                `;
+                    }
+
+                    return [];
+                }
+
+                const token =
+                    localStorage.getItem(
+                        "token"
+                    );
+
+                console.error(
+                    "🔥🔥🔥 VERSIONS FETCH DEBUG",
+                    {
+                        API,
+                        projectId,
+                        url:
+                            `${API}/project/${projectId}/versions`,
+                        tokenExists:
+                            !!localStorage.getItem("token")
+                    }
+                );
+
+                const res =
+                    await fetch(
+                        `${API}/project/${projectId}/versions`,
+                        {
+                            method:
+                                "GET",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                ...(token
+                                    ? {
+                                        Authorization:
+                                            `Bearer ${token}`
+                                    }
+                                    : {})
+                            }
+                        }
+                    );
+
+                if (!res.ok) {
+
+                    console.error(
+                        "🔥 LOAD VERSIONS FAILED",
+                        {
+                            status:
+                                res.status,
+
+                            statusText:
+                                res.statusText
+                        }
+                    );
+
+                    return [];
+                }
+
+                const versions =
+                    await res.json();
+
+                console.log(
+                    "🔥 VERSIONS LOADED",
+                    {
+                        projectId,
+                        versions
+                    }
+                );
+
+                const container =
+                    document.getElementById(
+                        "versions"
+                    );
+
+                if (!container) {
+
+                    console.warn(
+                        "🔥 VERSIONS CONTAINER NOT FOUND"
+                    );
+
+                    return versions;
+                }
+
+                if (
+                    !Array.isArray(
+                        versions
+                    ) ||
+                    versions.length === 0
+                ) {
+
+                    container.innerHTML = `
+                <div>
+                    No versions yet.
+                </div>
+            `;
+
+                    return versions;
+                }
+
+                container.innerHTML =
+                    versions
+                        .map(
+                            version => `
+
+                        <div class="report">
+
+                            <h3>
+                                Version #${version.id}
+                            </h3>
+
+                        </div>
+
+                    `
+                        )
+                        .join("");
+
+                return versions;
+
+            }
+            catch (err) {
+
+                console.error(
+                    "🔥 LOAD VERSIONS ERROR",
+                    err
+                );
+
+                return [];
+            }
+        }
+        async function restoreVersion(
+            versionId,
+        ) {
+
+            const ok = confirm(
+                "Restore version?"
+            );
+
+            if (!ok) {
+                return;
+            }
+
+            await fetch(
+
+                `${API}/project/version/${versionId}/restore`,
+
+                {
+                    method: "POST",
+                }
+            );
+
+            alert(
+                "Version restored"
+            );
+
+            loadProject();
+        }
+
+        // =====================
+        // LOGO
+        // =====================
+
+        async function uploadLogo() {
+
+            const file =
+                document.getElementById(
+                    "logo"
+                ).files[0];
+
+            const form =
+                new FormData();
+
+            form.append(
+                "file",
+                file,
+            );
+
+            const res =
+                await fetch(
+                    `${API}/me/logo`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                        },
+
+                        body: form,
+                    }
+                );
+
+            await res.json();
+
+            alert(
+                "Logo uploaded"
+            );
+        }
+
+        // =====================
+        // 🔥 GLOBAL PROJECT API
+        // =====================
+
+
+        window.loadProjects =
+            loadProjects;
+
+        // =====================
+        // 🔥 LOAD DATA
+        // =====================
+
+        loadUser();
+        loadReports();
+        loadProjects();
+        loadVersions();
+
+    </script>
+
+</body>
+
+</html>

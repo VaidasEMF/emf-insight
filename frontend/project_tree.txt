@@ -1,0 +1,104 @@
+Folder PATH listing
+Volume serial number is 000000F8 6233:F390
+C:.
+¦   dashboard.html
+¦   frontend_js.txt
+¦   frontend_tree.txt
+¦   index.html
+¦   login.html
+¦   project_tree.txt
+¦   success.html
+¦   
++---.vscode
+¦       settings.json
+¦       
++---assets
+¦   +---icons
+¦           antena.png
+¦           batterystorage.png
+¦           bed.png
+¦           bluetooth.png
+¦           default.png
+¦           electricalpanel.png
+¦           electricsubstation.png
+¦           evstation.png
+¦           evstove.png
+¦           generator.png
+¦           heatpump.png
+¦           highvoltageline.png
+¦           logo darbinis.png
+¦           mobiletowerrf.png
+¦           powerlines.png
+¦           routerwifi.png
+¦           smartmeter.png
+¦           sofa.png
+¦           solarpanel.png
+¦           table.png
+¦           waterheater.png
+¦           wifi.png
+¦           windturbine.png
+¦           work.png
+¦           
++---core
+¦       app_mode.js
+¦       app_state.js
+¦       bootstrap.js
+¦       getters.js
+¦       image_analysis.js
+¦       object_types.js
+¦       render_engine.js
+¦       render_frame.js
+¦       viewport.js
+¦       
++---factories
+¦       floor_factory.js
+¦       measurement_factory.js
+¦       project_factory.js
+¦       room_factory.js
+¦       session_factory.js
+¦       source_factory.js
+¦       zone_factory.js
+¦       
++---js
+¦       analytics.js
+¦       api.js
+¦       app.js
+¦       auth.js
+¦       canvas.js
+¦       editor_preview.js
+¦       events.js
+¦       export.js
+¦       exposure.js
+¦       floors.js
+¦       heatmap.js
+¦       hud.js
+¦       layers.js
+¦       pdf.js
+¦       render.js
+¦       render_overlays.js
+¦       save.js
+¦       sessions.js
+¦       session_compare.js
+¦       source_impact.js
+¦       ui.js
+¦       workflow.js
+¦       
++---tools
+¦       drag.js
+¦       measurements.js
+¦       object_v1.js
+¦       room_v2.js
+¦       scale.js
+¦       scale_v2.js
+¦       sources.js
+¦       source_links.js
+¦       upload.js
+¦       zones.js
+¦       
++---ui
+¦       notification_bubble.js
+¦       
++---utils
+        boundaries.js
+        geometry.js
+        
