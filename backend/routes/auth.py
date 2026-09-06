@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import (
     APIRouter,
@@ -268,4 +268,54 @@ def login(
     return {
         "access_token": token,
         "token_type": "bearer",
+    }
+
+
+@router.post("/admin/tester")
+def create_tester(
+    email: str,
+    password: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    existing = (
+        db.query(User)
+        .filter(
+            User.email == email
+        )
+        .first()
+    )
+
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists",
+        )
+
+    tester = User(
+        email=email,
+        hashed_password=hash_password(password),
+        credits=1,
+        plan="tester",
+        access_expires_at=(
+            datetime.utcnow()
+            + timedelta(days=7)
+        ),
+    )
+
+    db.add(tester)
+    db.commit()
+    db.refresh(tester)
+
+    return {
+        "email": tester.email,
+        "plan": tester.plan,
+        "access_expires_at": tester.access_expires_at,
     }
