@@ -2,6 +2,17 @@
 <html>
 
 <head>
+
+  <script>
+    (function () {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.replace("login.html");
+      }
+    })();
+  </script>
+
   <meta charset="utf-8">
   <title>EMF Planner</title>
 
