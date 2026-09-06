@@ -51,6 +51,11 @@ class User(Base):
         nullable=True,
     )
 
+    is_admin: Mapped[bool] = mapped_column(
+        default=False,
+        nullable=False,
+    )
+
 
     company_name: Mapped[str] = mapped_column(
         String,
