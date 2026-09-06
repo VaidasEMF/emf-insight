@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import text
 
 from .database import engine
@@ -31,3 +33,29 @@ def init_db():
                     """
                 )
             )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE
+                    """
+                )
+            )
+
+            admin_email = os.getenv("ADMIN_EMAIL")
+
+            if admin_email:
+
+                connection.execute(
+                    text(
+                        """
+                        UPDATE users
+                        SET is_admin = TRUE
+                        WHERE email = :email
+                        """
+                    ),
+                    {
+                        "email": admin_email,
+                    },
+                )
