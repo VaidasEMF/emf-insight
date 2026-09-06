@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -242,6 +244,18 @@ def login(
             status_code=401,
             detail="Invalid credentials",
         )
+
+    if (
+        user.access_expires_at is not None
+        and user.access_expires_at <= datetime.utcnow()
+    ):
+
+        raise HTTPException(
+            status_code=403,
+            detail="Test access has expired.",
+        )
+
+
 
     token = create_access_token(
         {
