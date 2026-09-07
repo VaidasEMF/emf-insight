@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+import secrets
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -298,6 +300,40 @@ def create_tester(
         "email": tester.email,
         "plan": tester.plan,
         "access_expires_at": tester.access_expires_at,
+    }
+
+
+@router.post("/forgot-password")
+def forgot_password(
+    email: str,
+    db: Session = Depends(get_db),
+):
+
+    user = (
+        db.query(User)
+        .filter(
+            User.email == email
+        )
+        .first()
+    )
+
+    if not user:
+        return {
+            "message": "If the account exists, a password reset link will be sent."
+        }
+
+    token = secrets.token_urlsafe(32)
+
+    user.password_reset_token = token
+    user.password_reset_expires_at = (
+        datetime.utcnow() + timedelta(minutes=30)
+    )
+
+    db.commit()
+
+    return {
+        "message": "Password reset token created",
+        "token": token,
     }
 
 @router.post("/admin/reset-password")
