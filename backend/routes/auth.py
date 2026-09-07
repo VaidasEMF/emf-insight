@@ -308,6 +308,9 @@ def forgot_password(
     email: str,
     db: Session = Depends(get_db),
 ):
+    import os
+    import smtplib
+    from email.message import EmailMessage
 
     user = (
         db.query(User)
@@ -317,6 +320,7 @@ def forgot_password(
         .first()
     )
 
+    # Do not reveal whether an account exists
     if not user:
         return {
             "message": "If the account exists, a password reset link will be sent."
@@ -331,11 +335,81 @@ def forgot_password(
 
     db.commit()
 
-    return {
-        "message": "Password reset token created",
-        "token": token,
-    }
+    reset_url = (
+        "https://app.emfinsight.com/reset-password.html"
+        f"?token={token}"
+    )
 
+    message = EmailMessage()
+
+    message["Subject"] = "EMF Insight – Password Reset"
+    message["From"] = os.getenv(
+        "SMTP_USERNAME",
+        "info@emfinsight.com",
+    )
+    message["To"] = user.email
+
+    message.set_content(
+        f"""Hello,
+
+We received a request to reset your EMF Insight password.
+
+Please use the following link to reset your password:
+
+{reset_url}
+
+This link is valid for 30 minutes.
+
+If you did not request a password reset, you can safely ignore this email.
+
+EMF Insight
+"""
+    )
+
+    smtp_host = os.getenv(
+        "SMTP_HOST",
+        "smtp.gmail.com",
+    )
+
+    smtp_port = int(
+        os.getenv(
+            "SMTP_PORT",
+            "587",
+        )
+    )
+
+    smtp_username = os.getenv(
+        "SMTP_USERNAME"
+    )
+
+    smtp_password = os.getenv(
+        "SMTP_PASSWORD"
+    )
+
+    if not smtp_username or not smtp_password:
+        raise RuntimeError(
+            "SMTP_USERNAME and SMTP_PASSWORD are not configured."
+        )
+
+    with smtplib.SMTP(
+        smtp_host,
+        smtp_port,
+    ) as server:
+
+        server.starttls()
+
+        server.login(
+            smtp_username,
+            smtp_password,
+        )
+
+        server.send_message(
+            message
+        )
+
+    return {
+        "message": "If the account exists, a password reset link will be sent."
+    }
 
 
 
