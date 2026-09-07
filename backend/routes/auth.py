@@ -358,3 +358,47 @@ def reset_admin_password(
     return {
         "message": "Admin password updated",
     }
+
+
+@router.post("/reset-password")
+def reset_password(
+    token: str,
+    new_password: str,
+    db: Session = Depends(get_db),
+):
+
+    user = (
+        db.query(User)
+        .filter(
+            User.password_reset_token == token
+        )
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired reset token",
+        )
+
+    if (
+        user.password_reset_expires_at is None
+        or user.password_reset_expires_at <= datetime.utcnow()
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired reset token",
+        )
+
+    user.hashed_password = hash_password(
+        new_password
+    )
+
+    user.password_reset_token = None
+    user.password_reset_expires_at = None
+
+    db.commit()
+
+    return {
+        "message": "Password reset successful",
+    }
