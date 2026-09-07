@@ -342,3 +342,40 @@ def reset_admin_password(
     return {
         "message": "Admin password updated",
     }
+
+@router.post("/admin/tester/expire")
+def expire_tester(
+    email: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    tester = (
+        db.query(User)
+        .filter(
+            User.email == email,
+            User.plan == "tester",
+        )
+        .first()
+    )
+
+    if not tester:
+        raise HTTPException(
+            status_code=404,
+            detail="Tester not found",
+        )
+
+    tester.access_expires_at = datetime.utcnow()
+
+    db.commit()
+
+    return {
+        "email": tester.email,
+        "access_expires_at": tester.access_expires_at,
+    }
