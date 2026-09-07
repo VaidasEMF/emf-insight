@@ -83,3 +83,22 @@ def init_db():
                         "hashed_password": hashed_password,
                     },
                 )
+
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS password_reset_expires_at TIMESTAMP
+                    """
+                )
+            )

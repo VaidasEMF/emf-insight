@@ -51,6 +51,16 @@ class User(Base):
         nullable=True,
     )
 
+    password_reset_token: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+    )
+
+    password_reset_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
     is_admin: Mapped[bool] = mapped_column(
         default=False,
         nullable=False,
