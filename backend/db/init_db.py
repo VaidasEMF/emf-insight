@@ -46,6 +46,7 @@ def init_db():
             )
 
             admin_email = os.getenv("ADMIN_EMAIL")
+            reset_password = os.getenv("ADMIN_RESET_PASSWORD")
 
             if admin_email:
 
@@ -61,8 +62,6 @@ def init_db():
                         "email": admin_email,
                     },
                 )
-
-            reset_password = os.getenv("ADMIN_RESET_PASSWORD")
 
             if admin_email and reset_password:
 
@@ -83,4 +82,4 @@ def init_db():
                         "email": admin_email,
                         "hashed_password": hashed_password,
                     },
-                )    
+                )
