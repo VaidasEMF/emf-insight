@@ -336,28 +336,7 @@ def forgot_password(
         "token": token,
     }
 
-@router.post("/admin/reset-password")
-def reset_admin_password(
-    password: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
 
-    if not current_user.is_admin:
-        raise HTTPException(
-            status_code=403,
-            detail="Admin access required",
-        )
-
-    current_user.hashed_password = hash_password(
-        password
-    )
-
-    db.commit()
-
-    return {
-        "message": "Admin password updated",
-    }
 
 
 @router.post("/reset-password")
