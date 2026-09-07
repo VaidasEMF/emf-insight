@@ -302,15 +302,15 @@ def create_tester(
         "access_expires_at": tester.access_expires_at,
     }
 
-
 @router.post("/forgot-password")
 def forgot_password(
     email: str,
     db: Session = Depends(get_db),
 ):
     import os
-    import smtplib
-    from email.message import EmailMessage
+    import json
+    import urllib.request
+    import urllib.error
 
     user = (
         db.query(User)
@@ -340,17 +340,25 @@ def forgot_password(
         f"?token={token}"
     )
 
-    message = EmailMessage()
+    brevo_api_key = os.getenv("BREVO_API_KEY")
 
-    message["Subject"] = "EMF Insight – Password Reset"
-    message["From"] = os.getenv(
-        "SMTP_USERNAME",
-        "info@emfinsight.com",
-    )
-    message["To"] = user.email
+    if not brevo_api_key:
+        raise RuntimeError(
+            "BREVO_API_KEY is not configured."
+        )
 
-    message.set_content(
-        f"""Hello,
+    payload = {
+        "sender": {
+            "name": "EMF Insight",
+            "email": "info@emfinsight.com",
+        },
+        "to": [
+            {
+                "email": user.email,
+            }
+        ],
+        "subject": "EMF Insight – Password Reset",
+        "textContent": f"""Hello,
 
 We received a request to reset your EMF Insight password.
 
@@ -363,55 +371,49 @@ This link is valid for 30 minutes.
 If you did not request a password reset, you can safely ignore this email.
 
 EMF Insight
-"""
+""",
+    }
+
+    request = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "accept": "application/json",
+            "api-key": brevo_api_key,
+            "content-type": "application/json",
+        },
+        method="POST",
     )
 
-    smtp_host = os.getenv(
-        "SMTP_HOST",
-        "smtp.gmail.com",
-    )
+    try:
+        with urllib.request.urlopen(
+            request,
+            timeout=15,
+        ) as response:
 
-    smtp_port = int(
-        os.getenv(
-            "SMTP_PORT",
-            "587",
+            if response.status not in (200, 201):
+                raise RuntimeError(
+                    f"Brevo email failed with status {response.status}."
+                )
+
+    except urllib.error.HTTPError as exc:
+        error_body = exc.read().decode(
+            "utf-8",
+            errors="replace",
         )
-    )
 
-    smtp_username = os.getenv(
-        "SMTP_USERNAME"
-    )
-
-    smtp_password = os.getenv(
-        "SMTP_PASSWORD"
-    )
-
-    if not smtp_username or not smtp_password:
         raise RuntimeError(
-            "SMTP_USERNAME and SMTP_PASSWORD are not configured."
-        )
+            f"Brevo email failed: {error_body}"
+        ) from exc
 
-    with smtplib.SMTP(
-        smtp_host,
-        smtp_port,
-    ) as server:
-
-        server.starttls()
-
-        server.login(
-            smtp_username,
-            smtp_password,
-        )
-
-        server.send_message(
-            message
-        )
+    except urllib.error.URLError as exc:
+        raise RuntimeError(
+            f"Brevo connection failed: {exc}"
+        ) from exc
 
     return {
         "message": "If the account exists, a password reset link will be sent."
     }
-
-
 
 @router.post("/reset-password")
 def reset_password(
