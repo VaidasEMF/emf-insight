@@ -406,8 +406,9 @@ EMF Insight
             errors="replace",
         )
 
-        raise RuntimeError(
-            f"Brevo email failed: {error_body}"
+        raise HTTPException(
+            status_code=503,
+            detail="Password reset email service is temporarily unavailable. Please try again later."
         ) from exc
 
     except urllib.error.URLError as exc:
