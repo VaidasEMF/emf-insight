@@ -21,6 +21,8 @@ from fastapi import (
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
+from routes.pricing import router as pricing_router
+
 import stripe
 
 import engine
@@ -75,6 +77,8 @@ app.include_router(
 app.include_router(
     projects_router,
 )
+
+app.include_router(pricing_router)
 
 
 app.include_router(

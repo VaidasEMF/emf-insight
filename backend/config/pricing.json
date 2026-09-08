@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "default_region": "EU",
+  "default_currency": "EUR",
+  "regions": {
+    "EU": {
+      "currency": "EUR",
+      "products": {
+        "HOME_FULL_REPORT": {
+          "name": "Full EMF Insight Report",
+          "price": 9,
+          "billing": "one_time",
+          "credits": 0,
+          "available": true
+        },
+        "BUSINESS_SINGLE": {
+          "name": "Single Report",
+          "price": 9,
+          "billing": "one_time",
+          "credits": 1,
+          "available": true
+        },
+        "BUSINESS_PRO": {
+          "name": "Pro",
+          "price": 19,
+          "billing": "monthly",
+          "credits": 5,
+          "available": true
+        },
+        "BUSINESS_PREMIUM": {
+          "name": "Premium",
+          "price": null,
+          "billing": "monthly",
+          "credits": null,
+          "available": false
+        }
+      }
+    },
+    "US": {
+      "currency": "USD",
+      "products": {
+        "HOME_FULL_REPORT": {
+          "name": "Full EMF Insight Report",
+          "price": 9,
+          "billing": "one_time",
+          "credits": 0,
+          "available": true
+        },
+        "BUSINESS_SINGLE": {
+          "name": "Single Report",
+          "price": 9,
+          "billing": "one_time",
+          "credits": 1,
+          "available": true
+        },
+        "BUSINESS_PRO": {
+          "name": "Pro",
+          "price": 19,
+          "billing": "monthly",
+          "credits": 5,
+          "available": true
+        },
+        "BUSINESS_PREMIUM": {
+          "name": "Premium",
+          "price": null,
+          "billing": "monthly",
+          "credits": null,
+          "available": false
+        }
+      }
+    }
+  }
+}
