@@ -45,6 +45,24 @@ def init_db():
                 )
             )
 
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS first_name VARCHAR DEFAULT ''
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS last_name VARCHAR DEFAULT ''
+                    """
+                )
+            )
+
             admin_email = os.getenv("ADMIN_EMAIL")
             reset_password = os.getenv("ADMIN_RESET_PASSWORD")
 
@@ -83,7 +101,6 @@ def init_db():
                         "hashed_password": hashed_password,
                     },
                 )
-
 
             connection.execute(
                 text(

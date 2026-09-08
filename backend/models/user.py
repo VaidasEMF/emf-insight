@@ -25,6 +25,18 @@ class User(Base):
         index=True,
     )
 
+    first_name: Mapped[str] = mapped_column(
+        String,
+        default="",
+        nullable=False,
+    )
+
+    last_name: Mapped[str] = mapped_column(
+        String,
+        default="",
+        nullable=False,
+    )
+
     email: Mapped[str] = mapped_column(
         String,
         unique=True,

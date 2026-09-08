@@ -139,6 +139,8 @@ def get_current_user(
 
 @router.post("/register")
 def register(
+    first_name: str,
+    last_name: str,
     email: str,
     password: str,
     db: Session = Depends(
@@ -162,6 +164,8 @@ def register(
         )
 
     user = User(
+        first_name=first_name,
+        last_name=last_name,
         email=email,
         hashed_password=hash_password(
             password,
