@@ -1,24 +1,63 @@
-from pathlib import Path
-import json
+﻿from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-from fastapi import APIRouter, HTTPException
+from db.database import SessionLocal
+from models.pricing import Pricing
 
 router = APIRouter(tags=["pricing"])
 
-PRICING_FILE = Path(__file__).resolve().parent.parent / "config" / "pricing.json"
 
+def get_db():
+    db = SessionLocal()
 
-def load_pricing() -> dict:
     try:
-        with PRICING_FILE.open("r", encoding="utf-8") as file:
-            return json.load(file)
-    except (OSError, json.JSONDecodeError) as exc:
-        raise HTTPException(
-            status_code=500,
-            detail="Pricing configuration is unavailable."
-        ) from exc
+        yield db
+    finally:
+        db.close()
 
 
 @router.get("/pricing")
-def get_pricing():
-    return load_pricing()
+def get_pricing(
+    db: Session = Depends(get_db),
+):
+    rows = (
+        db.query(Pricing)
+        .order_by(
+            Pricing.region,
+            Pricing.product_key,
+        )
+        .all()
+    )
+
+    regions = {}
+
+    for row in rows:
+
+        if row.region not in regions:
+            regions[row.region] = {
+                "currency": row.currency,
+                "products": {},
+            }
+
+        regions[row.region]["products"][row.product_key] = {
+            "name": row.name,
+            "price": row.price,
+            "billing": row.billing,
+            "credits": row.credits,
+            "available": row.available,
+        }
+
+    if not regions:
+        return {
+            "version": 1,
+            "default_region": "EU",
+            "default_currency": "EUR",
+            "regions": {},
+        }
+
+    return {
+        "version": 1,
+        "default_region": "EU",
+        "default_currency": "EUR",
+        "regions": regions,
+    }
