@@ -432,8 +432,8 @@
                         requestedWorkspace === "home" ||
                         requestedWorkspace === "business"
                     ) {
-                        localStorage.setItem(
-                            "workspaceMode",
+                        sessionStorage.setItem(
+                            "requestedWorkspace",
                             requestedWorkspace
                         );
                     }

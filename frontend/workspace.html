@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EMF Insight</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #0f172a;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 42px 24px 60px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 42px;
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0b1f35;
+        }
+
+        .account {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .account-btn {
+            border: 1px solid #d8e0e8;
+            background: white;
+            color: #334155;
+            padding: 9px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            margin: 0 0 10px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .welcome p {
+            margin: 0;
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .workspaces {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .workspace-card {
+            background: white;
+            border: 1px solid #dbe3ec;
+            border-radius: 16px;
+            padding: 28px;
+            min-height: 250px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workspace-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: #eef4fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .workspace-card h2 {
+            margin: 0 0 10px;
+            font-size: 21px;
+        }
+
+        .workspace-card p {
+            margin: 0;
+            color: #64748b;
+            line-height: 1.55;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .workspace-btn {
+            margin-top: 24px;
+            border: none;
+            background: #16212c;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .workspace-btn:hover {
+            background: #243443;
+        }
+
+        .account-section {
+            margin-top: 34px;
+            background: white;
+            border: 1px solid #dbe3ec;
+            border-radius: 16px;
+            padding: 24px 28px;
+        }
+
+        .account-section h3 {
+            margin: 0 0 8px;
+            font-size: 17px;
+        }
+
+        .account-section p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .account-links {
+            margin-top: 18px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .account-links a {
+            color: #315f8c;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .account-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .error {
+            display: none;
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #be123c;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                align-items: flex-start;
+                gap: 15px;
+                flex-direction: column;
+            }
+
+            .workspaces {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 27px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <header class="header">
+
+            <div class="brand">
+                EMF Insight
+            </div>
+
+            <div class="account">
+
+                <div id="userEmail" class="user-email"></div>
+
+                <button class="account-btn" onclick="openAccount()">
+                    Account
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <div id="error" class="error"></div>
+
+
+        <section class="welcome">
+
+            <h1>
+                Welcome to EMF Insight
+            </h1>
+
+            <p>
+                Choose the workspace you want to use.
+            </p>
+
+        </section>
+
+
+        <section class="workspaces">
+
+
+            <!-- HOME WELLNESS -->
+
+            <div class="workspace-card">
+
+                <div class="workspace-icon">
+                    🏠
+                </div>
+
+                <h2>
+                    Home Wellness
+                </h2>
+
+                <p>
+                    Assess EMF exposure in your home,
+                    explore sources and lifestyle areas,
+                    and identify opportunities for improvement.
+                </p>
+
+                <button class="workspace-btn" onclick="openHomeWellness()">
+                    Open Home Wellness
+                </button>
+
+            </div>
+
+
+            <!-- BUSINESS SURVEY -->
+
+            <div class="workspace-card">
+
+                <div class="workspace-icon">
+                    🏢
+                </div>
+
+                <h2>
+                    Business Survey
+                </h2>
+
+                <p>
+                    Create and manage professional EMF
+                    assessment projects, floors, measurements,
+                    sources and survey results.
+                </p>
+
+                <button class="workspace-btn" onclick="openBusinessSurvey()">
+                    Open Business Survey
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACCOUNT -->
+
+        <section class="account-section">
+
+            <h3>
+                Account
+            </h3>
+
+            <p>
+                Manage your profile, plan, reports and account settings.
+            </p>
+
+            <div class="account-links">
+
+                <a href="dashboard.html">
+                    Account & Billing
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <div class="footer">
+            © 2026 EMF Insight
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const API = "https://emf-insight.onrender.com";
+
+
+        function getToken() {
+
+            return localStorage.getItem("token");
+
+        }
+
+
+        async function loadUser() {
+
+            const token = getToken();
+
+            if (!token) {
+
+                window.location.href = "login.html";
+
+                return;
+
+            }
+
+
+            try {
+
+                const response = await fetch(
+                    `${API}/me`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+                if (!response.ok) {
+
+                    localStorage.removeItem("token");
+
+                    window.location.href = "login.html";
+
+                    return;
+
+                }
+
+
+                const user = await response.json();
+
+
+                document.getElementById(
+                    "userEmail"
+                ).textContent =
+                    user.email || "";
+
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                document.getElementById(
+                    "error"
+                ).textContent =
+                    "Unable to load your account. Please try again.";
+
+                document.getElementById(
+                    "error"
+                ).style.display = "block";
+
+            }
+
+        }
+
+
+        function openHomeWellness() {
+
+            localStorage.setItem(
+                "workspaceMode",
+                "home"
+            );
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        function openBusinessSurvey() {
+
+            localStorage.setItem(
+                "workspaceMode",
+                "business"
+            );
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        function openAccount() {
+
+            window.location.href =
+                "dashboard.html";
+
+        }
+
+        function routeToRequestedWorkspace() {
+
+            const workspace =
+                sessionStorage.getItem(
+                    "requestedWorkspace"
+                );
+
+            if (
+                workspace === "home" ||
+                workspace === "business"
+            ) {
+                sessionStorage.removeItem(
+                    "requestedWorkspace"
+                );
+
+                localStorage.setItem(
+                    "workspaceMode",
+                    workspace
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return true;
+            }
+
+            return false;
+        }
+
+
+        if (!routeToRequestedWorkspace()) {
+            loadUser();
+        }
+
+    </script>
+
+</body>
+
+</html>
