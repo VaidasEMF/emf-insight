@@ -1,4 +1,4 @@
-import os
+﻿import os
 
 from sqlalchemy import text
 
@@ -11,6 +11,7 @@ from .base import Base
 from models.user import User
 from models.project import Project
 from models.report import Report
+from models.pricing import Pricing
 
 
 def init_db():
