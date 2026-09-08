@@ -766,7 +766,10 @@ def save_project(
 # GENERATE PDF
 # =====================
 @app.post("/generate-pdf")
-def generate_pdf(data: dict):
+def generate_pdf(
+    data: dict,
+    current_user=Depends(get_current_user),
+):
 
     print("\n=== GENERATE PDF ===")
 
@@ -779,8 +782,6 @@ def generate_pdf(data: dict):
         # =====================
 
         pid = data.get("project_id")
-
-        user_id = data.get("user_id")
 
         sessionA = data.get("sessionA") or "session_1"
 
@@ -800,36 +801,24 @@ def generate_pdf(data: dict):
         # 🔥 LOAD PROJECT
         # =====================
 
-        project_row = db.query(Project).filter(Project.id == pid).first()
 
+        project_row = (
+            db.query(Project)
+            .filter(
+                Project.id == pid,
+                Project.user_id == current_user.id,
+            )
+            .first()
+        )
         if not project_row:
-
             raise HTTPException(404, "Project not found")
 
-        # =====================
-        # 🔥 LOAD USER
-        # =====================
-
-        user = None
-
-        if user_id:
-
-            user = db.query(User).filter(User.id == user_id).first()
 
         # =====================
-        # 🔥 DEV FALLBACK
+        # AUTHENTICATED USER
         # =====================
-        if not user:
 
-            class MockUser:
-
-                plan = "premium"
-                credits = 999
-
-            user = MockUser()
-
-            print("⚠ Using MockUser")
-                
+        user = current_user
 
         # =====================
         # 🔥 PROJECT DATA
@@ -840,10 +829,10 @@ def generate_pdf(data: dict):
         print(project_row.data)
         print("=================================\n")
 
-   
+
         project = project_row.data
 
-        
+
 
         project["meta"] = {
             "company": "EMF Maps",
@@ -854,10 +843,10 @@ def generate_pdf(data: dict):
             "total_pages": 0,
         }
 
-        
-       
+
+
         for i, floor in enumerate(project.get("floors", [])):
-           
+
 
             for zone in floor.get("zones", []):
                 print(
@@ -868,26 +857,26 @@ def generate_pdf(data: dict):
                     "\nmeasurements:", len(zone.get("measurements", [])),
                 )
 
-        
+
         floors = project.get("floors", [])
 
-       
+
         if floors:
             floor = floors[0]
 
-           
 
-        
+
+
         floors = project.get("floors", [])
-       
+
 
         if floors:
             floor = floors[0]
 
             rooms = floor.get("rooms", [])
-           
 
-            
+
+
 
             for room in rooms:
 
@@ -928,18 +917,18 @@ def generate_pdf(data: dict):
                     p.get("y"),
                 )
 
-        
+
 
         floors = project.get("floors", [])
 
-       
+
 
         if floors:
 
             floor = floors[0]
 
-           
-            
+
+
             # ---------- ROOM ----------
             if floor.get("rooms"):
 
@@ -959,7 +948,7 @@ def generate_pdf(data: dict):
 
                 zone = floor["zones"][0]
 
-               
+
 
                 poly = zone.get("polygon", [])
 
@@ -969,13 +958,13 @@ def generate_pdf(data: dict):
 
                 grid = zone.get("grid", [])
 
-                
+
 
                 if grid:
 
                     gp = grid[0]
 
-                   
+
 
 
 
@@ -1012,7 +1001,7 @@ def generate_pdf(data: dict):
             ):
                 continue
 
-            
+
 
         for i, floor in enumerate(
             project.get(
@@ -1033,7 +1022,7 @@ def generate_pdf(data: dict):
                     s.get("id"),
                 )
 
-            
+
 
             print(
                 f"FLOOR {i} OUTDOOR:",
@@ -1061,14 +1050,14 @@ def generate_pdf(data: dict):
         # 🔥 VALIDATE DATA
         # =====================
 
-        
+
 
         pts_before = engine.collect_points(
             project,
             sessionA,
         )
 
-        
+
 
         if pts_before:
 
@@ -1118,7 +1107,7 @@ def generate_pdf(data: dict):
             user=user,
         )
 
-       
+
 
         # =====================
         # 🔥 SAVE REPORT

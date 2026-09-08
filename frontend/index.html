@@ -23720,7 +23720,7 @@
     floor.rooms.forEach(r => {
       (r.grid || []).forEach(p => {
         if (p.measurements?.[from]) {
-          p.measurements[to] = { ...p.measurements[from] };
+          p.measurements[to] = {...p.measurements[from]};
         }
       });
     });
@@ -25481,7 +25481,9 @@
 
           headers: {
             "Content-Type":
-              "application/json"
+              "application/json",
+            "Authorization":
+              `Bearer ${token}`
           },
 
           body: JSON.stringify({
