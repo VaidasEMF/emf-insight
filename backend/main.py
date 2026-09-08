@@ -761,45 +761,6 @@ def save_project(
 
         db.close()
 
-# =====================
-# GET PROJECTS
-# =====================
-@app.get("/projects/{user_id}")
-def get_projects(user_id: str):
-
-    db = SessionLocal()
-
-    projects = db.query(Project).filter(Project.user_id == user_id).all()
-
-    result = [
-        {"id": p.id, "name": p.name, "created_at": str(p.created_at)} for p in projects
-    ]
-
-    db.close()
-
-    return result
-
-
-# =====================
-# GET PROJECT
-# =====================
-@app.get("/project/{project_id}")
-def get_project(project_id: str):
-
-    db = SessionLocal()
-
-    project = db.query(Project).filter(Project.id == project_id).first()
-
-    if not project:
-        db.close()
-        raise HTTPException(404, "Project not found")
-
-    data = project.data
-
-    db.close()
-
-    return {"id": project.id, "name": project.name, "data": data}
-
 
 # =====================
 # GENERATE PDF
