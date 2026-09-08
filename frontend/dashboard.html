@@ -1385,10 +1385,12 @@
             window.location.href = "login.html";
         }
 
-        let pricingCurrency = (window.EMF_PRICING && window.EMF_PRICING.defaultCurrency) || "EUR";
+        let pricingCurrency = "EUR";
+        let pricingLoaded = false;
 
         function currencyInfo() {
-            return window.EMF_PRICING.currencies[pricingCurrency] || window.EMF_PRICING.currencies.EUR;
+            return window.EMF_PRICING.currencies[pricingCurrency]
+                || window.EMF_PRICING.currencies.EUR;
         }
 
         function formatPrice(value) {
@@ -1418,8 +1420,11 @@
             const price = item.prices[pricingCurrency];
             const isTbd = item.type === "tbd" || typeof price !== "number";
             const featured = key === "pro";
-            const credits = item.credits ? `${item.credits} report${item.credits === 1 ? "" : "s"}` : "";
+            const credits = item.credits
+                ? `${item.credits} report${item.credits === 1 ? "" : "s"}`
+                : "";
             const period = item.type === "monthly" ? "/ month" : "one-time";
+
             const description = workspace === "home"
                 ? "Unlock the complete EMF Insight report."
                 : key === "single"
@@ -1441,44 +1446,187 @@
         }
 
         function renderPricing() {
-            if (!window.EMF_PRICING) return;
+            if (!pricingLoaded || !window.EMF_PRICING) return;
 
             const select = document.getElementById("currencySelect");
+
             if (select) {
                 select.innerHTML = window.EMF_PRICING.supportedCurrencies.map(code => {
                     const info = window.EMF_PRICING.currencies[code];
+
                     return `<option value="${code}" ${code === pricingCurrency ? "selected" : ""}>${info.symbol} ${code}</option>`;
                 }).join("");
             }
 
             const home = window.EMF_PRICING.home.fullReport;
+
             const homeGrid = document.getElementById("homePricingGrid");
-            if (homeGrid) homeGrid.innerHTML = renderPriceCard(home, "fullReport", "home");
+
+            if (homeGrid) {
+                homeGrid.innerHTML = renderPriceCard(
+                    home,
+                    "fullReport",
+                    "home"
+                );
+            }
 
             const businessGrid = document.getElementById("businessPricingGrid");
+
             if (businessGrid) {
                 businessGrid.innerHTML = [
-                    renderPriceCard(window.EMF_PRICING.business.single, "single", "business"),
-                    renderPriceCard(window.EMF_PRICING.business.pro, "pro", "business"),
-                    renderPriceCard(window.EMF_PRICING.business.premium, "premium", "business")
+                    renderPriceCard(
+                        window.EMF_PRICING.business.single,
+                        "single",
+                        "business"
+                    ),
+                    renderPriceCard(
+                        window.EMF_PRICING.business.pro,
+                        "pro",
+                        "business"
+                    ),
+                    renderPriceCard(
+                        window.EMF_PRICING.business.premium,
+                        "premium",
+                        "business"
+                    )
                 ].join("");
             }
 
-            const homePriceSummary = document.getElementById("homePriceSummary");
+            const homePriceSummary =
+                document.getElementById("homePriceSummary");
+
             if (homePriceSummary) {
                 const price = home.prices[pricingCurrency];
-                homePriceSummary.textContent = typeof price === "number"
-                    ? `Full report unlock: ${formatPrice(price)} one-time`
-                    : "Full report pricing: TBD";
+
+                homePriceSummary.textContent =
+                    typeof price === "number"
+                        ? `Full report unlock: ${formatPrice(price)} one-time`
+                        : "Full report pricing: TBD";
             }
         }
 
-        const savedPricingCurrency = localStorage.getItem("pricingCurrency");
-        if (savedPricingCurrency && window.EMF_PRICING.supportedCurrencies.includes(savedPricingCurrency)) {
-            pricingCurrency = savedPricingCurrency;
+        async function loadPricing() {
+            try {
+                const res = await fetch(`${API}/pricing`);
+
+                if (!res.ok) {
+                    throw new Error(`Pricing request failed: ${res.status}`);
+                }
+
+                const data = await res.json();
+
+                const supportedCurrencies = [];
+                const currencies = {};
+
+                Object.entries(data.regions || {}).forEach(([region, regionData]) => {
+                    const code = regionData.currency;
+
+                    if (!code || currencies[code]) return;
+
+                    supportedCurrencies.push(code);
+
+                    const symbol = code === "USD"
+                        ? "$"
+                        : code === "EUR"
+                            ? "€"
+                            : code;
+
+                    const locale = code === "USD"
+                        ? "en-US"
+                        : code === "EUR"
+                            ? "en-IE"
+                            : "en-US";
+
+                    currencies[code] = {
+                        code,
+                        symbol,
+                        locale
+                    };
+                });
+
+                const eu = data.regions?.EU;
+                const us = data.regions?.US;
+
+                window.EMF_PRICING = {
+                    defaultCurrency: data.default_currency || "EUR",
+                    supportedCurrencies,
+                    currencies,
+
+                    home: {
+                        fullReport: {
+                            name: eu?.products?.HOME_FULL_REPORT?.name
+                                || "Full EMF Insight Report",
+                            type: eu?.products?.HOME_FULL_REPORT?.billing
+                                || "one_time",
+                            prices: {
+                                EUR: eu?.products?.HOME_FULL_REPORT?.price,
+                                USD: us?.products?.HOME_FULL_REPORT?.price
+                            }
+                        }
+                    },
+
+                    business: {
+                        single: {
+                            name: eu?.products?.BUSINESS_SINGLE?.name
+                                || "Single Report",
+                            type: eu?.products?.BUSINESS_SINGLE?.billing
+                                || "one_time",
+                            credits: eu?.products?.BUSINESS_SINGLE?.credits,
+                            prices: {
+                                EUR: eu?.products?.BUSINESS_SINGLE?.price,
+                                USD: us?.products?.BUSINESS_SINGLE?.price
+                            }
+                        },
+
+                        pro: {
+                            name: eu?.products?.BUSINESS_PRO?.name
+                                || "Pro",
+                            type: eu?.products?.BUSINESS_PRO?.billing
+                                || "monthly",
+                            credits: eu?.products?.BUSINESS_PRO?.credits,
+                            prices: {
+                                EUR: eu?.products?.BUSINESS_PRO?.price,
+                                USD: us?.products?.BUSINESS_PRO?.price
+                            }
+                        },
+
+                        premium: {
+                            name: eu?.products?.BUSINESS_PREMIUM?.name
+                                || "Premium",
+                            type: "tbd",
+                            credits: null,
+                            prices: {
+                                EUR: eu?.products?.BUSINESS_PREMIUM?.price,
+                                USD: us?.products?.BUSINESS_PREMIUM?.price
+                            }
+                        }
+                    }
+                };
+
+                const savedPricingCurrency =
+                    localStorage.getItem("pricingCurrency");
+
+                if (
+                    savedPricingCurrency &&
+                    window.EMF_PRICING.supportedCurrencies.includes(
+                        savedPricingCurrency
+                    )
+                ) {
+                    pricingCurrency = savedPricingCurrency;
+                } else {
+                    pricingCurrency =
+                        window.EMF_PRICING.defaultCurrency;
+                }
+
+                pricingLoaded = true;
+                renderPricing();
+
+            } catch (error) {
+                console.error("Failed to load pricing:", error);
+            }
         }
 
-        renderPricing();
+        loadPricing();
 
         async function loadUser() {
             try {
