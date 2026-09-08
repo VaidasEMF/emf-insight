@@ -420,9 +420,25 @@
                         data.access_token
                     );
 
+                    // Remember which workspace the user selected
+                    const params = new URLSearchParams(
+                        window.location.search
+                    );
 
-                    window.location.href =
-                        "dashboard.html";
+                    const requestedWorkspace =
+                        params.get("workspace");
+
+                    if (
+                        requestedWorkspace === "home" ||
+                        requestedWorkspace === "business"
+                    ) {
+                        localStorage.setItem(
+                            "workspaceMode",
+                            requestedWorkspace
+                        );
+                    }
+
+                    window.location.href = "workspace.html";
 
                 }
 
