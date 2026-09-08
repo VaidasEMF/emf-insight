@@ -620,6 +620,136 @@
             font-size: 10px;
         }
 
+        .billing-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--surface-soft);
+        }
+
+        .billing-toolbar-copy strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .billing-toolbar-copy span {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .currency-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .currency-control label {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .currency-control select {
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 8px 28px 8px 9px;
+            background: #fff;
+            color: var(--text);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .price-card {
+            position: relative;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px;
+            background: #fff;
+        }
+
+        .price-card.featured {
+            border-color: #a8ccd7;
+            box-shadow: 0 8px 24px rgba(21, 39, 63, 0.06);
+        }
+
+        .price-card.muted {
+            background: var(--surface-soft);
+        }
+
+        .price-card h4 {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .price-description {
+            min-height: 34px;
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
+        .price-amount {
+            margin-top: 14px;
+            font-size: 26px;
+            font-weight: 820;
+            letter-spacing: -0.04em;
+        }
+
+        .price-period {
+            margin-left: 3px;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 650;
+        }
+
+        .price-meta {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .price-actions {
+            margin-top: 16px;
+        }
+
+        .price-badge {
+            display: inline-flex;
+            padding: 4px 7px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .price-card .btn-primary[disabled],
+        .price-card .btn-secondary[disabled] {
+            opacity: .55;
+            cursor: default;
+        }
+
+        .pricing-footnote {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
         /* =========================
            BRANDING
            ========================= */
@@ -781,8 +911,14 @@
 
             .workspace-grid,
             .billing-layout,
+            .pricing-grid,
             .form-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .billing-toolbar {
+                align-items: flex-start;
+                flex-direction: column;
             }
 
             .summary-grid {
@@ -1057,29 +1193,63 @@
                     <div class="section-heading">
                         <div>
                             <h2 class="section-title" id="billing-title">Billing &amp; Plan</h2>
-                            <p class="section-description">Commercial settings are being separated by workspace so Home
-                                and Business access can evolve independently.</p>
+                            <p class="section-description">Home Wellness and Business Survey have separate commercial
+                                models and can evolve independently.</p>
                         </div>
                     </div>
 
                     <div class="content-card">
                         <div class="content-body">
+                            <div class="billing-toolbar">
+                                <div class="billing-toolbar-copy">
+                                    <strong>Pricing display</strong>
+                                    <span>Prices are loaded from the central EMF Insight pricing configuration.</span>
+                                </div>
+                                <div class="currency-control">
+                                    <label for="currencySelect">Currency</label>
+                                    <select id="currencySelect" onchange="setPricingCurrency(this.value)"></select>
+                                </div>
+                            </div>
+
                             <div class="billing-layout">
                                 <div class="billing-panel">
                                     <h4>Home Wellness</h4>
-                                    <p>Home access and full-report unlocking will be managed independently from Business
-                                        Survey plans.</p>
-                                    <div class="billing-value">Workspace access</div>
-                                    <div class="billing-note">Pricing is configured separately and is not hardcoded on
-                                        this page.</div>
+                                    <p>Personal EMF assessment with optional full-report unlocking.</p>
+                                    <div class="billing-value" id="homeAccessStatus">Workspace access</div>
+                                    <div class="billing-note" id="homePriceSummary">—</div>
                                 </div>
 
                                 <div class="billing-panel">
                                     <h4>Business Survey</h4>
-                                    <p>Your current Business Survey account status is shown below.</p>
+                                    <p>Your current Business Survey account status and available credits.</p>
                                     <div class="billing-value" id="billingBusinessPlan">—</div>
                                     <div class="billing-note" id="billingBusinessCredits">— credits available</div>
                                 </div>
+                            </div>
+
+                            <div style="height: 18px;"></div>
+
+                            <div class="section-heading" style="margin-bottom: 10px;">
+                                <div>
+                                    <h3 class="section-title" style="font-size: 16px;">Home Wellness</h3>
+                                    <p class="section-description">One-time full report unlock.</p>
+                                </div>
+                            </div>
+                            <div class="pricing-grid" id="homePricingGrid"></div>
+
+                            <div style="height: 22px;"></div>
+
+                            <div class="section-heading" style="margin-bottom: 10px;">
+                                <div>
+                                    <h3 class="section-title" style="font-size: 16px;">Business Survey</h3>
+                                    <p class="section-description">Credits are used for Business Survey reports.</p>
+                                </div>
+                            </div>
+                            <div class="pricing-grid" id="businessPricingGrid"></div>
+
+                            <div class="pricing-footnote">
+                                Pricing shown here is configuration-driven. Checkout and payment processing will be
+                                connected after the commercial model and backend billing structure are finalized.
                             </div>
                         </div>
                     </div>
@@ -1161,6 +1331,7 @@
         </main>
     </div>
 
+    <script src="pricing-config.js"></script>
     <script>
         const API = "https://emf-insight.onrender.com";
         const token = localStorage.getItem("token");
@@ -1213,6 +1384,101 @@
             sessionStorage.removeItem("requestedWorkspace");
             window.location.href = "login.html";
         }
+
+        let pricingCurrency = (window.EMF_PRICING && window.EMF_PRICING.defaultCurrency) || "EUR";
+
+        function currencyInfo() {
+            return window.EMF_PRICING.currencies[pricingCurrency] || window.EMF_PRICING.currencies.EUR;
+        }
+
+        function formatPrice(value) {
+            const info = currencyInfo();
+            return new Intl.NumberFormat(info.locale, {
+                style: "currency",
+                currency: info.code,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function setPricingCurrency(currency) {
+            if (!window.EMF_PRICING.supportedCurrencies.includes(currency)) return;
+            pricingCurrency = currency;
+            localStorage.setItem("pricingCurrency", currency);
+            renderPricing();
+        }
+
+        function pricingButton(label, enabled = false) {
+            if (!enabled) {
+                return `<button class="btn-secondary" disabled>${label}</button>`;
+            }
+            return `<button class="btn-primary">${label}</button>`;
+        }
+
+        function renderPriceCard(item, key, workspace) {
+            const price = item.prices[pricingCurrency];
+            const isTbd = item.type === "tbd" || typeof price !== "number";
+            const featured = key === "pro";
+            const credits = item.credits ? `${item.credits} report${item.credits === 1 ? "" : "s"}` : "";
+            const period = item.type === "monthly" ? "/ month" : "one-time";
+            const description = workspace === "home"
+                ? "Unlock the complete EMF Insight report."
+                : key === "single"
+                    ? "One Business Survey report credit."
+                    : key === "pro"
+                        ? "Five Business Survey report credits each month."
+                        : "Higher-volume plan to be defined later.";
+
+            return `
+            <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""}">
+                ${featured ? `<span class="price-badge">Current beta offer</span>` : ""}
+                <h4>${escapeHtml(item.name)}</h4>
+                <p class="price-description">${description}</p>
+                <div class="price-amount">${isTbd ? "TBD" : formatPrice(price)}${!isTbd && item.type === "monthly" ? `<span class="price-period">${period}</span>` : ""}</div>
+                <div class="price-meta">${isTbd ? "Not available yet" : credits ? credits : period}</div>
+                <div class="price-actions">${pricingButton(isTbd ? "Coming later" : "Available soon")}</div>
+            </article>
+        `;
+        }
+
+        function renderPricing() {
+            if (!window.EMF_PRICING) return;
+
+            const select = document.getElementById("currencySelect");
+            if (select) {
+                select.innerHTML = window.EMF_PRICING.supportedCurrencies.map(code => {
+                    const info = window.EMF_PRICING.currencies[code];
+                    return `<option value="${code}" ${code === pricingCurrency ? "selected" : ""}>${info.symbol} ${code}</option>`;
+                }).join("");
+            }
+
+            const home = window.EMF_PRICING.home.fullReport;
+            const homeGrid = document.getElementById("homePricingGrid");
+            if (homeGrid) homeGrid.innerHTML = renderPriceCard(home, "fullReport", "home");
+
+            const businessGrid = document.getElementById("businessPricingGrid");
+            if (businessGrid) {
+                businessGrid.innerHTML = [
+                    renderPriceCard(window.EMF_PRICING.business.single, "single", "business"),
+                    renderPriceCard(window.EMF_PRICING.business.pro, "pro", "business"),
+                    renderPriceCard(window.EMF_PRICING.business.premium, "premium", "business")
+                ].join("");
+            }
+
+            const homePriceSummary = document.getElementById("homePriceSummary");
+            if (homePriceSummary) {
+                const price = home.prices[pricingCurrency];
+                homePriceSummary.textContent = typeof price === "number"
+                    ? `Full report unlock: ${formatPrice(price)} one-time`
+                    : "Full report pricing: TBD";
+            }
+        }
+
+        const savedPricingCurrency = localStorage.getItem("pricingCurrency");
+        if (savedPricingCurrency && window.EMF_PRICING.supportedCurrencies.includes(savedPricingCurrency)) {
+            pricingCurrency = savedPricingCurrency;
+        }
+
+        renderPricing();
 
         async function loadUser() {
             try {
