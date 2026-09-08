@@ -1,8 +1,6 @@
-﻿import os
+import os
 
 from sqlalchemy import text
-
-from auth.passwords import hash_password
 
 from .database import engine
 from .base import Base
@@ -65,7 +63,7 @@ def init_db():
             )
 
             admin_email = os.getenv("ADMIN_EMAIL")
-            reset_password = os.getenv("ADMIN_RESET_PASSWORD")
+
 
             if admin_email:
 
@@ -82,26 +80,7 @@ def init_db():
                     },
                 )
 
-            if admin_email and reset_password:
 
-                hashed_password = hash_password(
-                    reset_password
-                )
-
-                connection.execute(
-                    text(
-                        """
-                        UPDATE users
-                        SET is_admin = TRUE,
-                            hashed_password = :hashed_password
-                        WHERE email = :email
-                        """
-                    ),
-                    {
-                        "email": admin_email,
-                        "hashed_password": hashed_password,
-                    },
-                )
 
             connection.execute(
                 text(
