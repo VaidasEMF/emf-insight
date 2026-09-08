@@ -120,3 +120,113 @@ def init_db():
                     """
                 )
             )
+
+            pricing_count = connection.execute(
+                text(
+                    """
+                    SELECT COUNT(*)
+                    FROM pricing
+                    """
+                )
+            ).scalar()
+
+            if pricing_count == 0:
+
+                connection.execute(
+                    text(
+                        """
+                        INSERT INTO pricing
+                            (
+                                region,
+                                currency,
+                                product_key,
+                                name,
+                                price,
+                                billing,
+                                credits,
+                                available
+                            )
+                        VALUES
+                            (
+                                'EU',
+                                'EUR',
+                                'HOME_FULL_REPORT',
+                                'Full EMF Insight Report',
+                                9,
+                                'one_time',
+                                0,
+                                TRUE
+                            ),
+                            (
+                                'EU',
+                                'EUR',
+                                'BUSINESS_SINGLE',
+                                'Single Report',
+                                9,
+                                'one_time',
+                                1,
+                                TRUE
+                            ),
+                            (
+                                'EU',
+                                'EUR',
+                                'BUSINESS_PRO',
+                                'Pro',
+                                19,
+                                'monthly',
+                                5,
+                                TRUE
+                            ),
+                            (
+                                'EU',
+                                'EUR',
+                                'BUSINESS_PREMIUM',
+                                'Premium',
+                                NULL,
+                                'monthly',
+                                NULL,
+                                FALSE
+                            ),
+                            (
+                                'US',
+                                'USD',
+                                'HOME_FULL_REPORT',
+                                'Full EMF Insight Report',
+                                9,
+                                'one_time',
+                                0,
+                                TRUE
+                            ),
+                            (
+                                'US',
+                                'USD',
+                                'BUSINESS_SINGLE',
+                                'Single Report',
+                                9,
+                                'one_time',
+                                1,
+                                TRUE
+                            ),
+                            (
+                                'US',
+                                'USD',
+                                'BUSINESS_PRO',
+                                'Pro',
+                                19,
+                                'monthly',
+                                5,
+                                TRUE
+                            ),
+                            (
+                                'US',
+                                'USD',
+                                'BUSINESS_PREMIUM',
+                                'Premium',
+                                NULL,
+                                'monthly',
+                                NULL,
+                                FALSE
+                            )
+                        """
+                    )
+                )
