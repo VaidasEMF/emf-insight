@@ -23,6 +23,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routes.pricing import router as pricing_router
 
+from routes.admin_pricing import router as admin_pricing_router
+
 import stripe
 
 import engine
@@ -79,6 +81,8 @@ app.include_router(
 )
 
 app.include_router(pricing_router)
+
+app.include_router(admin_pricing_router)
 
 
 app.include_router(
