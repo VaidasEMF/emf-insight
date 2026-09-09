@@ -142,22 +142,45 @@ def collect_points(
                           
 
                             continue
-
                 # =====================
                 # 🔥 SAFE PARSE
+                # =====================
+                #
+                # Measurement Profile may intentionally
+                # leave unused channels as null.
+                #
+                # Example:
+                # rf = 333
+                # electric = null
+                # magnetic = null
+                #
+                # null is valid for an inactive channel.
+                # Only the active measured values need
+                # to be numeric.
                 # =====================
 
                 try:
 
-                    rf = float(m.get("rf", 0))
+                    rf_raw = m.get("rf")
+                    electric_raw = m.get("electric")
+                    magnetic_raw = m.get("magnetic")
 
-                    electric = float(m.get("electric", 0))
+                    rf = float(rf_raw) if rf_raw not in (None, "") else 0.0
 
-                    magnetic = float(m.get("magnetic", 0))
+                    electric = (
+                        float(electric_raw)
+                        if electric_raw not in (None, "")
+                        else 0.0
+                    )
 
-                except Exception as e:
+                    magnetic = (
+                        float(magnetic_raw)
+                        if magnetic_raw not in (None, "")
+                        else 0.0
+                    )
 
-                    
+                except Exception:
+
                     continue
 
                 # =====================
