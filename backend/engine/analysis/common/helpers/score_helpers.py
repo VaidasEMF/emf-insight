@@ -78,25 +78,37 @@ def normalize_sbm(m: dict) -> dict:
     SBM biological exposure model
     """
 
-    rf = float(
-        m.get(
-            "rf",
-            0,
-        )
+    rf_raw = m.get(
+        "rf",
+        0,
     )
 
-    mag = float(
-        m.get(
-            "magnetic",
-            0,
-        )
+    mag_raw = m.get(
+        "magnetic",
+        0,
     )
 
-    elec = float(
-        m.get(
-            "electric",
-            0,
-        )
+    elec_raw = m.get(
+        "electric",
+        0,
+    )
+
+    rf = (
+        float(rf_raw)
+        if rf_raw is not None
+        else 0.0
+    )
+
+    mag = (
+        float(mag_raw)
+        if mag_raw is not None
+        else 0.0
+    )
+
+    elec = (
+        float(elec_raw)
+        if elec_raw is not None
+        else 0.0
     )
 
     
