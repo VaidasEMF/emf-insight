@@ -46,8 +46,8 @@ function updateRoomStatusUI() {
 
     rooms.forEach((room, i) => {
 
-        const stats =
-            window.getRoomMeasurementStats?.(room);
+        const readiness =
+            window.getRoomAnalysisReadiness?.(room);
 
         let status =
             "";
@@ -56,46 +56,30 @@ function updateRoomStatusUI() {
             "#6b7280";
 
         if (
-
             !room.grid ||
-
             room.grid.length === 0
-
         ) {
-
             status =
                 "○ No Grid";
 
             color =
                 "#6b7280";
         }
-
         else if (
-
-            !stats.canComplete
-
+            readiness?.ready === true
         ) {
-
-            const remaining =
-
-                stats.required -
-                stats.measured;
-
-            status =
-
-                `⚠ Need ${remaining}`;
-
-            color =
-                "#f59e0b";
-        }
-
-        else {
-
             status =
                 "✓ Complete";
 
             color =
                 "#16a34a";
+        }
+        else {
+            status =
+                "⚠ Not Ready";
+
+            color =
+                "#f59e0b";
         }
 
         const active =
