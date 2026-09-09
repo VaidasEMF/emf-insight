@@ -4635,10 +4635,40 @@ function getRoomAnalysisReadiness(
     // Zone has priority over Room grid.
     // ==================================================
 
+    const roomPointBelongsToZone = point => {
+        if (!point) {
+            return false;
+        }
+
+        if (point.zoneId) {
+            return true;
+        }
+
+        return roomZones.some(zone => {
+            if (
+                !Array.isArray(zone.polygon) ||
+                zone.polygon.length < 3
+            ) {
+                return false;
+            }
+
+            return pointInPolygon(
+                {
+                    x: point.x,
+                    y: point.y
+                },
+                zone.polygon
+            );
+        });
+    };
+
+
     const uncoveredRoomPoints =
         roomPoints.filter(
             point =>
-                !point.zoneId
+                !roomPointBelongsToZone(
+                    point
+                )
         );
 
 
