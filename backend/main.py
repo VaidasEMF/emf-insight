@@ -28,6 +28,9 @@ from routes.admin_pricing import router as admin_pricing_router
 import stripe
 
 import engine
+from engine.analysis.business.analysis import (
+    build_business_analysis,
+)
 
 from db.database import SessionLocal
 
@@ -759,6 +762,45 @@ def save_project(
 
     finally:
 
+        db.close()
+
+
+@app.get("/business-analysis/{project_id}")
+def get_business_analysis(
+    project_id: int,
+    current_user=Depends(get_current_user),
+):
+    db = SessionLocal()
+
+    try:
+        project_row = (
+            db.query(Project)
+            .filter(
+                Project.id == project_id,
+                Project.user_id == current_user.id,
+            )
+            .first()
+        )
+
+        if not project_row:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found",
+            )
+
+        project = project_row.data
+
+        analysis = build_business_analysis(
+            project,
+            "session_1",
+            "session_2",
+        )
+
+        analysis["project_id"] = project_id
+
+        return analysis
+
+    finally:
         db.close()
 
 
