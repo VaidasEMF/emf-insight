@@ -1585,6 +1585,138 @@
     }
 
 
+    /* ==================================================
+   USER ACCOUNT SELECTOR
+   ================================================== */
+
+    .user-selector {
+      position: relative;
+      margin-left: 10px;
+    }
+
+    .user-account-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      height: 40px;
+      padding: 0 14px;
+
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+
+      background: #ffffff;
+      color: #374151;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      cursor: pointer;
+    }
+
+    .user-account-switcher:hover {
+      background: #f9fafb;
+    }
+
+    .user-account-icon {
+      font-size: 15px;
+    }
+
+    .user-account-chevron {
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+
+    /* USER DROPDOWN */
+
+    .user-account-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+
+      width: 280px;
+
+      padding: 8px;
+
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.12);
+
+      z-index: 10000;
+    }
+
+    .user-menu-section-title {
+      padding: 7px 10px 6px;
+
+      font-size: 10px;
+      font-weight: 700;
+
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+    }
+
+    .user-menu-item {
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 9px 10px;
+
+      border-radius: 7px;
+
+      cursor: pointer;
+    }
+
+    .user-menu-item:hover {
+      background: #f3f4f6;
+    }
+
+    .user-menu-icon {
+      width: 24px;
+
+      text-align: center;
+
+      font-size: 15px;
+    }
+
+    .user-menu-content {
+      display: flex;
+      flex-direction: column;
+
+      min-width: 0;
+    }
+
+    .user-menu-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .user-menu-subtitle {
+      margin-top: 2px;
+
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .user-menu-divider {
+      height: 1px;
+
+      margin: 6px 4px;
+
+      background: #e5e7eb;
+    }
+
+    .user-menu-item-danger .user-menu-title {
+      color: #b91c1c;
+    }
+
+
     /* ===================== */
     /* SWITCHER BUTTON */
     /* ===================== */
@@ -5127,6 +5259,10 @@
 
       gap: 16px;
 
+    }
+
+    #projectHeader .project-header-top .user-selector {
+      margin-left: auto;
     }
 
 
@@ -18174,6 +18310,151 @@
                   </span>
 
                 </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ================================================== -->
+          <!-- USER ACCOUNT SELECTOR -->
+          <!-- ================================================== -->
+
+          <div class="user-selector">
+
+            <button id="userAccountBtn" class="user-account-switcher" type="button" onclick="toggleUserMenu()">
+
+              <span class="user-account-icon">
+                👤
+              </span>
+
+              <span id="userAccountLabel">
+                User
+              </span>
+
+              <span class="user-account-chevron">
+                ▼
+              </span>
+
+            </button>
+
+
+            <!-- USER MENU -->
+
+            <div id="userAccountMenu" class="user-account-menu" style="display:none;">
+
+              <div class="user-menu-section">
+
+                <div class="user-menu-section-title">
+                  ACCOUNT
+                </div>
+
+
+                <div class="user-menu-item" id="userProfileItem">
+                  <span class="user-menu-icon">👤</span>
+
+                  <span class="user-menu-content">
+
+                    <span class="user-menu-title">
+                      Profile
+                    </span>
+
+                    <span class="user-menu-subtitle">
+                      Personal & account details
+                    </span>
+
+                  </span>
+                </div>
+
+
+                <div class="user-menu-item" id="userBrandingItem">
+                  <span class="user-menu-icon">🎨</span>
+
+                  <span class="user-menu-content">
+
+                    <span class="user-menu-title">
+                      Branding
+                    </span>
+
+                    <span class="user-menu-subtitle">
+                      Company name, email & logo
+                    </span>
+
+                  </span>
+                </div>
+
+
+                <div class="user-menu-item" id="userBillingItem">
+                  <span class="user-menu-icon">💳</span>
+
+                  <span class="user-menu-content">
+
+                    <span class="user-menu-title">
+                      Billing & Plan
+                    </span>
+
+                    <span class="user-menu-subtitle">
+                      Credits and subscription
+                    </span>
+
+                  </span>
+                </div>
+
+
+                <div class="user-menu-item" id="userSecurityItem">
+                  <span class="user-menu-icon">🔐</span>
+
+                  <span class="user-menu-content">
+
+                    <span class="user-menu-title">
+                      Security
+                    </span>
+
+                    <span class="user-menu-subtitle">
+                      Password & security
+                    </span>
+
+                  </span>
+                </div>
+
+
+                <div class="user-menu-item" id="userHelpItem">
+                  <span class="user-menu-icon">❓</span>
+
+                  <span class="user-menu-content">
+
+                    <span class="user-menu-title">
+                      Help & Support
+                    </span>
+
+                    <span class="user-menu-subtitle">
+                      Get help with EMF Insight
+                    </span>
+
+                  </span>
+                </div>
+
+              </div>
+
+
+              <div class="user-menu-divider"></div>
+
+
+              <div class="user-menu-item user-menu-item-danger" id="userSignOutItem">
+
+                <span class="user-menu-icon">
+                  🚪
+                </span>
+
+                <span class="user-menu-content">
+
+                  <span class="user-menu-title">
+                    Sign out
+                  </span>
+
+                </span>
 
               </div>
 

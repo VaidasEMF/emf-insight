@@ -2695,6 +2695,49 @@ window.toggleWorkspaceMenu =
 window.closeWorkspaceMenu =
     closeWorkspaceMenu;
 
+
+    // =====================
+// 👤 USER ACCOUNT MENU
+// =====================
+
+function toggleUserMenu() {
+
+    const menu =
+        document.getElementById(
+            "userAccountMenu"
+        );
+
+    if (!menu) {
+        return;
+    }
+
+    menu.style.display =
+        menu.style.display === "block"
+            ? "none"
+            : "block";
+}
+
+function closeUserMenu() {
+
+    const menu =
+        document.getElementById(
+            "userAccountMenu"
+        );
+
+    if (!menu) {
+        return;
+    }
+
+    menu.style.display =
+        "none";
+}
+
+window.toggleUserMenu =
+    toggleUserMenu;
+
+window.closeUserMenu =
+    closeUserMenu;
+
 // =====================
 // 🔥 EXPORT
 // =====================
