@@ -4336,6 +4336,10 @@ async function openProjectMenu() {
 
 function closeProjectMenu() {
 
+    document.body.classList.remove(
+        "project-popup-open"
+    );
+
     const popup =
         document.getElementById(
             "openProjectPopup"
