@@ -25472,6 +25472,8 @@
         return;
       }
 
+      const pdfWindow = window.open("", "_blank");
+
       const res = await fetch(
 
         `${API}/generate-pdf`,
@@ -25516,12 +25518,17 @@
 
       if (data.pdf_url) {
 
-        window.open(
+        if (pdfWindow) {
 
-          `${API}${data.pdf_url}`,
+          pdfWindow.location.href =
+            `${API}${data.pdf_url}`;
 
-          "_blank"
-        );
+        } else {
+
+          alert(
+            "Please allow pop-ups for EMF Insight to open the Expert Report."
+          );
+        }
       }
 
       else {
