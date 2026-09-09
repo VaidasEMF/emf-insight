@@ -125,22 +125,40 @@ def build_zone_summary(
             rf_values
         )
 
+        numeric_electric_values = [
+            value
+            for value in electric_values
+            if value is not None
+        ]
+
         avg_electric = (
-            sum(electric_values)
-            / len(electric_values)
+            sum(numeric_electric_values)
+            / len(numeric_electric_values)
+            if numeric_electric_values
+            else 0
         )
 
         max_electric = max(
-            electric_values
+            numeric_electric_values,
+            default=0,
         )
 
+        numeric_magnetic_values = [
+            value
+            for value in magnetic_values
+            if value is not None
+        ]
+
         avg_magnetic = (
-            sum(magnetic_values)
-            / len(magnetic_values)
+            sum(numeric_magnetic_values)
+            / len(numeric_magnetic_values)
+            if numeric_magnetic_values
+            else 0
         )
 
         max_magnetic = max(
-            magnetic_values
+            numeric_magnetic_values,
+            default=0,
         )
 
         # =====================
