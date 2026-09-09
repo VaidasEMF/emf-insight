@@ -63,8 +63,13 @@ function exportCanvasImage() {
 
 function generateBusinessPdf() {
 
+    if (typeof generatePDF === "function") {
+        generatePDF();
+        return;
+    }
+
     alert(
-        "Business PDF Report coming soon"
+        "PDF generation is not available."
     );
 }
 
