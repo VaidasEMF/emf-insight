@@ -787,7 +787,7 @@ def generate_pdf(
 
         sessionB = data.get("sessionB") or "session_2"
 
-        plan = data.get("plan", "premium")
+        plan = "premium"
 
         # =====================
         # 🔥 VALIDATION
@@ -1035,29 +1035,13 @@ def generate_pdf(
             )
 
         # =====================
-        # 🔥 PLAN CHECK
-        # =====================
-
-        if plan == "premium" and user.plan != "premium":
-
-            raise HTTPException(403, "Upgrade required")
-
-        if plan == "pro" and user.plan not in ["pro", "premium"]:
-
-            raise HTTPException(403, "Upgrade required")
-
-        # =====================
         # 🔥 VALIDATE DATA
         # =====================
-
-
 
         pts_before = engine.collect_points(
             project,
             sessionA,
         )
-
-
 
         if pts_before:
 
