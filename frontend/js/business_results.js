@@ -134,6 +134,227 @@ function brRiskLabel(risk) {
     return "Not Measured";
 }
 
+function brGetRoomCoverage(
+    roomSummary,
+    localFloor
+) {
+
+    const roomName =
+        roomSummary?.room;
+
+    const localRoom =
+        localFloor?.rooms?.find(
+            room =>
+                String(
+                    room?.name || ""
+                ) === String(
+                    roomName || ""
+                )
+        );
+
+
+    // Prefer the normalized backend
+    // room points when available.
+    const summaryPoints =
+        Array.isArray(
+            roomSummary?.points
+        )
+            ? roomSummary.points
+            : [];
+
+
+    if (summaryPoints.length) {
+
+        const total =
+            summaryPoints.length;
+
+        const measured =
+            summaryPoints.filter(
+                point =>
+                    point?.measurement_complete === true ||
+                    point?.measurementStatus?.state === "confirmed"
+            ).length;
+
+
+        return {
+            measured,
+            total,
+            coverage:
+                total > 0
+                    ? Math.round(
+                        measured /
+                        total *
+                        100
+                    )
+                    : 0
+        };
+    }
+
+
+    // Fallback to the local room grid.
+    if (
+        Array.isArray(
+            localRoom?.grid
+        )
+    ) {
+
+        const points =
+            localRoom.grid;
+
+        const total =
+            points.length;
+
+        const measured =
+            points.filter(
+                point => {
+
+                    const status =
+                        window.getMeasurementPointStatus?.(
+                            point
+                        );
+
+                    return (
+                        status?.state ===
+                        "confirmed"
+                    );
+                }
+            ).length;
+
+
+        return {
+            measured,
+            total,
+            coverage:
+                total > 0
+                    ? Math.round(
+                        measured /
+                        total *
+                        100
+                    )
+                    : 0
+        };
+    }
+
+
+    return {
+        measured: 0,
+        total:
+            Number(
+                roomSummary?.point_count ||
+                0
+            ),
+        coverage: 0
+    };
+}
+
+
+function brGetSurveyDate(
+    project
+) {
+
+    let latestSavedAt =
+        null;
+
+
+    const floors =
+        Array.isArray(
+            project?.floors
+        )
+            ? project.floors
+            : [];
+
+
+    floors.forEach(
+        floor => {
+
+            const rooms =
+                Array.isArray(
+                    floor?.rooms
+                )
+                    ? floor.rooms
+                    : [];
+
+
+            rooms.forEach(
+                room => {
+
+                    const points =
+                        Array.isArray(
+                            room?.grid
+                        )
+                            ? room.grid
+                            : [];
+
+
+                    points.forEach(
+                        point => {
+
+                            const measurements =
+                                point?.measurements;
+
+
+                            if (
+                                !measurements ||
+                                typeof measurements !==
+                                    "object"
+                            ) {
+                                return;
+                            }
+
+
+                            Object.values(
+                                measurements
+                            ).forEach(
+                                measurement => {
+
+                                    const savedAt =
+                                        Number(
+                                            measurement?.savedAt ||
+                                            0
+                                        );
+
+
+                                    if (
+                                        Number.isFinite(
+                                            savedAt
+                                        ) &&
+                                        savedAt > 0 &&
+                                        (
+                                            latestSavedAt ===
+                                                null ||
+                                            savedAt >
+                                                latestSavedAt
+                                        )
+                                    ) {
+
+                                        latestSavedAt =
+                                            savedAt;
+                                    }
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+    );
+
+
+    if (latestSavedAt) {
+
+        return latestSavedAt;
+    }
+
+
+    return (
+        project?.updatedAt ||
+        project?.updated_at ||
+        project?.createdAt ||
+        project?.created_at ||
+        null
+    );
+}
+
 
 function brCountRisks(rooms) {
 
@@ -862,11 +1083,9 @@ function renderBusinessResultsPreview(
 
 
     const surveyDate =
-        project.updatedAt ||
-        project.updated_at ||
-        project.createdAt ||
-        project.created_at ||
-        null;
+    brGetSurveyDate(
+        project
+    );
 
 
     const overlay =
@@ -1554,10 +1773,6 @@ function renderBusinessResultsPreview(
 
                 <div class="br-actions">
 
-                    <div class="br-mode">
-                        🏢 Business Survey ▾
-                    </div>
-
                     <button
                         class="br-back"
                         type="button"
@@ -1937,28 +2152,44 @@ function renderBusinessResultsPreview(
                         ${
                             rooms.length
                                 ? rooms.map(
-                                    room => {
+    room => {
 
-                                        const roomTotal =
-                                            Number(
-                                                room.point_count ||
-                                                0
-                                            );
+        const roomFloor =
+            floors.find(
+                floor =>
+                    String(
+                        floor?.name ||
+                        floor?.floorName ||
+                        ""
+                    ) === String(
+                        room?.floor ||
+                        ""
+                    )
+            ) ||
+            floors[0] ||
+            null;
 
-                                        const roomMeasured =
-                                            Number(
-                                                room.measured_points ??
-                                                0
-                                            );
 
-                                        const roomCoverage =
-                                            roomTotal > 0
-                                                ? Math.round(
-                                                    roomMeasured /
-                                                    roomTotal *
-                                                    100
-                                                )
-                                                : 0;
+        const roomCoverageData =
+            brGetRoomCoverage(
+                room,
+                AppState?.project?.floors?.[
+                    floors.indexOf(
+                        roomFloor
+                    )
+                ] ||
+                AppState?.project?.floors?.[0]
+            );
+
+
+        const roomTotal =
+            roomCoverageData.total;
+
+        const roomMeasured =
+            roomCoverageData.measured;
+
+        const roomCoverage =
+            roomCoverageData.coverage;
 
                                         const risk =
                                             brRiskClass(
