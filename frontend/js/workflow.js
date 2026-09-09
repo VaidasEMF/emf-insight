@@ -387,12 +387,9 @@ function areAllZonesMeasured() {
     const floor =
         getCurrentFloor?.();
 
-
     if (!floor) {
-
         return false;
     }
-
 
     const zones =
         Array.isArray(
@@ -401,58 +398,32 @@ function areAllZonesMeasured() {
             ? floor.zones
             : [];
 
-
     // No Zones = Zone workflow
     // is not complete.
-
     if (
         zones.length === 0
     ) {
-
         return false;
     }
 
-
+    // A Zone is considered ready when
+    // it satisfies the common coverage model:
+    //
+    // 1. Point coverage according to grid size
+    // 2. Sector / spatial coverage >= 60%
+    //
+    // getZoneAnalysisReadiness() is the
+    // canonical Zone readiness logic.
     return zones.every(
         zone => {
 
-            const points =
-                Array.isArray(
-                    zone.grid
-                )
-                    ? zone.grid
-                    : [];
+            const readiness =
+                getZoneAnalysisReadiness?.(
+                    zone
+                );
 
-
-            // A Zone without a grid
-            // is not measurable yet.
-
-            if (
-                points.length === 0
-            ) {
-
-                return false;
-            }
-
-
-            // EVERY Zone point must be
-            // CONFIRMED according to
-            // its Measurement Profile.
-
-            return points.every(
-                point => {
-
-                    const status =
-                        getMeasurementPointStatus?.(
-                            point
-                        );
-
-
-                    return (
-                        status?.state ===
-                        "confirmed"
-                    );
-                }
+            return (
+                readiness?.ready === true
             );
         }
     );
@@ -4181,19 +4152,18 @@ function areAllRoomsMeasured() {
     return rooms.every(
         room => {
 
-            const stats =
-                getRoomMeasurementStats(
+            const readiness =
+                getRoomAnalysisReadiness?.(
                     room
                 );
 
             return (
-                stats &&
-                stats.canComplete === true
+                readiness &&
+                readiness.ready === true
             );
         }
     );
 }
-
 
 function getZoneAnalysisReadiness(
     zone
