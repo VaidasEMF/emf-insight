@@ -892,6 +892,15 @@ async function openBusinessResults() {
         return;
     }
 
+        const workspaceSwitcher =
+        document.getElementById(
+            "workspaceSwitcherBtn"
+        );
+
+    if (workspaceSwitcher) {
+        workspaceSwitcher.style.display = "none";
+    }
+
 
     try {
 
@@ -1196,6 +1205,7 @@ function renderBusinessResultsPreview(
                 flex-direction: column;
                 align-items: flex-end;
                 gap: 8px;
+                padding-top: 10px;
             }
 
 
@@ -2562,6 +2572,16 @@ function closeBusinessResultsPreview() {
             "businessResultsPreview"
         )
         ?.remove();
+
+
+    const workspaceSwitcher =
+        document.getElementById(
+            "workspaceSwitcherBtn"
+        );
+
+    if (workspaceSwitcher) {
+        workspaceSwitcher.style.display = "";
+    }
 }
 
 
