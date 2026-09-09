@@ -4159,54 +4159,83 @@ function updateBusinessOutputState(assessmentReady) {
             '[onclick="exportBusinessCsv()"]'
         );
 
-    [
-        resultsBtn,
-        reportBtn,
-        exportBtn
-    ].forEach(btn => {
 
-        if (!btn) {
-            return;
-        }
+    // ==================================================
+    // VIEW RESULTS
+    // ==================================================
+
+    if (resultsBtn) {
+
+        resultsBtn.classList.remove(
+            "output-locked"
+        );
+
+        resultsBtn.disabled = false;
+
+        resultsBtn.style.pointerEvents =
+            "auto";
 
         const lock =
-            btn.querySelector(
+            resultsBtn.querySelector(
                 ".output-lock"
             );
 
-        if (assessmentReady) {
-
-            btn.classList.remove(
-                "output-locked"
-            );
-
-            btn.disabled = false;
-
-            btn.style.pointerEvents =
-                "auto";
-
-            if (lock) {
-                lock.style.display =
-                    "none";
-            }
-
-        } else {
-
-            btn.classList.add(
-                "output-locked"
-            );
-
-            btn.disabled = true;
-
-            btn.style.pointerEvents =
-                "none";
-
-            if (lock) {
-                lock.style.display =
-                    "";
-            }
+        if (lock) {
+            lock.style.display = "none";
         }
-    });
+    }
+
+
+    // ==================================================
+    // EXPERT REPORT
+    // ==================================================
+
+    if (reportBtn) {
+
+        reportBtn.classList.remove(
+            "output-locked"
+        );
+
+        reportBtn.disabled = false;
+
+        reportBtn.style.pointerEvents =
+            "auto";
+
+        const lock =
+            reportBtn.querySelector(
+                ".output-lock"
+            );
+
+        if (lock) {
+            lock.style.display = "none";
+        }
+    }
+
+
+    // ==================================================
+    // EXPORT DATA
+    // ==================================================
+
+    if (exportBtn) {
+
+        exportBtn.classList.add(
+            "output-locked"
+        );
+
+        exportBtn.disabled = true;
+
+        exportBtn.style.pointerEvents =
+            "none";
+
+        const lock =
+            exportBtn.querySelector(
+                ".output-lock"
+            );
+
+        if (lock) {
+            lock.style.display = "";
+        }
+    }
 }
 
 function areAllRoomsMeasured() {
