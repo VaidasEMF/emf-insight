@@ -3467,6 +3467,17 @@ function updateWorkflowUI() {
         }
     );
 
+
+
+    const assessmentReady =
+        hasMeasurements &&
+        hasSources;
+
+    updateBusinessOutputState(
+        assessmentReady
+    );
+
+
     updateMeasurementProfileUI?.();
 
 
@@ -4129,6 +4140,73 @@ function getRoomMeasurementStats(
 
         zoneNotMeasured
     };
+}
+
+function updateBusinessOutputState(assessmentReady) {
+
+    const resultsBtn =
+        document.querySelector(
+            '[onclick="openResultsDashboard()"]'
+        );
+
+    const reportBtn =
+        document.querySelector(
+            '[onclick="generateBusinessPdf()"]'
+        );
+
+    const exportBtn =
+        document.querySelector(
+            '[onclick="exportBusinessCsv()"]'
+        );
+
+    [
+        resultsBtn,
+        reportBtn,
+        exportBtn
+    ].forEach(btn => {
+
+        if (!btn) {
+            return;
+        }
+
+        const lock =
+            btn.querySelector(
+                ".output-lock"
+            );
+
+        if (assessmentReady) {
+
+            btn.classList.remove(
+                "output-locked"
+            );
+
+            btn.disabled = false;
+
+            btn.style.pointerEvents =
+                "auto";
+
+            if (lock) {
+                lock.style.display =
+                    "none";
+            }
+
+        } else {
+
+            btn.classList.add(
+                "output-locked"
+            );
+
+            btn.disabled = true;
+
+            btn.style.pointerEvents =
+                "none";
+
+            if (lock) {
+                lock.style.display =
+                    "";
+            }
+        }
+    });
 }
 
 function areAllRoomsMeasured() {
