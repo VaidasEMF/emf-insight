@@ -15,9 +15,15 @@ def build_room_summary(
 
     def avg(values):
 
+        numeric_values = [
+            value
+            for value in values
+            if value is not None
+        ]
+
         return (
-            sum(values) / len(values)
-            if values
+            sum(numeric_values) / len(numeric_values)
+            if numeric_values
             else 0
         )
 
