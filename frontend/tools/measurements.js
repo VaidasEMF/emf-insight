@@ -1979,10 +1979,6 @@ function getZoneAreaCoverage(
     points.forEach(
         point => {
 
-            // ==========================================
-            // AVAILABLE SECTOR
-            // ==========================================
-
             if (
                 point.sector
             ) {
@@ -1991,16 +1987,75 @@ function getZoneAreaCoverage(
                     point.sector
                 );
             }
+        }
+    );
 
 
-            // ==========================================
-            // CONFIRMED SECTOR
-            // ==========================================
-            //
-            // A sector counts as measured only when
-            // at least one point in that sector is
-            // CONFIRMED according to its profile.
-            //
+    // ================================================
+    // LEGACY / POINT-BASED ZONE COVERAGE
+    // ================================================
+    //
+    // Some existing Zone grids do not contain sector
+    // metadata. In that case the Zone grid points
+    // themselves are the spatial coverage units.
+    //
+    // ================================================
+
+    if (
+        availableSectors.size === 0 &&
+        points.length > 0
+    ) {
+
+        const total =
+            points.length;
+
+
+        const measured =
+            points.filter(
+                point => {
+
+                    const status =
+                        getMeasurementPointStatus?.(
+                            point
+                        );
+
+
+                    return (
+                        status?.state ===
+                        "confirmed"
+                    );
+                }
+            ).length;
+
+
+        const percent =
+            total > 0
+                ? Math.round(
+                    (
+                        measured /
+                        total
+                    ) * 100
+                )
+                : 0;
+
+
+        return {
+
+            measured,
+
+            total,
+
+            percent
+        };
+    }
+
+
+    // ================================================
+    // SECTOR-BASED COVERAGE
+    // ================================================
+
+    points.forEach(
+        point => {
 
             const status =
                 getMeasurementPointStatus?.(
