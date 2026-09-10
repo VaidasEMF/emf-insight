@@ -2193,10 +2193,21 @@
 
 
         function startNewProject() {
-            localStorage.setItem("workspaceMode", "business");
-            localStorage.removeItem("businessProjectId");
-            localStorage.removeItem("project_id");
+
+            const workspaceMode =
+                localStorage.getItem("workspaceMode") || "business";
+
+            localStorage.setItem("workspaceMode", workspaceMode);
+
+            if (workspaceMode === "home") {
+                localStorage.removeItem("home_project_id");
+            } else {
+                localStorage.removeItem("businessProjectId");
+                localStorage.removeItem("project_id");
+            }
+
             window.location.href = "index.html";
+
         }
 
         function signOut() {
