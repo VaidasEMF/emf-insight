@@ -1213,6 +1213,12 @@
                         <span class="nav-icon">◈</span>
                         <span>Pricing Management</span>
                     </a>
+
+                    <a class="nav-link" id="adminProfessionalRequestsNav" href="#admin-professional-requests"
+                        style="display:none;">
+                        <span class="nav-icon">👤</span>
+                        <span>Professional Assessment</span>
+                    </a>
                 </div>
             </nav>
 
@@ -1545,6 +1551,51 @@
                                 <div class="empty-title">Loading pricing</div>
                                 <div class="empty-copy">Please wait.</div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- =========================
+     PROFESSIONAL ASSESSMENT REQUESTS
+     ========================= -->
+                <section class="section" id="admin-professional-requests" style="display:none;">
+                    <div class="section-heading">
+                        <div>
+                            <h2 class="section-title">
+                                Professional Assessment Requests
+                            </h2>
+                            <div class="section-subtitle">
+                                Incoming requests from Home Wellness users seeking an on-site EMF assessment.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-body">
+                        <div id="adminProfessionalRequestsStatus" class="admin-pricing-status">
+                            Loading requests...
+                        </div>
+
+                        <div class="admin-pricing-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Request</th>
+                                        <th>User</th>
+                                        <th>Project</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="adminProfessionalRequestsBody">
+                                    <tr>
+                                        <td colspan="6">
+                                            No requests loaded.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
@@ -2789,6 +2840,7 @@
                 status.className = "admin-pricing-status success";
 
                 await loadAdminPricing();
+                loadAdminProfessionalRequests();
 
                 setTimeout(() => {
                     closeAdminPricingModal();
@@ -2877,10 +2929,86 @@
                     document.getElementById("company_email").value = data.company_email || "";
                 }
 
+                if (data.is_admin === true) {
+                    loadAdminProfessionalRequests();
+                }
+
                 return data;
             } catch (error) {
                 console.error("Load user error:", error);
                 return null;
+            }
+        }
+
+        async function loadAdminProfessionalRequests() {
+            const nav = document.getElementById("adminProfessionalRequestsNav");
+            const section = document.getElementById("admin-professional-requests");
+            const status = document.getElementById("adminProfessionalRequestsStatus");
+            const body = document.getElementById("adminProfessionalRequestsBody");
+
+            if (!nav || !section || !status || !body) return;
+
+            nav.style.display = "";
+            section.style.display = "";
+
+            try {
+                const res = await fetch(`${API}/admin/professional-requests`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Professional requests request failed: ${res.status}`);
+                }
+
+                const data = await res.json();
+                const requests = Array.isArray(data.requests)
+                    ? data.requests
+                    : [];
+
+                if (!requests.length) {
+                    status.textContent = "No professional assessment requests.";
+                    body.innerHTML = `
+                        <tr>
+                            <td colspan="6">
+                                No requests found.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                status.textContent =
+                    `${requests.length} professional assessment request${requests.length === 1 ? "" : "s"}.`;
+
+                body.innerHTML = requests.map(request => `
+                    <tr>
+                        <td>#${request.id}</td>
+                        <td>User ${request.user_id}</td>
+                        <td>#${request.project_id}</td>
+                        <td>
+                            ${[
+                        request.city,
+                        request.region,
+                        request.country
+                    ].filter(Boolean).join(", ") || "—"}
+                        </td>
+                        <td>${request.status || "—"}</td>
+                        <td>${request.created_at || "—"}</td>
+                    </tr>
+                `).join("");
+
+            } catch (error) {
+                console.error("Load admin professional requests error:", error);
+                status.textContent = "Unable to load professional assessment requests.";
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="6">
+                            Unable to load requests.
+                        </td>
+                    </tr>
+                `;
             }
         }
 
