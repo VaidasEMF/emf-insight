@@ -25882,8 +25882,27 @@
       }
 
       alert(
-        "Your professional assessment request has been submitted."
+        "Professional Assessment Requested.\n\n" +
+        "Your request has been submitted successfully.\n" +
+        "Status: Request submitted."
       );
+
+      const lockedMessage = document.getElementById(
+        "homeProfessionalAssessmentLocked"
+      );
+
+      const button = document.getElementById(
+        "homeBtnProfessionalAssessment"
+      );
+
+      if (lockedMessage) {
+        lockedMessage.textContent =
+          "Your professional assessment request has been submitted. Status: Request submitted.";
+      }
+
+      if (button) {
+        button.style.display = "none";
+      }
 
       console.log(
         "Professional request created:",
