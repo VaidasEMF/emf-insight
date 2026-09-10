@@ -7,8 +7,11 @@ from fastapi import (
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from auth.dependencies import (
+from routes.auth import (
     get_current_user,
+)
+
+from auth.dependencies import (
     get_db,
 )
 

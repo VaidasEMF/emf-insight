@@ -43,6 +43,19 @@ def init_db():
                 )
             )
 
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS home_entitlements (
+                        user_id VARCHAR(255) PRIMARY KEY,
+                        full_report_unlocked BOOLEAN NOT NULL DEFAULT FALSE,
+                        stripe_session_id VARCHAR(255),
+                        unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
+
     # ==================================================
     # DATABASE MIGRATIONS
     # ==================================================
