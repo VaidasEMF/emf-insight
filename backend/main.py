@@ -8,6 +8,7 @@ import traceback
 from datetime import datetime
 
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 load_dotenv()
 
@@ -128,45 +129,117 @@ app.add_middleware(
 # =====================
 # STRIPE CHECKOUT
 # =====================
+
+# Stripe Price IDs are configured in Render Environment Variables.
+# Do not hardcode Stripe Price IDs in source code.
+STRIPE_PRICE_IDS = {
+    "EUR": {
+        "single": os.getenv("STRIPE_EU_BUSINESS_SINGLE_PRICE_ID"),
+        "pro": os.getenv("STRIPE_EU_BUSINESS_PRO_PRICE_ID"),
+        "home_full_report": os.getenv("STRIPE_EU_HOME_FULL_REPORT_PRICE_ID"),
+    },
+    "USD": {
+        "single": os.getenv("STRIPE_US_BUSINESS_SINGLE_PRICE_ID"),
+        "pro": os.getenv("STRIPE_US_BUSINESS_PRO_PRICE_ID"),
+        "home_full_report": os.getenv("STRIPE_US_HOME_FULL_REPORT_PRICE_ID"),
+    },
+}
+
+STRIPE_ALLOWED_PLANS = {
+    "single": "Business Single",
+    "pro": "Business Pro",
+    "home_full_report": "Full EMF Insight Report",
+}
+
+STRIPE_APP_URL = os.getenv("APP_BASE_URL", "https://app.emfinsight.com").rstrip("/")
+
+
+def _ensure_stripe_events_table(db):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS stripe_events (
+            event_id VARCHAR(255) PRIMARY KEY,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+
+def _ensure_home_entitlements_table(db):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS home_entitlements (
+            user_id VARCHAR(255) PRIMARY KEY,
+            full_report_unlocked BOOLEAN NOT NULL DEFAULT FALSE,
+            stripe_session_id VARCHAR(255),
+            unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+
+def _claim_stripe_event(db, event_id):
+    result = db.execute(
+        text("""
+            INSERT INTO stripe_events (event_id)
+            VALUES (:event_id)
+            ON CONFLICT (event_id) DO NOTHING
+        """),
+        {"event_id": event_id},
+    )
+    return result.rowcount == 1
+
+
 @app.post("/create-checkout-session")
-def create_checkout(body: dict):
-
-    user_id = body.get("user_id")
+def create_checkout(
+    body: dict,
+    current_user=Depends(get_current_user),
+):
     plan = body.get("plan")
+    currency = str(body.get("currency") or "EUR").upper()
 
-    if plan not in [
-        "single",
-        "pro",
-        "premium",
-    ]:
+    if plan not in STRIPE_ALLOWED_PLANS:
+        raise HTTPException(400, "Invalid or unavailable plan")
+
+    if currency not in STRIPE_PRICE_IDS:
+        raise HTTPException(400, "Unsupported currency")
+
+    price_id = STRIPE_PRICE_IDS[currency].get(plan)
+
+    if not price_id:
         raise HTTPException(
-            400,
-            "Invalid plan",
+            503,
+            "Stripe price is not configured for this currency",
         )
 
-    price_map = {
-        "single": 900,
-        "pro": 2900,
-        "premium": 9900,
-    }
+    # Business Pro is the only recurring V1 product.
+    # Business Single and Home Full Report are one-time payments.
+    mode = "subscription" if plan == "pro" else "payment"
 
-    session = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        line_items=[
-            {
-                "price_data": {
-                    "currency": "eur",
-                    "product_data": {"name": f"EMF {plan.capitalize()} Plan"},
-                    "unit_amount": price_map[plan],
-                },
-                "quantity": 1,
-            }
-        ],
-        mode="payment",
-        success_url="https://emf-insight.pages.dev/success.html",
-        cancel_url="https://emf-insight.pages.dev/dashboard.html",
-        metadata={"user_id": user_id, "plan": plan},
-    )
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price": price_id,
+                    "quantity": 1,
+                }
+            ],
+            mode=mode,
+            success_url=f"{STRIPE_APP_URL}/success.html",
+            cancel_url=f"{STRIPE_APP_URL}/dashboard.html#billing",
+            metadata={
+                "user_id": str(current_user.id),
+                "plan": plan,
+                "currency": currency,
+            },
+            subscription_data={
+                "metadata": {
+                    "user_id": str(current_user.id),
+                    "plan": plan,
+                    "currency": currency,
+                }
+            } if mode == "subscription" else None,
+        )
+    except Exception as exc:
+        print("Stripe checkout error:", repr(exc))
+        raise HTTPException(502, "Unable to create Stripe checkout session")
 
     return {"url": session.url}
 
@@ -174,57 +247,84 @@ def create_checkout(body: dict):
 # =====================
 # STRIPE WEBHOOK
 # =====================
+
 @app.post("/stripe-webhook")
 async def stripe_webhook(request: Request):
-
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
 
     try:
-        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            endpoint_secret,
+        )
     except Exception:
         raise HTTPException(400, "Invalid webhook")
 
-    if event["type"] == "checkout.session.completed":
+    event_type = event["type"]
+    event_id = event["id"]
+    db = SessionLocal()
 
-        session = event["data"]["object"]
+    try:
+        # The event ID is stored with a primary key. If Stripe retries the
+        # same delivery, the second delivery is ignored safely.
+        _ensure_stripe_events_table(db)
+        _ensure_home_entitlements_table(db)
+        if not _claim_stripe_event(db, event_id):
+            db.rollback()
+            print("Stripe webhook already processed:", event_id)
+            return {"status": "ok"}
 
-        user_id = session["metadata"]["user_id"]
-        plan = session["metadata"]["plan"]
+        # =============================================================
+        # INITIAL CHECKOUT
+        # =============================================================
+        if event_type == "checkout.session.completed":
+            session = event["data"]["object"]
+            metadata = session.get("metadata") or {}
 
-        db = SessionLocal()
+            user_id = metadata.get("user_id")
+            plan = metadata.get("plan")
 
-        user = db.query(User).filter(User.id == user_id).first()
+            if not user_id or plan not in STRIPE_ALLOWED_PLANS:
+                print("Stripe checkout webhook missing/invalid metadata")
+                db.commit()
+                return {"status": "ok"}
 
-        if user:
+            user = db.query(User).filter(User.id == user_id).first()
 
-            # =====================
-            # SINGLE REPORT
-            # =====================
+            if not user:
+                print("Stripe webhook user not found:", user_id)
+                db.commit()
+                return {"status": "ok"}
 
             if plan == "single":
-
-                user.credits += 1
-
-            # =====================
-            # PRO
-            # =====================
+                # One successful Business Single purchase = one Business credit.
+                user.credits = (user.credits or 0) + 1
 
             elif plan == "pro":
-
+                # First Pro billing cycle = 5 Business report credits.
                 user.plan = "pro"
+                user.credits = 5
 
-                user.credits = 999999
-
-            # =====================
-            # PREMIUM
-            # =====================
-
-            elif plan == "premium":
-
-                user.plan = "premium"
-
-                user.credits = 999999
+            elif plan == "home_full_report":
+                # Home Full Report is deliberately separate from Business credits.
+                db.execute(
+                    text("""
+                        INSERT INTO home_entitlements
+                            (user_id, full_report_unlocked, stripe_session_id)
+                        VALUES
+                            (:user_id, TRUE, :stripe_session_id)
+                        ON CONFLICT (user_id) DO UPDATE SET
+                            full_report_unlocked = TRUE,
+                            stripe_session_id = EXCLUDED.stripe_session_id,
+                            unlocked_at = CURRENT_TIMESTAMP
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "stripe_session_id": session.get("id"),
+                    },
+                )
 
             db.commit()
 
@@ -232,11 +332,53 @@ async def stripe_webhook(request: Request):
                 "PAYMENT SUCCESS",
                 user.email,
                 plan,
+                metadata.get("currency"),
             )
 
+        # =============================================================
+        # RECURRING BUSINESS PRO PAYMENT
+        # =============================================================
+        elif event_type == "invoice.paid":
+            invoice = event["data"]["object"]
+            subscription_id = invoice.get("subscription")
+
+            if subscription_id:
+                subscription = stripe.Subscription.retrieve(subscription_id)
+                metadata = subscription.get("metadata") or {}
+
+                user_id = metadata.get("user_id")
+                plan = metadata.get("plan")
+
+                if user_id and plan == "pro":
+                    user = db.query(User).filter(User.id == user_id).first()
+
+                    if user:
+                        # New successful monthly billing cycle = fresh 5-credit allowance.
+                        user.plan = "pro"
+                        user.credits = 5
+                        print(
+                            "PRO MONTHLY RENEWAL",
+                            user.email,
+                            "5 credits",
+                        )
+
+            db.commit()
+
+        else:
+            # We received a valid Stripe event that this V1 backend does not
+            # currently need. Mark it processed so Stripe retries are harmless.
+            db.commit()
+
+        return {"status": "ok"}
+
+    except Exception:
+        db.rollback()
+        print(traceback.format_exc())
+        raise HTTPException(500, "Webhook processing failed")
+
+    finally:
         db.close()
 
-    return {"status": "ok"}
 
 # =====================
 # PROJECT SAVE (DB)

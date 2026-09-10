@@ -1712,6 +1712,87 @@
             window.location.href = "index.html";
         }
 
+        function applyDashboardWorkspaceMode() {
+            const mode = localStorage.getItem("workspaceMode") || "business";
+            const isHome = mode === "home";
+
+            // Workspace navigation
+            const workspaceLinks = document.querySelectorAll(
+                '.nav-link[onclick*="openWorkspace"]'
+            );
+
+            workspaceLinks.forEach(link => {
+                const isBusinessLink = link.getAttribute("onclick").includes("'business'");
+                const isHomeLink = link.getAttribute("onclick").includes("'home'");
+
+                if (isHomeLink) {
+                    link.style.display = isHome ? "" : "";
+                }
+
+                if (isBusinessLink) {
+                    link.style.display = isHome ? "none" : "";
+                }
+            });
+
+            // Project navigation belongs to Business Survey.
+            const navGroups = document.querySelectorAll(".nav-group");
+
+            navGroups.forEach(group => {
+                const label = group.querySelector(".nav-label");
+
+                if (label && label.textContent.trim() === "PROJECT") {
+                    group.style.display = isHome ? "none" : "";
+                }
+            });
+
+            // Billing panels
+            const billingPanels = document.querySelectorAll(".billing-panel");
+
+            billingPanels.forEach(panel => {
+                const title = panel.querySelector("h4");
+                if (!title) return;
+
+                const text = title.textContent.trim();
+
+                if (text === "Home Wellness") {
+                    panel.style.display = isHome ? "" : "none";
+                }
+
+                if (text === "Business Survey") {
+                    panel.style.display = isHome ? "none" : "";
+                }
+            });
+
+            // Pricing sections
+            const homeGrid = document.getElementById("homePricingGrid");
+            const businessGrid = document.getElementById("businessPricingGrid");
+
+            if (homeGrid) {
+                const homeHeading = homeGrid.previousElementSibling;
+                const homeSpacer = homeGrid.nextElementSibling;
+
+                homeGrid.style.display = isHome ? "" : "none";
+
+                if (homeHeading) {
+                    homeHeading.style.display = isHome ? "" : "none";
+                }
+
+                if (homeSpacer) {
+                    homeSpacer.style.display = isHome ? "" : "none";
+                }
+            }
+
+            if (businessGrid) {
+                const businessHeading = businessGrid.previousElementSibling;
+
+                businessGrid.style.display = isHome ? "none" : "";
+
+                if (businessHeading) {
+                    businessHeading.style.display = isHome ? "none" : "";
+                }
+            }
+        }
+
         function startNewProject() {
             localStorage.setItem("workspaceMode", "business");
             localStorage.removeItem("businessProjectId");
@@ -1755,11 +1836,20 @@
             renderPricing();
         }
 
-        function pricingButton(label, enabled = false) {
+        function pricingButton(label, plan, enabled = false) {
             if (!enabled) {
                 return `<button class="btn-secondary" disabled>${label}</button>`;
             }
-            return `<button class="btn-primary">${label}</button>`;
+
+            return `
+        <button
+            class="btn-primary"
+            type="button"
+            onclick="buyPlan('${plan}')"
+        >
+            ${label}
+        </button>
+    `;
         }
 
         function renderPriceCard(item, key, workspace) {
@@ -1771,6 +1861,11 @@
                 : "";
             const period = item.type === "monthly" ? "/ month" : "one-time";
 
+            const checkoutPlan =
+                workspace === "home"
+                    ? "home_full_report"
+                    : key;
+
             const description = workspace === "home"
                 ? "Unlock the complete EMF Insight report."
                 : key === "single"
@@ -1780,15 +1875,28 @@
                         : "Higher-volume plan to be defined later.";
 
             return `
-            <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""}">
-                ${featured ? `<span class="price-badge">Current beta offer</span>` : ""}
-                <h4>${escapeHtml(item.name)}</h4>
-                <p class="price-description">${description}</p>
-                <div class="price-amount">${isTbd ? "TBD" : formatPrice(price)}${!isTbd && item.type === "monthly" ? `<span class="price-period">${period}</span>` : ""}</div>
-                <div class="price-meta">${isTbd ? "Not available yet" : credits ? credits : period}</div>
-                <div class="price-actions">${pricingButton(isTbd ? "Coming later" : "Available soon")}</div>
-            </article>
-        `;
+        <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""}">
+            ${featured ? `<span class="price-badge">Current beta offer</span>` : ""}
+            <h4>${escapeHtml(item.name)}</h4>
+            <p class="price-description">${description}</p>
+            <div class="price-amount">
+                ${isTbd ? "TBD" : formatPrice(price)}
+                ${!isTbd && item.type === "monthly"
+                    ? `<span class="price-period">${period}</span>`
+                    : ""}
+            </div>
+            <div class="price-meta">
+                ${isTbd ? "Not available yet" : credits ? credits : period}
+            </div>
+            <div class="price-actions">
+                ${pricingButton(
+                        isTbd ? "Coming later" : "Buy now",
+                        checkoutPlan,
+                        !isTbd
+                    )}
+            </div>
+        </article>
+    `;
         }
 
         function renderPricing() {
@@ -2568,23 +2676,34 @@
         // Pricing is intentionally not rendered here; it will come from the future pricing configuration.
         async function buyPlan(plan) {
             try {
-                const meRes = await fetch(`${API}/me`, {
-                    headers: {"Authorization": `Bearer ${token}`}
-                });
-                if (!meRes.ok) throw new Error(`User request failed: ${meRes.status}`);
-                const me = await meRes.json();
-
                 const res = await fetch(`${API}/create-checkout-session`, {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({user_id: me.id, plan})
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        plan,
+                        currency: pricingCurrency
+                    })
                 });
+
                 const data = await res.json();
-                if (!res.ok || !data.url) throw new Error(data.detail || "Checkout session could not be created.");
+
+                if (!res.ok || !data.url) {
+                    throw new Error(
+                        data.detail || "Checkout session could not be created."
+                    );
+                }
+
                 window.location.href = data.url;
+
             } catch (error) {
                 console.error("Checkout error:", error);
-                alert("Unable to start checkout. Please try again.");
+                alert(
+                    error.message ||
+                    "Unable to start checkout. Please try again."
+                );
             }
         }
 
@@ -2684,6 +2803,8 @@
 
         async function initDashboard() {
             if (!token) return;
+
+            applyDashboardWorkspaceMode();
 
             await loadUser();
             await Promise.all([loadProjects(), loadReports()]);
