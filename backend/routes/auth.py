@@ -31,6 +31,7 @@ from auth.jwt import (
     create_access_token,
     decode_access_token,
 )
+from sqlalchemy import text
 
 
 router = APIRouter()
@@ -331,16 +332,25 @@ def get_admin_user(
             detail="User not found",
         )
 
+    entitlement = db.execute(
+        text("""
+            SELECT
+                user_id,
+                full_report_unlocked,
+                stripe_session_id,
+                unlocked_at
+            FROM home_entitlements
+            WHERE user_id = :user_id
+        """),
+        {"user_id": str(user_id)},
+    ).mappings().first()
+
     return {
         "id": user.id,
         "email": user.email,
         "plan": user.plan,
         "credits": user.credits,
-        "home_full_report_unlocked": getattr(
-            user,
-            "home_full_report_unlocked",
-            None,
-        ),
+        "home_entitlement": dict(entitlement) if entitlement else None,
     }
 
 
