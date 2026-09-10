@@ -63,6 +63,53 @@ def create_professional_request(
     region = body.get("region")
     city = body.get("city")
 
+    if not project_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Home project ID is required.",
+        )
+
+    # ---------------------------------
+    # CHECK EXISTING ACTIVE REQUEST
+    # ---------------------------------
+
+    existing_request = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                project_id,
+                country,
+                region,
+                city,
+                status,
+                created_at
+            FROM professional_requests
+            WHERE user_id = :user_id
+              AND project_id = :project_id
+              AND status = 'open'
+            ORDER BY created_at DESC
+            LIMIT 1
+        """),
+        {
+            "user_id": str(current_user.id),
+            "project_id": project_id,
+        },
+    ).mappings().first()
+
+    if existing_request:
+        return {
+            "id": existing_request["id"],
+            "user_id": existing_request["user_id"],
+            "project_id": existing_request["project_id"],
+            "country": existing_request["country"],
+            "region": existing_request["region"],
+            "city": existing_request["city"],
+            "status": existing_request["status"],
+            "created_at": existing_request["created_at"],
+            "already_exists": True,
+        }
+
     # ---------------------------------
     # CREATE REQUEST
     # ---------------------------------
