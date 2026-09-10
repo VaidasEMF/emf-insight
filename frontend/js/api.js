@@ -4370,14 +4370,24 @@ async function loadProject(
 ) {
 
     // ==================================================
-    // RESOLVE ONLY BUSINESS PROJECT ID
+    // RESOLVE PROJECT ID BY CURRENT WORKSPACE
     // ==================================================
+
+    const currentWorkspace =
+        window.AppMode?.current ||
+        localStorage.getItem("workspaceMode") ||
+        "business";
 
     const resolvedProjectId =
         projectId ??
         currentProjectId ??
-        localStorage.getItem(
-            "business_project_id"
+        (
+            currentWorkspace === "home"
+                ? (
+                    localStorage.getItem("home_project_id") ||
+                    localStorage.getItem("homeProjectId")
+                )
+                : localStorage.getItem("business_project_id")
         );
 
     if (
@@ -4667,16 +4677,34 @@ async function loadProject(
         }
 
         // ==================================================
-        // SAFETY
+        // WORKSPACE VALIDATION
         // ==================================================
 
         if (
-            projectType !==
-            "business"
+            currentWorkspace === "business" &&
+            projectType !== "business"
         ) {
 
             console.error(
-                "❌ LOAD PROJECT RETURNED NON-BUSINESS PROJECT",
+                "❌ BUSINESS WORKSPACE RECEIVED NON-BUSINESS PROJECT",
+                {
+                    projectId:
+                        loadedProjectId,
+
+                    projectType
+                }
+            );
+
+            return false;
+        }
+
+        if (
+            currentWorkspace === "home" &&
+            projectType !== "home"
+        ) {
+
+            console.error(
+                "❌ HOME WORKSPACE RECEIVED NON-HOME PROJECT",
                 {
                     projectId:
                         loadedProjectId,
@@ -4728,11 +4756,19 @@ async function loadProject(
             project;
 
         // ==================================================
-        // BUSINESS COMPATIBILITY WORKSPACE
+        // WORKSPACE-SPECIFIC PROJECT STATE
         // ==================================================
 
-        AppState.businessProject =
-            project;
+        if (currentWorkspace === "home") {
+
+            AppState.homeProject =
+                project;
+
+        } else {
+
+            AppState.businessProject =
+                project;
+        }
 
 
 
@@ -4798,26 +4834,45 @@ async function loadProject(
         // ==================================================
 
         // ==================================================
-        // BUSINESS ID
+        // WORKSPACE PROJECT ID
         // ==================================================
 
-        localStorage.setItem(
-            "business_project_id",
-            String(
-                loadedProjectId
-            )
-        );
+        if (currentWorkspace === "home") {
+
+            localStorage.setItem(
+                "home_project_id",
+                String(
+                    loadedProjectId
+                )
+            );
+
+            localStorage.setItem(
+                "homeProjectId",
+                String(
+                    loadedProjectId
+                )
+            );
+
+        } else {
+
+            localStorage.setItem(
+                "business_project_id",
+                String(
+                    loadedProjectId
+                )
+            );
+        }
 
         // ==================================================
-        // MODE
+        // PRESERVE CURRENT WORKSPACE
         // ==================================================
 
         window.AppMode.current =
-            "business";
+            currentWorkspace;
 
         localStorage.setItem(
             "workspaceMode",
-            "business"
+            currentWorkspace
         );
 
         // ==================================================
