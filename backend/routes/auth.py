@@ -324,7 +324,7 @@ def forgot_password(
         .first()
     )
 
-    print("Password reset user found:", bool(user))
+    
 
     # Do not reveal whether an account exists
     if not user:
