@@ -220,3 +220,46 @@ def get_professional_request(
             "created_at": request["created_at"],
         }
     }
+
+@router.get("/admin/professional-requests")
+def get_admin_professional_requests(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    requests = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                project_id,
+                country,
+                region,
+                city,
+                status,
+                created_at
+            FROM professional_requests
+            ORDER BY created_at DESC
+        """)
+    ).mappings().all()
+
+    return {
+        "requests": [
+            {
+                "id": request["id"],
+                "user_id": request["user_id"],
+                "project_id": request["project_id"],
+                "country": request["country"],
+                "region": request["region"],
+                "city": request["city"],
+                "status": request["status"],
+                "created_at": request["created_at"],
+            }
+            for request in requests
+        ]
+    }
