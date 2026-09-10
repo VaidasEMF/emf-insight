@@ -294,6 +294,18 @@
             letter-spacing: -0.02em;
         }
 
+        #workspace-title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--accent-dark);
+        }
+
+        #workspace-title+.section-description {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
         .section-description {
             margin: 4px 0 0;
             color: var(--muted);
@@ -1342,7 +1354,7 @@
                     <div class="section-heading">
                         <div>
                             <h2 class="section-title" id="projects-title">Projects</h2>
-                            <p class="section-description">Open an existing Business Survey project or start a new one.
+                            <p id="projects-description"></p>
                             </p>
                         </div>
                         <button class="btn-primary" onclick="startNewProject()">＋ New Project</button>
@@ -1351,7 +1363,7 @@
                     <div class="content-card">
                         <div class="content-card-header">
                             <div>
-                                <h3>Business Survey Projects</h3>
+                                <h3 id="projects-card-title"></h3>
                                 <p>Project versions remain part of the project workflow rather than a separate
                                     account-level section.</p>
                             </div>
@@ -1419,8 +1431,9 @@
                             <div class="billing-layout">
                                 <div class="billing-panel">
                                     <h4>Home Wellness</h4>
-                                    <p>Personal EMF assessment with optional full-report unlocking.</p>
-                                    <div class="billing-value" id="homeAccessStatus">Workspace access</div>
+                                    <p>Personal property assessment with the option to unlock the complete EMF Insight
+                                        report.</p>
+                                    <div class="billing-value" id="homeAccessStatus">Full EMF Insight Report</div>
                                     <div class="billing-note" id="homePriceSummary">—</div>
                                 </div>
 
@@ -1453,8 +1466,9 @@
                             <div class="pricing-grid" id="businessPricingGrid"></div>
 
                             <div class="pricing-footnote">
-                                Pricing shown here is configuration-driven. Checkout and payment processing will be
-                                connected after the commercial model and backend billing structure are finalized.
+                                Prices are shown in your selected currency. Home Full EMF Insight Report is a one-time
+                                purchase.
+                                Business plans and credits are managed separately from Home Wellness.
                             </div>
                         </div>
                     </div>
@@ -1713,31 +1727,71 @@
         }
 
         function applyDashboardWorkspaceMode() {
+
             const mode = localStorage.getItem("workspaceMode") || "business";
             const isHome = mode === "home";
 
-            // Workspace navigation
+
+            // =========================================================
+            // WORKSPACE NAVIGATION
+            // =========================================================
+
             const workspaceLinks = document.querySelectorAll(
                 '.nav-link[onclick*="openWorkspace"]'
             );
 
             workspaceLinks.forEach(link => {
-                const isBusinessLink = link.getAttribute("onclick").includes("'business'");
-                const isHomeLink = link.getAttribute("onclick").includes("'home'");
+                const isBusinessLink =
+                    link.getAttribute("onclick").includes("'business'");
 
-                if (isHomeLink) {
-                    link.style.display = isHome ? "" : "";
-                }
+                const isHomeLink =
+                    link.getAttribute("onclick").includes("'home'");
 
-                if (isBusinessLink) {
-                    link.style.display = isHome ? "none" : "";
-                }
+                // Active workspace
+                link.classList.toggle(
+                    "primary",
+                    (isHomeLink && isHome) ||
+                    (isBusinessLink && !isHome)
+                );
+
+                // Keep both workspaces visible.
+                // The secondary workspace is visually handled by the cards.
+                link.style.display = "";
             });
 
-            // Project navigation belongs to Business Survey.
+
+            const projectsDescription =
+                document.getElementById("projects-description");
+
+            if (projectsDescription) {
+                projectsDescription.textContent =
+                    mode === "home"
+                        ? "Open an existing Home Wellness project or start a new one."
+                        : "Open an existing Business Survey project or start a new one.";
+            }
+
+            const projectsCardTitle =
+                document.getElementById("projects-card-title");
+
+            if (projectsCardTitle) {
+                projectsCardTitle.textContent =
+                    mode === "home"
+                        ? "Home Wellness Projects"
+                        : "Business Survey Projects";
+            }
+
+
+            // =========================================================
+            // PROJECT NAVIGATION
+            // =========================================================
+            // Project navigation is primarily part of Business Survey.
+            // Home users work with projects from the Dashboard Projects
+            // section and do not need the Business project navigation group.
+
             const navGroups = document.querySelectorAll(".nav-group");
 
             navGroups.forEach(group => {
+
                 const label = group.querySelector(".nav-label");
 
                 if (label && label.textContent.trim() === "PROJECT") {
@@ -1745,12 +1799,335 @@
                 }
             });
 
-            // Billing panels
-            const billingPanels = document.querySelectorAll(".billing-panel");
+
+            // =========================================================
+            // CURRENT WORKSPACE HEADER
+            // =========================================================
+
+            const workspaceTitle = document.getElementById("workspace-title");
+
+            if (workspaceTitle) {
+
+                workspaceTitle.textContent = isHome
+                    ? "Home Wellness"
+                    : "Business Survey";
+
+                const workspaceDescription =
+                    workspaceTitle.parentElement?.querySelector(
+                        ".section-description"
+                    );
+
+                if (workspaceDescription) {
+
+                    workspaceDescription.textContent = isHome
+                        ? "Your current workspace for personal property assessment."
+                        : "Your current workspace for professional EMF assessment and measurement.";
+                }
+            }
+
+
+            // =========================================================
+            // WORKSPACE CARDS
+            // =========================================================
+            // Keep the other workspace visible, but make it clearly
+            // secondary rather than presenting both as equal active
+            // workspaces.
+
+            const workspaceSection =
+                workspaceTitle
+                    ? workspaceTitle.closest(".section")
+                    : null;
+
+            if (workspaceSection) {
+
+                const workspaceCards =
+                    workspaceSection.querySelectorAll(".workspace-card");
+
+                workspaceCards.forEach(card => {
+
+                    const title = card.querySelector("h3");
+
+                    if (!title) {
+                        return;
+                    }
+
+                    const cardTitle = title.textContent.trim();
+
+                    const isHomeCard =
+                        cardTitle === "Home Wellness";
+
+                    const isBusinessCard =
+                        cardTitle === "Business Survey";
+
+                    const isCurrent =
+                        (isHome && isHomeCard) ||
+                        (!isHome && isBusinessCard);
+
+                    const status =
+                        card.querySelector(".status");
+
+                    if (status) {
+
+                        status.innerHTML = isCurrent
+                            ? '<span class="status-dot"></span>Current workspace'
+                            : '<span class="status-dot"></span>Professional workspace';
+                    }
+
+
+                    // Make the inactive workspace visually secondary.
+                    if (!isCurrent) {
+
+                        card.style.opacity = "0.82";
+                        card.style.boxShadow = "none";
+
+                    } else {
+
+                        card.style.opacity = "";
+                        card.style.boxShadow = "";
+                    }
+
+
+                    // -------------------------------------------------
+                    // Home card
+                    // -------------------------------------------------
+
+                    if (isHomeCard) {
+
+                        const description = card.querySelector("p");
+
+                        if (description) {
+
+                            description.textContent = isCurrent
+                                ? "Your personal property assessment workspace for understanding potential EMF concerns."
+                                : "Personal property assessment and Home Wellness information.";
+                        }
+
+                        const button = card.querySelector("button");
+
+                        if (button) {
+
+                            button.textContent = isCurrent
+                                ? "Open Home Wellness"
+                                : "Open Home Wellness";
+                        }
+                    }
+
+
+                    // -------------------------------------------------
+                    // Business card
+                    // -------------------------------------------------
+
+                    if (isBusinessCard) {
+
+                        const description = card.querySelector("p");
+
+                        if (description) {
+
+                            description.textContent = isCurrent
+                                ? "Professional workspace for on-site EMF measurement, rooms, zones and professional assessments."
+                                : "For professional on-site measurement. A qualified professional can use this property's Home Wellness context and add measurements in Business Survey.";
+                        }
+
+                        const button = card.querySelector("button");
+
+                        if (button) {
+                            button.textContent = "Open Business Survey";
+                        }
+                    }
+                });
+            }
+
+
+            // =========================================================
+            // ACCOUNT OVERVIEW
+            // =========================================================
+
+            const summaryCards =
+                document.querySelectorAll(".summary-card");
+
+            if (summaryCards.length >= 4) {
+
+                const firstCard = summaryCards[0];
+                const secondCard = summaryCards[1];
+                const thirdCard = summaryCards[2];
+                const fourthCard = summaryCards[3];
+
+
+                if (isHome) {
+
+                    // ---------------------------------------------
+                    // Home Overview
+                    // ---------------------------------------------
+
+                    const firstLabel =
+                        firstCard.querySelector(".summary-label");
+
+                    const firstNote =
+                        firstCard.querySelector(".summary-note");
+
+                    if (firstLabel) {
+                        firstLabel.textContent = "Home projects";
+                    }
+
+                    if (firstNote) {
+                        firstNote.textContent =
+                            "Home Wellness assessments";
+                    }
+
+                    secondCard.style.display = "none";
+
+                    const secondLabel =
+                        secondCard.querySelector(".summary-label");
+
+                    const secondNote =
+                        secondCard.querySelector(".summary-note");
+
+                    if (secondLabel) {
+                        secondLabel.textContent = "Reports";
+                    }
+
+                    if (secondNote) {
+                        secondNote.textContent =
+                            "Reports available for your property";
+                    }
+
+
+                    const thirdLabel =
+                        thirdCard.querySelector(".summary-label");
+
+                    const thirdNote =
+                        thirdCard.querySelector(".summary-note");
+
+                    if (thirdLabel) {
+                        thirdLabel.textContent = "Reports";
+                    }
+
+                    if (thirdNote) {
+                        thirdNote.textContent =
+                            "Reports available for your property";
+                    }
+
+
+                    const fourthLabel =
+                        fourthCard.querySelector(".summary-label");
+
+                    const fourthNote =
+                        fourthCard.querySelector(".summary-note");
+
+                    const fourthValue =
+                        fourthCard.querySelector(".summary-value");
+
+                    if (fourthLabel) {
+                        fourthLabel.textContent = "Current workspace";
+                    }
+
+                    if (fourthValue) {
+                        fourthValue.textContent = "Home Wellness";
+                    }
+
+                    if (fourthNote) {
+                        fourthNote.textContent =
+                            "Personal property assessment";
+                    }
+
+
+                    // Business credits are not a Home account metric.
+                    // Keep the underlying element available for Business
+                    // mode, but do not present it as the Home metric.
+
+                    const firstValue =
+                        firstCard.querySelector(".summary-value");
+
+                    if (firstValue && firstValue.textContent === "—") {
+                        firstValue.textContent = "—";
+                    }
+
+                } else {
+
+                    // ---------------------------------------------
+                    // Business Overview
+                    // ---------------------------------------------
+
+                    const firstLabel =
+                        firstCard.querySelector(".summary-label");
+
+                    const firstNote =
+                        firstCard.querySelector(".summary-note");
+
+                    if (firstLabel) {
+                        firstLabel.textContent = "Business credits";
+                    }
+
+                    if (firstNote) {
+                        firstNote.textContent =
+                            "Available for Business Survey";
+                    }
+
+
+                    const secondLabel =
+                        secondCard.querySelector(".summary-label");
+
+                    const secondNote =
+                        secondCard.querySelector(".summary-note");
+
+                    if (secondLabel) {
+                        secondLabel.textContent = "Projects";
+                    }
+
+                    if (secondNote) {
+                        secondNote.textContent =
+                            "Business Survey projects";
+                    }
+
+
+                    const thirdLabel =
+                        thirdCard.querySelector(".summary-label");
+
+                    const thirdNote =
+                        thirdCard.querySelector(".summary-note");
+
+                    if (thirdLabel) {
+                        thirdLabel.textContent = "Reports";
+                    }
+
+                    if (thirdNote) {
+                        thirdNote.textContent =
+                            "Reports in this account";
+                    }
+
+
+                    const fourthLabel =
+                        fourthCard.querySelector(".summary-label");
+
+                    const fourthNote =
+                        fourthCard.querySelector(".summary-note");
+
+                    if (fourthLabel) {
+                        fourthLabel.textContent = "Current plan";
+                    }
+
+                    if (fourthNote) {
+                        fourthNote.textContent =
+                            "Business Survey";
+                    }
+                }
+            }
+
+
+            // =========================================================
+            // BILLING PANELS
+            // =========================================================
+
+            const billingPanels =
+                document.querySelectorAll(".billing-panel");
 
             billingPanels.forEach(panel => {
+
                 const title = panel.querySelector("h4");
-                if (!title) return;
+
+                if (!title) {
+                    return;
+                }
 
                 const text = title.textContent.trim();
 
@@ -1763,35 +2140,57 @@
                 }
             });
 
-            // Pricing sections
-            const homeGrid = document.getElementById("homePricingGrid");
-            const businessGrid = document.getElementById("businessPricingGrid");
+
+            // =========================================================
+            // PRICING SECTIONS
+            // =========================================================
+
+            const homeGrid =
+                document.getElementById("homePricingGrid");
+
+            const businessGrid =
+                document.getElementById("businessPricingGrid");
+
 
             if (homeGrid) {
-                const homeHeading = homeGrid.previousElementSibling;
-                const homeSpacer = homeGrid.nextElementSibling;
 
-                homeGrid.style.display = isHome ? "" : "none";
+                const homeHeading =
+                    homeGrid.previousElementSibling;
+
+                const homeSpacer =
+                    homeGrid.nextElementSibling;
+
+                homeGrid.style.display =
+                    isHome ? "" : "none";
 
                 if (homeHeading) {
-                    homeHeading.style.display = isHome ? "" : "none";
+                    homeHeading.style.display =
+                        isHome ? "" : "none";
                 }
 
                 if (homeSpacer) {
-                    homeSpacer.style.display = isHome ? "" : "none";
+                    homeSpacer.style.display =
+                        isHome ? "" : "none";
                 }
             }
 
-            if (businessGrid) {
-                const businessHeading = businessGrid.previousElementSibling;
 
-                businessGrid.style.display = isHome ? "none" : "";
+            if (businessGrid) {
+
+                const businessHeading =
+                    businessGrid.previousElementSibling;
+
+                businessGrid.style.display =
+                    isHome ? "none" : "";
 
                 if (businessHeading) {
-                    businessHeading.style.display = isHome ? "none" : "";
+                    businessHeading.style.display =
+                        isHome ? "none" : "";
                 }
             }
         }
+
+
 
         function startNewProject() {
             localStorage.setItem("workspaceMode", "business");
@@ -2418,19 +2817,47 @@
                     : email;
                 const plan = data.plan || "free";
                 const credits = Number.isFinite(Number(data.credits)) ? Number(data.credits) : 0;
+                const homeFullReportUnlocked = data.home_full_report_unlocked === true;
 
                 document.getElementById("userName").textContent = displayName;
-                document.getElementById("userPlan").textContent = `Business Survey · ${plan}`;
+                const dashboardMode =
+                    localStorage.getItem("workspaceMode") || "business";
+
+                document.getElementById("userPlan").textContent =
+                    dashboardMode === "home"
+                        ? "Home Wellness"
+                        : `Business Survey · ${plan}`;
                 document.getElementById("avatar").textContent = initials(firstName, lastName, email);
                 document.getElementById("sidebarEmail").textContent = email;
-                document.getElementById("sidebarPlan").textContent = `Business Survey · ${plan}`;
+                document.getElementById("sidebarPlan").textContent =
+                    dashboardMode === "home"
+                        ? "Home Wellness"
+                        : `Business Survey · ${plan}`;
 
                 document.getElementById("businessPlan").textContent = plan;
                 document.getElementById("businessCredits").textContent = credits;
                 document.getElementById("summaryCredits").textContent = credits;
-                document.getElementById("summaryPlan").textContent = plan;
+                document.getElementById("summaryPlan").textContent =
+                    dashboardMode === "home"
+                        ? "Home Wellness"
+                        : plan;
                 document.getElementById("billingBusinessPlan").textContent = plan;
                 document.getElementById("billingBusinessCredits").textContent = `${credits} credit${credits === 1 ? "" : "s"} available`;
+
+                const homeAccessStatus = document.getElementById("homeAccessStatus");
+                const homePriceSummary = document.getElementById("homePriceSummary");
+
+                if (homeAccessStatus) {
+                    homeAccessStatus.textContent = homeFullReportUnlocked
+                        ? "Full EMF Insight Report unlocked"
+                        : "Full EMF Insight Report";
+                }
+
+                if (homePriceSummary) {
+                    homePriceSummary.textContent = homeFullReportUnlocked
+                        ? "Your full report is unlocked."
+                        : "One-time purchase available";
+                }
 
                 if (data.company_name !== undefined) {
                     document.getElementById("company_name").value = data.company_name || "";
@@ -2446,6 +2873,7 @@
             }
         }
 
+
         async function loadProjects() {
             const container = document.getElementById("projectsContainer");
 
@@ -2460,61 +2888,183 @@
                 }
 
                 const raw = await res.json();
-                const projects = Array.isArray(raw) ? raw : (raw.projects || raw.data || []);
+                const allProjects = Array.isArray(raw)
+                    ? raw
+                    : (raw.projects || raw.data || []);
 
-                document.getElementById("businessProjectCount").textContent = projects.length;
-                document.getElementById("summaryProjects").textContent = projects.length;
+                // Current dashboard workspace
+                const currentMode =
+                    localStorage.getItem("workspaceMode") || "business";
+
+                // Determine project type from all supported locations.
+                function getProjectType(project) {
+                    const data =
+                        project?.data &&
+                            typeof project.data === "object"
+                            ? project.data
+                            : {};
+
+                    const nestedProject =
+                        data?.project &&
+                            typeof data.project === "object"
+                            ? data.project
+                            : {};
+
+                    const nestedAssessment =
+                        data?.assessment &&
+                            typeof data.assessment === "object"
+                            ? data.assessment
+                            : {};
+
+                    const type =
+                        project?.type ||
+                        project?.project_type ||
+                        project?.projectType ||
+                        data?.type ||
+                        data?.project_type ||
+                        data?.projectType ||
+                        nestedProject?.type ||
+                        nestedProject?.project_type ||
+                        nestedProject?.projectType ||
+                        nestedAssessment?.type ||
+                        nestedAssessment?.project_type ||
+                        nestedAssessment?.projectType ||
+                        "";
+
+                    return String(type).toLowerCase().trim();
+                }
+
+                // Show only projects belonging to the current workspace.
+                const projects = allProjects.filter(project => {
+                    return getProjectType(project) === currentMode;
+                });
+
+                document.getElementById("businessProjectCount").textContent =
+                    currentMode === "business" ? projects.length : "—";
+
+                document.getElementById("summaryProjects").textContent =
+                    projects.length;
 
                 if (!projects.length) {
+                    const title =
+                        currentMode === "home"
+                            ? "No Home projects yet"
+                            : "No Business projects yet";
+
+                    const copy =
+                        currentMode === "home"
+                            ? "Create your first Home Wellness project."
+                            : "Create your first Business Survey project.";
+
                     container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">□</div>
-                        <div class="empty-title">No projects yet</div>
-                        <div class="empty-copy">Create your first Business Survey project to begin an assessment.</div>
-                    </div>
-                `;
+                <div class="empty-state">
+                    <div class="empty-icon">□</div>
+                    <div class="empty-title">${title}</div>
+                    <div class="empty-copy">${copy}</div>
+                </div>
+            `;
+
                     return projects;
                 }
 
                 container.innerHTML = projects.map(project => {
                     const id = project.id ?? project.project_id;
-                    const name = escapeHtml(project.name || "EMF Project");
+
+                    const name = escapeHtml(
+                        project.name ||
+                        (currentMode === "home"
+                            ? "Home Wellness Project"
+                            : "Business Survey Project")
+                    );
+
                     const created = escapeHtml(project.created_at || "");
 
                     return `
-                    <div class="project-row">
-                        <div>
-                            <div class="row-title">${name}</div>
-                            <div class="row-meta">Project #${escapeHtml(id)}${created ? ` · ${created}` : ""}</div>
-                        </div>
-                        <div class="row-actions">
-                            <button class="row-button" onclick="openProject('${escapeHtml(id)}')">Open</button>
-                            <button class="row-button danger" onclick="deleteProject('${escapeHtml(id)}')">Delete</button>
+                <div class="project-row">
+                    <div>
+                        <div class="row-title">${name}</div>
+                        <div class="row-meta">
+                            Project #${escapeHtml(id)}
+                            ${created ? ` · ${created}` : ""}
                         </div>
                     </div>
-                `;
+
+                    <div class="row-actions">
+                        <button
+                            class="row-button"
+                            onclick="openProject('${escapeHtml(id)}', '${currentMode}')"
+                        >
+                            Open
+                        </button>
+
+                        <button
+                            class="row-button danger"
+                            onclick="deleteProject('${escapeHtml(id)}')"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `;
                 }).join("");
 
                 return projects;
+
             } catch (error) {
                 console.error("Load projects error:", error);
+
                 document.getElementById("businessProjectCount").textContent = "—";
                 document.getElementById("summaryProjects").textContent = "—";
+
                 container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">!</div>
-                    <div class="empty-title">Projects could not be loaded</div>
-                    <div class="empty-copy">Please refresh the page and try again.</div>
+            <div class="empty-state">
+                <div class="empty-icon">!</div>
+                <div class="empty-title">Projects could not be loaded</div>
+                <div class="empty-copy">
+                    Please refresh the page and try again.
                 </div>
-            `;
+            </div>
+        `;
+
                 return [];
             }
         }
 
-        function openProject(projectId) {
-            localStorage.setItem("workspaceMode", "business");
-            localStorage.setItem("project_id", projectId);
-            localStorage.setItem("businessProjectId", projectId);
+
+        function openProject(projectId, workspaceMode) {
+
+            const mode =
+                workspaceMode === "home"
+                    ? "home"
+                    : "business";
+
+            localStorage.setItem("workspaceMode", mode);
+
+            if (mode === "home") {
+
+                localStorage.setItem(
+                    "home_project_id",
+                    projectId
+                );
+
+                // Do not let an old legacy Business project
+                // determine the Home startup.
+                localStorage.removeItem("project_id");
+
+            } else {
+
+                localStorage.setItem(
+                    "business_project_id",
+                    projectId
+                );
+
+                // Keep legacy key for compatibility with older code.
+                localStorage.setItem(
+                    "project_id",
+                    projectId
+                );
+            }
+
             window.location.href = "index.html";
         }
 
@@ -2801,12 +3351,13 @@
 
         window.addEventListener("hashchange", activateDashboardSection);
 
+
         async function initDashboard() {
             if (!token) return;
 
+            await loadUser();
             applyDashboardWorkspaceMode();
 
-            await loadUser();
             await Promise.all([loadProjects(), loadReports()]);
 
             activateDashboardSection();

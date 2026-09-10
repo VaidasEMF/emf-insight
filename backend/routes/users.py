@@ -28,13 +28,38 @@ def me(
     current_user=Depends(
         get_current_user,
     ),
+    db: Session = Depends(
+        get_db,
+    ),
 ):
+
+    home_full_report_unlocked = False
+
+    try:
+        from sqlalchemy import text
+
+        result = db.execute(
+            text("""
+                SELECT full_report_unlocked
+                FROM home_entitlements
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": str(current_user.id),
+            },
+        ).scalar()
+
+        home_full_report_unlocked = bool(result)
+
+    except Exception:
+        home_full_report_unlocked = False
 
     return {
         "id": current_user.id,
         "email": current_user.email,
         "credits": current_user.credits,
         "plan": current_user.plan,
+        "home_full_report_unlocked": home_full_report_unlocked,
     }
 
 

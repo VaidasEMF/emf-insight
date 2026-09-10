@@ -162,7 +162,6 @@ def _ensure_stripe_events_table(db):
         )
     """))
 
-
 def _ensure_home_entitlements_table(db):
     db.execute(text("""
         CREATE TABLE IF NOT EXISTS home_entitlements (
@@ -172,6 +171,7 @@ def _ensure_home_entitlements_table(db):
             unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """))
+
 
 
 def _claim_stripe_event(db, event_id):
