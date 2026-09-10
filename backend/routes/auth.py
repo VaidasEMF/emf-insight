@@ -306,6 +306,44 @@ def create_tester(
         "access_expires_at": tester.access_expires_at,
     }
 
+
+@router.get("/admin/user/{user_id}")
+def get_admin_user(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    return {
+        "id": user.id,
+        "email": user.email,
+        "plan": user.plan,
+        "credits": user.credits,
+        "home_full_report_unlocked": getattr(
+            user,
+            "home_full_report_unlocked",
+            None,
+        ),
+    }
+
+
 @router.post("/forgot-password")
 def forgot_password(
     email: str,
