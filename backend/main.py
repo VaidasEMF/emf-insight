@@ -311,7 +311,7 @@ async def stripe_webhook(request: Request):
                 db.commit()
                 return {"status": "ok"}
 
-            user = db.query(User).filter(User.id == user_id).first()
+            user = db.query(User).filter(User.id == int(user_id)).first()
 
             if not user:
                 print("Stripe webhook user not found:", user_id)
