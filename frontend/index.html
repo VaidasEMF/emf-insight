@@ -16733,6 +16733,44 @@
       flex-direction: column;
       justify-content: center;
     }
+
+
+    /* =========================================================
+   HOME — PROFESSIONAL ASSESSMENT NEXT STEP
+   ========================================================= */
+
+    #homeProfessionalAssessment {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid #dbe3ef;
+      border-radius: 12px;
+      background: #ffffff;
+      box-sizing: border-box;
+    }
+
+    #homeProfessionalAssessment .sidebar-section-header {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    #homeProfessionalAssessment .sidebar-subtitle {
+      font-size: 12px;
+      line-height: 1.45;
+      color: #64748b;
+      margin-bottom: 9px;
+    }
+
+    #homeProfessionalAssessmentLocked {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #64748b;
+      margin-bottom: 9px;
+    }
+
+    #homeProfessionalAssessment #homeBtnProfessionalAssessment {
+      margin-bottom: 0;
+    }
   </style>
 
 </head>
@@ -17505,6 +17543,44 @@
 
           </div>
 
+
+        </div>
+
+
+        <!-- =============================== -->
+        <!-- PROFESSIONAL ASSESSMENT NEXT STEP -->
+        <!-- =============================== -->
+
+        <div id="homeProfessionalAssessment" class="home-only sidebar-section">
+
+          <div class="sidebar-section-header">
+            Professional Assessment
+          </div>
+
+          <div class="sidebar-subtitle">
+            Need an on-site EMF assessment? Your Home Wellness project can continue with a qualified EMF professional.
+          </div>
+
+          <div id="homeProfessionalAssessmentLocked" class="workflow-hint">
+            Unlock your Full EMF Insight Report to prepare your project for professional assessment.
+          </div>
+
+          <button id="homeBtnProfessionalAssessment" class="workflow-action-btn" type="button"
+            onclick="scrollToUnlockReport();">
+            <div class="workflow-action-icon">
+              👤
+            </div>
+
+            <div>
+              <div class="workflow-action-title">
+                Unlock Full Report
+              </div>
+
+              <div class="workflow-action-subtitle">
+                Prepare for professional assessment
+              </div>
+            </div>
+          </button>
 
         </div>
 
@@ -25681,8 +25757,151 @@
     }
   }
 
+  function updateHomeProfessionalAssessment() {
 
+    const lockedMessage =
+      document.getElementById(
+        "homeProfessionalAssessmentLocked"
+      );
 
+    const button =
+      document.getElementById(
+        "homeBtnProfessionalAssessment"
+      );
+
+    if (!lockedMessage || !button) {
+      return;
+    }
+
+    const unlocked =
+      window.homeFullReportUnlocked === true;
+
+    if (unlocked) {
+
+      lockedMessage.textContent =
+        "Your Home assessment is ready for professional review.";
+
+      button.onclick = function () {
+        createProfessionalRequest();
+      };
+
+      button.querySelector(
+        ".workflow-action-title"
+      ).textContent =
+        "Find a Professional";
+
+      button.querySelector(
+        ".workflow-action-subtitle"
+      ).textContent =
+        "Request an on-site EMF assessment";
+
+      button.querySelector(
+        ".workflow-action-icon"
+      ).textContent =
+        "👤";
+
+    } else {
+
+      lockedMessage.textContent =
+        "Unlock your Full EMF Insight Report to prepare your project for professional assessment.";
+
+      button.onclick = function () {
+        scrollToUnlockReport();
+      };
+
+      button.querySelector(
+        ".workflow-action-title"
+      ).textContent =
+        "Unlock Full Report";
+
+      button.querySelector(
+        ".workflow-action-subtitle"
+      ).textContent =
+        "Prepare for professional assessment";
+
+      button.querySelector(
+        ".workflow-action-icon"
+      ).textContent =
+        "🔒";
+    }
+  }
+
+  async function createProfessionalRequest() {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Please log in first.");
+      return;
+    }
+
+    if (window.homeFullReportUnlocked !== true) {
+      alert(
+        "Please unlock your Full EMF Insight Report before requesting a professional assessment."
+      );
+      return;
+    }
+
+    const projectId =
+      localStorage.getItem("home_project_id") ||
+      localStorage.getItem("homeProjectId");
+
+    if (!projectId) {
+      alert(
+        "No Home project is currently available."
+      );
+      return;
+    }
+
+    try {
+
+      const response = await fetch(
+        `${API}/professional-requests`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+
+          body: JSON.stringify({
+            project_id: projectId
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(
+          data.detail ||
+          "Unable to create professional assessment request."
+        );
+        return;
+      }
+
+      alert(
+        "Your professional assessment request has been submitted."
+      );
+
+      console.log(
+        "Professional request created:",
+        data
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Professional request failed:",
+        error
+      );
+
+      alert(
+        "Unable to submit the professional assessment request."
+      );
+    }
+  }
 
   window.onload = async () => {
 
@@ -25706,10 +25925,6 @@
     );
 
     initializeProjects();
-
-
-
-
 
     if (
       typeof initializeSessions ===
@@ -25735,8 +25950,6 @@
     //     home_project_id
     //
     // ==================================================
-
-
 
     // ==================================================
     // 🔥 STARTUP WORKSPACE
@@ -26372,6 +26585,41 @@
       await setAppMode(
         workspaceMode
       );
+    }
+
+    // ==================================================
+    // HOME — FULL REPORT ENTITLEMENT
+    // ==================================================
+
+    if (workspaceMode === "home") {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+          const meRes = await fetch(
+            `${API}/me`,
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`
+              }
+            }
+          );
+
+          if (meRes.ok) {
+            const me = await meRes.json();
+
+            window.homeFullReportUnlocked =
+              me.home_full_report_unlocked === true;
+
+            updateHomeProfessionalAssessment?.();
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Home entitlement check failed:",
+          error
+        );
+      }
     }
 
 

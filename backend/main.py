@@ -58,6 +58,10 @@ from routes.projects import (
     router as projects_router,
 )
 
+from routes.professional_requests import (
+    router as professional_requests_router,
+)
+
 from routes.reports import (
     router as reports_router,
 )
@@ -78,6 +82,10 @@ app.mount(
 
 app.include_router(
     reports_router,
+)
+
+app.include_router(
+    professional_requests_router,
 )
 
 app.include_router(
@@ -172,7 +180,19 @@ def _ensure_home_entitlements_table(db):
         )
     """))
 
-
+def _ensure_professional_requests_table(db):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS professional_requests (
+            id SERIAL PRIMARY KEY,
+            user_id VARCHAR(255) NOT NULL,
+            project_id VARCHAR(255),
+            country VARCHAR(100),
+            region VARCHAR(100),
+            city VARCHAR(100),
+            status VARCHAR(50) NOT NULL DEFAULT 'open',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
 
 def _claim_stripe_event(db, event_id):
     result = db.execute(

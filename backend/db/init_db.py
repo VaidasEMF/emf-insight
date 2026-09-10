@@ -18,6 +18,31 @@ def init_db():
         bind=engine,
     )
 
+     # ==================================================
+    # PROFESSIONAL REQUESTS
+    # ==================================================
+
+    if engine.dialect.name == "postgresql":
+
+        with engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS professional_requests (
+                        id SERIAL PRIMARY KEY,
+                        user_id VARCHAR(255) NOT NULL,
+                        project_id VARCHAR(255),
+                        country VARCHAR(100),
+                        region VARCHAR(100),
+                        city VARCHAR(100),
+                        status VARCHAR(50) NOT NULL DEFAULT 'open',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
+
     # ==================================================
     # DATABASE MIGRATIONS
     # ==================================================
