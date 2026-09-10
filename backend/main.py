@@ -301,6 +301,7 @@ async def stripe_webhook(request: Request):
         # =============================================================
         if event_type == "checkout.session.completed":
             session = event["data"]["object"]
+            session = session.to_dict()
             metadata = session.get("metadata") or {}
 
             user_id = metadata.get("user_id")
