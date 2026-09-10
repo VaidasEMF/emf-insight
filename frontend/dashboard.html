@@ -141,6 +141,12 @@
             color: var(--text);
         }
 
+
+        .nav-link.active {
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+        }
+
         .nav-link.primary {
             background: var(--accent-soft);
             color: var(--accent-dark);
@@ -1133,6 +1139,13 @@
                 width: 100%;
             }
         }
+
+
+        .nav-link.active {
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -1715,6 +1728,8 @@
             sessionStorage.removeItem("requestedWorkspace");
             window.location.href = "login.html";
         }
+
+
 
         let pricingCurrency = "EUR";
         let pricingLoaded = false;
@@ -2639,16 +2654,41 @@
 
         window.loadProjects = loadProjects;
 
+        function activateDashboardSection() {
+            const sectionId = window.location.hash.replace("#", "");
+
+            if (!sectionId) return;
+
+            const section = document.getElementById(sectionId);
+
+            if (!section) return;
+
+            document.querySelectorAll('.nav-link[href^="#"]').forEach(link => {
+                link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === `#${sectionId}`
+                );
+            });
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    section.scrollIntoView({
+                        behavior: "auto",
+                        block: "start"
+                    });
+                });
+            });
+        }
+
+        window.addEventListener("hashchange", activateDashboardSection);
+
         async function initDashboard() {
             if (!token) return;
 
             await loadUser();
+            await Promise.all([loadProjects(), loadReports()]);
 
-            await Promise.all([
-                loadProjects(),
-                loadReports(),
-                loadAdminPricing()
-            ]);
+            activateDashboardSection();
         }
 
         initDashboard();
@@ -2656,6 +2696,130 @@
 
 
     </script>
+
+    <script>
+        function scrollToDashboardSection() {
+            const hash = window.location.hash;
+
+            if (!hash) return;
+
+            const target = document.querySelector(hash);
+
+            if (!target) return;
+
+            setTimeout(() => {
+                target.scrollIntoView({
+                    behavior: "auto",
+                    block: "start"
+                });
+            }, 50);
+        }
+
+        window.addEventListener("load", scrollToDashboardSection);
+        window.addEventListener("hashchange", scrollToDashboardSection);
+
+        // ==========================================
+        // ACCOUNT SECTION NAVIGATION
+        // ==========================================
+        function activateDashboardSection() {
+            const hash = window.location.hash;
+
+            if (!hash) {
+                return;
+            }
+
+            const sectionId = hash.substring(1);
+
+            const target = document.getElementById(sectionId);
+
+            const activeLink = document.querySelector(
+                `.nav-link[href="#${sectionId}"]`
+            );
+
+            // Activate the corresponding Account navigation item
+            document.querySelectorAll(".nav-link").forEach(link => {
+                link.classList.remove("active");
+            });
+
+            if (activeLink) {
+                activeLink.classList.add("active");
+
+                // Make the selected item visible in the left navigation
+                activeLink.scrollIntoView({
+                    behavior: "auto",
+                    block: "center"
+                });
+            }
+
+            if (!target) {
+                return;
+            }
+
+            // Position the requested section correctly
+            requestAnimationFrame(() => {
+                target.scrollIntoView({
+                    behavior: "auto",
+                    block: "start"
+                });
+            });
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            activateDashboardSection();
+        });
+
+        window.addEventListener("hashchange", () => {
+            activateDashboardSection();
+        });
+
+        // ==================================================
+        // ACCOUNT SECTION NAVIGATION
+        // ==================================================
+
+        function activateAccountSection() {
+            const hash = window.location.hash.replace("#", "");
+
+            if (!hash) {
+                return;
+            }
+
+            const target = document.getElementById(hash);
+
+            if (!target) {
+                return;
+            }
+
+            // Remove active state from all account navigation links
+            document.querySelectorAll(".nav-group .nav-link").forEach(link => {
+                link.classList.remove("active");
+            });
+
+            // Activate the matching sidebar link
+            const activeLink = document.querySelector(
+                `.nav-link[href="#${hash}"]`
+            );
+
+            if (activeLink) {
+                activeLink.classList.add("active");
+            }
+
+            // Scroll to the requested section after the dashboard layout is ready
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    target.scrollIntoView({
+                        behavior: "auto",
+                        block: "start"
+                    });
+                }, 50);
+            });
+        }
+
+        window.addEventListener("load", activateAccountSection);
+        window.addEventListener("hashchange", activateAccountSection);
+
+    </script>
+
+
+
 </body>
 
 </html>
