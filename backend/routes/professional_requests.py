@@ -120,3 +120,56 @@ def create_professional_request(
         "status": request["status"],
         "created_at": request["created_at"],
     }
+
+# =====================
+# GET CURRENT PROFESSIONAL REQUEST
+# =====================
+
+@router.get("/professional-requests")
+def get_professional_request(
+    current_user=Depends(
+        get_current_user,
+    ),
+    db: Session = Depends(
+        get_db,
+    ),
+):
+
+    request = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                project_id,
+                country,
+                region,
+                city,
+                status,
+                created_at
+            FROM professional_requests
+            WHERE user_id = :user_id
+            ORDER BY created_at DESC
+            LIMIT 1
+        """),
+        {
+            "user_id": str(current_user.id),
+        },
+    ).mappings().first()
+
+    if not request:
+        return {
+            "request": None,
+        }
+
+    return {
+        "request": {
+            "id": request["id"],
+            "user_id": request["user_id"],
+            "project_id": request["project_id"],
+            "country": request["country"],
+            "region": request["region"],
+            "city": request["city"],
+            "status": request["status"],
+            "created_at": request["created_at"],
+        }
+    }

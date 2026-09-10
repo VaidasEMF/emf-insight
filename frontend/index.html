@@ -25757,24 +25757,63 @@
     }
   }
 
-  function updateHomeProfessionalAssessment() {
+  async function loadProfessionalAssessmentRequest() {
+    const token = localStorage.getItem("token");
 
-    const lockedMessage =
-      document.getElementById(
-        "homeProfessionalAssessmentLocked"
-      );
-
-    const button =
-      document.getElementById(
-        "homeBtnProfessionalAssessment"
-      );
-
-    if (!lockedMessage || !button) {
+    if (!token || window.AppMode?.current !== "home") {
       return;
     }
 
-    const unlocked =
-      window.homeFullReportUnlocked === true;
+    try {
+      const response = await fetch(
+        `${API}/professional-requests`,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        console.error(
+          "Professional request status check failed:",
+          response.status
+        );
+        return;
+      }
+
+      const data = await response.json();
+
+      window.homeProfessionalRequest =
+        data.request || null;
+
+      updateHomeProfessionalAssessment();
+
+    } catch (error) {
+      console.error(
+        "Professional request status check failed:",
+        error
+      );
+    }
+  }
+
+
+
+  function updateHomeProfessionalAssessment() {
+    const lockedMessage = document.getElementById("homeProfessionalAssessmentLocked");
+    const button = document.getElementById("homeBtnProfessionalAssessment");
+    if (!lockedMessage || !button) return;
+
+    const unlocked = window.homeFullReportUnlocked === true;
+    const request = window.homeProfessionalRequest;
+
+    if (unlocked && request) {
+      lockedMessage.textContent =
+        "Your professional assessment request has been submitted. Status: Request submitted.";
+
+      button.style.display = "none";
+      return;
+    }
 
     if (unlocked) {
 
@@ -26631,6 +26670,8 @@
               me.home_full_report_unlocked === true;
 
             updateHomeProfessionalAssessment?.();
+
+            await loadProfessionalAssessmentRequest();
           }
         }
       } catch (error) {
