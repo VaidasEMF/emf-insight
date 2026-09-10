@@ -44,7 +44,7 @@ def create_professional_request(
             WHERE user_id = :user_id
         """),
         {
-            "user_id": current_user.id,
+            "user_id": str(current_user.id),
         },
     ).scalar()
 
@@ -98,7 +98,7 @@ def create_professional_request(
                 created_at
         """),
         {
-            "user_id": current_user.id,
+            "user_id": str(current_user.id),
             "project_id": project_id,
             "country": country,
             "region": region,
