@@ -1618,6 +1618,11 @@
       background: #f9fafb;
     }
 
+    .user-account-switcher.menu-open {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
     .user-account-icon {
       font-size: 15px;
     }
@@ -1746,6 +1751,12 @@
     .workspace-switcher-chevron {
       font-size: 11px;
       color: #475569;
+    }
+
+
+    .workspace-switcher.menu-open {
+      background: #f8fafc;
+      border-color: #94a3b8;
     }
 
 
@@ -5249,6 +5260,8 @@
 
       display: flex;
 
+      flex-wrap: nowrap;
+
       align-items: center;
 
       justify-content: flex-start;
@@ -5262,9 +5275,14 @@
     }
 
     #projectHeader .project-header-top .user-selector {
-      margin-left: auto;
+      margin-left: 0;
+      flex-shrink: 0;
     }
 
+    #projectHeader .project-header-top .workspace-selector {
+      margin-left: auto;
+      flex-shrink: 0;
+    }
 
     /* =========================================================
    PROJECT TITLE
@@ -14449,13 +14467,12 @@
 
 
     /* ==================================================
-   HOME WORKSPACE SWITCHER — TOP RIGHT
+   WORKSPACE SWITCHER — HEADER
    ================================================== */
 
     .workspace-selector {
-      position: fixed;
-      top: 8px;
-      right: 12px;
+      position: relative;
+      display: inline-block;
       z-index: 999999;
     }
 
@@ -18134,176 +18151,148 @@
                 <div class="workspace-menu-divider"></div>
 
 
-                <!-- ================================================== -->
-                <!-- PROJECT -->
-                <!-- ================================================== -->
-
-                <div class="workspace-menu-section">
-
-                  <div class="workspace-menu-section-title">
-
-                    PROJECT
-
-                  </div>
 
 
-                  <!-- NEW PROJECT -->
+              </div>
 
-                  <div class="workspace-menu-item" onclick="
-              createProject?.();
-              closeWorkspaceMenu?.();
-            ">
-
-                    <span class="workspace-menu-icon">
-                      ＋
-                    </span>
-
-                    <span class="workspace-menu-content">
-
-                      <span class="workspace-menu-title">
-                        New Project
-                      </span>
-
-                      <span class="workspace-menu-subtitle">
-                        Start a new assessment
-                      </span>
-
-                    </span>
-
-                  </div>
+            </div>
 
 
-                  <!-- OPEN PROJECT -->
+            <!-- ================================================== -->
+            <!-- USER ACCOUNT SELECTOR -->
+            <!-- ================================================== -->
 
-                  <div class="workspace-menu-item" onclick="
-              openProjectMenu?.();
-              closeWorkspaceMenu?.();
-            ">
+            <div class="user-selector">
 
-                    <span class="workspace-menu-icon">
-                      📂
-                    </span>
+              <button id="userAccountBtn" class="user-account-switcher" type="button" onclick="toggleUserMenu()">
 
-                    <span class="workspace-menu-content">
+                <span class="user-account-icon">
+                  👤
+                </span>
 
-                      <span class="workspace-menu-title">
-                        Open Project
-                      </span>
+                <span id="userAccountLabel">
+                  User
+                </span>
 
-                      <span class="workspace-menu-subtitle">
-                        Continue an existing assessment
-                      </span>
+                <span class="user-account-chevron">
+                  ▼
+                </span>
 
-                    </span>
-
-                  </div>
-
-                </div>
+              </button>
 
 
-                <div class="workspace-menu-divider"></div>
+              <!-- USER MENU -->
 
+              <div id="userAccountMenu" class="user-account-menu" style="display:none;">
 
-                <!-- ================================================== -->
-                <!-- ACCOUNT -->
-                <!-- ================================================== -->
+                <div class="user-menu-section">
 
-                <div class="workspace-menu-section">
-
-                  <div class="workspace-menu-section-title">
-
+                  <div class="user-menu-section-title">
                     ACCOUNT
-
                   </div>
 
 
-                  <!-- ACCOUNT -->
+                  <div class="user-menu-item" id="userProfileItem">
+                    <span class="user-menu-icon">👤</span>
 
-                  <div class="workspace-menu-item" id="workspaceAccountItem">
+                    <span class="user-menu-content">
 
-                    <span class="workspace-menu-icon">
-                      👤
-                    </span>
-
-                    <span class="workspace-menu-content">
-
-                      <span class="workspace-menu-title">
-                        Account
+                      <span class="user-menu-title">
+                        Profile
                       </span>
 
-                      <span class="workspace-menu-subtitle">
-                        Profile and account details
+                      <span class="user-menu-subtitle">
+                        Personal & account details
                       </span>
 
                     </span>
-
                   </div>
 
 
-                  <!-- SETTINGS -->
+                  <div class="user-menu-item" id="userBrandingItem"
+                    onclick="window.location.href='dashboard.html#branding'">
+                    <span class="user-menu-icon">🎨</span>
 
-                  <div class="workspace-menu-item" id="workspaceSettingsItem">
+                    <span class="user-menu-content">
 
-                    <span class="workspace-menu-icon">
-                      ⚙
-                    </span>
-
-                    <span class="workspace-menu-content">
-
-                      <span class="workspace-menu-title">
-                        Settings
+                      <span class="user-menu-title">
+                        Branding
                       </span>
 
-                      <span class="workspace-menu-subtitle">
-                        Application preferences
+                      <span class="user-menu-subtitle">
+                        Company name, email & logo
                       </span>
 
                     </span>
-
                   </div>
 
 
-                  <!-- HELP -->
+                  <div class="user-menu-item" id="userBillingItem"
+                    onclick="window.location.href='dashboard.html#billing'">
+                    <span class="user-menu-icon">💳</span>
 
-                  <div class="workspace-menu-item" id="workspaceHelpItem">
+                    <span class="user-menu-content">
 
-                    <span class="workspace-menu-icon">
-                      ❓
-                    </span>
-
-                    <span class="workspace-menu-content">
-
-                      <span class="workspace-menu-title">
-                        Help &amp; Support
+                      <span class="user-menu-title">
+                        Billing & Plan
                       </span>
 
-                      <span class="workspace-menu-subtitle">
-                        Get help with EMF Maps
+                      <span class="user-menu-subtitle">
+                        Credits and subscription
                       </span>
 
                     </span>
+                  </div>
 
+
+                  <div class="user-menu-item" id="userSecurityItem">
+                    <span class="user-menu-icon">🔐</span>
+
+                    <span class="user-menu-content">
+
+                      <span class="user-menu-title">
+                        Security
+                      </span>
+
+                      <span class="user-menu-subtitle">
+                        Password & security
+                      </span>
+
+                    </span>
+                  </div>
+
+
+                  <div class="user-menu-item" id="userHelpItem" onclick="window.location.href='dashboard.html#help'">
+                    <span class="user-menu-icon">❓</span>
+
+                    <span class="user-menu-content">
+
+                      <span class="user-menu-title">
+                        Help & Support
+                      </span>
+
+                      <span class="user-menu-subtitle">
+                        Get help with EMF Insight
+                      </span>
+
+                    </span>
                   </div>
 
                 </div>
 
 
-                <div class="workspace-menu-divider"></div>
+                <div class="user-menu-divider"></div>
 
 
-                <!-- ================================================== -->
-                <!-- SIGN OUT -->
-                <!-- ================================================== -->
+                <div class="user-menu-item user-menu-item-danger" id="userSignOutItem">
 
-                <div class="workspace-menu-item workspace-menu-item-danger" id="workspaceSignOutItem">
-
-                  <span class="workspace-menu-icon">
+                  <span class="user-menu-icon">
                     🚪
                   </span>
 
-                  <span class="workspace-menu-content">
+                  <span class="user-menu-content">
 
-                    <span class="workspace-menu-title">
+                    <span class="user-menu-title">
                       Sign out
                     </span>
 
@@ -18318,149 +18307,7 @@
           </div>
 
 
-          <!-- ================================================== -->
-          <!-- USER ACCOUNT SELECTOR -->
-          <!-- ================================================== -->
 
-          <div class="user-selector">
-
-            <button id="userAccountBtn" class="user-account-switcher" type="button" onclick="toggleUserMenu()">
-
-              <span class="user-account-icon">
-                👤
-              </span>
-
-              <span id="userAccountLabel">
-                User
-              </span>
-
-              <span class="user-account-chevron">
-                ▼
-              </span>
-
-            </button>
-
-
-            <!-- USER MENU -->
-
-            <div id="userAccountMenu" class="user-account-menu" style="display:none;">
-
-              <div class="user-menu-section">
-
-                <div class="user-menu-section-title">
-                  ACCOUNT
-                </div>
-
-
-                <div class="user-menu-item" id="userProfileItem">
-                  <span class="user-menu-icon">👤</span>
-
-                  <span class="user-menu-content">
-
-                    <span class="user-menu-title">
-                      Profile
-                    </span>
-
-                    <span class="user-menu-subtitle">
-                      Personal & account details
-                    </span>
-
-                  </span>
-                </div>
-
-
-                <div class="user-menu-item" id="userBrandingItem">
-                  <span class="user-menu-icon">🎨</span>
-
-                  <span class="user-menu-content">
-
-                    <span class="user-menu-title">
-                      Branding
-                    </span>
-
-                    <span class="user-menu-subtitle">
-                      Company name, email & logo
-                    </span>
-
-                  </span>
-                </div>
-
-
-                <div class="user-menu-item" id="userBillingItem">
-                  <span class="user-menu-icon">💳</span>
-
-                  <span class="user-menu-content">
-
-                    <span class="user-menu-title">
-                      Billing & Plan
-                    </span>
-
-                    <span class="user-menu-subtitle">
-                      Credits and subscription
-                    </span>
-
-                  </span>
-                </div>
-
-
-                <div class="user-menu-item" id="userSecurityItem">
-                  <span class="user-menu-icon">🔐</span>
-
-                  <span class="user-menu-content">
-
-                    <span class="user-menu-title">
-                      Security
-                    </span>
-
-                    <span class="user-menu-subtitle">
-                      Password & security
-                    </span>
-
-                  </span>
-                </div>
-
-
-                <div class="user-menu-item" id="userHelpItem">
-                  <span class="user-menu-icon">❓</span>
-
-                  <span class="user-menu-content">
-
-                    <span class="user-menu-title">
-                      Help & Support
-                    </span>
-
-                    <span class="user-menu-subtitle">
-                      Get help with EMF Insight
-                    </span>
-
-                  </span>
-                </div>
-
-              </div>
-
-
-              <div class="user-menu-divider"></div>
-
-
-              <div class="user-menu-item user-menu-item-danger" id="userSignOutItem">
-
-                <span class="user-menu-icon">
-                  🚪
-                </span>
-
-                <span class="user-menu-content">
-
-                  <span class="user-menu-title">
-                    Sign out
-                  </span>
-
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
 
 
           <!-- ================================================== -->

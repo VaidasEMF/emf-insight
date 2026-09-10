@@ -2661,17 +2661,45 @@ function toggleWorkspaceMenu() {
             "workspaceMenu"
         );
 
+    const button =
+        document.getElementById(
+            "workspaceSwitcherBtn"
+        );
+
+    const chevron =
+        button?.querySelector(
+            ".workspace-switcher-chevron"
+        );
+
     if (!menu) {
         return;
     }
 
+    const isOpen =
+        menu.style.display === "block";
+
+    closeUserMenu();
+
     menu.style.display =
-
-        menu.style.display ===
-            "block"
-
+        isOpen
             ? "none"
             : "block";
+
+    if (button) {
+        button.classList.toggle(
+            "menu-open",
+            !isOpen
+        );
+        button.setAttribute(
+            "aria-expanded",
+            String(!isOpen)
+        );
+    }
+
+    if (chevron) {
+        chevron.textContent =
+            !isOpen ? "▲" : "▼";
+    }
 }
 
 function closeWorkspaceMenu() {
@@ -2681,12 +2709,33 @@ function closeWorkspaceMenu() {
             "workspaceMenu"
         );
 
-    if (!menu) {
-        return;
+    const button =
+        document.getElementById(
+            "workspaceSwitcherBtn"
+        );
+
+    const chevron =
+        button?.querySelector(
+            ".workspace-switcher-chevron"
+        );
+
+    if (menu) {
+        menu.style.display = "none";
     }
 
-    menu.style.display =
-        "none";
+    if (button) {
+        button.classList.remove(
+            "menu-open"
+        );
+        button.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+    if (chevron) {
+        chevron.textContent = "▼";
+    }
 }
 
 window.toggleWorkspaceMenu =
@@ -2707,14 +2756,45 @@ function toggleUserMenu() {
             "userAccountMenu"
         );
 
+    const button =
+        document.getElementById(
+            "userAccountBtn"
+        );
+
+    const chevron =
+        button?.querySelector(
+            ".user-account-chevron"
+        );
+
     if (!menu) {
         return;
     }
 
+    const isOpen =
+        menu.style.display === "block";
+
+    closeWorkspaceMenu();
+
     menu.style.display =
-        menu.style.display === "block"
+        isOpen
             ? "none"
             : "block";
+
+    if (button) {
+        button.classList.toggle(
+            "menu-open",
+            !isOpen
+        );
+        button.setAttribute(
+            "aria-expanded",
+            String(!isOpen)
+        );
+    }
+
+    if (chevron) {
+        chevron.textContent =
+            !isOpen ? "▲" : "▼";
+    }
 }
 
 function closeUserMenu() {
@@ -2724,12 +2804,33 @@ function closeUserMenu() {
             "userAccountMenu"
         );
 
-    if (!menu) {
-        return;
+    const button =
+        document.getElementById(
+            "userAccountBtn"
+        );
+
+    const chevron =
+        button?.querySelector(
+            ".user-account-chevron"
+        );
+
+    if (menu) {
+        menu.style.display = "none";
     }
 
-    menu.style.display =
-        "none";
+    if (button) {
+        button.classList.remove(
+            "menu-open"
+        );
+        button.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+    if (chevron) {
+        chevron.textContent = "▼";
+    }
 }
 
 window.toggleUserMenu =
@@ -2737,6 +2838,36 @@ window.toggleUserMenu =
 
 window.closeUserMenu =
     closeUserMenu;
+
+    // =====================
+// 🖱️ CLOSE MENUS ON OUTSIDE CLICK
+// =====================
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        const clickedWorkspace =
+            event.target.closest(
+                ".workspace-selector"
+            );
+
+        const clickedUser =
+            event.target.closest(
+                ".user-selector"
+            );
+
+        if (
+            clickedWorkspace ||
+            clickedUser
+        ) {
+            return;
+        }
+
+        closeWorkspaceMenu();
+        closeUserMenu();
+    }
+);
 
 // =====================
 // 🔥 EXPORT
