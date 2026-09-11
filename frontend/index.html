@@ -17439,25 +17439,7 @@
 
             </div>
 
-            <div id="insightsReadyCard" style="display: none;">
 
-              <div class="workflow-card-title">
-
-                🔒 Personalized Insights Ready
-
-              </div>
-
-              <div id="insightsReadyText">
-
-              </div>
-
-              <div class="insights-hint" onclick="scrollToUnlockReport()">
-
-                👉 View Full Report →
-
-              </div>
-
-            </div>
 
 
             <!-- ===================== -->
@@ -25344,7 +25326,7 @@
     }
 
     requestRender();
-    updateProgressUI();
+    window.updateProgressUI?.();
     updateRoomStatusUI();
     window.updateFlow?.();
   }
