@@ -2109,8 +2109,14 @@ function handleMouseDown(evt) {
                 evt
             );
 
+            setTimeout(() => {
+                updateHomeSidebarStatus?.();
+                updateHomeWorkflow?.();
+                updateHomeLocks?.();
+            }, 0);
+
             return;
-        }
+                    }
 
 
         // ==================================================

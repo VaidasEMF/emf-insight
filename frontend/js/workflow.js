@@ -301,6 +301,22 @@ function updateHomeWorkflow() {
             }
         });
 
+    // =====================
+    // INSIGHTS READY CARD
+    // =====================
+
+    const insightsReadyCard =
+        document.getElementById(
+            "insightsReadyCard"
+        );
+
+    if (insightsReadyCard) {
+        insightsReadyCard.style.display =
+            hasSources
+                ? "block"
+                : "none";
+    } 
+
 
     // =====================
     // DEBUG

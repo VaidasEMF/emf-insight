@@ -507,12 +507,6 @@ Object.entries(
 
 
 
-
-
-// ==================================================
-// 🔥 START OBJECT PLACEMENT
-// ==================================================
-
 // ==================================================
 // 🔥 START OBJECT PLACEMENT
 // ==================================================
@@ -1888,9 +1882,14 @@ function placeObject(evt) {
 
         requestRender?.();
 
+        updateHomeSidebarStatus?.();
+        updateHomeWorkflow?.();
+        updateHomeLocks?.();
+        renderHomeCurrentFloorCard?.();
+
         return;
-    }
-}
+            }
+        }
 
 
 function calculateBedRisk(
