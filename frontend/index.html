@@ -16771,6 +16771,212 @@
     #homeProfessionalAssessment #homeBtnProfessionalAssessment {
       margin-bottom: 0;
     }
+
+
+    /* ==================================================
+   PROFESSIONAL ASSESSMENT MODAL
+   ================================================== */
+
+    .professional-assessment-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .professional-assessment-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(3px);
+    }
+
+    .professional-assessment-dialog {
+      position: relative;
+      z-index: 1;
+      width: min(520px, 100%);
+      max-height: min(720px, calc(100vh - 48px));
+      overflow-y: auto;
+      box-sizing: border-box;
+      padding: 28px;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow:
+        0 24px 70px rgba(15, 23, 42, 0.28);
+    }
+
+    .professional-assessment-close {
+      position: absolute !important;
+      top: 12px !important;
+      right: 12px !important;
+
+      width: 32px !important;
+      min-width: 32px !important;
+      max-width: 32px !important;
+
+      height: 32px !important;
+      min-height: 32px !important;
+      max-height: 32px !important;
+
+      padding: 0 !important;
+      margin: 0 !important;
+
+      border: 0 !important;
+      border-radius: 50% !important;
+
+      background: transparent !important;
+
+      color: #64748b !important;
+
+      font-family: Arial, sans-serif !important;
+      font-size: 24px !important;
+      font-weight: 500 !important;
+      line-height: 32px !important;
+
+      text-align: center !important;
+
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      box-shadow: none !important;
+
+      cursor: pointer !important;
+      z-index: 10 !important;
+
+      appearance: none !important;
+      -webkit-appearance: none !important;
+    }
+
+    .professional-assessment-close:hover {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+
+    .professional-assessment-title {
+      padding-right: 48px;
+      font-size: 21px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .professional-assessment-subtitle {
+      margin-top: 5px;
+      margin-bottom: 20px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .professional-assessment-availability {
+      margin-top: 10px;
+      margin-bottom: 16px;
+      padding: 11px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .professional-assessment-consent {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #334155;
+    }
+
+    .professional-assessment-consent input {
+      margin-top: 3px;
+      flex: 0 0 auto;
+    }
+
+    .read-more-link {
+      padding: 0;
+      margin-left: 4px;
+      border: 0;
+      background: transparent;
+      color: #2563eb;
+      font: inherit;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .read-more-link:hover {
+      color: #1d4ed8;
+    }
+
+    .terms-link:hover {
+      color: #1d4ed8;
+    }
+
+    .professional-assessment-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 22px;
+    }
+
+    .professional-assessment-actions button {
+      min-width: 140px;
+    }
+
+    .professional-assessment-terms-dialog {
+      width: min(620px, 100%);
+    }
+
+    .professional-assessment-terms-content {
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .professional-assessment-terms-content h4 {
+      margin: 18px 0 6px;
+      color: #0f172a;
+      font-size: 14px;
+    }
+
+    .professional-assessment-terms-content h4:first-child {
+      margin-top: 0;
+    }
+
+    .professional-assessment-terms-content p {
+      margin: 0 0 12px;
+    }
+
+    .professional-assessment-terms-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 22px;
+    }
+
+    @media (max-width: 600px) {
+
+      .professional-assessment-modal {
+        padding: 12px;
+      }
+
+      .professional-assessment-dialog {
+        padding: 22px;
+        border-radius: 15px;
+      }
+
+      .professional-assessment-actions {
+        flex-direction: column-reverse;
+      }
+
+      .professional-assessment-actions button {
+        width: 100%;
+      }
+    }
   </style>
 
 </head>
@@ -17569,103 +17775,154 @@
         <!-- ========================================== -->
         <!-- PROFESSIONAL ASSESSMENT LOCATION MODAL -->
         <!-- ========================================== -->
+        <div id="professionalAssessmentLocationModal" class="professional-assessment-modal" style="display:none;"
+          aria-hidden="true">
+          <div class="professional-assessment-backdrop" onclick="event.stopPropagation();"></div>
 
-        <div id="professionalAssessmentLocationModal" class="project-popup" style="display:none;" aria-hidden="true">
+          <div class="professional-assessment-dialog" role="dialog" aria-modal="true"
+            aria-labelledby="professionalAssessmentTitle">
 
-          <div class="project-popup-content">
+            <button type="button" class="professional-assessment-close" aria-label="Close"
+              onclick="closeProfessionalAssessmentLocationModal();">
+              ×
+            </button>
 
-            <div class="project-popup-title">
+            <div class="professional-assessment-title" id="professionalAssessmentTitle">
               Professional Assessment
             </div>
 
-            <div class="project-popup-subtitle">
-              Find a qualified EMF professional for an on-site assessment.
+            <div class="professional-assessment-subtitle">
+              Find an EMF professional in your area.
             </div>
 
-            <div style="margin-top:20px;">
+            <div class="form-group">
+              <label for="professionalAssessmentCountry">
+                Country *
+              </label>
 
-              <div class="project-name-label">
-                Property location
-              </div>
-
-              <div class="project-name-hint">
-                Your location helps us identify professionals who can realistically travel to your property.
-              </div>
-
-              <div style="display:grid; gap:12px; margin-top:16px;">
-
-                <div>
-                  <label for="professionalAssessmentCountry" class="project-name-label">
-                    Country *
-                  </label>
-
-                  <input id="professionalAssessmentCountry" class="project-name-input" type="text"
-                    placeholder="e.g. Ireland">
-                </div>
-
-                <div>
-                  <label for="professionalAssessmentAdminArea" class="project-name-label">
-                    Administrative area
-                  </label>
-
-                  <input id="professionalAssessmentAdminArea" class="project-name-input" type="text"
-                    placeholder="e.g. County Dublin">
-                </div>
-
-                <div>
-                  <label for="professionalAssessmentCity" class="project-name-label">
-                    City / Town *
-                  </label>
-
-                  <input id="professionalAssessmentCity" class="project-name-input" type="text"
-                    placeholder="e.g. Dublin">
-                </div>
-
-                <div>
-                  <label for="professionalAssessmentPostalCode" class="project-name-label">
-                    Postal code
-                  </label>
-
-                  <input id="professionalAssessmentPostalCode" class="project-name-input" type="text"
-                    placeholder="e.g. D04">
-                </div>
-
-              </div>
-
-              <div style="margin-top:20px;">
-
-                <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer;">
-
-                  <input id="professionalAssessmentMatchingConsent" type="checkbox" style="margin-top:4px;">
-
-                  <span>
-                    <strong>Make my project available to qualified EMF professionals in my area.</strong>
-                    <br>
-                    <span style="font-size:13px; opacity:0.75;">
-                      Your exact address will not be publicly displayed.
-                    </span>
-                  </span>
-
-                </label>
-
-              </div>
-
+              <select id="professionalAssessmentCountry" autocomplete="country"
+                onchange="checkProfessionalAvailability();">
+                <option value="">Select country</option>
+              </select>
             </div>
 
-            <div class="project-popup-actions">
+            <div class="form-group">
+              <label for="professionalAssessmentCity">
+                City / Town *
+              </label>
 
-              <button id="professionalAssessmentLocationCancel" type="button" class="project-popup-cancel">
+              <input type="text" id="professionalAssessmentCity" placeholder="City or town"
+                autocomplete="address-level2" onblur="checkProfessionalAvailability();">
+            </div>
+
+            <div class="form-group">
+              <label for="professionalAssessmentPostalCode">
+                Postal Code
+              </label>
+
+              <input type="text" id="professionalAssessmentPostalCode" placeholder="Optional"
+                autocomplete="postal-code">
+            </div>
+
+            <div id="professionalAssessmentAvailability" class="professional-assessment-availability">
+              Enter country and city to check professional availability.
+            </div>
+
+
+            <label class="professional-assessment-consent">
+              <input type="checkbox" id="professionalAssessmentLocationConsent">
+
+              <span>
+                I agree to share this location information for professional matching.
+                <button type="button" class="read-more-link" onclick="openProfessionalAssessmentTerms(event);">
+                  Read more...
+                </button>
+              </span>
+            </label>
+
+            <div class="professional-assessment-actions">
+
+              <button type="button" class="secondary-btn" onclick="closeProfessionalAssessmentLocationModal();">
                 Cancel
               </button>
 
-              <button id="professionalAssessmentLocationSubmit" type="button" class="project-popup-create">
-                Find a Professional
+              <button type="button" class="primary-btn" onclick="createProfessionalRequest();">
+                Submit Request
               </button>
 
             </div>
 
           </div>
+        </div>
 
+
+        <div id="professionalAssessmentTermsModal" class="professional-assessment-modal" style="display:none;"
+          aria-hidden="true">
+          <div class="professional-assessment-backdrop"></div>
+
+          <div class="professional-assessment-dialog professional-assessment-terms-dialog" role="dialog"
+            aria-modal="true" aria-labelledby="professionalAssessmentTermsTitle">
+
+            <button type="button" class="professional-assessment-close" aria-label="Close"
+              onclick="closeProfessionalAssessmentTerms();">
+              ×
+            </button>
+
+            <div class="professional-assessment-title" id="professionalAssessmentTermsTitle">
+              About Professional Matching
+            </div>
+
+            <div class="professional-assessment-subtitle">
+              Learn how your location information is used when requesting a professional assessment.
+            </div>
+
+            <div class="professional-assessment-terms-content">
+
+              <h4>What information is shared?</h4>
+
+              <p>
+                Your country, city or town, and optional postal code are used to
+                determine whether EMF professionals are currently listed in your area
+                and to help process your professional assessment request.
+              </p>
+
+              <h4>Who may receive this information?</h4>
+
+              <p>
+                Your location information may be used by EMF Insight for professional
+                matching and, where appropriate, shared with a relevant EMF
+                professional when your request is being processed.
+              </p>
+
+              <h4>What happens after I submit?</h4>
+
+              <p>
+                Your request is recorded in EMF Insight. Availability is checked
+                based on the information you provide. If a suitable professional is
+                available, your request may be used to facilitate the next step of
+                arranging an assessment.
+              </p>
+
+              <h4>Important</h4>
+
+              <p>
+                Submitting a request does not guarantee that a professional will be
+                available or that an assessment will take place.
+              </p>
+
+              <p>
+                You can cancel this request form before submitting it.
+              </p>
+
+            </div>
+
+            <div class="professional-assessment-terms-actions">
+              <button type="button" class="primary-btn" onclick="closeProfessionalAssessmentTerms();">
+                Close
+              </button>
+            </div>
+
+          </div>
         </div>
 
         <!-- ===================== -->
@@ -25881,6 +26138,103 @@
     }
   }
 
+  async function checkProfessionalAvailability() {
+
+    const countryCode =
+      document.getElementById(
+        "professionalAssessmentCountry"
+      )?.value.trim();
+
+    const city =
+      document.getElementById(
+        "professionalAssessmentCity"
+      )?.value.trim();
+
+    const availabilityEl =
+      document.getElementById(
+        "professionalAssessmentAvailability"
+      );
+
+    // Nothing to check yet
+    if (!countryCode || !city) {
+
+      if (availabilityEl) {
+        availabilityEl.textContent =
+          "Enter your country and city/town to check professional availability.";
+
+        availabilityEl.className =
+          "professional-assessment-availability";
+      }
+
+      return;
+    }
+
+    try {
+
+      if (availabilityEl) {
+        availabilityEl.textContent =
+          "Checking professional availability...";
+
+        availabilityEl.className =
+          "professional-assessment-availability";
+      }
+
+      const response = await fetch(
+        `${API}/professional-requests/availability?country_code=${encodeURIComponent(countryCode)}&city=${encodeURIComponent(city)}`
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Availability check failed: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      console.log(
+        "Professional availability:",
+        data
+      );
+
+      if (!availabilityEl) {
+        return;
+      }
+
+      if (data.available) {
+
+        availabilityEl.textContent =
+          "✓ Professionals are currently available in this area. You can submit a request and we’ll help connect you with an available professional.";
+
+        availabilityEl.className =
+          "professional-assessment-availability available";
+
+      } else {
+
+        availabilityEl.textContent =
+          "No EMF professionals are currently listed in this area. You can still submit your request. Your request will be recorded and help us understand demand in this location.";
+
+        availabilityEl.className =
+          "professional-assessment-availability unavailable";
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Professional availability error:",
+        error
+      );
+
+      if (availabilityEl) {
+        availabilityEl.textContent =
+          "Professional availability could not be checked right now. You can still submit your request.";
+
+        availabilityEl.className =
+          "professional-assessment-availability error";
+      }
+    }
+  }
+
+
   function closeProfessionalAssessmentLocationModal() {
 
     const modal =
@@ -26046,7 +26400,338 @@
     }
   }
 
+  function openProfessionalAssessmentTerms(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
+    const modal =
+      document.getElementById(
+        "professionalAssessmentTermsModal"
+      );
+
+    if (!modal) {
+      return;
+    }
+
+    modal.style.display = "flex";
+    modal.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+  }
+
+  function closeProfessionalAssessmentTerms() {
+    const modal =
+      document.getElementById(
+        "professionalAssessmentTermsModal"
+      );
+
+    if (!modal) {
+      return;
+    }
+
+    modal.style.display = "none";
+    modal.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+  }
+
+
+  document.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (event.key === "Escape") {
+
+        const termsModal =
+          document.getElementById(
+            "professionalAssessmentTermsModal"
+          );
+
+        if (
+          termsModal &&
+          termsModal.style.display !== "none"
+        ) {
+          closeProfessionalAssessmentTerms();
+          return;
+        }
+
+        const assessmentModal =
+          document.getElementById(
+            "professionalAssessmentLocationModal"
+          );
+
+        if (
+          assessmentModal &&
+          assessmentModal.style.display !== "none"
+        ) {
+          closeProfessionalAssessmentLocationModal();
+          return;
+        }
+      }
+
+      if (event.key === "Enter") {
+
+        const assessmentModal =
+          document.getElementById(
+            "professionalAssessmentLocationModal"
+          );
+
+        if (
+          !assessmentModal ||
+          assessmentModal.style.display === "none"
+        ) {
+          return;
+        }
+
+        const active =
+          document.activeElement;
+
+        if (
+          active &&
+          active.tagName === "TEXTAREA"
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        createProfessionalRequest();
+      }
+
+    }
+  );
+
+  function populateProfessionalAssessmentCountries() {
+
+    const select =
+      document.getElementById(
+        "professionalAssessmentCountry"
+      );
+
+    if (!select) {
+      return;
+    }
+
+    const countries = [
+      ["AF", "Afghanistan"],
+      ["AL", "Albania"],
+      ["DZ", "Algeria"],
+      ["AD", "Andorra"],
+      ["AO", "Angola"],
+      ["AG", "Antigua and Barbuda"],
+      ["AR", "Argentina"],
+      ["AM", "Armenia"],
+      ["AU", "Australia"],
+      ["AT", "Austria"],
+      ["AZ", "Azerbaijan"],
+      ["BS", "Bahamas"],
+      ["BH", "Bahrain"],
+      ["BD", "Bangladesh"],
+      ["BB", "Barbados"],
+      ["BY", "Belarus"],
+      ["BE", "Belgium"],
+      ["BZ", "Belize"],
+      ["BJ", "Benin"],
+      ["BT", "Bhutan"],
+      ["BO", "Bolivia"],
+      ["BA", "Bosnia and Herzegovina"],
+      ["BW", "Botswana"],
+      ["BR", "Brazil"],
+      ["BN", "Brunei"],
+      ["BG", "Bulgaria"],
+      ["BF", "Burkina Faso"],
+      ["BI", "Burundi"],
+      ["CV", "Cabo Verde"],
+      ["KH", "Cambodia"],
+      ["CM", "Cameroon"],
+      ["CA", "Canada"],
+      ["CF", "Central African Republic"],
+      ["TD", "Chad"],
+      ["CL", "Chile"],
+      ["CN", "China"],
+      ["CO", "Colombia"],
+      ["KM", "Comoros"],
+      ["CG", "Congo"],
+      ["CD", "Democratic Republic of the Congo"],
+      ["CR", "Costa Rica"],
+      ["CI", "Côte d'Ivoire"],
+      ["HR", "Croatia"],
+      ["CU", "Cuba"],
+      ["CY", "Cyprus"],
+      ["CZ", "Czechia"],
+      ["DK", "Denmark"],
+      ["DJ", "Djibouti"],
+      ["DM", "Dominica"],
+      ["DO", "Dominican Republic"],
+      ["EC", "Ecuador"],
+      ["EG", "Egypt"],
+      ["SV", "El Salvador"],
+      ["GQ", "Equatorial Guinea"],
+      ["ER", "Eritrea"],
+      ["EE", "Estonia"],
+      ["SZ", "Eswatini"],
+      ["ET", "Ethiopia"],
+      ["FJ", "Fiji"],
+      ["FI", "Finland"],
+      ["FR", "France"],
+      ["GA", "Gabon"],
+      ["GM", "Gambia"],
+      ["GE", "Georgia"],
+      ["DE", "Germany"],
+      ["GH", "Ghana"],
+      ["GR", "Greece"],
+      ["GD", "Grenada"],
+      ["GT", "Guatemala"],
+      ["GN", "Guinea"],
+      ["GW", "Guinea-Bissau"],
+      ["GY", "Guyana"],
+      ["HT", "Haiti"],
+      ["HN", "Honduras"],
+      ["HU", "Hungary"],
+      ["IS", "Iceland"],
+      ["IN", "India"],
+      ["ID", "Indonesia"],
+      ["IR", "Iran"],
+      ["IQ", "Iraq"],
+      ["IE", "Ireland"],
+      ["IL", "Israel"],
+      ["IT", "Italy"],
+      ["JM", "Jamaica"],
+      ["JP", "Japan"],
+      ["JO", "Jordan"],
+      ["KZ", "Kazakhstan"],
+      ["KE", "Kenya"],
+      ["KI", "Kiribati"],
+      ["KP", "North Korea"],
+      ["KR", "South Korea"],
+      ["KW", "Kuwait"],
+      ["KG", "Kyrgyzstan"],
+      ["LA", "Laos"],
+      ["LV", "Latvia"],
+      ["LB", "Lebanon"],
+      ["LS", "Lesotho"],
+      ["LR", "Liberia"],
+      ["LY", "Libya"],
+      ["LI", "Liechtenstein"],
+      ["LT", "Lithuania"],
+      ["LU", "Luxembourg"],
+      ["MG", "Madagascar"],
+      ["MW", "Malawi"],
+      ["MY", "Malaysia"],
+      ["MV", "Maldives"],
+      ["ML", "Mali"],
+      ["MT", "Malta"],
+      ["MH", "Marshall Islands"],
+      ["MR", "Mauritania"],
+      ["MU", "Mauritius"],
+      ["MX", "Mexico"],
+      ["FM", "Micronesia"],
+      ["MD", "Moldova"],
+      ["MC", "Monaco"],
+      ["MN", "Mongolia"],
+      ["ME", "Montenegro"],
+      ["MA", "Morocco"],
+      ["MZ", "Mozambique"],
+      ["MM", "Myanmar"],
+      ["NA", "Namibia"],
+      ["NR", "Nauru"],
+      ["NP", "Nepal"],
+      ["NL", "Netherlands"],
+      ["NZ", "New Zealand"],
+      ["NI", "Nicaragua"],
+      ["NE", "Niger"],
+      ["NG", "Nigeria"],
+      ["MK", "North Macedonia"],
+      ["NO", "Norway"],
+      ["OM", "Oman"],
+      ["PK", "Pakistan"],
+      ["PW", "Palau"],
+      ["PA", "Panama"],
+      ["PG", "Papua New Guinea"],
+      ["PY", "Paraguay"],
+      ["PE", "Peru"],
+      ["PH", "Philippines"],
+      ["PL", "Poland"],
+      ["PT", "Portugal"],
+      ["QA", "Qatar"],
+      ["RO", "Romania"],
+      ["RU", "Russia"],
+      ["RW", "Rwanda"],
+      ["KN", "Saint Kitts and Nevis"],
+      ["LC", "Saint Lucia"],
+      ["VC", "Saint Vincent and the Grenadines"],
+      ["WS", "Samoa"],
+      ["SM", "San Marino"],
+      ["ST", "Sao Tome and Principe"],
+      ["SA", "Saudi Arabia"],
+      ["SN", "Senegal"],
+      ["RS", "Serbia"],
+      ["SC", "Seychelles"],
+      ["SL", "Sierra Leone"],
+      ["SG", "Singapore"],
+      ["SK", "Slovakia"],
+      ["SI", "Slovenia"],
+      ["SB", "Solomon Islands"],
+      ["SO", "Somalia"],
+      ["ZA", "South Africa"],
+      ["SS", "South Sudan"],
+      ["ES", "Spain"],
+      ["LK", "Sri Lanka"],
+      ["SD", "Sudan"],
+      ["SR", "Suriname"],
+      ["SE", "Sweden"],
+      ["CH", "Switzerland"],
+      ["SY", "Syria"],
+      ["TJ", "Tajikistan"],
+      ["TZ", "Tanzania"],
+      ["TH", "Thailand"],
+      ["TL", "Timor-Leste"],
+      ["TG", "Togo"],
+      ["TO", "Tonga"],
+      ["TT", "Trinidad and Tobago"],
+      ["TN", "Tunisia"],
+      ["TR", "Turkey"],
+      ["TM", "Turkmenistan"],
+      ["TV", "Tuvalu"],
+      ["UG", "Uganda"],
+      ["UA", "Ukraine"],
+      ["AE", "United Arab Emirates"],
+      ["GB", "United Kingdom"],
+      ["US", "United States"],
+      ["UY", "Uruguay"],
+      ["UZ", "Uzbekistan"],
+      ["VU", "Vanuatu"],
+      ["VA", "Vatican City"],
+      ["VE", "Venezuela"],
+      ["VN", "Vietnam"],
+      ["YE", "Yemen"],
+      ["ZM", "Zambia"],
+      ["ZW", "Zimbabwe"]
+    ];
+
+    select.innerHTML =
+      '<option value="">Select country</option>';
+
+    countries
+      .sort((a, b) =>
+        a[1].localeCompare(b[1])
+      )
+      .forEach(([code, name]) => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = code;
+        option.textContent = name;
+
+        select.appendChild(option);
+      });
+  }
+  populateProfessionalAssessmentCountries();
 
   async function createProfessionalRequest() {
 
@@ -26057,6 +26742,7 @@
       return;
     }
 
+    // Home Full Report must be unlocked
     if (window.homeFullReportUnlocked !== true) {
       alert(
         "Please unlock your Full EMF Insight Report before requesting a professional assessment."
@@ -26064,6 +26750,7 @@
       return;
     }
 
+    // Get current Home project
     const projectId =
       localStorage.getItem("home_project_id") ||
       localStorage.getItem("homeProjectId");
@@ -26071,6 +26758,58 @@
     if (!projectId) {
       alert(
         "No Home project is currently available."
+      );
+      return;
+    }
+
+    // Form elements
+    const countryEl = document.getElementById(
+      "professionalAssessmentCountry"
+    );
+
+    const cityEl = document.getElementById(
+      "professionalAssessmentCity"
+    );
+
+    const postalCodeEl = document.getElementById(
+      "professionalAssessmentPostalCode"
+    );
+
+    const consentEl = document.getElementById(
+      "professionalAssessmentLocationConsent"
+    );
+
+    // Form values
+    const countryCode = countryEl
+      ? countryEl.value.trim()
+      : "";
+
+    const countryName = countryEl?.selectedOptions?.[0]
+      ?.textContent.trim() || "";
+
+    const city = cityEl
+      ? cityEl.value.trim()
+      : "";
+
+    const postalCode = postalCodeEl
+      ? postalCodeEl.value.trim()
+      : "";
+
+    const consent =
+      consentEl?.checked === true;
+
+    // Validate country and city
+    if (!countryCode || !city) {
+      alert(
+        "Please enter your country and city/town."
+      );
+      return;
+    }
+
+    // Validate location-sharing consent
+    if (!consent) {
+      alert(
+        "Please agree to share your location information for professional matching."
       );
       return;
     }
@@ -26088,34 +26827,60 @@
           },
 
           body: JSON.stringify({
-            project_id: projectId
+            project_id: projectId,
+
+            // ISO 3166-1 alpha-2 country code
+            country_code: countryCode,
+
+            // Human-readable country name
+            country: countryName,
+
+            city: city,
+
+            // Optional
+            postal_code: postalCode
           })
         }
       );
 
-      const data = await response.json();
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.warn(
+          "Professional request response was not valid JSON:",
+          jsonError
+        );
+      }
 
       if (!response.ok) {
+
         alert(
           data.detail ||
           "Unable to create professional assessment request."
         );
+
         return;
       }
 
+      // Request successfully submitted
       alert(
         "Professional Assessment Requested.\n\n" +
         "Your request has been submitted successfully.\n" +
         "Status: Request submitted."
       );
 
-      const lockedMessage = document.getElementById(
-        "homeProfessionalAssessmentLocked"
-      );
+      // Update Home sidebar
+      const lockedMessage =
+        document.getElementById(
+          "homeProfessionalAssessmentLocked"
+        );
 
-      const button = document.getElementById(
-        "homeBtnProfessionalAssessment"
-      );
+      const button =
+        document.getElementById(
+          "homeBtnProfessionalAssessment"
+        );
 
       if (lockedMessage) {
         lockedMessage.textContent =
@@ -26124,6 +26889,17 @@
 
       if (button) {
         button.style.display = "none";
+      }
+
+      // Save current request in memory
+      window.homeProfessionalRequest = data;
+
+      // Close location modal
+      if (
+        typeof closeProfessionalAssessmentLocationModal ===
+        "function"
+      ) {
+        closeProfessionalAssessmentLocationModal();
       }
 
       console.log(

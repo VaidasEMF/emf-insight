@@ -170,6 +170,36 @@ def create_professional_request(
     }
 
 # =====================
+# CHECK PROFESSIONAL AVAILABILITY
+# =====================
+
+@router.get("/professional-requests/availability")
+def check_professional_availability(
+    country_code: str,
+    city: str,
+    db: Session = Depends(get_db),
+):
+    professionals = db.execute(
+        text("""
+            SELECT COUNT(*)
+            FROM professional_profiles
+            WHERE country_code = :country_code
+              AND LOWER(city) = LOWER(:city)
+              AND availability_status = 'available'
+              AND verification_status = 'verified'
+        """),
+        {
+            "country_code": country_code.strip().upper(),
+            "city": city.strip(),
+        },
+    ).scalar()
+
+    return {
+        "available": professionals > 0,
+        "count": professionals,
+    }
+
+# =====================
 # GET CURRENT PROFESSIONAL REQUEST
 # =====================
 

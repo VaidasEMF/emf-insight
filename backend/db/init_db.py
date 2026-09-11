@@ -36,12 +36,116 @@ def init_db():
                         country VARCHAR(100),
                         region VARCHAR(100),
                         city VARCHAR(100),
+                        postal_code VARCHAR(30),
                         status VARCHAR(50) NOT NULL DEFAULT 'open',
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                     """
                 )
             )
+
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS professional_profiles (
+                        id SERIAL PRIMARY KEY,
+                        user_id VARCHAR(255) NOT NULL UNIQUE,
+                        first_name VARCHAR(100),
+                        last_name VARCHAR(100),
+                        company_name VARCHAR(200),
+                        professional_email VARCHAR(255),
+                        professional_phone VARCHAR(50),
+                        country_code VARCHAR(2),
+                        country VARCHAR(100),
+                        city VARCHAR(100),
+                        postal_code VARCHAR(30),
+                        availability_status VARCHAR(50) NOT NULL DEFAULT 'unavailable',
+                        verification_status VARCHAR(50) NOT NULL DEFAULT 'pending',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
+
+
+            # =====================
+            # PROFESSIONAL PROFILE COLUMNS
+            # =====================
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS country_code VARCHAR(2)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS first_name VARCHAR(100)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS last_name VARCHAR(100)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS company_name VARCHAR(200)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS professional_email VARCHAR(255)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS professional_phone VARCHAR(50)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS verification_status VARCHAR(50)
+                    NOT NULL DEFAULT 'pending'
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_requests
+                    ADD COLUMN IF NOT EXISTS country_code VARCHAR(2)
+                    """
+                )
+            )
+
+            
 
             connection.execute(
                 text(

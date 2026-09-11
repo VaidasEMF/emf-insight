@@ -105,6 +105,10 @@ app.include_router(
     users_router,
 )
 
+app.include_router(
+    professional_requests_router,
+)
+
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
 
@@ -189,10 +193,18 @@ def _ensure_professional_requests_table(db):
             country VARCHAR(100),
             region VARCHAR(100),
             city VARCHAR(100),
+            postal_code VARCHAR(30),
             status VARCHAR(50) NOT NULL DEFAULT 'open',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """))
+
+    db.execute(
+    text("""
+        ALTER TABLE professional_requests
+        ADD COLUMN IF NOT EXISTS postal_code VARCHAR(30)
+    """)
+)
 
 def _claim_stripe_event(db, event_id):
     result = db.execute(
