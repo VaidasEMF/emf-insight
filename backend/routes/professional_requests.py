@@ -263,3 +263,74 @@ def get_admin_professional_requests(
             for request in requests
         ]
     }
+
+@router.patch("/admin/professional-requests/{request_id}")
+def update_admin_professional_request(
+    request_id: int,
+    body: dict,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    status = body.get("status")
+
+    allowed_statuses = {
+        "open",
+        "contacted",
+        "scheduled",
+        "completed",
+        "closed",
+    }
+
+    if status not in allowed_statuses:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid professional assessment request status.",
+        )
+
+    result = db.execute(
+        text("""
+            UPDATE professional_requests
+            SET status = :status
+            WHERE id = :request_id
+            RETURNING
+                id,
+                user_id,
+                project_id,
+                country,
+                region,
+                city,
+                status,
+                created_at
+        """),
+        {
+            "status": status,
+            "request_id": request_id,
+        },
+    )
+
+    request = result.mappings().first()
+
+    if not request:
+        raise HTTPException(
+            status_code=404,
+            detail="Professional assessment request not found.",
+        )
+
+    db.commit()
+
+    return {
+        "id": request["id"],
+        "user_id": request["user_id"],
+        "project_id": request["project_id"],
+        "country": request["country"],
+        "region": request["region"],
+        "city": request["city"],
+        "status": request["status"],
+        "created_at": request["created_at"],
+    }
