@@ -62,6 +62,7 @@ def create_professional_request(
     country = body.get("country")
     region = body.get("region")
     city = body.get("city")
+    postal_code = body.get("postal_code")
 
     if not project_id:
         raise HTTPException(
@@ -105,6 +106,7 @@ def create_professional_request(
             "country": existing_request["country"],
             "region": existing_request["region"],
             "city": existing_request["city"],
+            "postal_code": existing_request["postal_code"],
             "status": existing_request["status"],
             "created_at": existing_request["created_at"],
             "already_exists": True,
@@ -118,12 +120,7 @@ def create_professional_request(
         text("""
             INSERT INTO professional_requests
                 (
-                    user_id,
-                    project_id,
-                    country,
-                    region,
-                    city,
-                    status
+                   user_id, project_id, country, region, city, postal_code, status
                 )
             VALUES
                 (
@@ -132,6 +129,7 @@ def create_professional_request(
                     :country,
                     :region,
                     :city,
+                    :postal_code,
                     'open'
                 )
             RETURNING
@@ -141,6 +139,7 @@ def create_professional_request(
                 country,
                 region,
                 city,
+                postal_code,
                 status,
                 created_at
         """),
@@ -150,6 +149,7 @@ def create_professional_request(
             "country": country,
             "region": region,
             "city": city,
+            "postal_code": postal_code,
         },
     )
 
@@ -164,6 +164,7 @@ def create_professional_request(
         "country": request["country"],
         "region": request["region"],
         "city": request["city"],
+        "postal_code": request["postal_code"],
         "status": request["status"],
         "created_at": request["created_at"],
     }
@@ -185,15 +186,16 @@ def get_professional_request(
     request = db.execute(
         text("""
             SELECT
-                id,
-                user_id,
-                project_id,
-                country,
-                region,
-                city,
-                status,
-                created_at
-            FROM professional_requests
+            id,
+            user_id,
+            project_id,
+            country,
+            region,
+            city,
+            postal_code,
+            status,
+            created_at
+        FROM professional_requests
             WHERE user_id = :user_id
             ORDER BY created_at DESC
             LIMIT 1
@@ -216,6 +218,7 @@ def get_professional_request(
             "country": request["country"],
             "region": request["region"],
             "city": request["city"],
+            "postal_code": request["postal_code"],
             "status": request["status"],
             "created_at": request["created_at"],
         }
@@ -235,15 +238,16 @@ def get_admin_professional_requests(
     requests = db.execute(
         text("""
             SELECT
-                id,
-                user_id,
-                project_id,
-                country,
-                region,
-                city,
-                status,
-                created_at
-            FROM professional_requests
+            id,
+            user_id,
+            project_id,
+            country,
+            region,
+            city,
+            postal_code,
+            status,
+            created_at
+        FROM professional_requests
             ORDER BY created_at DESC
         """)
     ).mappings().all()
@@ -257,6 +261,7 @@ def get_admin_professional_requests(
                 "country": request["country"],
                 "region": request["region"],
                 "city": request["city"],
+                "postal_code": request["postal_code"],
                 "status": request["status"],
                 "created_at": request["created_at"],
             }
@@ -299,14 +304,15 @@ def update_admin_professional_request(
             SET status = :status
             WHERE id = :request_id
             RETURNING
-                id,
-                user_id,
-                project_id,
-                country,
-                region,
-                city,
-                status,
-                created_at
+            id,
+            user_id,
+            project_id,
+            country,
+            region,
+            city,
+            postal_code,
+            status,
+            created_at
         """),
         {
             "status": status,
@@ -331,6 +337,7 @@ def update_admin_professional_request(
         "country": request["country"],
         "region": request["region"],
         "city": request["city"],
+        "postal_code": request["postal_code"],
         "status": request["status"],
         "created_at": request["created_at"],
     }
