@@ -25,9 +25,17 @@ const AppState = {
 
         name: "",
 
-        address: "",
+country: "",
 
-        propertyType: "",
+state: "",
+
+region: "",
+
+city: "",
+
+address: "",
+
+propertyType: "",
 
         floors: [],
 

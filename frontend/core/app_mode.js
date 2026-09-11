@@ -414,7 +414,9 @@ async function setAppMode(
     // BUSINESS
     // ==================================================
 
-    else {
+    if (
+        mode === "business"
+    ) {
 
         // ------------------------------------------------
         // EXISTING PERSISTED BUSINESS PROJECT
@@ -472,9 +474,31 @@ async function setAppMode(
 
             else {
 
+                console.error(
+                    "🔥 BUSINESS STATE AFTER LOAD",
+                    {
+                        businessProjectId:
+                            AppState.businessProject?.id ??
+                            AppState.businessProject?.project_id ??
+                            null,
+
+                        businessProjectType:
+                            AppState.businessProject?.type ??
+                            null,
+
+                        stateProjectId:
+                            AppState.project?.id ??
+                            AppState.project?.project_id ??
+                            null,
+
+                        stateProjectType:
+                            AppState.project?.type ??
+                            null
+                    }
+                );
+
                 activeProject =
                     AppState.businessProject ||
-                    AppState.project ||
                     null;
             }
         }
@@ -1345,8 +1369,16 @@ function updateWorkspaceUI() {
     // ==================================================
 
     const activeProject =
-        AppState?.project ||
-        null;
+    mode === "home"
+        ? (
+            AppState?.homeProject ||
+            AppState?.project ||
+            null
+        )
+        : (
+            AppState?.project ||
+            null
+        );
 
     const hasActiveProject =
         !!activeProject;

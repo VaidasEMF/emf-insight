@@ -1585,143 +1585,6 @@
     }
 
 
-    /* ==================================================
-   USER ACCOUNT SELECTOR
-   ================================================== */
-
-    .user-selector {
-      position: relative;
-      margin-left: 10px;
-    }
-
-    .user-account-switcher {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      height: 40px;
-      padding: 0 14px;
-
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-
-      background: #ffffff;
-      color: #374151;
-
-      font-size: 14px;
-      font-weight: 600;
-
-      cursor: pointer;
-    }
-
-    .user-account-switcher:hover {
-      background: #f9fafb;
-    }
-
-    .user-account-switcher.menu-open {
-      background: #f8fafc;
-      border-color: #94a3b8;
-    }
-
-    .user-account-icon {
-      font-size: 15px;
-    }
-
-    .user-account-chevron {
-      font-size: 10px;
-      color: #6b7280;
-    }
-
-
-    /* USER DROPDOWN */
-
-    .user-account-menu {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-
-      width: 280px;
-
-      padding: 8px;
-
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-
-      box-shadow:
-        0 12px 30px rgba(0, 0, 0, 0.12);
-
-      z-index: 10000;
-    }
-
-    .user-menu-section-title {
-      padding: 7px 10px 6px;
-
-      font-size: 10px;
-      font-weight: 700;
-
-      letter-spacing: 0.08em;
-      color: #9ca3af;
-    }
-
-    .user-menu-item {
-      display: flex;
-      align-items: center;
-
-      gap: 10px;
-
-      padding: 9px 10px;
-
-      border-radius: 7px;
-
-      cursor: pointer;
-    }
-
-    .user-menu-item:hover {
-      background: #f3f4f6;
-    }
-
-    .user-menu-icon {
-      width: 24px;
-
-      text-align: center;
-
-      font-size: 15px;
-    }
-
-    .user-menu-content {
-      display: flex;
-      flex-direction: column;
-
-      min-width: 0;
-    }
-
-    .user-menu-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #374151;
-    }
-
-    .user-menu-subtitle {
-      margin-top: 2px;
-
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .user-menu-divider {
-      height: 1px;
-
-      margin: 6px 4px;
-
-      background: #e5e7eb;
-    }
-
-    .user-menu-item-danger .user-menu-title {
-      color: #b91c1c;
-    }
-
-
     /* ===================== */
     /* SWITCHER BUTTON */
     /* ===================== */
@@ -1751,12 +1614,6 @@
     .workspace-switcher-chevron {
       font-size: 11px;
       color: #475569;
-    }
-
-
-    .workspace-switcher.menu-open {
-      background: #f8fafc;
-      border-color: #94a3b8;
     }
 
 
@@ -3331,7 +3188,7 @@
 
       position: absolute;
 
-      top: 100px;
+      top: 90px;
       right: 0;
 
       width: 320px;
@@ -5260,8 +5117,6 @@
 
       display: flex;
 
-      flex-wrap: nowrap;
-
       align-items: center;
 
       justify-content: flex-start;
@@ -5274,15 +5129,6 @@
 
     }
 
-    #projectHeader .project-header-top .user-selector {
-      margin-left: 0;
-      flex-shrink: 0;
-    }
-
-    #projectHeader .project-header-top .workspace-selector {
-      margin-left: auto;
-      flex-shrink: 0;
-    }
 
     /* =========================================================
    PROJECT TITLE
@@ -14467,12 +14313,13 @@
 
 
     /* ==================================================
-   WORKSPACE SWITCHER — HEADER
+   HOME WORKSPACE SWITCHER — TOP RIGHT
    ================================================== */
 
     .workspace-selector {
-      position: relative;
-      display: inline-block;
+      position: fixed;
+      top: 8px;
+      right: 12px;
       z-index: 999999;
     }
 
@@ -16733,44 +16580,6 @@
       flex-direction: column;
       justify-content: center;
     }
-
-
-    /* =========================================================
-   HOME — PROFESSIONAL ASSESSMENT NEXT STEP
-   ========================================================= */
-
-    #homeProfessionalAssessment {
-      margin-top: 14px;
-      padding: 12px;
-      border: 1px solid #dbe3ef;
-      border-radius: 12px;
-      background: #ffffff;
-      box-sizing: border-box;
-    }
-
-    #homeProfessionalAssessment .sidebar-section-header {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-
-    #homeProfessionalAssessment .sidebar-subtitle {
-      font-size: 12px;
-      line-height: 1.45;
-      color: #64748b;
-      margin-bottom: 9px;
-    }
-
-    #homeProfessionalAssessmentLocked {
-      font-size: 12px;
-      line-height: 1.4;
-      color: #64748b;
-      margin-bottom: 9px;
-    }
-
-    #homeProfessionalAssessment #homeBtnProfessionalAssessment {
-      margin-bottom: 0;
-    }
   </style>
 
 </head>
@@ -17547,144 +17356,6 @@
         </div>
 
 
-        <!-- =============================== -->
-        <!-- PROFESSIONAL ASSESSMENT NEXT STEP -->
-        <!-- =============================== -->
-
-        <div id="homeProfessionalAssessment" class="home-only sidebar-section">
-
-          <div class="sidebar-section-header">
-            Professional Assessment
-          </div>
-
-          <div class="sidebar-subtitle">
-            Need an on-site EMF assessment? Your Home Wellness project can continue with a qualified EMF professional.
-          </div>
-
-          <div id="homeProfessionalAssessmentLocked" class="workflow-hint">
-            Unlock your Full EMF Insight Report to prepare your project for professional assessment.
-          </div>
-
-          <button id="homeBtnProfessionalAssessment" class="workflow-action-btn" type="button"
-            onclick="scrollToUnlockReport();">
-            <div class="workflow-action-icon">
-              👤
-            </div>
-
-            <div>
-              <div class="workflow-action-title">
-                Unlock Full Report
-              </div>
-
-              <div class="workflow-action-subtitle">
-                Prepare for professional assessment
-              </div>
-            </div>
-          </button>
-
-        </div>
-
-        <!-- ========================================== -->
-        <!-- PROFESSIONAL ASSESSMENT LOCATION MODAL -->
-        <!-- ========================================== -->
-
-        <div id="professionalAssessmentLocationModal" class="project-popup" style="display:none;" aria-hidden="true">
-
-          <div class="project-popup-content">
-
-            <div class="project-popup-title">
-              Professional Assessment
-            </div>
-
-            <div class="project-popup-subtitle">
-              Find a qualified EMF professional for an on-site assessment.
-            </div>
-
-            <div style="margin-top:20px;">
-
-              <div class="project-name-label">
-                Property location
-              </div>
-
-              <div class="project-name-hint">
-                Your location helps us identify professionals who can realistically travel to your property.
-              </div>
-
-              <div style="display:grid; gap:12px; margin-top:16px;">
-
-                <div>
-                  <label for="professionalAssessmentCountry" class="project-name-label">
-                    Country *
-                  </label>
-
-                  <input id="professionalAssessmentCountry" class="project-name-input" type="text"
-                    placeholder="e.g. Ireland">
-                </div>
-
-                <div>
-                  <label for="professionalAssessmentAdminArea" class="project-name-label">
-                    Administrative area
-                  </label>
-
-                  <input id="professionalAssessmentAdminArea" class="project-name-input" type="text"
-                    placeholder="e.g. County Dublin">
-                </div>
-
-                <div>
-                  <label for="professionalAssessmentCity" class="project-name-label">
-                    City / Town *
-                  </label>
-
-                  <input id="professionalAssessmentCity" class="project-name-input" type="text"
-                    placeholder="e.g. Dublin">
-                </div>
-
-                <div>
-                  <label for="professionalAssessmentPostalCode" class="project-name-label">
-                    Postal code
-                  </label>
-
-                  <input id="professionalAssessmentPostalCode" class="project-name-input" type="text"
-                    placeholder="e.g. D04">
-                </div>
-
-              </div>
-
-              <div style="margin-top:20px;">
-
-                <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer;">
-
-                  <input id="professionalAssessmentMatchingConsent" type="checkbox" style="margin-top:4px;">
-
-                  <span>
-                    <strong>Make my project available to qualified EMF professionals in my area.</strong>
-                    <br>
-                    <span style="font-size:13px; opacity:0.75;">
-                      Your exact address will not be publicly displayed.
-                    </span>
-                  </span>
-
-                </label>
-
-              </div>
-
-            </div>
-
-            <div class="project-popup-actions">
-
-              <button id="professionalAssessmentLocationCancel" type="button" class="project-popup-cancel">
-                Cancel
-              </button>
-
-              <button id="professionalAssessmentLocationSubmit" type="button" class="project-popup-create">
-                Find a Professional
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
 
         <!-- ===================== -->
         <!-- 🔥 BUSINESS WORKFLOW -->
@@ -18327,148 +17998,176 @@
                 <div class="workspace-menu-divider"></div>
 
 
+                <!-- ================================================== -->
+                <!-- PROJECT -->
+                <!-- ================================================== -->
 
+                <div class="workspace-menu-section">
 
-              </div>
+                  <div class="workspace-menu-section-title">
 
-            </div>
+                    PROJECT
 
-
-            <!-- ================================================== -->
-            <!-- USER ACCOUNT SELECTOR -->
-            <!-- ================================================== -->
-
-            <div class="user-selector">
-
-              <button id="userAccountBtn" class="user-account-switcher" type="button" onclick="toggleUserMenu()">
-
-                <span class="user-account-icon">
-                  👤
-                </span>
-
-                <span id="userAccountLabel">
-                  User
-                </span>
-
-                <span class="user-account-chevron">
-                  ▼
-                </span>
-
-              </button>
-
-
-              <!-- USER MENU -->
-
-              <div id="userAccountMenu" class="user-account-menu" style="display:none;">
-
-                <div class="user-menu-section">
-
-                  <div class="user-menu-section-title">
-                    ACCOUNT
                   </div>
 
 
-                  <div class="user-menu-item" id="userProfileItem">
-                    <span class="user-menu-icon">👤</span>
+                  <!-- NEW PROJECT -->
 
-                    <span class="user-menu-content">
+                  <div class="workspace-menu-item" onclick="
+              createProject?.();
+              closeWorkspaceMenu?.();
+            ">
 
-                      <span class="user-menu-title">
-                        Profile
+                    <span class="workspace-menu-icon">
+                      ＋
+                    </span>
+
+                    <span class="workspace-menu-content">
+
+                      <span class="workspace-menu-title">
+                        New Project
                       </span>
 
-                      <span class="user-menu-subtitle">
-                        Personal & account details
+                      <span class="workspace-menu-subtitle">
+                        Start a new assessment
                       </span>
 
                     </span>
+
                   </div>
 
 
-                  <div class="user-menu-item" id="userBrandingItem"
-                    onclick="window.location.href='dashboard.html#branding'">
-                    <span class="user-menu-icon">🎨</span>
+                  <!-- OPEN PROJECT -->
 
-                    <span class="user-menu-content">
+                  <div class="workspace-menu-item" onclick="
+              openProjectMenu?.();
+              closeWorkspaceMenu?.();
+            ">
 
-                      <span class="user-menu-title">
-                        Branding
+                    <span class="workspace-menu-icon">
+                      📂
+                    </span>
+
+                    <span class="workspace-menu-content">
+
+                      <span class="workspace-menu-title">
+                        Open Project
                       </span>
 
-                      <span class="user-menu-subtitle">
-                        Company name, email & logo
+                      <span class="workspace-menu-subtitle">
+                        Continue an existing assessment
                       </span>
 
                     </span>
-                  </div>
 
-
-                  <div class="user-menu-item" id="userBillingItem"
-                    onclick="window.location.href='dashboard.html#billing'">
-                    <span class="user-menu-icon">💳</span>
-
-                    <span class="user-menu-content">
-
-                      <span class="user-menu-title">
-                        Billing & Plan
-                      </span>
-
-                      <span class="user-menu-subtitle">
-                        Credits and subscription
-                      </span>
-
-                    </span>
-                  </div>
-
-
-                  <div class="user-menu-item" id="userSecurityItem">
-                    <span class="user-menu-icon">🔐</span>
-
-                    <span class="user-menu-content">
-
-                      <span class="user-menu-title">
-                        Security
-                      </span>
-
-                      <span class="user-menu-subtitle">
-                        Password & security
-                      </span>
-
-                    </span>
-                  </div>
-
-
-                  <div class="user-menu-item" id="userHelpItem" onclick="window.location.href='dashboard.html#help'">
-                    <span class="user-menu-icon">❓</span>
-
-                    <span class="user-menu-content">
-
-                      <span class="user-menu-title">
-                        Help & Support
-                      </span>
-
-                      <span class="user-menu-subtitle">
-                        Get help with EMF Insight
-                      </span>
-
-                    </span>
                   </div>
 
                 </div>
 
 
-                <div class="user-menu-divider"></div>
+                <div class="workspace-menu-divider"></div>
 
 
-                <div class="user-menu-item user-menu-item-danger" id="userSignOutItem">
+                <!-- ================================================== -->
+                <!-- ACCOUNT -->
+                <!-- ================================================== -->
 
-                  <span class="user-menu-icon">
+                <div class="workspace-menu-section">
+
+                  <div class="workspace-menu-section-title">
+
+                    ACCOUNT
+
+                  </div>
+
+
+                  <!-- ACCOUNT -->
+
+                  <div class="workspace-menu-item" id="workspaceAccountItem">
+
+                    <span class="workspace-menu-icon">
+                      👤
+                    </span>
+
+                    <span class="workspace-menu-content">
+
+                      <span class="workspace-menu-title">
+                        Account
+                      </span>
+
+                      <span class="workspace-menu-subtitle">
+                        Profile and account details
+                      </span>
+
+                    </span>
+
+                  </div>
+
+
+                  <!-- SETTINGS -->
+
+                  <div class="workspace-menu-item" id="workspaceSettingsItem">
+
+                    <span class="workspace-menu-icon">
+                      ⚙
+                    </span>
+
+                    <span class="workspace-menu-content">
+
+                      <span class="workspace-menu-title">
+                        Settings
+                      </span>
+
+                      <span class="workspace-menu-subtitle">
+                        Application preferences
+                      </span>
+
+                    </span>
+
+                  </div>
+
+
+                  <!-- HELP -->
+
+                  <div class="workspace-menu-item" id="workspaceHelpItem">
+
+                    <span class="workspace-menu-icon">
+                      ❓
+                    </span>
+
+                    <span class="workspace-menu-content">
+
+                      <span class="workspace-menu-title">
+                        Help &amp; Support
+                      </span>
+
+                      <span class="workspace-menu-subtitle">
+                        Get help with EMF Maps
+                      </span>
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div class="workspace-menu-divider"></div>
+
+
+                <!-- ================================================== -->
+                <!-- SIGN OUT -->
+                <!-- ================================================== -->
+
+                <div class="workspace-menu-item workspace-menu-item-danger" id="workspaceSignOutItem">
+
+                  <span class="workspace-menu-icon">
                     🚪
                   </span>
 
-                  <span class="user-menu-content">
+                  <span class="workspace-menu-content">
 
-                    <span class="user-menu-title">
+                    <span class="workspace-menu-title">
                       Sign out
                     </span>
 
@@ -18481,9 +18180,6 @@
             </div>
 
           </div>
-
-
-
 
 
           <!-- ================================================== -->
@@ -18922,7 +18618,7 @@
             <!-- 🔥 HOME WORKFLOW -->
             <!-- ===================== -->
 
-            <div id="homeWorkflowBar">
+            <div id="homeWorkflowBar" style="display:none !important;">
               <!-- PLAN -->
 
               <div class="workflow-item" data-step="upload">
@@ -19767,8 +19463,6 @@
                         <div class="project-name-hint">
                           Choose a name you will recognize later.
                         </div>
-
-
 
                       </div>
 
@@ -22136,7 +21830,6 @@
       <!-- ===================== -->
 
       <script src="js/export.js"></script>
-      <script src="js/business_results.js"></script>
 
 
       <!-- ===================== -->
@@ -22451,7 +22144,7 @@
 
       el.style.display =
 
-        AppMode.current ===
+        AppState.ui.mode ===
           "business"
 
           ? "block"
@@ -24027,7 +23720,7 @@
     floor.rooms.forEach(r => {
       (r.grid || []).forEach(p => {
         if (p.measurements?.[from]) {
-          p.measurements[to] = {...p.measurements[from]};
+          p.measurements[to] = { ...p.measurements[from] };
         }
       });
     });
@@ -25779,8 +25472,6 @@
         return;
       }
 
-      const pdfWindow = window.open("", "_blank");
-
       const res = await fetch(
 
         `${API}/generate-pdf`,
@@ -25790,12 +25481,15 @@
 
           headers: {
             "Content-Type":
-              "application/json",
-            "Authorization":
-              `Bearer ${token}`
+              "application/json"
           },
 
           body: JSON.stringify({
+
+            user_id:
+              localStorage.getItem(
+                "user_id"
+              ),
 
             project_id:
               currentProjectId,
@@ -25825,17 +25519,12 @@
 
       if (data.pdf_url) {
 
-        if (pdfWindow) {
+        window.open(
 
-          pdfWindow.location.href =
-            `${API}${data.pdf_url}`;
+          `${API}${data.pdf_url}`,
 
-        } else {
-
-          alert(
-            "Please allow pop-ups for EMF Insight to open the Expert Report."
-          );
-        }
+          "_blank"
+        );
       }
 
       else {
@@ -25859,308 +25548,8 @@
     }
   }
 
-  async function loadProfessionalAssessmentRequest() {
-    const token = localStorage.getItem("token");
 
-    if (!token || window.AppMode?.current !== "home") {
-      return;
-    }
 
-    try {
-      const response = await fetch(
-        `${API}/professional-requests`,
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        console.error(
-          "Professional request status check failed:",
-          response.status
-        );
-        return;
-      }
-
-      const data = await response.json();
-
-      window.homeProfessionalRequest =
-        data.request || null;
-
-      updateHomeProfessionalAssessment();
-
-    } catch (error) {
-      console.error(
-        "Professional request status check failed:",
-        error
-      );
-    }
-  }
-
-  function closeProfessionalAssessmentLocationModal() {
-
-    const modal =
-      document.getElementById(
-        "professionalAssessmentLocationModal"
-      );
-
-    if (!modal) {
-      return;
-    }
-
-    modal.style.display = "none";
-    modal.setAttribute(
-      "aria-hidden",
-      "true"
-    );
-  }
-
-
-  function openProfessionalAssessmentLocationModal() {
-
-    const modal =
-      document.getElementById(
-        "professionalAssessmentLocationModal"
-      );
-
-    if (!modal) {
-      console.error(
-        "Professional Assessment Location modal not found."
-      );
-      return;
-    }
-
-    modal.style.display = "flex";
-    modal.setAttribute(
-      "aria-hidden",
-      "false"
-    );
-
-    const professionalAssessmentLocationCancel =
-      document.getElementById(
-        "professionalAssessmentLocationCancel"
-      );
-
-    if (professionalAssessmentLocationCancel) {
-      professionalAssessmentLocationCancel.onclick =
-        function () {
-          closeProfessionalAssessmentLocationModal();
-        };
-    }
-    const professionalAssessmentLocationSubmit =
-      document.getElementById(
-        "professionalAssessmentLocationSubmit"
-      );
-
-    if (professionalAssessmentLocationSubmit) {
-      professionalAssessmentLocationSubmit.onclick =
-        function () {
-
-          const country =
-            document.getElementById(
-              "professionalAssessmentCountry"
-            )?.value.trim();
-
-          const adminArea =
-            document.getElementById(
-              "professionalAssessmentAdminArea"
-            )?.value.trim();
-
-          const city =
-            document.getElementById(
-              "professionalAssessmentCity"
-            )?.value.trim();
-
-          const postalCode =
-            document.getElementById(
-              "professionalAssessmentPostalCode"
-            )?.value.trim();
-
-          const consent =
-            document.getElementById(
-              "professionalAssessmentMatchingConsent"
-            )?.checked === true;
-
-          console.log(
-            "Professional Assessment Location:",
-            {
-              country,
-              adminArea,
-              city,
-              postalCode,
-              consent
-            }
-          );
-        };
-    }
-
-  }
-
-  function updateHomeProfessionalAssessment() {
-    const lockedMessage = document.getElementById("homeProfessionalAssessmentLocked");
-    const button = document.getElementById("homeBtnProfessionalAssessment");
-    if (!lockedMessage || !button) return;
-
-    const unlocked = window.homeFullReportUnlocked === true;
-    const request = window.homeProfessionalRequest;
-
-    if (unlocked && request) {
-      lockedMessage.textContent =
-        "Your professional assessment request has been submitted. Status: Request submitted.";
-
-      button.style.display = "none";
-      return;
-    }
-
-    if (unlocked) {
-
-      lockedMessage.textContent =
-        "Your Home assessment is ready for professional review.";
-
-      button.onclick = function () {
-        openProfessionalAssessmentLocationModal();
-      };
-
-      button.querySelector(
-        ".workflow-action-title"
-      ).textContent =
-        "Find a Professional";
-
-      button.querySelector(
-        ".workflow-action-subtitle"
-      ).textContent =
-        "Request an on-site EMF assessment";
-
-      button.querySelector(
-        ".workflow-action-icon"
-      ).textContent =
-        "👤";
-
-    } else {
-
-      lockedMessage.textContent =
-        "Unlock your Full EMF Insight Report to prepare your project for professional assessment.";
-
-      button.onclick = function () {
-        scrollToUnlockReport();
-      };
-
-      button.querySelector(
-        ".workflow-action-title"
-      ).textContent =
-        "Unlock Full Report";
-
-      button.querySelector(
-        ".workflow-action-subtitle"
-      ).textContent =
-        "Prepare for professional assessment";
-
-      button.querySelector(
-        ".workflow-action-icon"
-      ).textContent =
-        "🔒";
-    }
-  }
-
-
-
-  async function createProfessionalRequest() {
-
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      alert("Please log in first.");
-      return;
-    }
-
-    if (window.homeFullReportUnlocked !== true) {
-      alert(
-        "Please unlock your Full EMF Insight Report before requesting a professional assessment."
-      );
-      return;
-    }
-
-    const projectId =
-      localStorage.getItem("home_project_id") ||
-      localStorage.getItem("homeProjectId");
-
-    if (!projectId) {
-      alert(
-        "No Home project is currently available."
-      );
-      return;
-    }
-
-    try {
-
-      const response = await fetch(
-        `${API}/professional-requests`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-
-          body: JSON.stringify({
-            project_id: projectId
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(
-          data.detail ||
-          "Unable to create professional assessment request."
-        );
-        return;
-      }
-
-      alert(
-        "Professional Assessment Requested.\n\n" +
-        "Your request has been submitted successfully.\n" +
-        "Status: Request submitted."
-      );
-
-      const lockedMessage = document.getElementById(
-        "homeProfessionalAssessmentLocked"
-      );
-
-      const button = document.getElementById(
-        "homeBtnProfessionalAssessment"
-      );
-
-      if (lockedMessage) {
-        lockedMessage.textContent =
-          "Your professional assessment request has been submitted. Status: Request submitted.";
-      }
-
-      if (button) {
-        button.style.display = "none";
-      }
-
-      console.log(
-        "Professional request created:",
-        data
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Professional request failed:",
-        error
-      );
-
-      alert(
-        "Unable to submit the professional assessment request."
-      );
-    }
-  }
 
   window.onload = async () => {
 
@@ -26184,6 +25573,10 @@
     );
 
     initializeProjects();
+
+
+
+
 
     if (
       typeof initializeSessions ===
@@ -26209,6 +25602,8 @@
     //     home_project_id
     //
     // ==================================================
+
+
 
     // ==================================================
     // 🔥 STARTUP WORKSPACE
@@ -26844,50 +26239,6 @@
       await setAppMode(
         workspaceMode
       );
-
-      if (
-        workspaceMode ===
-        "home"
-      ) {
-        renderHomeFloorTabs?.();
-      }
-    }
-
-    // ==================================================
-    // HOME — FULL REPORT ENTITLEMENT
-    // ==================================================
-
-    if (workspaceMode === "home") {
-      try {
-        const token = localStorage.getItem("token");
-
-        if (token) {
-          const meRes = await fetch(
-            `${API}/me`,
-            {
-              headers: {
-                "Authorization": `Bearer ${token}`
-              }
-            }
-          );
-
-          if (meRes.ok) {
-            const me = await meRes.json();
-
-            window.homeFullReportUnlocked =
-              me.home_full_report_unlocked === true;
-
-            updateHomeProfessionalAssessment?.();
-
-            await loadProfessionalAssessmentRequest();
-          }
-        }
-      } catch (error) {
-        console.error(
-          "Home entitlement check failed:",
-          error
-        );
-      }
     }
 
 

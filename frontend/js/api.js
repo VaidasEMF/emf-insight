@@ -943,6 +943,30 @@ async function saveProject() {
                 null,
 
             // =================================================
+            // PROPERTY LOCATION
+            // =================================================
+
+            country:
+                AppState.property?.country ||
+                "",
+
+            state:
+                AppState.property?.state ||
+                "",
+
+            region:
+                AppState.property?.region ||
+                "",
+
+            city:
+                AppState.property?.city ||
+                "",
+
+            address:
+                AppState.property?.address ||
+                "",
+
+            // =================================================
             // ASSESSMENT CONTEXT
             // =================================================
 
@@ -2977,6 +3001,8 @@ function openCreateProjectNamePopup(projectType) {
             ? "Create New Home Project"
             : "Create New Business Project";
 
+   
+
     input.value = "";
 
     popup.style.display = "flex";
@@ -4034,6 +4060,7 @@ async function openExistingProject(
             projectId
         );
 
+        document.body.classList.remove("project-popup-open");
 
         // ==================================================
         // REFRESH UI

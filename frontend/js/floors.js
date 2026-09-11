@@ -2694,14 +2694,6 @@ function renderHomeFloorTabs() {
             index
         ) => {
 
-            if (
-                index ===
-                currentFloorIndex
-            ) {
-
-                return;
-            }
-
 
             if (!floor) {
                 return;
