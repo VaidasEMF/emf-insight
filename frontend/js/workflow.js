@@ -6105,6 +6105,10 @@ function updateHomeLocks() {
     const hasScale =
         !!floor?.scaleConfirmed;
 
+    const hasSources =
+        Array.isArray(floor?.sources) &&
+        floor.sources.length > 0;
+
     console.error("HOME LOCKS", {
         floor: floor.name,
         scaleConfirmed: floor.scaleConfirmed,
