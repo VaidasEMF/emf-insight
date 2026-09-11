@@ -44,6 +44,11 @@ def init_db():
                 )
             )
 
+            connection.execute(text("""
+                ALTER TABLE professional_requests
+                ADD COLUMN IF NOT EXISTS postal_code VARCHAR(30)
+            """))
+
             connection.execute(
                 text(
                     """
