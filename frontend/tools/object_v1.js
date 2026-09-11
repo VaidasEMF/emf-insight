@@ -1809,6 +1809,9 @@ function placeObject(evt) {
             newObject
         );
 
+        renderHomeCurrentFloorCard?.();
+        renderHomeFloorTabs?.();
+
 
         console.log(
             "🔥 INDOOR SOURCE ADDED",

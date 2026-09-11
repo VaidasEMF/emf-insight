@@ -305,6 +305,16 @@ function updateHomeWorkflow() {
     // INSIGHTS READY CARD
     // =====================
 
+    const assessmentReady =
+        hasPlan &&
+        hasScale &&
+        hasLifestyle &&
+        hasIndoorSources;
+
+    updateHomeOutputState(
+        assessmentReady
+    );
+
     const insightsReadyCard =
         document.getElementById(
             "insightsReadyCard"
@@ -312,10 +322,10 @@ function updateHomeWorkflow() {
 
     if (insightsReadyCard) {
         insightsReadyCard.style.display =
-            hasSources
+            assessmentReady
                 ? "block"
                 : "none";
-    } 
+    }
 
 
     // =====================
@@ -385,6 +395,7 @@ function completeSourceWorkflow() {
         true;
 
     updateHomeWorkflow?.();
+    renderHomeFloorTabs?.();
 
     updateStatus?.(
         "✅ Preview ready"
@@ -4158,6 +4169,145 @@ function getRoomMeasurementStats(
     };
 }
 
+function showHomeAssessmentReadyMessage() {
+    const existing =
+        document.getElementById(
+            "homeAssessmentReadyMessage"
+        );
+
+    if (existing) {
+        return;
+    }
+
+    const message =
+        document.createElement("div");
+
+    message.id =
+        "homeAssessmentReadyMessage";
+
+    message.textContent =
+        "✅ Assessment ready — your results are now available.";
+
+    message.style.position =
+        "fixed";
+
+    message.style.bottom =
+        "24px";
+
+    message.style.left =
+        "50%";
+
+    message.style.transform =
+        "translateX(-50%)";
+
+    message.style.zIndex =
+        "99999";
+
+    message.style.padding =
+        "12px 18px";
+
+    message.style.borderRadius =
+        "10px";
+
+    message.style.background =
+        "#ffffff";
+
+    message.style.boxShadow =
+        "0 4px 18px rgba(0,0,0,0.15)";
+
+    message.style.fontSize =
+        "14px";
+
+    message.style.fontWeight =
+        "600";
+
+    document.body.appendChild(
+        message
+    );
+
+    setTimeout(() => {
+        message.remove();
+    }, 3000);
+}
+
+function updateHomeOutputState(
+    assessmentReady
+) {
+    const wasReady =
+        window.homeAssessmentReady === true;
+
+    window.homeAssessmentReady =
+        assessmentReady;
+
+    const resultsBtn =
+        document.querySelector(
+            '[onclick="openResultsDashboard()"]'
+        );
+
+    if (!resultsBtn) {
+        return;
+    }
+
+    const lock =
+        resultsBtn.querySelector(
+            ".output-lock"
+        );
+
+    if (assessmentReady) {
+        resultsBtn.classList.remove(
+            "output-locked"
+        );
+
+        const subtitle =
+            resultsBtn.querySelector(
+                ".workflow-action-subtitle"
+            );
+
+        if (subtitle) {
+            subtitle.textContent =
+                "Heatmaps, scores & analytics";
+        }
+
+        resultsBtn.disabled = false;
+
+        resultsBtn.style.pointerEvents =
+            "auto";
+
+        if (lock) {
+            lock.style.display = "none";
+        }
+
+        if (!wasReady) {
+            showHomeAssessmentReadyMessage?.();
+        }
+
+        return;
+    }
+
+    resultsBtn.classList.add(
+        "output-locked"
+    );
+
+    resultsBtn.disabled = true;
+
+    resultsBtn.style.pointerEvents =
+        "none";
+
+    const subtitle =
+        resultsBtn.querySelector(
+            ".workflow-action-subtitle"
+        );
+
+    if (subtitle) {
+        subtitle.textContent =
+            "Complete your assessment to view results";
+    }
+
+    if (lock) {
+        lock.style.display = "";
+    }
+}
+
 function updateBusinessOutputState(assessmentReady) {
 
     const resultsBtn =
@@ -6013,11 +6163,18 @@ function updateHomeLocks() {
     // existence of an Indoor Source.
     // ==================================================
 
-    const hasSources =
-        !!(
-            floor?.sources &&
-            floor.sources.length
+    const hasIndoorSources =
+        Array.isArray(
+            floor?.sources
+        ) &&
+        floor.sources.some(
+            source =>
+                source &&
+                source.placementType !==
+                    "outdoor"
         );
+
+   
 
     console.error("SOURCE CHECK", {
 

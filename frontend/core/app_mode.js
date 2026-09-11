@@ -393,20 +393,25 @@ async function setAppMode(
 
 
     if (businessCheck) {
-
         businessCheck.style.display =
-            isHome
-                ? "none"
-                : "inline-flex";
+            "none";
     }
 
-
     if (homeCheck) {
-
         homeCheck.style.display =
-            isHome
-                ? "inline-flex"
-                : "none";
+            "none";
+    }
+
+    if (isHome) {
+        if (homeCheck) {
+            homeCheck.style.display =
+                "inline-flex";
+        }
+    } else {
+        if (businessCheck) {
+            businessCheck.style.display =
+                "inline-flex";
+        }
     }
 
 
