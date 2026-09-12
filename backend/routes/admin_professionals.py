@@ -395,3 +395,43 @@ def update_professional(
     db.commit()
 
     return dict(result)
+# =====================
+# SET USER ROLE
+# =====================
+
+@router.patch("/user-role")
+def set_user_role(
+    email: str,
+    role: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    if role not in {"user", "professional"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid role",
+        )
+
+    user = (
+        db.query(User)
+        .filter(User.email == email)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    user.role = role
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "id": user.id,
+        "email": user.email,
+        "role": user.role,
+        "is_admin": user.is_admin,
+    }
