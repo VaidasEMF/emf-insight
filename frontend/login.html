@@ -404,6 +404,22 @@
                         await response.json();
 
 
+                    console.log(
+                        "ROLE =",
+                        data.role
+                    );
+
+                    console.log(
+                        "IS ADMIN =",
+                        data.is_admin
+                    );
+
+                    console.log(
+                        "LOGIN DATA =",
+                        JSON.stringify(data)
+                    );
+
+
                     if (!response.ok) {
 
                         showError(
@@ -420,25 +436,49 @@
                         data.access_token
                     );
 
-                    // Remember which workspace the user selected
-                    const params = new URLSearchParams(
-                        window.location.search
-                    );
+                    if (data.is_admin === true) {
 
-                    const requestedWorkspace =
-                        params.get("workspace");
+                        localStorage.setItem(
+                            "role",
+                            "admin"
+                        );
 
-                    if (
-                        requestedWorkspace === "home" ||
-                        requestedWorkspace === "business"
-                    ) {
-                        sessionStorage.setItem(
-                            "requestedWorkspace",
-                            requestedWorkspace
+                        localStorage.setItem(
+                            "workspaceMode",
+                            "business"
+                        );
+
+                    } else if (data.role === "professional") {
+
+                        localStorage.setItem(
+                            "role",
+                            "professional"
+                        );
+
+                        localStorage.setItem(
+                            "workspaceMode",
+                            "business"
+                        );
+
+                    } else {
+
+                        localStorage.setItem(
+                            "role",
+                            "user"
+                        );
+
+                        localStorage.setItem(
+                            "workspaceMode",
+                            "home"
                         );
                     }
 
-                    window.location.href = "workspace.html";
+                    sessionStorage.removeItem(
+                        "requestedWorkspace"
+                    );
+
+                    window.location.href =
+                        "index.html";
 
                 }
 
