@@ -90,11 +90,13 @@ def update_professional_profile(
         )
 
     profile = db.execute(
-        """
-        SELECT id
-        FROM professional_profiles
-        WHERE user_id = :user_id
-        """,
+        text(
+            """
+            SELECT id
+            FROM professional_profiles
+            WHERE user_id = :user_id
+            """
+        ),
         {"user_id": current_user.id},
     ).mappings().first()
 
