@@ -4067,17 +4067,12 @@ async function openExistingProject(
         // ==================================================
 
         updateWorkspaceUI?.();
-
         updateProjectHeader?.();
-
         updateWorkflowUI?.();
-
         updateHomeWorkflow?.();
-
         updateHomeLocks?.();
-
         updateHomeEmptyPlanState?.();
-
+        updateHomeProfessionalAssessment?.();
         requestRender?.();
 
 

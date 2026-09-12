@@ -1811,6 +1811,7 @@ function placeObject(evt) {
 
         renderHomeCurrentFloorCard?.();
         renderHomeFloorTabs?.();
+        updateHomeProfessionalAssessment?.();
 
 
         console.log(

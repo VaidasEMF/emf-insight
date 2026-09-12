@@ -1175,19 +1175,13 @@ async function setAppMode(
     // ==================================================
 
     updateWorkspaceUI?.();
-
     updateHomeWorkflow?.();
-
     updateHomeLocks?.();
-
     updateHomeEmptyPlanState?.();
-
+    updateHomeProfessionalAssessment?.();
     updateProjectHeader?.();
-
     updateWorkflowUI?.();
-
     updateCurrentExposure?.();
-
 
     // ==================================================
     // RENDER

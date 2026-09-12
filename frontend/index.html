@@ -26335,67 +26335,203 @@
   }
 
   function updateHomeProfessionalAssessment() {
-    const lockedMessage = document.getElementById("homeProfessionalAssessmentLocked");
-    const button = document.getElementById("homeBtnProfessionalAssessment");
-    if (!lockedMessage || !button) return;
 
-    const unlocked = window.homeFullReportUnlocked === true;
-    const request = window.homeProfessionalRequest;
+    const lockedMessage =
+      document.getElementById(
+        "homeProfessionalAssessmentLocked"
+      );
 
-    if (unlocked && request) {
+    const button =
+      document.getElementById(
+        "homeBtnProfessionalAssessment"
+      );
+
+    if (!lockedMessage || !button) {
+      return;
+    }
+
+    const unlocked =
+      window.homeFullReportUnlocked === true;
+
+    const request =
+      window.homeProfessionalRequest;
+
+
+    // ==========================================
+    // HOME INDOOR SOURCES
+    // ==========================================
+
+    const floor =
+      typeof getCurrentFloor === "function"
+        ? getCurrentFloor()
+        : null;
+
+    const indoorSources =
+      Array.isArray(floor?.sources)
+        ? floor.sources.filter(
+          source =>
+            source &&
+            source.placementType !== "outdoor"
+        )
+        : [];
+
+    const hasIndoorSources =
+      indoorSources.length > 0;
+
+
+    // ==========================================
+    // 1. REQUEST ALREADY SUBMITTED
+    // ==========================================
+
+    if (request) {
+
       lockedMessage.textContent =
         "Your professional assessment request has been submitted. Status: Request submitted.";
 
       button.style.display = "none";
+
       return;
     }
+
+
+    // ==========================================
+    // 2. INDOOR SOURCES EXIST
+    // ==========================================
+
+    if (hasIndoorSources) {
+
+      lockedMessage.textContent =
+        "Your Home assessment is ready for professional review.";
+
+      button.style.display = "";
+
+      button.onclick = function () {
+        openProfessionalAssessmentLocationModal();
+      };
+
+      const title =
+        button.querySelector(
+          ".workflow-action-title"
+        );
+
+      if (title) {
+        title.textContent =
+          "Find a Professional";
+      }
+
+      const subtitle =
+        button.querySelector(
+          ".workflow-action-subtitle"
+        );
+
+      if (subtitle) {
+        subtitle.textContent =
+          "Request an on-site EMF assessment";
+      }
+
+      const icon =
+        button.querySelector(
+          ".workflow-action-icon"
+        );
+
+      if (icon) {
+        icon.textContent =
+          "👤";
+      }
+
+      return;
+    }
+
+
+    // ==========================================
+    // 3. FULL REPORT UNLOCKED
+    // ==========================================
 
     if (unlocked) {
 
       lockedMessage.textContent =
         "Your Home assessment is ready for professional review.";
 
+      button.style.display = "";
+
       button.onclick = function () {
         openProfessionalAssessmentLocationModal();
       };
 
+      const title =
+        button.querySelector(
+          ".workflow-action-title"
+        );
+
+      if (title) {
+        title.textContent =
+          "Find a Professional";
+      }
+
+      const subtitle =
+        button.querySelector(
+          ".workflow-action-subtitle"
+        );
+
+      if (subtitle) {
+        subtitle.textContent =
+          "Request an on-site EMF assessment";
+      }
+
+      const icon =
+        button.querySelector(
+          ".workflow-action-icon"
+        );
+
+      if (icon) {
+        icon.textContent =
+          "👤";
+      }
+
+      return;
+    }
+
+
+    // ==========================================
+    // 4. DEFAULT — UNLOCK FULL REPORT
+    // ==========================================
+
+    lockedMessage.textContent =
+      "Unlock the complete EMF Insight report for €9 one-time.";
+
+    button.style.display = "";
+
+    button.onclick = function () {
+      scrollToUnlockReport();
+    };
+
+    const title =
       button.querySelector(
         ".workflow-action-title"
-      ).textContent =
-        "Find a Professional";
+      );
 
-      button.querySelector(
-        ".workflow-action-subtitle"
-      ).textContent =
-        "Request an on-site EMF assessment";
-
-      button.querySelector(
-        ".workflow-action-icon"
-      ).textContent =
-        "👤";
-
-    } else {
-
-      lockedMessage.textContent =
-        "Unlock the complete EMF Insight report for €9 one-time.";
-
-      button.onclick = function () {
-        scrollToUnlockReport();
-      };
-
-      button.querySelector(
-        ".workflow-action-title"
-      ).textContent =
+    if (title) {
+      title.textContent =
         "Unlock Full Report";
+    }
 
+    const subtitle =
       button.querySelector(
         ".workflow-action-subtitle"
-      ).textContent =
-        "Get the complete report & recommendations";
+      );
 
+    if (subtitle) {
+      subtitle.textContent =
+        "Get the complete report & recommendations";
+    }
+
+    const icon =
       button.querySelector(
         ".workflow-action-icon"
-      ).textContent =
+      );
+
+    if (icon) {
+      icon.textContent =
         "🔒";
     }
   }
@@ -26742,10 +26878,39 @@
       return;
     }
 
-    // Home Full Report must be unlocked
-    if (window.homeFullReportUnlocked !== true) {
+    // ==================================================
+    // HOME INDOOR SOURCES
+    //
+    // A professional assessment can be requested when
+    // the Home project contains at least one Indoor Source.
+    //
+    // Full Report unlock is also sufficient.
+    // ==================================================
+
+    const floor =
+      typeof getCurrentFloor === "function"
+        ? getCurrentFloor()
+        : null;
+
+    const indoorSources =
+      Array.isArray(floor?.sources)
+        ? floor.sources.filter(
+          source =>
+            source &&
+            source.placementType !== "outdoor"
+        )
+        : [];
+
+    const hasIndoorSources =
+      indoorSources.length > 0;
+
+    // Home Full Report OR Indoor Source is required
+    if (
+      window.homeFullReportUnlocked !== true &&
+      !hasIndoorSources
+    ) {
       alert(
-        "Please unlock your Full EMF Insight Report before requesting a professional assessment."
+        "Please add an Indoor Source or unlock your Full EMF Insight Report before requesting a professional assessment."
       );
       return;
     }

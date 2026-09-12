@@ -2306,6 +2306,7 @@ function renderHomeCurrentFloorCard() {
     );
 
     updateHomeEmptyPlanState?.();
+    updateHomeProfessionalAssessment?.();
 }
 
 

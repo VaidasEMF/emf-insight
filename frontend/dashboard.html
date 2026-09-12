@@ -945,6 +945,140 @@
         }
 
         /* =========================
+   ADMIN PROFESSIONALS
+   ========================= */
+
+        .admin-professionals-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .admin-professionals-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        .admin-professionals-table th {
+            padding: 11px 10px;
+            text-align: left;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-soft);
+        }
+
+        .admin-professionals-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+            font-size: 11px;
+        }
+
+        .admin-professionals-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .admin-professional-name {
+            font-weight: 750;
+        }
+
+        .admin-professional-company {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .admin-professional-location {
+            line-height: 1.45;
+        }
+
+        .admin-professional-email {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .admin-status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .admin-status-badge.available,
+        .admin-status-badge.verified {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .admin-status-badge.limited,
+        .admin-status-badge.pending {
+            background: #fff4d8;
+            color: #8a6500;
+        }
+
+        .admin-status-badge.unavailable,
+        .admin-status-badge.suspended {
+            background: var(--surface-soft);
+            color: var(--muted);
+        }
+
+        .admin-professionals-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .admin-professionals-count {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .admin-professionals-add {
+            border: 0;
+            border-radius: 9px;
+            padding: 9px 13px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .admin-professionals-add:hover {
+            opacity: .92;
+        }
+
+        .admin-professionals-status {
+            min-height: 16px;
+            margin-bottom: 12px;
+            font-size: 11px;
+        }
+
+        .admin-professionals-status.error {
+            color: #a33b3b;
+        }
+
+        .admin-professionals-status.success {
+            color: var(--success);
+        }
+
+        @media (max-width: 760px) {
+            .admin-professionals-toolbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        /* =========================
    ADMIN PRICING
    ========================= */
 
@@ -1212,6 +1346,10 @@
                     <a class="nav-link" id="adminPricingNav" href="#admin-pricing" style="display:none;">
                         <span class="nav-icon">◈</span>
                         <span>Pricing Management</span>
+                    </a>
+                    <a class="nav-link" id="adminProfessionalsNav" href="#admin-professionals" style="display:none;">
+                        <span class="nav-icon">♙</span>
+                        <span>Professionals</span>
                     </a>
 
                     <a class="nav-link" id="adminProfessionalRequestsNav" href="#admin-professional-requests"
@@ -1519,6 +1657,61 @@
                     </div>
                 </section>
 
+
+                <!-- =========================
+ADMIN PROFESSIONALS
+========================= -->
+
+                <section class="section" id="admin-professionals" aria-labelledby="admin-professionals-title"
+                    style="display:none;">
+                    <div class="section-heading">
+                        <div>
+                            <h2 class="section-title" id="admin-professionals-title">
+                                Professionals
+                            </h2>
+
+                            <p class="section-description">
+                                Manage EMF professionals available for professional assessment matching.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-body">
+
+                            <div class="admin-professionals-toolbar">
+
+                                <div class="admin-professionals-count" id="adminProfessionalsCount">
+                                    Loading professionals…
+                                </div>
+
+                                <button type="button" class="admin-professionals-add"
+                                    onclick="openAdminProfessionalCreate();">
+                                    + Add Professional
+                                </button>
+
+                            </div>
+
+                            <div class="admin-professionals-status" id="adminProfessionalsStatus"></div>
+
+                            <div class="admin-professionals-table" id="adminProfessionalsContainer">
+                                <div class="empty-state">
+                                    <div class="empty-icon">♙</div>
+
+                                    <div class="empty-title">
+                                        Loading professionals
+                                    </div>
+
+                                    <div class="empty-copy">
+                                        Please wait.
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
                 <!-- =========================
  ADMIN PRICING
  ========================= -->
@@ -1637,6 +1830,169 @@
         </main>
     </div>
 
+
+    <!-- =========================
+     ADMIN PROFESSIONAL MODAL
+     ========================= -->
+
+    <div class="admin-modal-backdrop" id="adminProfessionalModal" role="dialog" aria-modal="true"
+        aria-labelledby="adminProfessionalModalTitle">
+        <div class="admin-modal">
+
+            <div class="admin-modal-header">
+
+                <h3 id="adminProfessionalModalTitle">
+                    Add Professional
+                </h3>
+
+                <p id="adminProfessionalModalSubtitle">
+                    Create a professional profile.
+                </p>
+
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div class="admin-professionals-status" id="adminProfessionalModalStatus"></div>
+
+                <div class="admin-modal-grid">
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalUserId">
+                            User ID
+                        </label>
+
+                        <input type="text" id="adminProfessionalUserId" placeholder="User ID">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalCompany">
+                            Company
+                        </label>
+
+                        <input type="text" id="adminProfessionalCompany" placeholder="Company name">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalFirstName">
+                            First Name
+                        </label>
+
+                        <input type="text" id="adminProfessionalFirstName" placeholder="First name">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalLastName">
+                            Last Name
+                        </label>
+
+                        <input type="text" id="adminProfessionalLastName" placeholder="Last name">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalEmail">
+                            Professional Email
+                        </label>
+
+                        <input type="email" id="adminProfessionalEmail" placeholder="name@company.com">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalPhone">
+                            Professional Phone
+                        </label>
+
+                        <input type="text" id="adminProfessionalPhone" placeholder="Phone">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalCountryCode">
+                            Country Code
+                        </label>
+
+                        <input type="text" id="adminProfessionalCountryCode" placeholder="IE" maxlength="2">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalCountry">
+                            Country
+                        </label>
+
+                        <input type="text" id="adminProfessionalCountry" placeholder="Ireland">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalCity">
+                            City / Town
+                        </label>
+
+                        <input type="text" id="adminProfessionalCity" placeholder="Dublin">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalPostalCode">
+                            Postal Code
+                        </label>
+
+                        <input type="text" id="adminProfessionalPostalCode" placeholder="Optional">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalAvailability">
+                            Availability
+                        </label>
+
+                        <select id="adminProfessionalAvailability">
+                            <option value="available">
+                                Available
+                            </option>
+                            <option value="limited">
+                                Limited
+                            </option>
+                            <option value="unavailable">
+                                Unavailable
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalVerification">
+                            Verification
+                        </label>
+
+                        <select id="adminProfessionalVerification">
+                            <option value="pending">
+                                Pending
+                            </option>
+                            <option value="verified">
+                                Verified
+                            </option>
+                            <option value="suspended">
+                                Suspended
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="admin-modal-actions">
+
+                    <button type="button" class="btn-secondary" onclick="closeAdminProfessionalModal();">
+                        Cancel
+                    </button>
+
+                    <button type="button" class="btn-primary" id="adminProfessionalSaveButton"
+                        onclick="saveAdminProfessional();">
+                        Save Professional
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
     <!-- =========================
      ADMIN PRICING MODAL
      ========================= -->
@@ -1742,6 +2098,9 @@
 
         let adminPricingEntries = [];
         let adminPricingEditingId = null;
+
+        let adminProfessionalEntries = [];
+        let adminProfessionalEditingId = null;
 
         const token = localStorage.getItem("token");
 
@@ -2584,6 +2943,709 @@
                 renderAdminPricing();
             } catch (error) {
                 console.error("Unable to load admin pricing:", error);
+            }
+        }
+
+        // ==========================================
+        // ADMIN PROFESSIONALS
+        // ==========================================
+
+        async function loadAdminProfessionals() {
+
+            const nav =
+                document.getElementById("adminProfessionalsNav");
+
+            const section =
+                document.getElementById("admin-professionals");
+
+            const container =
+                document.getElementById(
+                    "adminProfessionalsContainer"
+                );
+
+            const count =
+                document.getElementById(
+                    "adminProfessionalsCount"
+                );
+
+            if (!nav || !section || !container) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `${API}/admin/professionals`,
+                    {
+                        headers: authHeaders()
+                    }
+                );
+
+                if (response.status === 401) {
+                    signOut();
+                    return;
+                }
+
+                if (response.status === 403) {
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const data = await response.json();
+
+                if (!Array.isArray(data)) {
+                    throw new Error(
+                        "Invalid professionals response"
+                    );
+                }
+
+                adminProfessionalEntries = data;
+
+                nav.style.display = "";
+                section.style.display = "";
+
+                if (count) {
+                    count.textContent =
+                        `${data.length} professional${data.length === 1 ? "" : "s"}`;
+                }
+
+                renderAdminProfessionals();
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load professionals:",
+                    error
+                );
+
+                if (container) {
+                    container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">!</div>
+                    <div class="empty-title">
+                        Unable to load professionals
+                    </div>
+                    <div class="empty-copy">
+                        Please try again.
+                    </div>
+                </div>
+            `;
+                }
+
+            }
+        }
+
+
+        function renderAdminProfessionals() {
+
+            const container =
+                document.getElementById(
+                    "adminProfessionalsContainer"
+                );
+
+            if (!container) {
+                return;
+            }
+
+            if (!adminProfessionalEntries.length) {
+
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">♙</div>
+
+                <div class="empty-title">
+                    No professionals
+                </div>
+
+                <div class="empty-copy">
+                    No professional profiles have been added yet.
+                </div>
+            </div>
+        `;
+
+                return;
+            }
+
+            container.innerHTML = `
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Professional</th>
+                    <th>Location</th>
+                    <th>Contact</th>
+                    <th>Availability</th>
+                    <th>Verification</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                ${adminProfessionalEntries.map(
+                professional => {
+
+                    const fullName =
+                        [
+                            professional.first_name,
+                            professional.last_name
+                        ]
+                            .filter(Boolean)
+                            .join(" ")
+                        || "Unnamed professional";
+
+                    const location =
+                        [
+                            professional.city,
+                            professional.country
+                        ]
+                            .filter(Boolean)
+                            .join(", ")
+                        || "—";
+
+                    const email =
+                        professional.professional_email
+                        || "—";
+
+                    const availability =
+                        professional.availability_status
+                        || "unavailable";
+
+                    const verification =
+                        professional.verification_status
+                        || "pending";
+
+                    return `
+                            <tr>
+
+                                <td>
+                                    <div class="admin-professional-name">
+                                        ${escapeHtml(fullName)}
+                                    </div>
+
+                                    ${professional.company_name
+                            ? `
+                                                <div class="admin-professional-company">
+                                                    ${escapeHtml(
+                                professional.company_name
+                            )}
+                                                </div>
+                                            `
+                            : ""
+                        }
+                                </td>
+
+                                <td>
+                                    <div class="admin-professional-location">
+                                        ${escapeHtml(location)}
+
+                                        ${professional.postal_code
+                            ? `
+                                                    <br>
+                                                    <span class="admin-readonly">
+                                                        ${escapeHtml(
+                                professional.postal_code
+                            )}
+                                                    </span>
+                                                `
+                            : ""
+                        }
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="admin-professional-email">
+                                        ${escapeHtml(email)}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="admin-status-badge ${escapeHtml(
+                            availability
+                        )}">
+                                        ${escapeHtml(
+                            availability.charAt(0).toUpperCase()
+                            + availability.slice(1)
+                        )}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="admin-status-badge ${escapeHtml(
+                            verification
+                        )}">
+                                        ${escapeHtml(
+                            verification.charAt(0).toUpperCase()
+                            + verification.slice(1)
+                        )}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="admin-edit-button"
+                                        onclick="openAdminProfessionalEdit(${professional.id})"
+                                    >
+                                        Edit
+                                    </button>
+                                </td>
+
+                            </tr>
+                        `;
+                }
+            ).join("")}
+
+            </tbody>
+
+        </table>
+    `;
+        }
+
+
+        function openAdminProfessionalCreate() {
+
+            adminProfessionalEditingId = null;
+
+            document.getElementById(
+                "adminProfessionalModalTitle"
+            ).textContent = "Add Professional";
+
+            document.getElementById(
+                "adminProfessionalModalSubtitle"
+            ).textContent =
+                "Create a professional profile.";
+
+            document.getElementById(
+                "adminProfessionalModalStatus"
+            ).textContent = "";
+
+            document.getElementById(
+                "adminProfessionalUserId"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalUserId"
+            ).disabled = false;
+
+            document.getElementById(
+                "adminProfessionalCompany"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalFirstName"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalLastName"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalEmail"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalPhone"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalCountryCode"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalCountry"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalCity"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalPostalCode"
+            ).value = "";
+
+            document.getElementById(
+                "adminProfessionalAvailability"
+            ).value = "unavailable";
+
+            document.getElementById(
+                "adminProfessionalVerification"
+            ).value = "pending";
+
+            document.getElementById(
+                "adminProfessionalModal"
+            ).style.display = "flex";
+        }
+
+
+        function openAdminProfessionalEdit(
+            professionalId
+        ) {
+
+            const professional =
+                adminProfessionalEntries.find(
+                    item =>
+                        Number(item.id) ===
+                        Number(professionalId)
+                );
+
+            if (!professional) {
+                return;
+            }
+
+            adminProfessionalEditingId =
+                professional.id;
+
+            document.getElementById(
+                "adminProfessionalModalTitle"
+            ).textContent = "Edit Professional";
+
+            document.getElementById(
+                "adminProfessionalModalSubtitle"
+            ).textContent =
+                `${professional.first_name || ""} ${professional.last_name || ""}`.trim()
+                || "Update professional profile.";
+
+            document.getElementById(
+                "adminProfessionalModalStatus"
+            ).textContent = "";
+
+            document.getElementById(
+                "adminProfessionalUserId"
+            ).value =
+                professional.user_id || "";
+
+            document.getElementById(
+                "adminProfessionalUserId"
+            ).disabled = true;
+
+            document.getElementById(
+                "adminProfessionalCompany"
+            ).value =
+                professional.company_name || "";
+
+            document.getElementById(
+                "adminProfessionalFirstName"
+            ).value =
+                professional.first_name || "";
+
+            document.getElementById(
+                "adminProfessionalLastName"
+            ).value =
+                professional.last_name || "";
+
+            document.getElementById(
+                "adminProfessionalEmail"
+            ).value =
+                professional.professional_email || "";
+
+            document.getElementById(
+                "adminProfessionalPhone"
+            ).value =
+                professional.professional_phone || "";
+
+            document.getElementById(
+                "adminProfessionalCountryCode"
+            ).value =
+                professional.country_code || "";
+
+            document.getElementById(
+                "adminProfessionalCountry"
+            ).value =
+                professional.country || "";
+
+            document.getElementById(
+                "adminProfessionalCity"
+            ).value =
+                professional.city || "";
+
+            document.getElementById(
+                "adminProfessionalPostalCode"
+            ).value =
+                professional.postal_code || "";
+
+            document.getElementById(
+                "adminProfessionalAvailability"
+            ).value =
+                professional.availability_status
+                || "unavailable";
+
+            document.getElementById(
+                "adminProfessionalVerification"
+            ).value =
+                professional.verification_status
+                || "pending";
+
+            document.getElementById(
+                "adminProfessionalModal"
+            ).style.display = "flex";
+        }
+
+
+        function closeAdminProfessionalModal() {
+
+            const modal =
+                document.getElementById(
+                    "adminProfessionalModal"
+                );
+
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+
+
+        async function saveAdminProfessional() {
+
+            const status =
+                document.getElementById(
+                    "adminProfessionalModalStatus"
+                );
+
+            const button =
+                document.getElementById(
+                    "adminProfessionalSaveButton"
+                );
+
+            const userId =
+                document.getElementById(
+                    "adminProfessionalUserId"
+                ).value.trim();
+
+            const firstName =
+                document.getElementById(
+                    "adminProfessionalFirstName"
+                ).value.trim();
+
+            const lastName =
+                document.getElementById(
+                    "adminProfessionalLastName"
+                ).value.trim();
+
+            const companyName =
+                document.getElementById(
+                    "adminProfessionalCompany"
+                ).value.trim();
+
+            const email =
+                document.getElementById(
+                    "adminProfessionalEmail"
+                ).value.trim();
+
+            const phone =
+                document.getElementById(
+                    "adminProfessionalPhone"
+                ).value.trim();
+
+            const countryCode =
+                document.getElementById(
+                    "adminProfessionalCountryCode"
+                ).value.trim()
+                    .toUpperCase();
+
+            const country =
+                document.getElementById(
+                    "adminProfessionalCountry"
+                ).value.trim();
+
+            const city =
+                document.getElementById(
+                    "adminProfessionalCity"
+                ).value.trim();
+
+            const postalCode =
+                document.getElementById(
+                    "adminProfessionalPostalCode"
+                ).value.trim();
+
+            const availabilityStatus =
+                document.getElementById(
+                    "adminProfessionalAvailability"
+                ).value;
+
+            const verificationStatus =
+                document.getElementById(
+                    "adminProfessionalVerification"
+                ).value;
+
+            if (!userId) {
+
+                status.textContent =
+                    "User ID is required.";
+
+                status.className =
+                    "admin-professionals-status error";
+
+                return;
+            }
+
+            if (!countryCode || countryCode.length !== 2) {
+
+                status.textContent =
+                    "Please enter a valid two-letter country code.";
+
+                status.className =
+                    "admin-professionals-status error";
+
+                return;
+            }
+
+            if (!city) {
+
+                status.textContent =
+                    "City / Town is required.";
+
+                status.className =
+                    "admin-professionals-status error";
+
+                return;
+            }
+
+            const payload = {
+
+                user_id: userId,
+
+                first_name: firstName || null,
+                last_name: lastName || null,
+                company_name: companyName || null,
+
+                professional_email:
+                    email || null,
+
+                professional_phone:
+                    phone || null,
+
+                country_code:
+                    countryCode,
+
+                country:
+                    country || null,
+
+                city:
+                    city,
+
+                postal_code:
+                    postalCode || null,
+
+                availability_status:
+                    availabilityStatus,
+
+                verification_status:
+                    verificationStatus
+            };
+
+            button.disabled = true;
+            button.textContent = "Saving…";
+
+            status.textContent = "";
+            status.className =
+                "admin-professionals-status";
+
+            try {
+
+                const isEdit =
+                    adminProfessionalEditingId !== null;
+
+                const url =
+                    isEdit
+                        ? `${API}/admin/professionals/${adminProfessionalEditingId}`
+                        : `${API}/admin/professionals`;
+
+                const response = await fetch(
+                    url,
+                    {
+                        method:
+                            isEdit
+                                ? "PATCH"
+                                : "POST",
+
+                        headers: {
+                            ...authHeaders(),
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(payload)
+                    }
+                );
+
+                if (response.status === 401) {
+                    signOut();
+                    return;
+                }
+
+                if (response.status === 403) {
+
+                    status.textContent =
+                        "Admin access required.";
+
+                    status.className =
+                        "admin-professionals-status error";
+
+                    return;
+                }
+
+                if (!response.ok) {
+
+                    let detail =
+                        "Unable to save professional.";
+
+                    try {
+
+                        const errorData =
+                            await response.json();
+
+                        if (errorData.detail) {
+                            detail =
+                                errorData.detail;
+                        }
+
+                    } catch (_) { }
+
+                    throw new Error(detail);
+                }
+
+                await response.json();
+
+                status.textContent =
+                    isEdit
+                        ? "Professional updated successfully."
+                        : "Professional created successfully.";
+
+                status.className =
+                    "admin-professionals-status success";
+
+                await loadAdminProfessionals();
+
+                setTimeout(() => {
+                    closeAdminProfessionalModal();
+                }, 500);
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to save professional:",
+                    error
+                );
+
+                status.textContent =
+                    error.message
+                    || "Unable to save professional.";
+
+                status.className =
+                    "admin-professionals-status error";
+
+            } finally {
+
+                button.disabled = false;
+                button.textContent =
+                    "Save Professional";
             }
         }
 
@@ -3566,7 +4628,12 @@
             await loadUser();
             applyDashboardWorkspaceMode();
 
-            await Promise.all([loadProjects(), loadReports()]);
+            await Promise.all([
+                loadProjects(),
+                loadReports(),
+                loadAdminPricing(),
+                loadAdminProfessionals()
+            ]);
 
             activateDashboardSection();
         }
