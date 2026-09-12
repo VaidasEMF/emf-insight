@@ -194,6 +194,21 @@ def init_db():
             connection.execute(
                 text(
                     """
+                    UPDATE users
+                    SET role = 'professional'
+                    WHERE role = 'user'
+                      AND EXISTS (
+                          SELECT 1
+                          FROM professional_profiles
+                          WHERE professional_profiles.user_id = CAST(users.id AS VARCHAR)
+                      )
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
                     ALTER TABLE users
                     ADD COLUMN IF NOT EXISTS first_name VARCHAR DEFAULT ''
                     """
