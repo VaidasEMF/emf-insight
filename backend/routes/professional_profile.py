@@ -46,25 +46,27 @@ def get_professional_profile(
         )
 
     profile = db.execute(
-        """
-        SELECT
-            id,
-            user_id,
-            first_name,
-            last_name,
-            company_name,
-            professional_email,
-            professional_phone,
-            country_code,
-            country,
-            city,
-            postal_code,
-            availability_status,
-            verification_status,
-            created_at
-        FROM professional_profiles
-        WHERE user_id = :user_id
-        """,
+        text(
+            """
+            SELECT
+                id,
+                user_id,
+                first_name,
+                last_name,
+                company_name,
+                professional_email,
+                professional_phone,
+                country_code,
+                country,
+                city,
+                postal_code,
+                availability_status,
+                verification_status,
+                created_at
+            FROM professional_profiles
+            WHERE user_id = :user_id
+            """
+        ),
         {"user_id": str(current_user.id)},
     ).mappings().first()
 
