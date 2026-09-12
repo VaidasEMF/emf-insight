@@ -65,7 +65,7 @@ def get_professional_profile(
         FROM professional_profiles
         WHERE user_id = :user_id
         """,
-        {"user_id": current_user.id},
+        {"user_id": str(current_user.id)},
     ).mappings().first()
 
     if not profile:
@@ -97,7 +97,7 @@ def update_professional_profile(
             WHERE user_id = :user_id
             """
         ),
-        {"user_id": current_user.id},
+        {"user_id": str(current_user.id)},
     ).mappings().first()
 
     if not profile:
