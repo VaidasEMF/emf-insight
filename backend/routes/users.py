@@ -65,6 +65,109 @@ def me(
     }
 
 
+
+# =====================
+# DELETE ACCOUNT
+# =====================
+
+@router.delete("/me")
+def delete_me(
+    current_user=Depends(
+        get_current_user,
+    ),
+    db: Session = Depends(
+        get_db,
+    ),
+):
+    if current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin account cannot be deleted here",
+        )
+
+    from sqlalchemy import text
+
+    user_id = str(current_user.id)
+
+    try:
+        # Delete professional requests
+        db.execute(
+            text("""
+                DELETE FROM professional_requests
+                WHERE user_id = :user_id
+            """),
+            {"user_id": user_id},
+        )
+
+        # Delete professional profile
+        db.execute(
+            text("""
+                DELETE FROM professional_profiles
+                WHERE user_id = :user_id
+            """),
+            {"user_id": user_id},
+        )
+
+        # Delete Home entitlements
+        db.execute(
+            text("""
+                DELETE FROM home_entitlements
+                WHERE user_id = :user_id
+            """),
+            {"user_id": user_id},
+        )
+
+        # Delete reports belonging to user's projects
+        db.execute(
+            text("""
+                DELETE FROM reports
+                WHERE project_id IN (
+                    SELECT id
+                    FROM projects
+                    WHERE user_id = :user_id
+                )
+            """),
+            {"user_id": current_user.id},
+        )
+
+        # Delete project versions belonging to user's projects
+        db.execute(
+            text("""
+                DELETE FROM project_versions
+                WHERE project_id IN (
+                    SELECT id
+                    FROM projects
+                    WHERE user_id = :user_id
+                )
+            """),
+            {"user_id": current_user.id},
+        )
+
+        # Delete user's projects
+        db.execute(
+            text("""
+                DELETE FROM projects
+                WHERE user_id = :user_id
+            """),
+            {"user_id": current_user.id},
+        )
+
+        # Finally delete the user
+        db.delete(current_user)
+
+        db.commit()
+
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Account deletion failed",
+        )
+
+    return {
+        "status": "deleted",
+    }
+
 # =====================
 # UPDATE PROFILE
 # =====================
@@ -138,3 +241,4 @@ async def upload_logo(
     db.commit()
 
     return {"logo_url": f"/uploads/logos/{filename}"}
+
