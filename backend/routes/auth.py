@@ -188,6 +188,93 @@ def register(
         "message": "User created",
     }
 
+# =====================
+# PROFESSIONAL REGISTER
+# =====================
+
+@router.post("/register-professional")
+def register_professional(
+    first_name: str,
+    last_name: str,
+    email: str,
+    password: str,
+    db: Session = Depends(
+        get_db
+    ),
+):
+
+    existing = (
+        db.query(User)
+        .filter(
+            User.email == email
+        )
+        .first()
+    )
+
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists",
+        )
+
+    professional = User(
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        hashed_password=hash_password(
+            password,
+        ),
+        credits=0,
+        plan="free",
+        role="professional",
+    )
+
+    db.add(
+        professional
+    )
+
+    db.commit()
+
+    db.refresh(
+        professional
+    )
+
+    db.execute(
+        text(
+            """
+            INSERT INTO professional_profiles (
+                user_id,
+                first_name,
+                last_name,
+                professional_email,
+                availability_status,
+                verification_status
+            )
+            VALUES (
+                :user_id,
+                :first_name,
+                :last_name,
+                :professional_email,
+                'unavailable',
+                'not_requested'
+            )
+            """
+        ),
+        {
+            "user_id": str(professional.id),
+            "first_name": professional.first_name,
+            "last_name": professional.last_name,
+            "professional_email": professional.email,
+        },
+    )
+
+    db.commit()
+
+    return {
+        "message": "Professional account created",
+        "user_id": professional.id,
+        "role": professional.role,
+    }
 
 # =====================
 # LOGIN
@@ -255,6 +342,8 @@ def login(
     return {
         "access_token": token,
         "token_type": "bearer",
+        "role": user.role,
+        "is_admin": user.is_admin,
     }
 
 
@@ -350,6 +439,8 @@ def get_admin_user(
         "email": user.email,
         "plan": user.plan,
         "credits": user.credits,
+        "role": user.role,
+        "is_admin": user.is_admin,
         "home_entitlement": dict(entitlement) if entitlement else None,
     }
 
