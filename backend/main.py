@@ -66,6 +66,10 @@ from routes.professional_requests import (
     router as professional_requests_router,
 )
 
+from routes.professional_profile import (
+    router as professional_profile_router,
+)
+
 from routes.reports import (
     router as reports_router,
 )
@@ -90,6 +94,10 @@ app.include_router(
 
 app.include_router(
     professional_requests_router,
+)
+
+app.include_router(
+    professional_profile_router,
 )
 
 app.include_router(

@@ -436,6 +436,13 @@
                         data.access_token
                     );
 
+                    const userRole =
+                        String(
+                            data.role || ""
+                        )
+                            .trim()
+                            .toLowerCase();
+
                     if (data.is_admin === true) {
 
                         localStorage.setItem(
@@ -448,7 +455,9 @@
                             "business"
                         );
 
-                    } else if (data.role === "professional") {
+                    } else if (
+                        userRole === "professional"
+                    ) {
 
                         localStorage.setItem(
                             "role",

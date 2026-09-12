@@ -55,13 +55,14 @@ def me(
         home_full_report_unlocked = False
 
     return {
-    "id": current_user.id,
-    "email": current_user.email,
-    "credits": current_user.credits,
-    "plan": current_user.plan,
-    "is_admin": current_user.is_admin,
-    "home_full_report_unlocked": home_full_report_unlocked,
-}
+        "id": current_user.id,
+        "email": current_user.email,
+        "credits": current_user.credits,
+        "plan": current_user.plan,
+        "role": current_user.role,
+        "is_admin": current_user.is_admin,
+        "home_full_report_unlocked": home_full_report_unlocked,
+    }
 
 
 # =====================

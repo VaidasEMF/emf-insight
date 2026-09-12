@@ -17689,7 +17689,7 @@
                     </button>
 
                     <button class="secondary-btn" onclick="startObjectPlacement('solar_inverter')">
-                      ☀️ Solar
+                      ☀ Solar
                     </button>
 
                     <button class="secondary-btn" onclick="startObjectPlacement('ev_charger')">
@@ -18607,7 +18607,7 @@
                   </div>
 
 
-                  <div class="user-menu-item" id="userProfileItem">
+                  <div class="user-menu-item" id="userProfileItem" onclick="openProfessionalProfile()">
                     <span class="user-menu-icon">👤</span>
 
                     <span class="user-menu-content">
@@ -22409,6 +22409,7 @@
       <script src="js/floors.js"></script>
 
       <script src="js/api.js"></script>
+    <script src="js/professional_profile.js"></script>
 
       <!-- ===================== -->
       <!-- 🔥 SHARED HELPERS -->
@@ -23634,7 +23635,7 @@
 
                                     title="Delete Room"
                                 >
-                                    🗑️
+                                    🗑
                                 </span>
 
                             </div>
@@ -24188,7 +24189,7 @@
 
     {
       type: "solar",
-      icon: "☀️",
+      icon: "☀",
       name: "Solar System"
     },
 
@@ -25042,7 +25043,7 @@
       window.scalePoints = [];
 
       updateStatus?.(
-        "📏 Click 2 points for scale"
+        "📏 Click 2 points for scale"
       );
     }
 
@@ -25303,7 +25304,7 @@
     const ratio = measured / total;
 
     if (ratio < 0.3) {
-      setGuide("⚠ Very low coverage — measure more points");
+      setGuide("⚠️ Very low coverage — measure more points");
       lastWarning = now;
     }
   }
@@ -28003,6 +28004,144 @@
   );
 </script>
 
+
+
+<!-- PROFESSIONAL PROFILE MODAL -->
+<div id="professionalProfileModal"
+     style="display:none;
+            position:fixed;
+            inset:0;
+            z-index:10000;
+            background:rgba(0,0,0,.45);
+            align-items:center;
+            justify-content:center;">
+
+  <div style="width:520px;
+              max-width:calc(100vw - 40px);
+              max-height:calc(100vh - 40px);
+              overflow:auto;
+              background:#fff;
+              border-radius:12px;
+              padding:24px;
+              box-shadow:0 20px 60px rgba(0,0,0,.25);">
+
+    <div style="display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:20px;">
+
+      <div>
+        <div style="font-size:20px;font-weight:600;">
+          Professional Profile
+        </div>
+
+        <div style="font-size:13px;color:#666;margin-top:4px;">
+          Your professional details
+        </div>
+      </div>
+
+      <button type="button"
+              onclick="closeProfessionalProfile()"
+              style="border:0;background:none;font-size:22px;cursor:pointer;">
+        ×
+      </button>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+      <label>
+        <div>First name</div>
+        <input id="professionalProfileFirstName"
+               type="text"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label>
+        <div>Last name</div>
+        <input id="professionalProfileLastName"
+               type="text"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label style="grid-column:1/-1;">
+        <div>Company name</div>
+        <input id="professionalProfileCompanyName"
+               type="text"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label style="grid-column:1/-1;">
+        <div>Professional email</div>
+        <input id="professionalProfileEmail"
+               type="email"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label style="grid-column:1/-1;">
+        <div>Professional phone</div>
+        <input id="professionalProfilePhone"
+               type="tel"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label>
+        <div>Country</div>
+        <input id="professionalProfileCountry"
+               type="text"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label>
+        <div>Country code</div>
+        <input id="professionalProfileCountryCode"
+               type="text"
+               maxlength="2"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label>
+        <div>City</div>
+        <input id="professionalProfileCity"
+               type="text"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+      <label>
+        <div>Postal code</div>
+        <input id="professionalProfilePostalCode"
+               type="text"
+               style="width:100%;box-sizing:border-box;">
+      </label>
+
+    </div>
+
+    <div id="professionalProfileStatus"
+         style="margin-top:14px;font-size:13px;">
+    </div>
+
+    <div style="display:flex;
+                justify-content:flex-end;
+                gap:10px;
+                margin-top:22px;">
+
+      <button type="button"
+              onclick="closeProfessionalProfile()">
+        Cancel
+      </button>
+
+      <button type="button"
+              onclick="saveProfessionalProfileForm()">
+        Save
+      </button>
+
+    </div>
+
+  </div>
+</div>
+<!-- END PROFESSIONAL PROFILE MODAL -->
 </body>
 
 </html>
+
+

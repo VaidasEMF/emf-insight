@@ -292,6 +292,61 @@
                 font-size: 27px;
             }
         }
+
+
+        .account-type {
+            margin-bottom: 24px;
+        }
+
+        .account-type-title {
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #24344d;
+        }
+
+        .account-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 15px;
+            margin-bottom: 10px;
+
+            border: 1px solid #d7dee8;
+            border-radius: 10px;
+
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .account-option:hover {
+            border-color: #b8c4d3;
+        }
+
+        .account-option input {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 auto;
+            margin: 2px 0 0;
+        }
+
+        .account-option span {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .account-option strong {
+            font-size: 14px;
+            color: #24344d;
+        }
+
+        .account-option small {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #7a8798;
+            font-weight: 400;
+        }
     </style>
 </head>
 
@@ -321,6 +376,32 @@
             <p class="intro">
                 Create an account to start your EMF assessment.
             </p>
+
+            <div class="account-type">
+                <div class="account-type-title">
+                    Account type
+                </div>
+
+                <label class="account-option">
+                    <input type="radio" name="accountType" value="home" checked>
+                    <span>
+                        <strong>Home Wellness</strong>
+                        <small>
+                            Assess and understand EMF exposure in your home.
+                        </small>
+                    </span>
+                </label>
+
+                <label class="account-option">
+                    <input type="radio" name="accountType" value="professional">
+                    <span>
+                        <strong>Professional</strong>
+                        <small>
+                            Conduct professional EMF assessments and Business Surveys.
+                        </small>
+                    </span>
+                </label>
+            </div>
 
 
             <!-- MESSAGE -->
@@ -504,6 +585,11 @@
                         "confirmPassword"
                     ).value;
 
+                const accountType =
+                    document.querySelector(
+                        'input[name="accountType"]:checked'
+                    )?.value || "home";
+
 
                 // PASSWORD CHECK
                 if (
@@ -559,9 +645,14 @@
                         });
 
 
+                    const registerEndpoint =
+                        accountType === "professional"
+                            ? "/register-professional"
+                            : "/register";
+
                     const response =
                         await fetch(
-                            `${API}/register?${params.toString()}`,
+                            `${API}${registerEndpoint}?${params.toString()}`,
                             {
                                 method: "POST"
                             }
@@ -583,7 +674,9 @@
 
 
                     showMessage(
-                        "Account created successfully. Redirecting to sign in...",
+                        accountType === "professional"
+                            ? "Professional account created successfully. Redirecting to sign in..."
+                            : "Account created successfully. Redirecting to sign in...",
                         "success"
                     );
 

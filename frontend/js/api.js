@@ -4379,9 +4379,6 @@ function closeProjectMenu() {
 window.closeProjectMenu =
     closeProjectMenu;
 
-// =====================================================
-// 🔥 LOAD PROJECT
-// =====================================================
 
 // =====================================================
 // 🔥 LOAD PROFESSIONAL / BUSINESS PROJECT

@@ -241,6 +241,21 @@
                 Choose the workspace you want to use.
             </p>
 
+            <div id="professionalNotice" style="
+        display:none;
+        margin-top:14px;
+        padding:12px 14px;
+        border:1px solid #dbe3ec;
+        border-radius:10px;
+        background:#f8fafc;
+        color:#475569;
+        font-size:14px;
+        line-height:1.5;
+    ">
+                You are signed in as a Professional.
+                Business Survey is your primary workspace.
+            </div>
+
         </section>
 
 
@@ -350,9 +365,7 @@
                 window.location.href = "login.html";
 
                 return;
-
             }
-
 
             try {
 
@@ -367,26 +380,45 @@
                     }
                 );
 
-
                 if (!response.ok) {
 
                     localStorage.removeItem("token");
+                    localStorage.removeItem("role");
 
                     window.location.href = "login.html";
 
                     return;
-
                 }
 
-
                 const user = await response.json();
-
 
                 document.getElementById(
                     "userEmail"
                 ).textContent =
                     user.email || "";
 
+                if (user.role) {
+
+                    localStorage.setItem(
+                        "role",
+                        user.role
+                    );
+                }
+
+                if (user.is_admin === true) {
+
+                    localStorage.setItem(
+                        "role",
+                        "admin"
+                    );
+                }
+
+                if (user.role === "professional") {
+
+                    document.getElementById(
+                        "professionalNotice"
+                    ).style.display = "block";
+                }
 
             }
             catch (error) {
@@ -401,9 +433,7 @@
                 document.getElementById(
                     "error"
                 ).style.display = "block";
-
             }
-
         }
 
 

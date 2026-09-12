@@ -1376,8 +1376,9 @@
                     <div>
                         <div class="eyebrow">EMF Insight · Account</div>
                         <h1>Account Dashboard</h1>
-                        <p class="lead">Manage your Home Wellness and Business Survey workspaces, projects, reports and
-                            account settings in one place.</p>
+                        <p class="lead" id="dashboardLead">
+                            Manage your current workspace, projects, reports and account settings.
+                        </p>
                     </div>
 
                     <div class="user-pill">
@@ -2138,8 +2139,73 @@ ADMIN PROFESSIONALS
 
         function applyDashboardWorkspaceMode() {
 
-            const mode = localStorage.getItem("workspaceMode") || "business";
-            const isHome = mode === "home";
+            const mode =
+                localStorage.getItem("workspaceMode")
+                || "home";
+
+            const isHome =
+                mode === "home";
+
+
+            // =========================================================
+            // WORKSPACE CARD — SHOW ONLY THE CURRENT WORKSPACE
+            // =========================================================
+
+            const workspaceCards =
+                document.querySelectorAll(
+                    ".workspace-card"
+                );
+
+            workspaceCards.forEach(card => {
+
+                const title =
+                    card.querySelector("h3");
+
+                if (!title) {
+                    return;
+                }
+
+                const text =
+                    title.textContent.trim();
+
+                if (text === "Home Wellness") {
+
+                    card.style.display =
+                        isHome ? "" : "none";
+
+                }
+
+                if (text === "Business Survey") {
+
+                    card.style.display =
+                        isHome ? "none" : "";
+                }
+            });
+
+
+            // =========================================================
+            // COMPANY & BRANDING — BUSINESS ONLY
+            // =========================================================
+
+            const brandingSection =
+                document.getElementById(
+                    "branding"
+                );
+
+            if (brandingSection) {
+                brandingSection.style.display =
+                    isHome ? "none" : "";
+            }
+
+            const brandingNav =
+                document.querySelector(
+                    '.nav-link[href="#branding"]'
+                );
+
+            if (brandingNav) {
+                brandingNav.style.display =
+                    isHome ? "none" : "";
+            }
 
 
             // =========================================================
@@ -2188,6 +2254,21 @@ ADMIN PROFESSIONALS
                     mode === "home"
                         ? "Home Wellness Projects"
                         : "Business Survey Projects";
+            }
+
+
+
+            const dashboardLead =
+                document.getElementById(
+                    "dashboardLead"
+                );
+
+            if (dashboardLead) {
+
+                dashboardLead.textContent =
+                    isHome
+                        ? "Manage your Home Wellness assessment, projects, reports and account settings."
+                        : "Manage your Business Survey projects, reports, billing and professional account settings.";
             }
 
 
@@ -3948,16 +4029,26 @@ ADMIN PROFESSIONALS
                 const dashboardMode =
                     localStorage.getItem("workspaceMode") || "business";
 
+                const workspaceLabel =
+                    dashboardMode === "home"
+                        ? "Home Wellness"
+                        : "Business Survey";
+
                 document.getElementById("userPlan").textContent =
                     dashboardMode === "home"
-                        ? "Home Wellness"
-                        : `Business Survey · ${plan}`;
-                document.getElementById("avatar").textContent = initials(firstName, lastName, email);
-                document.getElementById("sidebarEmail").textContent = email;
+                        ? workspaceLabel
+                        : `${workspaceLabel} · ${plan}`;
+
+                document.getElementById("avatar").textContent =
+                    initials(firstName, lastName, email);
+
+                document.getElementById("sidebarEmail").textContent =
+                    email;
+
                 document.getElementById("sidebarPlan").textContent =
                     dashboardMode === "home"
-                        ? "Home Wellness"
-                        : `Business Survey · ${plan}`;
+                        ? workspaceLabel
+                        : `${workspaceLabel} · ${plan}`;
 
                 document.getElementById("businessPlan").textContent = plan;
                 document.getElementById("businessCredits").textContent = credits;

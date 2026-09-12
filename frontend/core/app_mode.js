@@ -2016,17 +2016,15 @@ function updateWorkspaceUI() {
     // ==================================================
     // BUSINESS EMPTY PLAN STATE
     // ==================================================
+        if (
+            mode === "business"
+        ) {
 
-    if (
-        mode === "business" &&
-        hasActiveProject
-    ) {
+            updateBusinessEmptyPlanState?.();
 
-        updateBusinessEmptyPlanState?.();
+        }
 
-    }
-
-    else {
+        else {
 
         const businessEmptyPlanState =
             document.getElementById(
