@@ -65,7 +65,7 @@ def init_db():
                         city VARCHAR(100),
                         postal_code VARCHAR(30),
                         availability_status VARCHAR(50) NOT NULL DEFAULT 'unavailable',
-                        verification_status VARCHAR(50) NOT NULL DEFAULT 'pending',
+                        verification_status VARCHAR(50) NOT NULL DEFAULT 'not_requested',
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                     """
@@ -186,7 +186,7 @@ def init_db():
                 text(
                     """
                     ALTER TABLE users
-                    ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE
+                    ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'user'
                     """
                 )
             )

@@ -14,91 +14,90 @@ from sqlalchemy.orm import (
 
 from db.base import Base
 
-
 class User(Base):
-
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
-        index=True,
+        index=True
     )
 
     first_name: Mapped[str] = mapped_column(
         String,
         default="",
-        nullable=False,
+        nullable=False
     )
 
     last_name: Mapped[str] = mapped_column(
         String,
         default="",
-        nullable=False,
+        nullable=False
     )
 
     email: Mapped[str] = mapped_column(
         String,
         unique=True,
-        nullable=False,
+        nullable=False
     )
 
     hashed_password: Mapped[str] = mapped_column(
         String,
-        nullable=False,
+        nullable=False
     )
 
     credits: Mapped[int] = mapped_column(
         Integer,
-        default=1,
+        default=1
     )
 
     plan: Mapped[str] = mapped_column(
         String,
-        default="free",
+        default="free"
     )
 
     access_expires_at: Mapped[datetime | None] = mapped_column(
         DateTime,
-        nullable=True,
+        nullable=True
     )
 
     password_reset_token: Mapped[str | None] = mapped_column(
         String,
-        nullable=True,
+        nullable=True
     )
 
     password_reset_expires_at: Mapped[datetime | None] = mapped_column(
         DateTime,
-        nullable=True,
+        nullable=True
     )
 
     is_admin: Mapped[bool] = mapped_column(
         default=False,
-        nullable=False,
+        nullable=False
     )
 
+    role: Mapped[str] = mapped_column(
+        String,
+        default="user",
+        nullable=False
+    )
 
     company_name: Mapped[str] = mapped_column(
         String,
-        default="",
+        default=""
     )
 
     company_email: Mapped[str] = mapped_column(
         String,
-        default="",
+        default=""
     )
 
     logo_path: Mapped[str] = mapped_column(
         String,
-        default="",
+        default=""
     )
-
-    # =====================
-    # RELATIONSHIPS
-    # =====================
 
     projects = relationship(
         "Project",
-        back_populates="user",
+        back_populates="user"
     )
