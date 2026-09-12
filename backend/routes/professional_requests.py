@@ -34,9 +34,45 @@ def create_professional_request(
 ):
 
     # ---------------------------------
-    # HOME FULL REPORT ENTITLEMENT
+    # PROFESSIONAL ASSESSMENT ELIGIBILITY
+    # ---------------------------------
+    # A Home professional assessment can be requested when:
+    # 1. Full EMF Insight Report is unlocked, OR
+    # 2. The Home project contains at least one Indoor Source.
     # ---------------------------------
 
+    project_id = body.get("project_id")
+
+    if not project_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Home project ID is required.",
+        )
+
+    # Load the user's Home project
+    project = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                data
+            FROM projects
+            WHERE id = :project_id
+            AND user_id = :user_id
+        """),
+        {
+            "project_id": project_id,
+            "user_id": str(current_user.id),
+        },
+    ).mappings().first()
+
+    if not project:
+        raise HTTPException(
+            status_code=404,
+            detail="Home project not found.",
+        )
+
+    # Check Full Report entitlement
     entitlement = db.execute(
         text("""
             SELECT full_report_unlocked
@@ -48,10 +84,41 @@ def create_professional_request(
         },
     ).scalar()
 
-    if entitlement is not True:
+    full_report_unlocked = entitlement is True
+
+    # Check for Indoor Sources inside the Home project
+    project_data = project["data"]
+
+    indoor_source_count = 0
+
+    if isinstance(project_data, dict):
+        floors = project_data.get("floors", [])
+
+        if isinstance(floors, list):
+            for floor in floors:
+
+                if not isinstance(floor, dict):
+                    continue
+
+                sources = floor.get("sources", [])
+
+                if not isinstance(sources, list):
+                    continue
+
+                for source in sources:
+
+                    if not isinstance(source, dict):
+                        continue
+
+                    if source.get("placementType") != "outdoor":
+                        indoor_source_count += 1
+
+    has_indoor_sources = indoor_source_count > 0
+
+    if not full_report_unlocked and not has_indoor_sources:
         raise HTTPException(
             status_code=403,
-            detail="Full EMF Insight Report must be unlocked before requesting a professional assessment.",
+            detail="Please add an Indoor Source or unlock your Full EMF Insight Report before requesting a professional assessment.",
         )
 
     # ---------------------------------
