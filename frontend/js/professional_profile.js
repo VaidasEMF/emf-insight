@@ -427,6 +427,52 @@ async function openProfessionalProfile() {
         }
 
 
+        const completionStatus =
+            document.getElementById(
+                "professionalHomeProfileCompletionStatus"
+            );
+
+        const completeButton =
+            document.getElementById(
+                "professionalCompleteHomeProfileButton"
+            );
+
+        const verificationButton =
+            document.getElementById(
+                "professionalRequestVerificationButton"
+            );
+
+        if (profile.verification_status === "pending") {
+
+            if (completionStatus) {
+                completionStatus.innerHTML =
+                    '<span style="color:#16a34a;font-weight:600;">✓ Profile Complete</span><br><span style="color:#2563eb;font-weight:600;">Verification Pending</span>';
+            }
+
+            if (completeButton) {
+                completeButton.style.display = "none";
+            }
+
+            if (verificationButton) {
+                verificationButton.style.display = "none";
+            }
+
+        } else if (profile.verification_status === "verified") {
+
+            if (completionStatus) {
+                completionStatus.innerHTML =
+                    '<span style="color:#16a34a;font-weight:600;">Profile Complete</span><br><span style="color:#16a34a;font-weight:600;">Verified</span>';
+            }
+
+            if (completeButton) {
+                completeButton.style.display = "none";
+            }
+
+            if (verificationButton) {
+                verificationButton.style.display = "none";
+            }
+        }
+
         if (status) {
 
             status.textContent = "";
