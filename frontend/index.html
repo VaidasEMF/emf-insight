@@ -16977,6 +16977,94 @@
         width: 100%;
       }
     }
+
+
+    /* ==================================================
+   DELETE ACCOUNT MODAL
+   ================================================== */
+
+    #deleteAccountModal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    #deleteAccountModal .modal-content {
+      width: min(440px, calc(100vw - 40px));
+      box-sizing: border-box;
+
+      padding: 26px 28px 24px;
+
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+
+      box-shadow:
+        0 18px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    #deleteAccountModal h3 {
+      margin: 0 0 18px;
+
+      font-size: 21px;
+      line-height: 1.25;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    #deleteAccountModal p {
+      margin: 0 0 12px;
+
+      font-size: 14px;
+      line-height: 1.55;
+      color: #475569;
+    }
+
+    #deleteAccountModal p:last-of-type {
+      margin-bottom: 22px;
+    }
+
+    #deleteAccountModal .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    #deleteAccountModal .modal-actions button {
+      min-height: 38px;
+      padding: 0 16px;
+
+      border-radius: 7px;
+      border: 1px solid #cbd5e1;
+
+      background: #ffffff;
+      color: #334155;
+
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #deleteAccountModal .modal-actions button:hover {
+      background: #f8fafc;
+    }
+
+    #deleteAccountModal .modal-actions button:last-child {
+      border-color: #dc2626;
+      background: #dc2626;
+      color: #ffffff;
+    }
+
+    #deleteAccountModal .modal-actions button:last-child:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+    }
   </style>
 
 </head>
@@ -18699,6 +18787,25 @@
                 <div class="user-menu-divider"></div>
 
 
+                <div class="user-menu-item user-menu-item-danger" id="userDeleteAccountItem">
+
+                  <span class="user-menu-icon">⚠️</span>
+
+                  <span class="user-menu-content">
+
+                    <span class="user-menu-title">
+                      Delete Account
+                    </span>
+
+                    <span class="user-menu-subtitle">
+                      Permanently delete your account and data
+                    </span>
+
+                  </span>
+
+                </div>
+
+
                 <div class="user-menu-item user-menu-item-danger" id="userSignOutItem">
 
                   <span class="user-menu-icon">
@@ -18717,6 +18824,35 @@
 
               </div>
 
+            </div>
+
+            <div id="deleteAccountModal" class="modal-overlay" style="display:none;">
+              <div class="modal-content">
+
+                <h3>Delete Account</h3>
+
+                <p>
+                  Are you sure you want to permanently delete your account?
+                </p>
+
+                <p>
+                  This will delete your account and associated data.
+                  This action cannot be undone.
+                </p>
+
+                <div class="modal-actions">
+
+                  <button type="button" onclick="closeDeleteAccountModal()">
+                    Cancel
+                  </button>
+
+                  <button type="button" class="workspace-menu-item-danger" onclick="confirmDeleteAccount()">
+                    Delete my account
+                  </button>
+
+                </div>
+
+              </div>
             </div>
 
           </div>
@@ -22409,7 +22545,7 @@
       <script src="js/floors.js"></script>
 
       <script src="js/api.js"></script>
-    <script src="js/professional_profile.js"></script>
+      <script src="js/professional_profile.js"></script>
 
       <!-- ===================== -->
       <!-- 🔥 SHARED HELPERS -->
@@ -23016,6 +23152,90 @@
   window.toggleSidebarSection =
     toggleSidebarSection;
 
+
+  function openDeleteAccountModal() {
+    const modal =
+      document.getElementById(
+        "deleteAccountModal"
+      );
+
+    if (modal) {
+      modal.style.display = "flex";
+    }
+  }
+
+  function closeDeleteAccountModal() {
+    const modal =
+      document.getElementById(
+        "deleteAccountModal"
+      );
+
+    if (modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  async function confirmDeleteAccount() {
+    const modal =
+      document.getElementById("deleteAccountModal");
+
+    try {
+      const response = await fetch(
+        `${API}/me`,
+        {
+          method: "DELETE",
+          headers: getAuthHeaders()
+        }
+      );
+
+      if (!response.ok) {
+        let message = "Failed to delete account.";
+
+        try {
+          const data = await response.json();
+
+          if (data.detail) {
+            message = data.detail;
+          }
+        } catch (_) {
+          // Ignore invalid error response
+        }
+
+        throw new Error(message);
+      }
+
+      // =========================
+      // CLEAR LOCAL SESSION
+      // =========================
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_id");
+
+      localStorage.removeItem("project_id");
+      localStorage.removeItem("home_project_id");
+      localStorage.removeItem("business_project_id");
+
+      localStorage.removeItem("workspaceMode");
+      localStorage.removeItem("requestedWorkspace");
+
+      // =========================
+      // LOGIN
+      // =========================
+
+      window.location.href = "login.html";
+
+    } catch (error) {
+      console.error(
+        "DELETE ACCOUNT FAILED",
+        error
+      );
+
+      alert(
+        error.message ||
+        "Failed to delete account. Please try again."
+      );
+    }
+  }
 
   function getOccupancy(
     hours
@@ -28004,11 +28224,36 @@
   );
 </script>
 
+<script>
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
+      const deleteAccountItem =
+        document.getElementById(
+          "userDeleteAccountItem"
+        );
+
+      if (!deleteAccountItem) {
+        console.warn(
+          "DELETE ACCOUNT ITEM NOT FOUND"
+        );
+        return;
+      }
+
+      deleteAccountItem.addEventListener(
+        "click",
+        () => {
+          openDeleteAccountModal();
+        }
+      );
+
+    }
+  );
+</script>
 
 <!-- PROFESSIONAL PROFILE MODAL -->
-<div id="professionalProfileModal"
-     style="display:none;
+<div id="professionalProfileModal" style="display:none;
             position:fixed;
             inset:0;
             z-index:10000;
@@ -28040,84 +28285,351 @@
         </div>
       </div>
 
-      <button type="button"
-              onclick="closeProfessionalProfile()"
-              style="border:0;background:none;font-size:22px;cursor:pointer;">
+      <button type="button" onclick="closeProfessionalProfile()"
+        style="border:0;background:none;font-size:22px;cursor:pointer;">
         ×
       </button>
 
+    </div>
+
+    <div style="margin-bottom:18px;padding:12px 14px;border:1px solid #ddd;border-radius:8px;background:#f8f8f8;">
+      <div style="font-weight:600;margin-bottom:4px;">
+        Business access
+      </div>
+      <div style="font-size:13px;color:#666;">
+        Your professional account is active. You can use Business Survey and Business Projects without completing your Home Professional profile.
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;padding:14px;border:1px solid #ddd;border-radius:8px;">
+      <div style="font-weight:600;margin-bottom:5px;">
+        Want to work with Home Projects?
+      </div>
+      <div style="font-size:13px;color:#666;margin-bottom:10px;">
+        Complete your professional profile, add your service areas and submit your profile for verification to become eligible for Home Professional requests.
+      </div>
+
+      <div id="professionalHomeProfileCompletionStatus"
+           style="font-size:13px;margin-bottom:10px;">
+        Profile incomplete
+      </div>
+
+      <button type="button" id="professionalCompleteHomeProfileButton">
+        Complete Profile for Home Projects
+      </button>
+
+      <button type="button"
+              id="professionalRequestVerificationButton"
+              style="display:none;background:#2563eb;color:#fff;border:1px solid #2563eb;padding:6px 12px;border-radius:4px;cursor:pointer;">
+        Request Verification
+      </button>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
 
       <label>
         <div>First name</div>
-        <input id="professionalProfileFirstName"
-               type="text"
-               style="width:100%;box-sizing:border-box;">
+        <input id="professionalProfileFirstName" type="text" style="width:100%;box-sizing:border-box;">
       </label>
 
       <label>
         <div>Last name</div>
-        <input id="professionalProfileLastName"
-               type="text"
-               style="width:100%;box-sizing:border-box;">
+        <input id="professionalProfileLastName" type="text" style="width:100%;box-sizing:border-box;">
       </label>
 
       <label style="grid-column:1/-1;">
         <div>Company name</div>
-        <input id="professionalProfileCompanyName"
-               type="text"
-               style="width:100%;box-sizing:border-box;">
+        <input id="professionalProfileCompanyName" type="text" style="width:100%;box-sizing:border-box;">
       </label>
 
       <label style="grid-column:1/-1;">
         <div>Professional email</div>
-        <input id="professionalProfileEmail"
-               type="email"
-               style="width:100%;box-sizing:border-box;">
+        <input id="professionalProfileEmail" type="email" style="width:100%;box-sizing:border-box;">
       </label>
 
       <label style="grid-column:1/-1;">
-        <div>Professional phone</div>
-        <input id="professionalProfilePhone"
-               type="tel"
-               style="width:100%;box-sizing:border-box;">
+        <div style="margin-bottom:6px;">Phone</div>
+
+        <div style="display:grid;grid-template-columns:180px 1fr;gap:10px;">
+
+          <label style="font-size:12px;">
+            <div style="margin-bottom:3px;">Country calling code</div>
+            <select id="professionalProfilePhoneCountryCode"
+                    style="width:100%;box-sizing:border-box;">
+              <option value="">Select code</option>
+            </select>
+          </label>
+
+          <label style="font-size:12px;">
+            <div style="margin-bottom:3px;">Phone number</div>
+            <input id="professionalProfilePhone"
+                   type="tel"
+                   inputmode="tel"
+                   autocomplete="tel"
+                   placeholder="Enter phone number"
+                   style="width:100%;box-sizing:border-box;">
+          </label>
+
+        </div>
       </label>
 
       <label>
         <div>Country</div>
-        <input id="professionalProfileCountry"
-               type="text"
-               style="width:100%;box-sizing:border-box;">
-      </label>
-
-      <label>
-        <div>Country code</div>
-        <input id="professionalProfileCountryCode"
-               type="text"
-               maxlength="2"
-               style="width:100%;box-sizing:border-box;">
+        <select id="professionalProfileCountry" style="width:100%;box-sizing:border-box;">
+          <option value="">Select country</option>
+          <option value="Afghanistan">Afghanistan</option>
+          <option value="Albania">Albania</option>
+          <option value="Algeria">Algeria</option>
+          <option value="Andorra">Andorra</option>
+          <option value="Angola">Angola</option>
+          <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+          <option value="Argentina">Argentina</option>
+          <option value="Armenia">Armenia</option>
+          <option value="Australia">Australia</option>
+          <option value="Austria">Austria</option>
+          <option value="Azerbaijan">Azerbaijan</option>
+          <option value="Bahamas">Bahamas</option>
+          <option value="Bahrain">Bahrain</option>
+          <option value="Bangladesh">Bangladesh</option>
+          <option value="Barbados">Barbados</option>
+          <option value="Belarus">Belarus</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Belize">Belize</option>
+          <option value="Benin">Benin</option>
+          <option value="Bhutan">Bhutan</option>
+          <option value="Bolivia">Bolivia</option>
+          <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+          <option value="Botswana">Botswana</option>
+          <option value="Brazil">Brazil</option>
+          <option value="Brunei">Brunei</option>
+          <option value="Bulgaria">Bulgaria</option>
+          <option value="Burkina Faso">Burkina Faso</option>
+          <option value="Burundi">Burundi</option>
+          <option value="Cabo Verde">Cabo Verde</option>
+          <option value="Cambodia">Cambodia</option>
+          <option value="Cameroon">Cameroon</option>
+          <option value="Canada">Canada</option>
+          <option value="Central African Republic">Central African Republic</option>
+          <option value="Chad">Chad</option>
+          <option value="Chile">Chile</option>
+          <option value="China">China</option>
+          <option value="Colombia">Colombia</option>
+          <option value="Comoros">Comoros</option>
+          <option value="Congo">Congo</option>
+          <option value="Costa Rica">Costa Rica</option>
+          <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+          <option value="Croatia">Croatia</option>
+          <option value="Cuba">Cuba</option>
+          <option value="Cyprus">Cyprus</option>
+          <option value="Czechia">Czechia</option>
+          <option value="Democratic Republic of the Congo">Democratic Republic of the Congo</option>
+          <option value="Denmark">Denmark</option>
+          <option value="Djibouti">Djibouti</option>
+          <option value="Dominica">Dominica</option>
+          <option value="Dominican Republic">Dominican Republic</option>
+          <option value="Ecuador">Ecuador</option>
+          <option value="Egypt">Egypt</option>
+          <option value="El Salvador">El Salvador</option>
+          <option value="Equatorial Guinea">Equatorial Guinea</option>
+          <option value="Eritrea">Eritrea</option>
+          <option value="Estonia">Estonia</option>
+          <option value="Eswatini">Eswatini</option>
+          <option value="Ethiopia">Ethiopia</option>
+          <option value="Fiji">Fiji</option>
+          <option value="Finland">Finland</option>
+          <option value="France">France</option>
+          <option value="Gabon">Gabon</option>
+          <option value="Gambia">Gambia</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Germany">Germany</option>
+          <option value="Ghana">Ghana</option>
+          <option value="Greece">Greece</option>
+          <option value="Grenada">Grenada</option>
+          <option value="Guatemala">Guatemala</option>
+          <option value="Guinea">Guinea</option>
+          <option value="Guinea-Bissau">Guinea-Bissau</option>
+          <option value="Guyana">Guyana</option>
+          <option value="Haiti">Haiti</option>
+          <option value="Honduras">Honduras</option>
+          <option value="Hungary">Hungary</option>
+          <option value="Iceland">Iceland</option>
+          <option value="India">India</option>
+          <option value="Indonesia">Indonesia</option>
+          <option value="Iran">Iran</option>
+          <option value="Iraq">Iraq</option>
+          <option value="Ireland">Ireland</option>
+          <option value="Israel">Israel</option>
+          <option value="Italy">Italy</option>
+          <option value="Jamaica">Jamaica</option>
+          <option value="Japan">Japan</option>
+          <option value="Jordan">Jordan</option>
+          <option value="Kazakhstan">Kazakhstan</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Kiribati">Kiribati</option>
+          <option value="Kuwait">Kuwait</option>
+          <option value="Kyrgyzstan">Kyrgyzstan</option>
+          <option value="Laos">Laos</option>
+          <option value="Latvia">Latvia</option>
+          <option value="Lebanon">Lebanon</option>
+          <option value="Lesotho">Lesotho</option>
+          <option value="Liberia">Liberia</option>
+          <option value="Libya">Libya</option>
+          <option value="Liechtenstein">Liechtenstein</option>
+          <option value="Lithuania">Lithuania</option>
+          <option value="Luxembourg">Luxembourg</option>
+          <option value="Madagascar">Madagascar</option>
+          <option value="Malawi">Malawi</option>
+          <option value="Malaysia">Malaysia</option>
+          <option value="Maldives">Maldives</option>
+          <option value="Mali">Mali</option>
+          <option value="Malta">Malta</option>
+          <option value="Marshall Islands">Marshall Islands</option>
+          <option value="Mauritania">Mauritania</option>
+          <option value="Mauritius">Mauritius</option>
+          <option value="Mexico">Mexico</option>
+          <option value="Micronesia">Micronesia</option>
+          <option value="Moldova">Moldova</option>
+          <option value="Monaco">Monaco</option>
+          <option value="Mongolia">Mongolia</option>
+          <option value="Montenegro">Montenegro</option>
+          <option value="Morocco">Morocco</option>
+          <option value="Mozambique">Mozambique</option>
+          <option value="Myanmar">Myanmar</option>
+          <option value="Namibia">Namibia</option>
+          <option value="Nauru">Nauru</option>
+          <option value="Nepal">Nepal</option>
+          <option value="Netherlands">Netherlands</option>
+          <option value="New Zealand">New Zealand</option>
+          <option value="Nicaragua">Nicaragua</option>
+          <option value="Niger">Niger</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="North Korea">North Korea</option>
+          <option value="North Macedonia">North Macedonia</option>
+          <option value="Norway">Norway</option>
+          <option value="Oman">Oman</option>
+          <option value="Pakistan">Pakistan</option>
+          <option value="Palau">Palau</option>
+          <option value="Palestine">Palestine</option>
+          <option value="Panama">Panama</option>
+          <option value="Papua New Guinea">Papua New Guinea</option>
+          <option value="Paraguay">Paraguay</option>
+          <option value="Peru">Peru</option>
+          <option value="Philippines">Philippines</option>
+          <option value="Poland">Poland</option>
+          <option value="Portugal">Portugal</option>
+          <option value="Qatar">Qatar</option>
+          <option value="Romania">Romania</option>
+          <option value="Russia">Russia</option>
+          <option value="Rwanda">Rwanda</option>
+          <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+          <option value="Saint Lucia">Saint Lucia</option>
+          <option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+          <option value="Samoa">Samoa</option>
+          <option value="San Marino">San Marino</option>
+          <option value="Sao Tome and Principe">Sao Tome and Principe</option>
+          <option value="Saudi Arabia">Saudi Arabia</option>
+          <option value="Senegal">Senegal</option>
+          <option value="Serbia">Serbia</option>
+          <option value="Seychelles">Seychelles</option>
+          <option value="Sierra Leone">Sierra Leone</option>
+          <option value="Singapore">Singapore</option>
+          <option value="Slovakia">Slovakia</option>
+          <option value="Slovenia">Slovenia</option>
+          <option value="Solomon Islands">Solomon Islands</option>
+          <option value="Somalia">Somalia</option>
+          <option value="South Africa">South Africa</option>
+          <option value="South Korea">South Korea</option>
+          <option value="South Sudan">South Sudan</option>
+          <option value="Spain">Spain</option>
+          <option value="Sri Lanka">Sri Lanka</option>
+          <option value="Sudan">Sudan</option>
+          <option value="Suriname">Suriname</option>
+          <option value="Sweden">Sweden</option>
+          <option value="Switzerland">Switzerland</option>
+          <option value="Syria">Syria</option>
+          <option value="Tajikistan">Tajikistan</option>
+          <option value="Tanzania">Tanzania</option>
+          <option value="Thailand">Thailand</option>
+          <option value="Timor-Leste">Timor-Leste</option>
+          <option value="Togo">Togo</option>
+          <option value="Tonga">Tonga</option>
+          <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+          <option value="Tunisia">Tunisia</option>
+          <option value="Türkiye">Türkiye</option>
+          <option value="Turkmenistan">Turkmenistan</option>
+          <option value="Tuvalu">Tuvalu</option>
+          <option value="Uganda">Uganda</option>
+          <option value="Ukraine">Ukraine</option>
+          <option value="United Arab Emirates">United Arab Emirates</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="United States">United States</option>
+          <option value="Uruguay">Uruguay</option>
+          <option value="Uzbekistan">Uzbekistan</option>
+          <option value="Vanuatu">Vanuatu</option>
+          <option value="Vatican City">Vatican City</option>
+          <option value="Venezuela">Venezuela</option>
+          <option value="Vietnam">Vietnam</option>
+          <option value="Yemen">Yemen</option>
+          <option value="Zambia">Zambia</option>
+          <option value="Zimbabwe">Zimbabwe</option>
+        </select>
       </label>
 
       <label>
         <div>City</div>
-        <input id="professionalProfileCity"
-               type="text"
-               style="width:100%;box-sizing:border-box;">
+        <input id="professionalProfileCity" type="text" style="width:100%;box-sizing:border-box;">
       </label>
 
       <label>
         <div>Postal code</div>
-        <input id="professionalProfilePostalCode"
-               type="text"
-               style="width:100%;box-sizing:border-box;">
+        <input id="professionalProfilePostalCode" type="text" style="width:100%;box-sizing:border-box;">
       </label>
+
+      <div style="grid-column:1/-1;margin-top:8px;">
+        <div style="font-weight:600;margin-bottom:8px;">Property Service Areas</div>
+
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">
+          Where can you provide property services?
+        </div>
+
+        <div style="font-size:13px;color:#666;margin-bottom:10px;">
+          Add the areas where you are available to work on properties. Your primary professional location above is already included, so only add additional areas here.
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <label>
+            <div>Country</div>
+            <select id="professionalServiceAreaCountry" style="width:100%;box-sizing:border-box;">
+              <option value="">Select country</option>
+            </select>
+          </label>
+
+          <label>
+            <div>Region / County</div>
+            <input id="professionalServiceAreaRegion" type="text" style="width:100%;box-sizing:border-box;">
+          </label>
+
+          <label>
+            <div>City / Town</div>
+            <input id="professionalServiceAreaCity" type="text" style="width:100%;box-sizing:border-box;">
+          </label>
+
+          <label>
+            <div>Postal / Postcode</div>
+            <input id="professionalServiceAreaPostalCode" type="text" style="width:100%;box-sizing:border-box;">
+          </label>
+        </div>
+
+        <button type="button" id="professionalServiceAreaAdd" style="margin-top:10px;">
+          Add area
+        </button>
+
+        <div id="professionalServiceAreasList" style="margin-top:12px;"></div>
+      </div>
 
     </div>
 
-    <div id="professionalProfileStatus"
-         style="margin-top:14px;font-size:13px;">
+    <div id="professionalProfileStatus" style="margin-top:14px;font-size:13px;">
     </div>
 
     <div style="display:flex;
@@ -28125,13 +28637,11 @@
                 gap:10px;
                 margin-top:22px;">
 
-      <button type="button"
-              onclick="closeProfessionalProfile()">
+      <button type="button" onclick="closeProfessionalProfile()">
         Cancel
       </button>
 
-      <button type="button"
-              onclick="saveProfessionalProfileForm()">
+      <button type="button" onclick="saveProfessionalProfileForm()">
         Save
       </button>
 
@@ -28143,5 +28653,3 @@
 </body>
 
 </html>
-
-

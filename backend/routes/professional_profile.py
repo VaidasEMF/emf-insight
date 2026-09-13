@@ -164,3 +164,97 @@ def update_professional_profile(
         current_user=current_user,
         db=db,
     )
+
+@router.post("/profile/request-verification")
+def request_professional_verification(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if current_user.role != "professional":
+        raise HTTPException(
+            status_code=403,
+            detail="Professional account required",
+        )
+
+    profile = db.execute(
+        text(
+            """
+            SELECT
+                id,
+                first_name,
+                last_name,
+                company_name,
+                professional_email,
+                professional_phone,
+                country,
+                city,
+                postal_code,
+                verification_status
+            FROM professional_profiles
+            WHERE user_id = :user_id
+            """
+        ),
+        {"user_id": str(current_user.id)},
+    ).mappings().first()
+
+    if not profile:
+        raise HTTPException(
+            status_code=404,
+            detail="Professional profile not found",
+        )
+
+    if profile["verification_status"] == "verified":
+        raise HTTPException(
+            status_code=400,
+            detail="Professional profile is already verified",
+        )
+
+    if profile["verification_status"] == "pending":
+        raise HTTPException(
+            status_code=400,
+            detail="Verification request is already pending",
+        )
+
+    required_fields = {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "company_name": "Company",
+        "professional_email": "Professional email",
+        "professional_phone": "Phone",
+        "country": "Country",
+        "city": "City / Town",
+        "postal_code": "Postal / Postcode",
+    }
+
+    missing_fields = [
+        label
+        for field, label in required_fields.items()
+        if not str(profile[field] or "").strip()
+    ]
+
+    if missing_fields:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Professional profile is incomplete",
+                "missing_fields": missing_fields,
+            },
+        )
+
+    db.execute(
+        text(
+            """
+            UPDATE professional_profiles
+            SET verification_status = 'pending'
+            WHERE id = :profile_id
+            """
+        ),
+        {"profile_id": profile["id"]},
+    )
+
+    db.commit()
+
+    return get_professional_profile(
+        current_user=current_user,
+        db=db,
+    )
