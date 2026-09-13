@@ -1968,6 +1968,9 @@ ADMIN PROFESSIONALS
                             <option value="verified">
                                 Verified
                             </option>
+                            <option value="rejected">
+                                Rejected
+                            </option>
                             <option value="suspended">
                                 Suspended
                             </option>
@@ -1981,6 +1984,20 @@ ADMIN PROFESSIONALS
                     <button type="button" class="btn-secondary" onclick="closeAdminProfessionalModal();">
                         Cancel
                     </button>
+
+                    <div id="adminProfessionalReviewActions" style="display:none; gap:10px;">
+
+                        <button type="button" class="btn-secondary" id="adminProfessionalRejectButton"
+                            onclick="reviewAdminProfessional('rejected');">
+                            Reject
+                        </button>
+
+                        <button type="button" class="btn-primary" id="adminProfessionalApproveButton"
+                            onclick="reviewAdminProfessional('verified');">
+                            Approve
+                        </button>
+
+                    </div>
 
                     <button type="button" class="btn-primary" id="adminProfessionalSaveButton"
                         onclick="saveAdminProfessional();">
@@ -3271,9 +3288,9 @@ ADMIN PROFESSIONALS
                                     <button
                                         type="button"
                                         class="admin-edit-button"
-                                        onclick="openAdminProfessionalEdit(${professional.id})"
+                                        onclick="${verification === "pending" ? "openAdminProfessionalReview(" + professional.id + ")" : "openAdminProfessionalEdit(" + professional.id + ")"}"
                                     >
-                                        Edit
+                                        ${verification === "pending" ? "Review" : "Edit"}
                                     </button>
                                 </td>
 
@@ -3358,9 +3375,17 @@ ADMIN PROFESSIONALS
                 "adminProfessionalVerification"
             ).value = "pending";
 
-            document.getElementById(
-                "adminProfessionalModal"
-            ).style.display = "flex";
+            const reviewActions = document.getElementById("adminProfessionalReviewActions");
+
+
+            if (reviewActions) {
+
+                reviewActions.style.display = "none";
+
+            }
+
+
+            document.getElementById("adminProfessionalModal").style.display = "flex";
         }
 
 
@@ -3462,11 +3487,236 @@ ADMIN PROFESSIONALS
                 professional.verification_status
                 || "pending";
 
-            document.getElementById(
-                "adminProfessionalModal"
-            ).style.display = "flex";
+            const reviewActions = document.getElementById("adminProfessionalReviewActions");
+
+
+            if (reviewActions) {
+
+                reviewActions.style.display = "none";
+
+            }
+
+
+            document.getElementById("adminProfessionalModal").style.display = "flex";
         }
 
+
+        function openAdminProfessionalReview(
+            professionalId
+        ) {
+
+            const professional =
+                adminProfessionalEntries.find(
+                    item =>
+                        Number(item.id) ===
+                        Number(professionalId)
+                );
+
+            if (!professional) {
+                return;
+            }
+
+            adminProfessionalEditingId =
+                professional.id;
+
+            document.getElementById(
+                "adminProfessionalModalTitle"
+            ).textContent = "Review Professional";
+
+            document.getElementById(
+                "adminProfessionalModalSubtitle"
+            ).textContent =
+                `${professional.first_name || ""} ${professional.last_name || ""}`.trim()
+                || "Review professional verification.";
+
+            document.getElementById(
+                "adminProfessionalModalStatus"
+            ).textContent = "";
+
+            document.getElementById(
+                "adminProfessionalUserId"
+            ).value =
+                professional.user_id || "";
+
+            document.getElementById(
+                "adminProfessionalUserId"
+            ).disabled = true;
+
+            document.getElementById(
+                "adminProfessionalCompany"
+            ).value =
+                professional.company_name || "";
+
+            document.getElementById(
+                "adminProfessionalFirstName"
+            ).value =
+                professional.first_name || "";
+
+            document.getElementById(
+                "adminProfessionalLastName"
+            ).value =
+                professional.last_name || "";
+
+            document.getElementById(
+                "adminProfessionalEmail"
+            ).value =
+                professional.professional_email || "";
+
+            document.getElementById(
+                "adminProfessionalPhone"
+            ).value =
+                professional.professional_phone || "";
+
+            document.getElementById(
+                "adminProfessionalCountryCode"
+            ).value =
+                professional.country_code || "";
+
+            document.getElementById(
+                "adminProfessionalCountry"
+            ).value =
+                professional.country || "";
+
+            document.getElementById(
+                "adminProfessionalCity"
+            ).value =
+                professional.city || "";
+
+            document.getElementById(
+                "adminProfessionalPostalCode"
+            ).value =
+                professional.postal_code || "";
+
+            document.getElementById(
+                "adminProfessionalAvailability"
+            ).value =
+                professional.availability_status
+                || "unavailable";
+
+            document.getElementById(
+                "adminProfessionalVerification"
+            ).value = "pending";
+
+const reviewActions = document.getElementById("adminProfessionalReviewActions");
+
+            if (reviewActions) {
+                reviewActions.style.display = "flex";
+            }
+
+            document.getElementById("adminProfessionalModal").style.display = "flex";
+        }
+
+        async function reviewAdminProfessional(
+            decision
+        ) {
+
+            if (
+                decision !== "verified" &&
+                decision !== "rejected"
+            ) {
+                return;
+            }
+
+            if (
+                adminProfessionalEditingId === null ||
+                adminProfessionalEditingId === undefined
+            ) {
+                return;
+            }
+
+            const action =
+                decision === "verified"
+                    ? "Approve"
+                    : "Reject";
+
+            const confirmed = window.confirm(
+                `${action} this professional verification request?`
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            const status =
+                document.getElementById(
+                    "adminProfessionalModalStatus"
+                );
+
+            const approveButton =
+                document.getElementById(
+                    "adminProfessionalApproveButton"
+                );
+
+            const rejectButton =
+                document.getElementById(
+                    "adminProfessionalRejectButton"
+                );
+
+            if (status) {
+                status.textContent =
+                    `${action}ing verification request...`;
+            }
+
+            if (approveButton) {
+                approveButton.disabled = true;
+            }
+
+            if (rejectButton) {
+                rejectButton.disabled = true;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `${API}/admin/professionals/${adminProfessionalEditingId}`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            verification_status: decision
+                        })
+                    }
+                );
+
+                const result =
+                    await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.detail ||
+                        "Unable to update verification status."
+                    );
+                }
+
+                await loadAdminProfessionals();
+
+                closeAdminProfessionalModal();
+
+            } catch (error) {
+
+                console.error(
+                    "Admin professional review failed:",
+                    error
+                );
+
+                if (status) {
+                    status.textContent =
+                        error.message ||
+                        "Unable to update verification status.";
+                }
+
+                if (approveButton) {
+                    approveButton.disabled = false;
+                }
+
+                if (rejectButton) {
+                    rejectButton.disabled = false;
+                }
+            }
+        }
 
         function closeAdminProfessionalModal() {
 
