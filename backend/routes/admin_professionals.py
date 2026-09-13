@@ -305,6 +305,7 @@ def update_professional(
     allowed_verification = {
         "pending",
         "verified",
+        "rejected",
         "suspended",
     }
 
