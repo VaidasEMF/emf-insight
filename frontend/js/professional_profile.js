@@ -443,34 +443,35 @@ async function openProfessionalProfile() {
             );
 
         if (profile.verification_status === "pending") {
-
             if (completionStatus) {
+                completionStatus.style.color = "";
                 completionStatus.innerHTML =
-                    '<span style="color:#16a34a;font-weight:600;">✓ Profile Complete</span><br><span style="color:#2563eb;font-weight:600;">Verification Pending</span>';
+                    '<span style="color:#16a34a;font-weight:600;">&#10003; Profile Complete</span><br><span style="color:#2563eb;font-weight:600;">Verification Pending</span>';
             }
-
-            if (completeButton) {
-                completeButton.style.display = "none";
-            }
-
-            if (verificationButton) {
-                verificationButton.style.display = "none";
-            }
-
+            if (completeButton) completeButton.style.display = "none";
+            if (verificationButton) verificationButton.style.display = "none";
         } else if (profile.verification_status === "verified") {
-
             if (completionStatus) {
                 completionStatus.innerHTML =
-                    '<span style="color:#16a34a;font-weight:600;">Profile Complete</span><br><span style="color:#16a34a;font-weight:600;">Verified</span>';
+                    '<span style="color:#16a34a;font-weight:600;">&#10003; Profile Complete</span><br><span style="color:#16a34a;font-weight:600;">&#10003; Verified</span>';
             }
-
-            if (completeButton) {
-                completeButton.style.display = "none";
+            if (completeButton) completeButton.style.display = "none";
+            if (verificationButton) verificationButton.style.display = "none";
+        } else if (profile.verification_status === "rejected") {
+            if (completionStatus) {
+                completionStatus.innerHTML =
+                    '<span style="color:#16a34a;font-weight:600;">&#10003; Profile Complete</span><br><span style="color:#dc2626;font-weight:700;">Verification Rejected</span>';
             }
-
-            if (verificationButton) {
-                verificationButton.style.display = "none";
+            if (completeButton) completeButton.style.display = "none";
+            if (verificationButton) verificationButton.style.display = "";
+        } else {
+            if (completionStatus) {
+                completionStatus.innerHTML =
+                    '<span style="color:#dc2626;font-weight:700;">Profile Incomplete</span>';
+                completionStatus.style.color = "#dc2626";
             }
+            if (completeButton) completeButton.style.display = "";
+            if (verificationButton) verificationButton.style.display = "none";
         }
 
         if (status) {

@@ -474,7 +474,8 @@ function brGetRecommendations(
 function brRenderHeatmapPreview(
     container,
     analysis,
-    floorIndex
+    floorIndex,
+    isDemo
 ) {
 
     if (!container) {
@@ -784,24 +785,26 @@ function brRenderHeatmapPreview(
         );
 
 
-        const blurLayer =
-            document.createElement(
-                "div"
-            );
+        if (!isDemo) {
 
-        blurLayer.className =
-            "br-heatmap-blur";
+            const blurLayer =
+                document.createElement(
+                    "div"
+                );
+
+            blurLayer.className =
+                "br-heatmap-blur";
 
 
-        const lock =
-            document.createElement(
-                "div"
-            );
+            const lock =
+                document.createElement(
+                    "div"
+                );
 
-        lock.className =
-            "br-heatmap-lock";
+            lock.className =
+                "br-heatmap-lock";
 
-        lock.innerHTML = `
+            lock.innerHTML = `
             <div class="br-lock-icon">
                 🔒
             </div>
@@ -819,13 +822,14 @@ function brRenderHeatmapPreview(
         `;
 
 
-        shell.appendChild(
-            blurLayer
-        );
+            shell.appendChild(
+                blurLayer
+            );
 
-        shell.appendChild(
-            lock
-        );
+            shell.appendChild(
+                lock
+            );
+        }
 
 
         container.appendChild(
@@ -962,7 +966,8 @@ async function openBusinessResults() {
 
         renderBusinessResultsPreview(
             analysis,
-            user
+            user,
+            user?.professional_demo_active === true
         );
 
 
@@ -987,7 +992,8 @@ async function openBusinessResults() {
 
 function renderBusinessResultsPreview(
     analysis,
-    user
+    user,
+    isDemo
 ) {
 
     document
@@ -2526,7 +2532,8 @@ function renderBusinessResultsPreview(
             "brHeatmapPreview"
         ),
         analysis,
-        0
+        0,
+        isDemo
     );
 
 
@@ -2553,7 +2560,8 @@ function renderBusinessResultsPreview(
                     analysis,
                     Number(
                         event.target.value
-                    )
+                    ),
+                    isDemo
                 );
             }
         );

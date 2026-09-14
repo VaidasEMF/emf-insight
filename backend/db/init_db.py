@@ -166,6 +166,29 @@ def init_db():
             )
 
     # ==================================================
+    # PROFESSIONAL DEMO LINKS
+    # ==================================================
+
+    if engine.dialect.name == "postgresql":
+
+        with engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS professional_demo_links (
+                        id SERIAL PRIMARY KEY,
+                        token VARCHAR(255) NOT NULL UNIQUE,
+                        status VARCHAR(30) NOT NULL DEFAULT 'available',
+                        user_id VARCHAR(255),
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        activated_at TIMESTAMP,
+                        expires_at TIMESTAMP
+                    )
+                    """
+                )
+            )
+
     # DATABASE MIGRATIONS
     # ==================================================
 

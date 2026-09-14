@@ -35,6 +35,38 @@ def me(
 
     home_full_report_unlocked = False
 
+    professional_demo_active = False
+    professional_demo_expires_at = None
+
+    try:
+        from auth.entitlements import is_professional_demo_active
+        from sqlalchemy import text
+        from datetime import datetime
+
+        professional_demo_active = is_professional_demo_active(
+            current_user,
+            db,
+        )
+
+        if professional_demo_active:
+            professional_demo_expires_at = db.execute(
+                text("""
+                    SELECT expires_at
+                    FROM professional_demo_links
+                    WHERE user_id = :user_id
+                      AND status = 'active'
+                    ORDER BY expires_at DESC
+                    LIMIT 1
+                """),
+                {
+                    "user_id": str(current_user.id),
+                },
+            ).scalar()
+
+    except Exception:
+        professional_demo_active = False
+        professional_demo_expires_at = None
+
     try:
         from sqlalchemy import text
 
@@ -62,6 +94,12 @@ def me(
         "role": current_user.role,
         "is_admin": current_user.is_admin,
         "home_full_report_unlocked": home_full_report_unlocked,
+        "professional_demo_active": professional_demo_active,
+        "professional_demo_expires_at": (
+            professional_demo_expires_at.isoformat()
+            if professional_demo_expires_at
+            else None
+        ),
     }
 
 

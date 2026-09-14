@@ -17067,6 +17067,104 @@
     }
   </style>
 
+
+  <style id="pdfMeasurementWarningStyles">
+    #pdfMeasurementWarningOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(15, 23, 42, 0.48);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    #pdfMeasurementWarningModal {
+      width: min(440px, 100%);
+      background: #ffffff;
+      border: 1px solid #dfe4ec;
+      border-radius: 12px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      position: relative;
+      padding: 24px 26px 22px;
+      box-sizing: border-box;
+    }
+
+    #pdfMeasurementWarningClose {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      background: transparent;
+      color: #7b8494;
+      font-size: 22px;
+      line-height: 30px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    #pdfMeasurementWarningClose:hover {
+      background: #f3f5f8;
+      color: #374151;
+    }
+
+    .pdf-measurement-warning-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #f3f5f8;
+      color: #4b5563;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .pdf-measurement-warning-title {
+      margin: 0 34px 9px 0;
+      color: #1f2937;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .pdf-measurement-warning-text {
+      margin: 0;
+      color: #667085;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .pdf-measurement-warning-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 22px;
+    }
+
+    #pdfMeasurementWarningOk {
+      min-width: 78px;
+      height: 36px;
+      padding: 0 18px;
+      border: 1px solid #3448c5;
+      border-radius: 7px;
+      background: #3448c5;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #pdfMeasurementWarningOk:hover {
+      background: #293aa8;
+      border-color: #293aa8;
+    }
+  </style>
 </head>
 
 
@@ -26239,7 +26337,8 @@
         return;
       }
 
-      const pdfWindow = window.open("", "_blank");
+
+
 
       const res = await fetch(
 
@@ -26273,29 +26372,27 @@
       );
 
       // 🔥 server down
-      if (!res.ok) {
-
-        throw new Error(
-          "PDF server offline"
-        );
-      }
-
       const data =
         await res.json();
 
-      if (data.pdf_url) {
+      if (!res.ok) {
 
-        if (pdfWindow) {
+        if (data.detail === "No measurement data found") {
+          showPDFMeasurementWarning();
 
-          pdfWindow.location.href =
-            `${API}${data.pdf_url}`;
-
-        } else {
-
-          alert(
-            "Please allow pop-ups for EMF Insight to open the Expert Report."
-          );
+          return;
         }
+
+        throw new Error(
+          data.detail || "PDF generation failed"
+        );
+      }
+
+      if (data.pdf_url) {
+        window.open(
+          `${API}${data.pdf_url}`,
+          "_blank"
+        );
       }
 
       else {
@@ -26311,10 +26408,17 @@
 
     catch (err) {
 
-      console.error(err);
+      console.error("PDF generation error:", err);
+
+      if (String(err?.message || "").includes("No measurement data found")) {
+
+        showPDFMeasurementWarning();
+
+        return;
+      }
 
       alert(
-        "PDF server not running"
+        err?.message || "PDF generation failed"
       );
     }
   }
@@ -28297,7 +28401,8 @@
         Business access
       </div>
       <div style="font-size:13px;color:#666;">
-        Your professional account is active. You can use Business Survey and Business Projects without completing your Home Professional profile.
+        Your professional account is active. You can use Business Survey and Business Projects without completing your
+        Home Professional profile.
       </div>
     </div>
 
@@ -28306,21 +28411,21 @@
         Want to work with Home Projects?
       </div>
       <div style="font-size:13px;color:#666;margin-bottom:10px;">
-        Complete your professional profile, add your service areas and submit your profile for verification to become eligible for Home Professional requests.
+        Complete your professional profile, add your service areas and submit your profile for verification to become
+        eligible for Home Professional requests.
       </div>
 
       <div id="professionalHomeProfileCompletionStatus"
-           style="font-size:13px;margin-bottom:10px;">
-        Profile incomplete
+        style="font-size:13px;margin-bottom:10px;color:#dc2626;font-weight:700;">
+        Profile Incomplete
       </div>
 
       <button type="button" id="professionalCompleteHomeProfileButton">
         Complete Profile for Home Projects
       </button>
 
-      <button type="button"
-              id="professionalRequestVerificationButton"
-              style="display:none;background:#2563eb;color:#fff;border:1px solid #2563eb;padding:6px 12px;border-radius:4px;cursor:pointer;">
+      <button type="button" id="professionalRequestVerificationButton"
+        style="display:none;background:#2563eb;color:#fff;border:1px solid #2563eb;padding:6px 12px;border-radius:4px;cursor:pointer;">
         Request Verification
       </button>
     </div>
@@ -28354,20 +28459,15 @@
 
           <label style="font-size:12px;">
             <div style="margin-bottom:3px;">Country calling code</div>
-            <select id="professionalProfilePhoneCountryCode"
-                    style="width:100%;box-sizing:border-box;">
+            <select id="professionalProfilePhoneCountryCode" style="width:100%;box-sizing:border-box;">
               <option value="">Select code</option>
             </select>
           </label>
 
           <label style="font-size:12px;">
             <div style="margin-bottom:3px;">Phone number</div>
-            <input id="professionalProfilePhone"
-                   type="tel"
-                   inputmode="tel"
-                   autocomplete="tel"
-                   placeholder="Enter phone number"
-                   style="width:100%;box-sizing:border-box;">
+            <input id="professionalProfilePhone" type="tel" inputmode="tel" autocomplete="tel"
+              placeholder="Enter phone number" style="width:100%;box-sizing:border-box;">
           </label>
 
         </div>
@@ -28593,7 +28693,8 @@
         </div>
 
         <div style="font-size:13px;color:#666;margin-bottom:10px;">
-          Add the areas where you are available to work on properties. Your primary professional location above is already included, so only add additional areas here.
+          Add the areas where you are available to work on properties. Your primary professional location above is
+          already included, so only add additional areas here.
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
@@ -28650,6 +28751,73 @@
   </div>
 </div>
 <!-- END PROFESSIONAL PROFILE MODAL -->
+
+<div id="pdfMeasurementWarningOverlay">
+  <div id="pdfMeasurementWarningModal" role="dialog" aria-modal="true" aria-labelledby="pdfMeasurementWarningTitle">
+    <button type="button" id="pdfMeasurementWarningClose" aria-label="Close">&times;</button>
+
+    <div class="pdf-measurement-warning-icon">!</div>
+
+    <h3 id="pdfMeasurementWarningTitle" class="pdf-measurement-warning-title">
+      Add a Measurement First
+    </h3>
+
+    <p class="pdf-measurement-warning-text">
+      At least one measurement is required before generating the PDF report.
+    </p>
+
+    <div class="pdf-measurement-warning-actions">
+      <button type="button" id="pdfMeasurementWarningOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPDFMeasurementWarning() {
+    const overlay = document.getElementById("pdfMeasurementWarningOverlay");
+
+    if (!overlay) {
+      return;
+    }
+
+    overlay.style.display = "flex";
+
+    const okButton = document.getElementById("pdfMeasurementWarningOk");
+    if (okButton) {
+      setTimeout(() => okButton.focus(), 0);
+    }
+  }
+
+  function hidePDFMeasurementWarning() {
+    const overlay = document.getElementById("pdfMeasurementWarningOverlay");
+
+    if (overlay) {
+      overlay.style.display = "none";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.getElementById("pdfMeasurementWarningOverlay");
+    const okButton = document.getElementById("pdfMeasurementWarningOk");
+    const closeButton = document.getElementById("pdfMeasurementWarningClose");
+
+    if (okButton) {
+      okButton.addEventListener("click", hidePDFMeasurementWarning);
+    }
+
+    if (closeButton) {
+      closeButton.addEventListener("click", hidePDFMeasurementWarning);
+    }
+
+    if (overlay) {
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          hidePDFMeasurementWarning();
+        }
+      });
+    }
+  });
+</script>
 </body>
 
 </html>

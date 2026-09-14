@@ -848,6 +848,452 @@
         }
 
         /* =========================
+           PROFESSIONAL STATUS
+           ========================= */
+
+        /* Professional Dashboard Settings */
+
+        .professional-dashboard-settings-card {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .professional-dashboard-location {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .professional-dashboard-location:first-child {
+            padding-top: 0;
+        }
+
+        .professional-dashboard-location:last-of-type {
+            border-bottom: 0;
+        }
+
+        .professional-dashboard-location-title {
+            font-size: 12px;
+            font-weight: 750;
+            color: var(--text);
+        }
+
+        .professional-dashboard-location-value {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .professional-dashboard-settings-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 16px;
+            padding: 9px 14px;
+            border: 1px solid #d7e2f2;
+            border-radius: 8px;
+            background: #f7faff;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 750;
+            cursor: pointer;
+            transition: background .15s ease, border-color .15s ease;
+        }
+
+        .professional-dashboard-settings-action:hover {
+            background: #eef5ff;
+            border-color: #bfd2ef;
+        }
+
+        .professional-dashboard-availability-options {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .professional-dashboard-availability-option {
+            display: block;
+            width: 100%;
+            min-height: 82px;
+            box-sizing: border-box;
+            padding: 14px;
+            border: 1px solid #dfe7f2;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            font: inherit;
+            transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+        }
+
+        .professional-dashboard-availability-option:hover {
+            border-color: #b9cce8;
+            background: #fafcff;
+        }
+
+        .professional-dashboard-availability-option.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, .08);
+        }
+
+        .professional-dashboard-availability-option strong {
+            display: block;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .professional-dashboard-availability-option span {
+            display: block;
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
+        .professional-dashboard-availability-current {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        @media (max-width: 700px) {
+            .professional-dashboard-availability-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .professional-status-card {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px;
+            background: #fff;
+        }
+
+        .professional-status-row {
+            display: grid;
+            grid-template-columns: 150px minmax(150px, auto) minmax(0, 1fr);
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .professional-status-row:last-child {
+            border-bottom: 0;
+        }
+
+        .professional-status-label {
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .professional-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            width: fit-content;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .professional-status-pill::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .professional-status-pill.success {
+            background: #ecfdf3;
+            color: #15803d;
+        }
+
+        .professional-status-pill.info {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .professional-status-pill.danger {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .professional-status-note {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        /* =========================
+           PROFESSIONAL DASHBOARD TOP
+           ========================= */
+        .professional-dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .professional-dashboard-grid>.section {
+            margin-top: 0;
+        }
+
+        .professional-quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .professional-quick-action {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 13px 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        .professional-quick-action:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.07);
+            transform: translateY(-1px);
+        }
+
+        .professional-quick-action strong {
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .professional-quick-action span {
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
+
+        .professional-status-content {
+            min-width: 0;
+        }
+
+        .professional-status-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: #eff6ff;
+        }
+
+        .professional-status-icon svg {
+            width: 19px;
+            height: 19px;
+            stroke: #2563eb;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .account-icon {
+            background: #ecfdf3;
+        }
+
+        .account-icon svg {
+            stroke: #16a34a;
+        }
+
+        .profile-icon {
+            background: #eff6ff;
+        }
+
+        .verification-icon {
+            background: #eff6ff;
+        }
+
+        .availability-icon {
+            background: #f5f3ff;
+        }
+
+        .availability-icon svg {
+            stroke: #7c3aed;
+        }
+
+        .home-icon {
+            background: #fff7ed;
+        }
+
+        .home-icon svg {
+            stroke: #f59e0b;
+        }
+
+        .professional-status-profile-incomplete {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            padding: 10px 12px;
+            margin: 0 -12px;
+        }
+
+        .professional-status-profile-incomplete .profile-icon {
+            background: #ffe4e6;
+        }
+
+        .professional-status-profile-incomplete .profile-icon svg {
+            stroke: #dc2626;
+        }
+
+        .professional-status-action {
+            padding-top: 14px;
+        }
+
+        .professional-complete-profile-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            min-width: 285px;
+            padding: 11px 15px;
+            border: 0;
+            border-radius: 9px;
+            background: #2563eb;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 750;
+            cursor: pointer;
+        }
+
+        .professional-complete-profile-button:hover {
+            background: #1d4ed8;
+        }
+
+        .professional-complete-profile-arrow {
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .professional-quick-action {
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr) 18px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .professional-quick-action-icon {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #eff6ff;
+        }
+
+        .professional-quick-action-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: #2563eb;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .availability-action-icon {
+            background: #f5f3ff;
+        }
+
+        .availability-action-icon svg {
+            stroke: #7c3aed;
+        }
+
+        .professional-quick-action-text {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .professional-quick-action-text strong {
+            color: var(--text);
+        }
+
+        .professional-quick-action-text span {
+            color: var(--muted);
+        }
+
+        .professional-quick-action-arrow {
+            color: #64748b;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .professional-status-row {
+                grid-template-columns: 40px minmax(0, 1fr);
+                align-items: start;
+            }
+
+            .professional-status-row .professional-status-icon {
+                grid-column: 1;
+                grid-row: 1 / span 2;
+            }
+
+            .professional-status-row .professional-status-label {
+                grid-column: 2;
+                grid-row: 1;
+                min-width: 0;
+            }
+
+            .professional-status-row .professional-status-content {
+                grid-column: 2;
+                grid-row: 2;
+                min-width: 0;
+            }
+
+            .professional-status-note {
+                max-width: 100%;
+                overflow-wrap: break-word;
+                word-break: normal;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .professional-dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .professional-status-row {
+                grid-template-columns: 40px 110px minmax(0, 1fr);
+            }
+
+            .professional-complete-profile-button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .professional-status-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+        }
+
+        /* =========================
            RESPONSIVE
            ========================= */
         @media (max-width: 1050px) {
@@ -1335,7 +1781,7 @@
                 <div class="nav-group">
                     <div class="nav-label">ACCOUNT</div>
                     <a class="nav-link" href="#overview"><span class="nav-icon">◉</span><span>Overview</span></a>
-                    <a class="nav-link" href="#projects"><span class="nav-icon">▤</span><span>Projects</span></a>
+                    <a class="nav-link" href="#projects"><span class="nav-icon">▣</span><span>Projects</span></a>
                     <a class="nav-link" href="#reports"><span class="nav-icon">▧</span><span>Reports</span></a>
                     <a class="nav-link" href="#billing"><span class="nav-icon">€</span><span>Billing &amp;
                             Plan</span></a>
@@ -1344,7 +1790,7 @@
                     <a class="nav-link" href="#settings"><span class="nav-icon">⚙</span><span>Settings</span></a>
                     <a class="nav-link" href="#help"><span class="nav-icon">?</span><span>Help &amp; Support</span></a>
                     <a class="nav-link" id="adminPricingNav" href="#admin-pricing" style="display:none;">
-                        <span class="nav-icon">◈</span>
+                        <span class="nav-icon">◆</span>
                         <span>Pricing Management</span>
                     </a>
                     <a class="nav-link" id="adminProfessionalsNav" href="#admin-professionals" style="display:none;">
@@ -1390,6 +1836,279 @@
                     </div>
                 </header>
 
+                <!-- PROFESSIONAL DASHBOARD TOP -->
+                <div class="professional-dashboard-grid">
+
+
+                    <!-- PROFESSIONAL STATUS -->
+                    <section class="section" id="professionalStatusSection" style="display:none;">
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title">Professional Status</h2>
+                                <p class="section-description">Your current professional account status and next steps.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="workspace-card professional-status-card">
+
+                            <div class="professional-status-row">
+                                <div class="professional-status-icon account-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="3.5"></circle>
+                                        <path d="M5.5 19c.7-3.2 3-5 6.5-5s5.8 1.8 6.5 5"></path>
+                                    </svg>
+                                </div>
+                                <div class="professional-status-label">Account</div>
+                                <div class="professional-status-content">
+                                    <div class="professional-status-pill success">Active</div>
+                                    <div class="professional-status-note">Your professional account is active.</div>
+                                </div>
+                            </div>
+
+                            <div class="professional-status-row" id="professionalStatusProfileRow">
+                                <div class="professional-status-icon profile-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="3.5"></circle>
+                                        <path d="M5.5 19c.7-3.2 3-5 6.5-5s5.8 1.8 6.5 5"></path>
+                                    </svg>
+                                </div>
+                                <div class="professional-status-label">Profile</div>
+                                <div class="professional-status-content">
+                                    <div id="professionalStatusProfile">Checking...</div>
+                                    <div class="professional-status-note" id="professionalStatusProfileNote"></div>
+                                </div>
+                            </div>
+
+                            <div class="professional-status-row">
+                                <div class="professional-status-icon verification-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 3l7 3v5c0 4.4-2.8 8.1-7 10-4.2-1.9-7-5.6-7-10V6l7-3z"></path>
+                                        <path d="M9 12l2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div class="professional-status-label">Verification</div>
+                                <div class="professional-status-content">
+                                    <div id="professionalStatusVerification">Checking...</div>
+                                    <div class="professional-status-note" id="professionalStatusVerificationNote"></div>
+                                </div>
+                            </div>
+
+                            <div class="professional-status-row">
+                                <div class="professional-status-icon availability-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="4" y="5" width="16" height="15" rx="2"></rect>
+                                        <path d="M8 3v4M16 3v4M4 9h16"></path>
+                                        <path d="M8 13h3M8 16h5"></path>
+                                    </svg>
+                                </div>
+                                <div class="professional-status-label">Availability</div>
+                                <div class="professional-status-content">
+                                    <div id="professionalStatusAvailability">Checking...</div>
+                                    <div class="professional-status-note" id="professionalStatusAvailabilityNote"></div>
+                                </div>
+                            </div>
+
+                            <div class="professional-status-row">
+                                <div class="professional-status-icon home-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M3.5 11.5L12 4l8.5 7.5"></path>
+                                        <path d="M5.5 10.5V20h13v-9.5"></path>
+                                        <path d="M9.5 20v-5h5v5"></path>
+                                    </svg>
+                                </div>
+                                <div class="professional-status-label">Home Projects</div>
+                                <div class="professional-status-content">
+                                    <div id="professionalStatusHome">Checking...</div>
+                                    <div class="professional-status-note" id="professionalStatusHomeNote"></div>
+                                </div>
+                            </div>
+
+                            <div class="professional-status-action">
+                                <button type="button" class="professional-complete-profile-button"
+                                    onclick="completeProfessionalProfileFromDashboard();">
+                                    <span>Complete Your Professional Profile</span>
+                                    <span class="professional-complete-profile-arrow">&#8594;</span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </section>
+
+
+
+
+                    <!-- QUICK ACTIONS -->
+                    <section class="section" id="professionalQuickActionsSection" style="display:none;">
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title">Quick Actions</h2>
+                                <p class="section-description">Common actions for your professional account.</p>
+                            </div>
+                        </div>
+
+                        <div class="workspace-card professional-quick-actions">
+
+                            <button type="button" class="professional-quick-action"
+                                onclick="openProfessionalProfile();">
+                                <span class="professional-quick-action-icon profile-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="3.5"></circle>
+                                        <path d="M5.5 19c.7-3.2 3-5 6.5-5s5.8 1.8 6.5 5"></path>
+                                    </svg>
+                                </span>
+                                <span class="professional-quick-action-text">
+                                    <strong>Professional Profile</strong>
+                                    <span>View and update your professional profile.</span>
+                                </span>
+                                <span class="professional-quick-action-arrow">&#8250;</span>
+                            </button>
+
+                            <button type="button" class="professional-quick-action"
+                                onclick="navigateProfessionalDashboardSection(\'service-areas\');">
+                                <span class="professional-quick-action-icon service-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 21s6-5.1 6-10a6 6 0 1 0-12 0c0 4.9 6 10 6 10z"></path>
+                                        <circle cx="12" cy="11" r="2"></circle>
+                                    </svg>
+                                </span>
+                                <span class="professional-quick-action-text">
+                                    <strong>Service Areas</strong>
+                                    <span>Manage the areas where you provide property services.</span>
+                                </span>
+                                <span class="professional-quick-action-arrow">&#8250;</span>
+                            </button>
+
+                            <button type="button" class="professional-quick-action"
+                                onclick="openProfessionalProfile();">
+                                <span class="professional-quick-action-icon availability-action-icon"
+                                    aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="4" y="5" width="16" height="15" rx="2"></rect>
+                                        <path d="M8 3v4M16 3v4M4 9h16"></path>
+                                        <path d="M8 13h3M8 16h5"></path>
+                                    </svg>
+                                </span>
+                                <span class="professional-quick-action-text">
+                                    <strong>Availability</strong>
+                                    <span>Manage your availability for Home Projects.</span>
+                                </span>
+                                <span class="professional-quick-action-arrow">&#8250;</span>
+                            </button>
+
+                        </div>
+
+
+
+                        <!-- =========================
+                     PROFESSIONAL SERVICE AREAS
+                     ========================= -->
+                        <section class="section" id="service-areas">
+                            <div class="section-heading">
+                                <div>
+                                    <h2 class="section-title">Service Areas</h2>
+                                    <p class="section-description">
+                                        Where you provide property services.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="workspace-card professional-dashboard-settings-card">
+
+                                <div class="professional-dashboard-location">
+                                    <div class="professional-dashboard-location-title">
+                                        Primary professional location
+                                    </div>
+
+                                    <div class="professional-dashboard-location-value"
+                                        id="professionalDashboardPrimaryLocation">
+                                        Loading...
+                                    </div>
+                                </div>
+
+                                <div class="professional-dashboard-location">
+                                    <div class="professional-dashboard-location-title">
+                                        Additional service areas
+                                    </div>
+
+                                    <div class="professional-dashboard-location-value"
+                                        id="professionalDashboardAdditionalAreas">
+                                        No additional service areas added yet.
+                                    </div>
+                                </div>
+
+                                <button type="button" class="professional-dashboard-settings-action"
+                                    onclick="openProfessionalProfileServiceAreas();">
+                                    Manage Service Areas
+                                    <span>&#8594;</span>
+                                </button>
+
+                            </div>
+                        </section>
+
+
+                        <!-- =========================
+                     PROFESSIONAL AVAILABILITY
+                     ========================= -->
+                        <section class="section" id="availability">
+                            <div class="section-heading">
+                                <div>
+                                    <h2 class="section-title">Availability</h2>
+                                    <p class="section-description">
+                                        Manage your availability for Home Projects.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="workspace-card professional-dashboard-settings-card">
+
+                                <div class="professional-dashboard-location-title">
+                                    Availability for Home Projects
+                                </div>
+
+                                <div class="professional-dashboard-availability-options">
+
+                                    <button type="button" class="professional-dashboard-availability-option"
+                                        data-availability="available"
+                                        onclick="selectProfessionalAvailability('available');">
+                                        <strong>Available</strong>
+                                        <span>
+                                            Can receive new Home Project requests.
+                                        </span>
+                                    </button>
+
+                                    <button type="button" class="professional-dashboard-availability-option"
+                                        data-availability="limited"
+                                        onclick="selectProfessionalAvailability('limited');">
+                                        <strong>Limited</strong>
+                                        <span>
+                                            Available with limited capacity.
+                                        </span>
+                                    </button>
+
+                                    <button type="button" class="professional-dashboard-availability-option"
+                                        data-availability="unavailable"
+                                        onclick="selectProfessionalAvailability('unavailable');">
+                                        <strong>Unavailable</strong>
+                                        <span>
+                                            Do not receive new Home Project requests.
+                                        </span>
+                                    </button>
+
+                                </div>
+
+                                <div class="professional-dashboard-availability-current"
+                                    id="professionalDashboardAvailabilityCurrent">
+                                    Current status: Unavailable
+                                </div>
+
+                            </div>
+                        </section>
+
+                    </section>
+
+                </div>
+
                 <!-- =========================
                  WORKSPACES
                  ========================= -->
@@ -1417,7 +2136,7 @@
                                 </div>
                                 <div>
                                     <div class="metric-mini-label">Reports</div>
-                                    <div class="metric-mini-value" id="homeReportCount">—</div>
+                                    <div class="metric-mini-value" id="homeReportCount">?</div>
                                 </div>
                             </div>
                             <div class="workspace-actions">
@@ -1436,15 +2155,15 @@
                             <div class="workspace-meta">
                                 <div>
                                     <div class="metric-mini-label">Plan</div>
-                                    <div class="metric-mini-value" id="businessPlan">—</div>
+                                    <div class="metric-mini-value" id="businessPlan">?</div>
                                 </div>
                                 <div>
                                     <div class="metric-mini-label">Credits</div>
-                                    <div class="metric-mini-value" id="businessCredits">—</div>
+                                    <div class="metric-mini-value" id="businessCredits">?</div>
                                 </div>
                                 <div>
                                     <div class="metric-mini-label">Projects</div>
-                                    <div class="metric-mini-value" id="businessProjectCount">—</div>
+                                    <div class="metric-mini-value" id="businessProjectCount">?</div>
                                 </div>
                             </div>
                             <div class="workspace-actions">
@@ -1471,22 +2190,22 @@
                     <div class="summary-grid">
                         <div class="summary-card">
                             <div class="summary-label">Business credits</div>
-                            <div class="summary-value" id="summaryCredits">—</div>
+                            <div class="summary-value" id="summaryCredits">?</div>
                             <div class="summary-note">Available for Business Survey</div>
                         </div>
                         <div class="summary-card">
                             <div class="summary-label">Projects</div>
-                            <div class="summary-value" id="summaryProjects">—</div>
+                            <div class="summary-value" id="summaryProjects">?</div>
                             <div class="summary-note">Business Survey projects</div>
                         </div>
                         <div class="summary-card">
                             <div class="summary-label">Reports</div>
-                            <div class="summary-value" id="summaryReports">—</div>
+                            <div class="summary-value" id="summaryReports">?</div>
                             <div class="summary-note">Reports in this account</div>
                         </div>
                         <div class="summary-card">
                             <div class="summary-label">Current plan</div>
-                            <div class="summary-value" id="summaryPlan">—</div>
+                            <div class="summary-value" id="summaryPlan">?</div>
                             <div class="summary-note">Business Survey</div>
                         </div>
                     </div>
@@ -1579,14 +2298,14 @@
                                     <p>Personal property assessment with the option to unlock the complete EMF Insight
                                         report.</p>
                                     <div class="billing-value" id="homeAccessStatus">Full EMF Insight Report</div>
-                                    <div class="billing-note" id="homePriceSummary">—</div>
+                                    <div class="billing-note" id="homePriceSummary">?</div>
                                 </div>
 
                                 <div class="billing-panel">
                                     <h4>Business Survey</h4>
                                     <p>Your current Business Survey account status and available credits.</p>
-                                    <div class="billing-value" id="billingBusinessPlan">—</div>
-                                    <div class="billing-note" id="billingBusinessCredits">— credits available</div>
+                                    <div class="billing-value" id="billingBusinessPlan">?</div>
+                                    <div class="billing-note" id="billingBusinessCredits">? credits available</div>
                                 </div>
                             </div>
 
@@ -2111,6 +2830,8 @@ ADMIN PROFESSIONALS
     </div>
 
 
+    <script src="js/professional_profile.js"></script>
+
     <script>
         const API = "https://emf-insight.onrender.com";
 
@@ -2165,7 +2886,7 @@ ADMIN PROFESSIONALS
 
 
             // =========================================================
-            // WORKSPACE CARD — SHOW ONLY THE CURRENT WORKSPACE
+            // WORKSPACE CARD ? SHOW ONLY THE CURRENT WORKSPACE
             // =========================================================
 
             const workspaceCards =
@@ -2201,7 +2922,7 @@ ADMIN PROFESSIONALS
 
 
             // =========================================================
-            // COMPANY & BRANDING — BUSINESS ONLY
+            // COMPANY & BRANDING ? BUSINESS ONLY
             // =========================================================
 
             const brandingSection =
@@ -2546,8 +3267,8 @@ ADMIN PROFESSIONALS
                     const firstValue =
                         firstCard.querySelector(".summary-value");
 
-                    if (firstValue && firstValue.textContent === "—") {
-                        firstValue.textContent = "—";
+                    if (firstValue && firstValue.textContent === "?") {
+                        firstValue.textContent = "?";
                     }
 
                 } else {
@@ -3204,11 +3925,11 @@ ADMIN PROFESSIONALS
                         ]
                             .filter(Boolean)
                             .join(", ")
-                        || "—";
+                        || "?";
 
                     const email =
                         professional.professional_email
-                        || "—";
+                        || "?";
 
                     const availability =
                         professional.availability_status
@@ -3597,7 +4318,7 @@ ADMIN PROFESSIONALS
                 "adminProfessionalVerification"
             ).value = "pending";
 
-const reviewActions = document.getElementById("adminProfessionalReviewActions");
+            const reviewActions = document.getElementById("adminProfessionalReviewActions");
 
             if (reviewActions) {
                 reviewActions.style.display = "flex";
@@ -3991,7 +4712,7 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
             if (!adminPricingEntries.length) {
                 container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">—</div>
+                <div class="empty-icon">?</div>
                 <div class="empty-title">No pricing entries</div>
                 <div class="empty-copy">
                     No pricing configuration entries are available.
@@ -4047,7 +4768,7 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
                             <td>
                                 ${entry.credits === null ||
                     entry.credits === undefined
-                    ? "—"
+                    ? "?"
                     : escapeHtml(entry.credits)
                 }
                             </td>
@@ -4265,6 +4986,7 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
                 }
 
                 const data = await res.json();
+                await loadProfessionalDashboardStatus();
                 const email = data.email || "Account";
                 const firstName = data.first_name || "";
                 const lastName = data.last_name || "";
@@ -4274,6 +4996,12 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
                 const plan = data.plan || "free";
                 const credits = Number.isFinite(Number(data.credits)) ? Number(data.credits) : 0;
                 const homeFullReportUnlocked = data.home_full_report_unlocked === true;
+
+                const professionalDemoActive =
+                    data.professional_demo_active === true;
+
+                const professionalDemoExpiresAt =
+                    data.professional_demo_expires_at || null;
 
                 document.getElementById("userName").textContent = displayName;
                 const dashboardMode =
@@ -4300,15 +5028,50 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
                         ? workspaceLabel
                         : `${workspaceLabel} · ${plan}`;
 
-                document.getElementById("businessPlan").textContent = plan;
+                document.getElementById("businessPlan").textContent =
+    professionalDemoActive
+        ? "Professional Demo"
+        : plan;
                 document.getElementById("businessCredits").textContent = credits;
                 document.getElementById("summaryCredits").textContent = credits;
                 document.getElementById("summaryPlan").textContent =
                     dashboardMode === "home"
                         ? "Home Wellness"
                         : plan;
-                document.getElementById("billingBusinessPlan").textContent = plan;
-                document.getElementById("billingBusinessCredits").textContent = `${credits} credit${credits === 1 ? "" : "s"} available`;
+                const billingBusinessPlan =
+                    document.getElementById("billingBusinessPlan");
+
+                const billingBusinessCredits =
+                    document.getElementById("billingBusinessCredits");
+
+                if (professionalDemoActive && professionalDemoExpiresAt) {
+                    const expiresAt = new Date(professionalDemoExpiresAt);
+                    const now = new Date();
+
+                    const remainingMs = expiresAt.getTime() - now.getTime();
+                    const remainingDays = Math.max(
+                        0,
+                        Math.ceil(remainingMs / (1000 * 60 * 60 * 24))
+                    );
+
+                    if (billingBusinessPlan) {
+                        billingBusinessPlan.textContent = "Professional Demo";
+                    }
+
+                    if (billingBusinessCredits) {
+                        billingBusinessCredits.textContent =
+                            `Active · ${remainingDays} day${remainingDays === 1 ? "" : "s"} remaining · Full Business access`;
+                    }
+                } else {
+                    if (billingBusinessPlan) {
+                        billingBusinessPlan.textContent = plan;
+                    }
+
+                    if (billingBusinessCredits) {
+                        billingBusinessCredits.textContent =
+                            `${credits} credit${credits === 1 ? "" : "s"} available`;
+                    }
+                }
 
                 const homeAccessStatus = document.getElementById("homeAccessStatus");
                 const homePriceSummary = document.getElementById("homePriceSummary");
@@ -4396,7 +5159,7 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
                         request.city,
                         request.region,
                         request.country
-                    ].filter(Boolean).join(", ") || "—"}
+                    ].filter(Boolean).join(", ") || "?"}
                         </td>
                         <td>
     <select
@@ -4420,7 +5183,7 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
         `).join("")}
     </select>
 </td>
-                        <td>${request.created_at || "—"}</td>
+                        <td>${request.created_at || "?"}</td>
                     </tr>
                 `).join("");
 
@@ -4484,6 +5247,276 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
             }
         }
 
+
+
+        function navigateProfessionalDashboardSection(sectionId) {
+            const target = document.getElementById(sectionId);
+            if (!target) return;
+
+            requestAnimationFrame(() => {
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(
+                        null,
+                        "",
+                        "#" + sectionId
+                    );
+                }
+            });
+        }
+
+
+        function openProfessionalProfileServiceAreas() {
+            if (typeof openProfessionalProfile === "function") {
+                openProfessionalProfile();
+
+                setTimeout(() => {
+                    const target = document.getElementById(
+                        "professionalServiceAreaCountry"
+                    );
+
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+                    }
+                }, 150);
+
+                return;
+            }
+
+            navigateProfessionalDashboardSection("service-areas");
+        }
+
+
+        function selectProfessionalAvailability(status) {
+            document.querySelectorAll(
+                ".professional-dashboard-availability-option"
+            ).forEach(button => {
+                button.classList.toggle(
+                    "selected",
+                    button.dataset.availability === status
+                );
+            });
+
+            const current = document.getElementById(
+                "professionalDashboardAvailabilityCurrent"
+            );
+
+            if (current) {
+                const labels = {
+                    available: "Available",
+                    limited: "Limited",
+                    unavailable: "Unavailable"
+                };
+
+                current.textContent =
+                    "Selected status: " +
+                    (labels[status] || "Unavailable");
+            }
+        }
+
+        function completeProfessionalProfileFromDashboard() {
+            if (typeof openProfessionalProfile === "function") {
+                openProfessionalProfile();
+                return;
+            }
+
+            window.location.href = "index.html";
+        }
+
+
+        async function loadProfessionalDashboardStatus() {
+            const section = document.getElementById("professionalStatusSection");
+            const quickActions = document.getElementById("professionalQuickActionsSection");
+
+            if (!section) return;
+
+            try {
+                const res = await fetch(`${API}/professional/profile`, {
+                    headers: authHeaders()
+                });
+
+                if (!res.ok) {
+                    section.style.display = "none";
+                    if (quickActions) quickActions.style.display = "none";
+                    return;
+                }
+
+                const profile = await res.json();
+                const primaryLocationEl =
+                    document.getElementById(
+                        "professionalDashboardPrimaryLocation"
+                    );
+
+                if (primaryLocationEl) {
+                    const parts = [
+                        profile.city,
+                        profile.country,
+                        profile.postal_code
+                    ].filter(
+                        value => String(value || "").trim()
+                    );
+
+                    primaryLocationEl.textContent =
+                        parts.length
+                            ? parts.join(" ? ")
+                            : "Primary location not completed";
+                }
+
+                const additionalAreasEl =
+                    document.getElementById(
+                        "professionalDashboardAdditionalAreas"
+                    );
+
+                if (additionalAreasEl) {
+                    const areas = Array.isArray(
+                        window.professionalServiceAreas
+                    )
+                        ? window.professionalServiceAreas
+                        : [];
+
+                    additionalAreasEl.textContent =
+                        areas.length
+                            ? `${areas.length} additional service area${areas.length === 1 ? "" : "s"} added`
+                            : "No additional service areas added yet.";
+                }
+
+
+                section.style.display = "block";
+                if (quickActions) quickActions.style.display = "block";
+
+                const requiredFields = [
+                    profile.first_name,
+                    profile.last_name,
+                    profile.company_name,
+                    profile.professional_email,
+                    profile.professional_phone,
+                    profile.country,
+                    profile.city,
+                    profile.postal_code
+                ];
+
+                const profileComplete =
+                    requiredFields.every(value => String(value || "").trim());
+
+                const profileRow =
+                    document.getElementById("professionalStatusProfileRow");
+
+                if (profileRow) {
+                    profileRow.classList.toggle(
+                        "professional-status-profile-incomplete",
+                        !profileComplete
+                    );
+                }
+
+                const verification =
+                    String(profile.verification_status || "").toLowerCase();
+
+                const availability =
+                    String(profile.availability_status || "unavailable").toLowerCase();
+
+                function setStatus(id, label, tone, note) {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+
+                    el.textContent = label;
+                    el.className =
+                        "professional-status-pill" +
+                        (tone ? " " + tone : "");
+
+                    const noteEl =
+                        document.getElementById(id + "Note");
+
+                    if (noteEl && note) {
+                        noteEl.textContent = note;
+                    }
+                }
+
+                setStatus(
+                    "professionalStatusProfile",
+                    profileComplete ? "Profile Complete" : "Profile Incomplete",
+                    profileComplete ? "success" : "danger",
+                    profileComplete
+                        ? "Your professional profile is complete."
+                        : "Complete your professional profile to become eligible for Home Projects."
+                );
+
+                let verificationLabel = "Not requested";
+                let verificationTone = "";
+                let verificationNote =
+                    "Complete your profile before requesting verification.";
+
+                if (profileComplete) {
+                    if (verification === "verified") {
+                        verificationLabel = "Verified";
+                        verificationTone = "success";
+                        verificationNote =
+                            "Your professional profile is verified.";
+                    } else if (verification === "pending") {
+                        verificationLabel = "Verification Pending";
+                        verificationTone = "info";
+                        verificationNote =
+                            "Your verification request is awaiting review.";
+                    } else if (verification === "rejected") {
+                        verificationLabel = "Rejected";
+                        verificationTone = "danger";
+                        verificationNote =
+                            "Your verification request was rejected. Update your profile and request verification again.";
+                    } else if (verification === "suspended") {
+                        verificationLabel = "Suspended";
+                        verificationTone = "danger";
+                        verificationNote =
+                            "Your professional verification is currently suspended.";
+                    }
+                }
+
+                setStatus(
+                    "professionalStatusVerification",
+                    verificationLabel,
+                    verificationTone,
+                    verificationNote
+                );
+
+                const availabilityLabel =
+                    availability === "available"
+                        ? "Available"
+                        : availability === "limited"
+                            ? "Limited"
+                            : "Unavailable";
+
+                setStatus(
+                    "professionalStatusAvailability",
+                    availabilityLabel,
+                    availability === "available" ? "success" : "",
+                    availability === "available"
+                        ? "You are available for Home Projects."
+                        : "You are not currently available for Home Projects."
+                );
+
+                const homeEligible =
+                    profileComplete &&
+                    verification === "verified" &&
+                    availability === "available";
+
+                setStatus(
+                    "professionalStatusHome",
+                    homeEligible ? "Eligible" : "Not eligible",
+                    homeEligible ? "success" : "",
+                    homeEligible
+                        ? "You can receive eligible Home Professional requests."
+                        : "Profile Complete, Verified status and Available status are required."
+                );
+            } catch (error) {
+                console.error("Load professional dashboard status error:", error);
+                section.style.display = "none";
+            }
+        }
 
         async function loadProjects() {
             const container = document.getElementById("projectsContainer");
@@ -4551,7 +5584,7 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
                 });
 
                 document.getElementById("businessProjectCount").textContent =
-                    currentMode === "business" ? projects.length : "—";
+                    currentMode === "business" ? projects.length : "?";
 
                 document.getElementById("summaryProjects").textContent =
                     projects.length;
@@ -4624,8 +5657,8 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
             } catch (error) {
                 console.error("Load projects error:", error);
 
-                document.getElementById("businessProjectCount").textContent = "—";
-                document.getElementById("summaryProjects").textContent = "—";
+                document.getElementById("businessProjectCount").textContent = "?";
+                document.getElementById("summaryProjects").textContent = "?";
 
                 container.innerHTML = `
             <div class="empty-state">
@@ -4753,8 +5786,8 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
                 return list;
             } catch (error) {
                 console.error("Load reports error:", error);
-                document.getElementById("summaryReports").textContent = "—";
-                document.getElementById("homeReportCount").textContent = "—";
+                document.getElementById("summaryReports").textContent = "?";
+                document.getElementById("homeReportCount").textContent = "?";
                 container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">!</div>
@@ -4935,20 +5968,29 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
         window.loadProjects = loadProjects;
 
         function activateDashboardSection() {
-            const sectionId = window.location.hash.replace("#", "");
+            let sectionId = window.location.hash.replace("#", "");
 
-            if (!sectionId) return;
+            // Account Dashboard defaults to Overview.
+            if (!sectionId) {
+                sectionId = "overview";
+            }
 
             const section = document.getElementById(sectionId);
 
-            if (!section) return;
-
-            document.querySelectorAll('.nav-link[href^="#"]').forEach(link => {
-                link.classList.toggle(
-                    "active",
-                    link.getAttribute("href") === `#${sectionId}`
-                );
+            // Clear all sidebar active states first.
+            document.querySelectorAll(".nav-link").forEach(link => {
+                link.classList.remove("active");
             });
+
+            const activeLink = document.querySelector(
+                `.nav-link[href="#${sectionId}"]`
+            );
+
+            if (activeLink) {
+                activeLink.classList.add("active");
+            }
+
+            if (!section) return;
 
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
@@ -4963,8 +6005,69 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
         window.addEventListener("hashchange", activateDashboardSection);
 
 
+        function initializeDashboardScrollSpy() {
+            const links = Array.from(
+                document.querySelectorAll('.nav-link[href^="#"]')
+            );
+
+            const sections = links
+                .map(link => {
+                    const id = link.getAttribute("href").substring(1);
+                    return document.getElementById(id);
+                })
+                .filter(Boolean);
+
+            if (!sections.length) return;
+
+            function setActiveSection(sectionId) {
+                links.forEach(link => {
+                    link.classList.toggle(
+                        "active",
+                        link.getAttribute("href") === `#${sectionId}`
+                    );
+                });
+            }
+
+            const observer = new IntersectionObserver(
+                () => {
+                    const activationPoint = window.innerHeight * 0.30;
+
+                    const visibleSections = sections
+                        .map(section => ({
+                            section,
+                            rect: section.getBoundingClientRect()
+                        }))
+                        .filter(item =>
+                            item.rect.top <= activationPoint &&
+                            item.rect.bottom > activationPoint
+                        )
+                        .sort((a, b) => b.rect.top - a.rect.top);
+
+                    if (visibleSections.length) {
+                        setActiveSection(visibleSections[0].section.id);
+                    }
+                },
+                {
+                    root: null,
+                    threshold: [0, 0.01, 0.1, 0.25],
+                    rootMargin: "-10% 0px -60% 0px"
+                }
+            );
+
+            sections.forEach(section => observer.observe(section));
+        }
+
         async function initDashboard() {
             if (!token) return;
+
+            // Account Dashboard always opens on Overview.
+            if (window.location.hash) {
+                history.replaceState(
+                    null,
+                    "",
+                    window.location.pathname + window.location.search
+                );
+            }
 
             await loadUser();
             applyDashboardWorkspaceMode();
@@ -4979,132 +6082,15 @@ const reviewActions = document.getElementById("adminProfessionalReviewActions");
             activateDashboardSection();
         }
 
-        initDashboard();
+        initDashboard().then(() => {
+            initializeDashboardScrollSpy();
+        });
 
 
 
     </script>
 
-    <script>
-        function scrollToDashboardSection() {
-            const hash = window.location.hash;
 
-            if (!hash) return;
-
-            const target = document.querySelector(hash);
-
-            if (!target) return;
-
-            setTimeout(() => {
-                target.scrollIntoView({
-                    behavior: "auto",
-                    block: "start"
-                });
-            }, 50);
-        }
-
-        window.addEventListener("load", scrollToDashboardSection);
-        window.addEventListener("hashchange", scrollToDashboardSection);
-
-        // ==========================================
-        // ACCOUNT SECTION NAVIGATION
-        // ==========================================
-        function activateDashboardSection() {
-            const hash = window.location.hash;
-
-            if (!hash) {
-                return;
-            }
-
-            const sectionId = hash.substring(1);
-
-            const target = document.getElementById(sectionId);
-
-            const activeLink = document.querySelector(
-                `.nav-link[href="#${sectionId}"]`
-            );
-
-            // Activate the corresponding Account navigation item
-            document.querySelectorAll(".nav-link").forEach(link => {
-                link.classList.remove("active");
-            });
-
-            if (activeLink) {
-                activeLink.classList.add("active");
-
-                // Make the selected item visible in the left navigation
-                activeLink.scrollIntoView({
-                    behavior: "auto",
-                    block: "center"
-                });
-            }
-
-            if (!target) {
-                return;
-            }
-
-            // Position the requested section correctly
-            requestAnimationFrame(() => {
-                target.scrollIntoView({
-                    behavior: "auto",
-                    block: "start"
-                });
-            });
-        }
-        window.addEventListener("DOMContentLoaded", () => {
-            activateDashboardSection();
-        });
-
-        window.addEventListener("hashchange", () => {
-            activateDashboardSection();
-        });
-
-        // ==================================================
-        // ACCOUNT SECTION NAVIGATION
-        // ==================================================
-
-        function activateAccountSection() {
-            const hash = window.location.hash.replace("#", "");
-
-            if (!hash) {
-                return;
-            }
-
-            const target = document.getElementById(hash);
-
-            if (!target) {
-                return;
-            }
-
-            // Remove active state from all account navigation links
-            document.querySelectorAll(".nav-group .nav-link").forEach(link => {
-                link.classList.remove("active");
-            });
-
-            // Activate the matching sidebar link
-            const activeLink = document.querySelector(
-                `.nav-link[href="#${hash}"]`
-            );
-
-            if (activeLink) {
-                activeLink.classList.add("active");
-            }
-
-            // Scroll to the requested section after the dashboard layout is ready
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    target.scrollIntoView({
-                        behavior: "auto",
-                        block: "start"
-                    });
-                }, 50);
-            });
-        }
-
-        window.addEventListener("load", activateAccountSection);
-        window.addEventListener("hashchange", activateAccountSection);
-
-    </script>
 
 
 

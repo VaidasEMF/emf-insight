@@ -43,6 +43,10 @@ from models.user import User
 from models.project import Project
 from models.report import Report
 
+from auth.entitlements import (
+    is_professional_demo_active,
+)
+
 from models.project_version import (
     ProjectVersion,
 )
@@ -68,6 +72,10 @@ from routes.professional_requests import (
 
 from routes.professional_profile import (
     router as professional_profile_router,
+)
+
+from routes.professional_demo import (
+    router as professional_demo_router,
 )
 
 from routes.reports import (
@@ -98,6 +106,10 @@ app.include_router(
 
 app.include_router(
     professional_profile_router,
+)
+
+app.include_router(
+    professional_demo_router,
 )
 
 app.include_router(
@@ -1137,22 +1149,21 @@ def generate_pdf(
             if rooms:
                 print("FIRST ROOM:", rooms[0]["id"])
 
-
-            print(
-                "FIRST ROOM POLYGON POINTS:"
-            )
-
-            for p in rooms[0].get(
-                "polygon",
-                []
-            ):
-
                 print(
-                    "X:",
-                    p.get("x"),
-                    "Y:",
-                    p.get("y"),
+                    "FIRST ROOM POLYGON POINTS:"
                 )
+
+                for p in rooms[0].get(
+                    "polygon",
+                    []
+                ):
+
+                    print(
+                        "X:",
+                        p.get("x"),
+                        "Y:",
+                        p.get("y"),
+                    )
 
 
 
@@ -1275,10 +1286,13 @@ def generate_pdf(
         # 🔥 VALIDATE DATA
         # =====================
 
-        pts_before = engine.collect_points(
-            project,
-            sessionA,
-        )
+        try:
+            pts_before = engine.collect_points(
+                project,
+                sessionA,
+            )
+        except IndexError:
+            pts_before = []
 
         if pts_before:
 
@@ -1300,7 +1314,16 @@ def generate_pdf(
 
         is_preview = False
 
-        if user.plan == "premium":
+        active_demo = is_professional_demo_active(
+            user,
+            db,
+        )
+
+        if active_demo:
+
+            pass
+
+        elif user.plan == "premium":
 
             pass
 
@@ -1315,7 +1338,7 @@ def generate_pdf(
             is_preview = True
 
         # =====================
-        # 🔥 BUILD PDF
+        # BUILD PDF
         # =====================
 
         pdf_path = engine.build_pdf(
