@@ -78,6 +78,10 @@ from routes.professional_demo import (
     router as professional_demo_router,
 )
 
+from routes.professional_demo_feedback import (
+    router as professional_demo_feedback_router,
+)
+
 from routes.reports import (
     router as reports_router,
 )
@@ -110,6 +114,10 @@ app.include_router(
 
 app.include_router(
     professional_demo_router,
+)
+
+app.include_router(
+    professional_demo_feedback_router,
 )
 
 app.include_router(

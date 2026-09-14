@@ -171,7 +171,7 @@ def init_db():
 
     if engine.dialect.name == "postgresql":
 
-        with engine.begin() as connection:
+       with engine.begin() as connection:
 
             connection.execute(
                 text(
@@ -190,10 +190,35 @@ def init_db():
                 )
             )
 
-    # DATABASE MIGRATIONS
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS professional_demo_feedback (
+                        id SERIAL PRIMARY KEY,
+                        demo_id INTEGER NOT NULL,
+                        user_id VARCHAR(255) NOT NULL,
 
-    if engine.dialect.name == "postgresql":
-        with engine.begin() as connection:
+                        overall_rating INTEGER,
+                        business_survey_rating INTEGER,
+                        measurements_rating INTEGER,
+                        results_rating INTEGER,
+                        pdf_rating INTEGER,
+
+                        confusing_text TEXT,
+                        missing_features TEXT,
+                        bugs_text TEXT,
+                        improvements_text TEXT,
+
+                        professional_use BOOLEAN,
+                        recommendation_score INTEGER,
+
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
+
             connection.execute(
                 text(
                     """
@@ -202,6 +227,7 @@ def init_db():
                     """
                 )
             )
+
     # ==================================================
 
     if engine.dialect.name == "postgresql":

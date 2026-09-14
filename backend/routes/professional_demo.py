@@ -18,6 +18,13 @@ router = APIRouter(
     tags=["professional-demo"],
 )
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 class DemoCreateRequest(BaseModel):
     duration_days: int = 7
@@ -106,12 +113,6 @@ def list_professional_demos(
 
     return result
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 # =====================
