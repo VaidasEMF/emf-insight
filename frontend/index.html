@@ -26340,6 +26340,8 @@
 
 
 
+      const pdfWindow = window.open("about:blank", "_blank");
+
       const res = await fetch(
 
         `${API}/generate-pdf`,
@@ -26389,10 +26391,13 @@
       }
 
       if (data.pdf_url) {
-        window.open(
-          `${API}${data.pdf_url}`,
-          "_blank"
-        );
+        const pdfUrl = `${API}${data.pdf_url}`;
+
+        if (pdfWindow) {
+          pdfWindow.location.href = pdfUrl;
+        } else {
+          window.open(pdfUrl, "_blank");
+        }
       }
 
       else {
