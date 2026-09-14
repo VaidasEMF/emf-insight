@@ -1703,6 +1703,7 @@
             gap: 8px;
             margin-top: 18px;
             padding-top: 16px;
+            padding-bottom: 8px;
             border-top: 1px solid var(--line);
         }
 
@@ -1757,11 +1758,11 @@
                 <div class="nav-group">
                     <div class="nav-label">WORKSPACE</div>
                     <a class="nav-link primary" href="index.html" onclick="openWorkspace('home'); return false;">
-                        <span class="nav-icon">⌂</span>
+                        <span class="nav-icon">Γîé</span>
                         <span>Home Wellness</span>
                     </a>
                     <a class="nav-link" href="index.html" onclick="openWorkspace('business'); return false;">
-                        <span class="nav-icon">▦</span>
+                        <span class="nav-icon">Γûª</span>
                         <span>Business Survey</span>
                     </a>
                 </div>
@@ -1769,38 +1770,44 @@
                 <div class="nav-group">
                     <div class="nav-label">PROJECT</div>
                     <a class="nav-link" href="index.html" onclick="startNewProject(); return false;">
-                        <span class="nav-icon">＋</span>
+                        <span class="nav-icon">∩╝ï</span>
                         <span>New Project</span>
                     </a>
                     <a class="nav-link" href="#projects">
-                        <span class="nav-icon">□</span>
+                        <span class="nav-icon">Γûí</span>
                         <span>Open Project</span>
                     </a>
                 </div>
 
                 <div class="nav-group">
                     <div class="nav-label">ACCOUNT</div>
-                    <a class="nav-link" href="#overview"><span class="nav-icon">◉</span><span>Overview</span></a>
-                    <a class="nav-link" href="#projects"><span class="nav-icon">▣</span><span>Projects</span></a>
-                    <a class="nav-link" href="#reports"><span class="nav-icon">▧</span><span>Reports</span></a>
-                    <a class="nav-link" href="#billing"><span class="nav-icon">€</span><span>Billing &amp;
+                    <a class="nav-link" href="#overview"><span class="nav-icon">Γùë</span><span>Overview</span></a>
+                    <a class="nav-link" href="#projects"><span class="nav-icon">Γûú</span><span>Projects</span></a>
+                    <a class="nav-link" href="#reports"><span class="nav-icon">Γûº</span><span>Reports</span></a>
+                    <a class="nav-link" href="#billing"><span class="nav-icon">Γé¼</span><span>Billing &amp;
                             Plan</span></a>
-                    <a class="nav-link" href="#branding"><span class="nav-icon">✦</span><span>Company &amp;
+                    <a class="nav-link" href="#branding"><span class="nav-icon">Γ£ª</span><span>Company &amp;
                             Branding</span></a>
-                    <a class="nav-link" href="#settings"><span class="nav-icon">⚙</span><span>Settings</span></a>
+                    <a class="nav-link" href="#settings"><span class="nav-icon">ΓÜÖ</span><span>Settings</span></a>
                     <a class="nav-link" href="#help"><span class="nav-icon">?</span><span>Help &amp; Support</span></a>
                     <a class="nav-link" id="adminPricingNav" href="#admin-pricing" style="display:none;">
-                        <span class="nav-icon">◆</span>
+                        <span class="nav-icon">Demo</span>
                         <span>Pricing Management</span>
                     </a>
                     <a class="nav-link" id="adminProfessionalsNav" href="#admin-professionals" style="display:none;">
-                        <span class="nav-icon">♙</span>
+                        <span class="nav-icon">!</span>
                         <span>Professionals</span>
+                    </a>
+
+                    <a class="nav-link" id="adminProfessionalDemosNav" href="#admin-professional-demos"
+                        style="display:none;">
+                        <span class="nav-icon">Demo</span>
+                        <span>Professional Demo</span>
                     </a>
 
                     <a class="nav-link" id="adminProfessionalRequestsNav" href="#admin-professional-requests"
                         style="display:none;">
-                        <span class="nav-icon">👤</span>
+                        <span class="nav-icon">≡ƒæñ</span>
                         <span>Professional Assessment</span>
                     </a>
                 </div>
@@ -1808,7 +1815,7 @@
 
             <div class="sidebar-bottom">
                 <div class="account-mini">
-                    <div id="sidebarEmail" class="account-mini-email">Loading account…</div>
+                    <div id="sidebarEmail" class="account-mini-email">Loading account...</div>
                     <div id="sidebarPlan">Account</div>
                 </div>
                 <button class="sign-out" onclick="signOut()">Sign out</button>
@@ -1820,7 +1827,7 @@
 
                 <header class="topbar" id="overview">
                     <div>
-                        <div class="eyebrow">EMF Insight · Account</div>
+                        <div class="eyebrow">EMF Insight ┬╖ Account</div>
                         <h1>Account Dashboard</h1>
                         <p class="lead" id="dashboardLead">
                             Manage your current workspace, projects, reports and account settings.
@@ -1830,7 +1837,7 @@
                     <div class="user-pill">
                         <div class="avatar" id="avatar">EM</div>
                         <div>
-                            <div class="user-pill-name" id="userName">Loading…</div>
+                            <div class="user-pill-name" id="userName">Loading...</div>
                             <div class="user-pill-plan" id="userPlan">Account</div>
                         </div>
                     </div>
@@ -2124,7 +2131,7 @@
                     <div class="workspace-grid">
                         <article class="workspace-card">
                             <div class="workspace-top">
-                                <div class="workspace-icon">⌂</div>
+                                <div class="workspace-icon">Γîé</div>
                                 <span class="status"><span class="status-dot"></span>Available</span>
                             </div>
                             <h3>Home Wellness</h3>
@@ -2146,7 +2153,7 @@
 
                         <article class="workspace-card">
                             <div class="workspace-top">
-                                <div class="workspace-icon">▦</div>
+                                <div class="workspace-icon">Γûª</div>
                                 <span class="status"><span class="status-dot"></span>Available</span>
                             </div>
                             <h3>Business Survey</h3>
@@ -2221,7 +2228,7 @@
                             <p id="projects-description"></p>
                             </p>
                         </div>
-                        <button class="btn-primary" onclick="startNewProject()">＋ New Project</button>
+                        <button class="btn-primary" onclick="startNewProject()">∩╝ï New Project</button>
                     </div>
 
                     <div class="content-card">
@@ -2234,7 +2241,7 @@
                         </div>
                         <div class="content-body" id="projectsContainer">
                             <div class="empty-state">
-                                <div class="empty-icon">…</div>
+                                <div class="empty-icon">...</div>
                                 <div class="empty-title">Loading projects</div>
                                 <div class="empty-copy">Please wait.</div>
                             </div>
@@ -2259,7 +2266,7 @@
                         </div>
                         <div class="content-body" id="reportsContainer">
                             <div class="empty-state">
-                                <div class="empty-icon">…</div>
+                                <div class="empty-icon">...</div>
                                 <div class="empty-title">Loading reports</div>
                                 <div class="empty-copy">Please wait.</div>
                             </div>
@@ -2402,7 +2409,7 @@ ADMIN PROFESSIONALS
                             <div class="admin-professionals-toolbar">
 
                                 <div class="admin-professionals-count" id="adminProfessionalsCount">
-                                    Loading professionals…
+                                    Loading professionals...
                                 </div>
 
                                 <button type="button" class="admin-professionals-add"
@@ -2416,7 +2423,7 @@ ADMIN PROFESSIONALS
 
                             <div class="admin-professionals-table" id="adminProfessionalsContainer">
                                 <div class="empty-state">
-                                    <div class="empty-icon">♙</div>
+                                    <div class="empty-icon">!</div>
 
                                     <div class="empty-title">
                                         Loading professionals
@@ -2433,8 +2440,38 @@ ADMIN PROFESSIONALS
                 </section>
 
                 <!-- =========================
- ADMIN PRICING
- ========================= -->
+                     PROFESSIONAL DEMO
+                ========================= -->
+
+                <section class="section" id="admin-professional-demos" aria-labelledby="admin-professional-demos-title"
+                    style="display:none;">
+                    <div class="section-heading">
+                        <div>
+                            <h2 class="section-title" id="admin-professional-demos-title">
+                                Professional Demo
+                            </h2>
+                            <p class="section-description">
+                                Manage Professional Demo access, trial periods and tester feedback.
+                            </p>
+                        </div>
+
+                        <button type="button" class="admin-professionals-add"
+                            onclick="openAdminProfessionalDemoCreate();">
+                            + Create Demo Link
+                        </button>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-body">
+                            <div id="adminProfessionalDemosContainer">
+                                Loading demos...
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
                 <section class="section" id="admin-pricing" aria-labelledby="admin-pricing-title" style="display:none;">
                     <div class="section-heading">
                         <div>
@@ -2460,7 +2497,7 @@ ADMIN PROFESSIONALS
 
                         <div class="content-body" id="adminPricingContainer">
                             <div class="empty-state">
-                                <div class="empty-icon">…</div>
+                                <div class="empty-icon">...</div>
                                 <div class="empty-title">Loading pricing</div>
                                 <div class="empty-copy">Please wait.</div>
                             </div>
@@ -2545,7 +2582,7 @@ ADMIN PROFESSIONALS
                     </div>
                 </section>
 
-                <div class="footer-note">© 2026 EMF Insight · Account Dashboard</div>
+                <div class="footer-note">┬⌐ 2026 EMF Insight ┬╖ Account Dashboard</div>
             </div>
         </main>
     </div>
@@ -2730,6 +2767,71 @@ ADMIN PROFESSIONALS
         </div>
     </div>
 
+
+    <!-- =========================
+ ADMIN PROFESSIONAL DEMO MODAL
+ ========================= -->
+
+    <div class="admin-modal-backdrop" id="adminProfessionalDemoModal" role="dialog" aria-modal="true"
+        aria-labelledby="adminProfessionalDemoModalTitle">
+
+        <div class="admin-modal">
+
+            <div class="admin-modal-header">
+                <h3 id="adminProfessionalDemoModalTitle">
+                    Create Professional Demo
+                </h3>
+
+                <p>
+                    Create a temporary Professional Demo access link.
+                </p>
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div class="admin-professionals-status" id="adminProfessionalDemoModalStatus"></div>
+
+                <div class="admin-modal-grid">
+
+                    <div class="admin-modal-field">
+                        <label for="adminProfessionalDemoDuration">
+                            Duration (days)
+                        </label>
+
+                        <input type="number" id="adminProfessionalDemoDuration" min="1" max="365" value="7">
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>
+                            Feedback
+                        </label>
+
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="adminProfessionalDemoRequestFeedback" checked>
+                            Request feedback from tester
+                        </label>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="admin-modal-actions">
+
+                <button type="button" class="btn-secondary" onclick="closeAdminProfessionalDemoModal();">
+                    Cancel
+                </button>
+
+                <button type="button" class="btn-primary" id="adminProfessionalDemoCreateButton"
+                    onclick="createAdminProfessionalDemo();">
+                    Create Demo Link
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
     <!-- =========================
      ADMIN PRICING MODAL
      ========================= -->
@@ -2840,6 +2942,8 @@ ADMIN PROFESSIONALS
 
         let adminProfessionalEntries = [];
         let adminProfessionalEditingId = null;
+
+        let adminProfessionalDemoEntries = [];
 
         const token = localStorage.getItem("token");
 
@@ -3621,7 +3725,7 @@ ADMIN PROFESSIONALS
                     const symbol = code === "USD"
                         ? "$"
                         : code === "EUR"
-                            ? "€"
+                            ? "Γé¼"
                             : code;
 
                     const locale = code === "USD"
@@ -3859,6 +3963,364 @@ ADMIN PROFESSIONALS
             }
         }
 
+        async function loadAdminProfessionalDemos() {
+            const nav = document.getElementById("adminProfessionalDemosNav");
+            const section = document.getElementById("admin-professional-demos");
+            const container = document.getElementById("adminProfessionalDemosContainer");
+
+            if (!nav || !section || !container) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API}/professional-demo/admin/list`, {
+                    headers: authHeaders()
+                });
+
+                if (response.status === 401) {
+                    signOut();
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error("Unable to load professional demos");
+                }
+
+                const data = await response.json();
+
+                if (!Array.isArray(data)) {
+                    throw new Error("Invalid professional demos response");
+                }
+
+                adminProfessionalDemoEntries = data;
+
+                nav.style.display = "";
+                section.style.display = "";
+
+                renderAdminProfessionalDemos();
+
+            } catch (error) {
+                console.error("Unable to load professional demos:", error);
+
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">!</div>
+                <div class="empty-title">
+                    Unable to load Professional Demo
+                </div>
+                <div class="empty-copy">
+                    Please try again.
+                </div>
+            </div>
+        `;
+            }
+        }
+
+
+        function renderAdminProfessionalDemos() {
+            const container =
+                document.getElementById("adminProfessionalDemosContainer");
+
+            if (!container) {
+                return;
+            }
+
+            if (!adminProfessionalDemoEntries.length) {
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">Demo</div>
+                <div class="empty-title">
+                    No Professional Demos
+                </div>
+                <div class="empty-copy">
+                    No Professional Demo links have been created yet.
+                </div>
+            </div>
+        `;
+                return;
+            }
+
+
+            container.innerHTML = `
+                <div class="admin-pricing-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Professional</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Started</th>
+                                <th>Expires</th>
+                                <th>Days</th>
+                                <th>Request Feedback</th>
+                                <th>Feedback</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            ${adminProfessionalDemoEntries.map(demo => `
+                    <tr>
+                        <td>
+                            ${escapeHtml(
+                [demo.first_name, demo.last_name]
+                    .filter(Boolean)
+                    .join(" ") || "-"
+            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(demo.email || "-")}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(demo.status || "-")}
+                        </td>
+
+                        <td>
+                            ${demo.activated_at
+                    ? escapeHtml(
+                        new Date(demo.activated_at)
+                            .toLocaleDateString()
+                    )
+                    : "-"}
+                        </td>
+
+                        <td>
+                            ${demo.expires_at
+                    ? escapeHtml(
+                        new Date(demo.expires_at)
+                            .toLocaleDateString()
+                    )
+                    : "-"}
+                        </td>
+
+                        <td>
+                            ${demo.status === "active"
+                    ? (
+                        Number.isFinite(Number(demo.days_remaining))
+                            ? escapeHtml(String(demo.days_remaining))
+                            : "-"
+                    )
+                    : (
+                        Number.isFinite(Number(demo.duration_days))
+                            ? escapeHtml(String(demo.duration_days))
+                            : "-"
+                    )}
+                        </td>
+
+                        <td>
+                            ${demo.request_feedback ? "Yes" : "No"}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                        demo.feedback_status || "Pending"
+                    )}
+                        </td>
+                    </tr>
+                `).join("")}
+                        </tbody>
+                    </table>
+    </div>
+                `;
+        }
+
+
+        function openAdminProfessionalDemoCreate() {
+            const modal = document.getElementById("adminProfessionalDemoModal");
+            const status = document.getElementById("adminProfessionalDemoModalStatus");
+            const duration = document.getElementById("adminProfessionalDemoDuration");
+            const button = document.getElementById("adminProfessionalDemoCreateButton");
+
+            if (!modal) {
+                return;
+            }
+
+            if (duration) {
+                duration.value = 7;
+            }
+
+            if (status) {
+                status.textContent = "";
+                status.className = "admin-professionals-status";
+            }
+
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Create Demo Link";
+            }
+
+            modal.style.display = "flex";
+        }
+
+
+        function closeAdminProfessionalDemoModal() {
+            const modal = document.getElementById("adminProfessionalDemoModal");
+
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        async function createAdminProfessionalDemo() {
+            const durationInput =
+                document.getElementById("adminProfessionalDemoDuration");
+
+            const status =
+                document.getElementById("adminProfessionalDemoModalStatus");
+
+            const button =
+                document.getElementById("adminProfessionalDemoCreateButton");
+
+            const durationDays = Number(durationInput?.value || 7);
+
+            const requestFeedback =
+                document.getElementById(
+                    "adminProfessionalDemoRequestFeedback"
+                )?.checked ?? true;
+
+            if (!Number.isInteger(durationDays) ||
+                durationDays < 1 ||
+                durationDays > 365) {
+
+                if (status) {
+                    status.textContent =
+                        "Duration must be between 1 and 365 days.";
+                    status.className =
+                        "admin-professionals-status error";
+                }
+
+                return;
+            }
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Creating...";
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo/admin/create`,
+                    {
+                        method: "POST",
+                        headers: {
+                            ...authHeaders(),
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            duration_days: durationDays,
+                            request_feedback: requestFeedback
+                        })
+                    }
+                );
+
+                if (response.status === 401) {
+                    signOut();
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail || "Unable to create Professional Demo."
+                    );
+                }
+
+                const demoUrl = `${window.location.origin}${data.demo_url} `;
+
+                if (status) {
+                    status.className = "admin-professionals-status success";
+
+                    status.innerHTML = `
+        <strong>Demo link created.</strong>
+
+        <div style="margin-top:8px;">
+            <input
+                type="text"
+                value="${escapeHtml(demoUrl)}"
+                readonly
+                style="width:100%; box-sizing:border-box;"
+                id="adminProfessionalDemoCreatedUrl">
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="copyAdminProfessionalDemoLink();">
+                Copy Link
+            </button>
+
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="closeAdminProfessionalDemoModal();">
+                Done
+            </button>
+        </div>
+    `;
+                }
+
+                await loadAdminProfessionalDemos();
+
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = "Created";
+                }
+
+
+
+            } catch (error) {
+                console.error(
+                    "Unable to create Professional Demo:",
+                    error
+                );
+
+                if (status) {
+                    status.textContent =
+                        error.message || "Unable to create Professional Demo.";
+                    status.className =
+                        "admin-professionals-status error";
+                }
+
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Create Demo Link";
+                }
+            }
+        }
+
+        async function copyAdminProfessionalDemoLink() {
+            const input =
+                document.getElementById("adminProfessionalDemoCreatedUrl");
+
+            if (!input) {
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(input.value);
+
+                const button =
+                    document.querySelector(
+                        "#adminProfessionalDemoModalStatus button.btn-secondary"
+                    );
+
+                if (button) {
+                    const originalText = button.textContent;
+                    button.textContent = "Copied";
+
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 1500);
+                }
+
+            } catch (error) {
+                input.select();
+                document.execCommand("copy");
+            }
+        }
 
         function renderAdminProfessionals() {
 
@@ -3874,8 +4336,8 @@ ADMIN PROFESSIONALS
             if (!adminProfessionalEntries.length) {
 
                 container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">♙</div>
+                <div class="empty-state">
+                <div class="empty-icon">!</div>
 
                 <div class="empty-title">
                     No professionals
@@ -3885,13 +4347,13 @@ ADMIN PROFESSIONALS
                     No professional profiles have been added yet.
                 </div>
             </div>
-        `;
+                `;
 
                 return;
             }
 
             container.innerHTML = `
-        <table>
+                <table>
 
             <thead>
                 <tr>
@@ -4023,7 +4485,7 @@ ADMIN PROFESSIONALS
             </tbody>
 
         </table>
-    `;
+                `;
         }
 
 
@@ -4135,7 +4597,7 @@ ADMIN PROFESSIONALS
             document.getElementById(
                 "adminProfessionalModalSubtitle"
             ).textContent =
-                `${professional.first_name || ""} ${professional.last_name || ""}`.trim()
+                `${professional.first_name || ""} ${professional.last_name || ""} `.trim()
                 || "Update professional profile.";
 
             document.getElementById(
@@ -4247,7 +4709,7 @@ ADMIN PROFESSIONALS
             document.getElementById(
                 "adminProfessionalModalSubtitle"
             ).textContent =
-                `${professional.first_name || ""} ${professional.last_name || ""}`.trim()
+                `${professional.first_name || ""} ${professional.last_name || ""} `.trim()
                 || "Review professional verification.";
 
             document.getElementById(
@@ -4351,7 +4813,7 @@ ADMIN PROFESSIONALS
                     : "Reject";
 
             const confirmed = window.confirm(
-                `${action} this professional verification request?`
+                `${action} this professional verification request ? `
             );
 
             if (!confirmed) {
@@ -4389,11 +4851,11 @@ ADMIN PROFESSIONALS
             try {
 
                 const response = await fetch(
-                    `${API}/admin/professionals/${adminProfessionalEditingId}`,
+                    `${API} /admin/professionals / ${adminProfessionalEditingId} `,
                     {
                         method: "PATCH",
                         headers: {
-                            "Authorization": `Bearer ${token}`,
+                            "Authorization": `Bearer ${token} `,
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
@@ -4592,7 +5054,7 @@ ADMIN PROFESSIONALS
             };
 
             button.disabled = true;
-            button.textContent = "Saving…";
+            button.textContent = "Saving...";
 
             status.textContent = "";
             status.className =
@@ -4605,8 +5067,8 @@ ADMIN PROFESSIONALS
 
                 const url =
                     isEdit
-                        ? `${API}/admin/professionals/${adminProfessionalEditingId}`
-                        : `${API}/admin/professionals`;
+                        ? `${API} /admin/professionals / ${adminProfessionalEditingId} `
+                        : `${API} /admin/professionals`;
 
                 const response = await fetch(
                     url,
@@ -4711,41 +5173,41 @@ ADMIN PROFESSIONALS
 
             if (!adminPricingEntries.length) {
                 container.innerHTML = `
-            <div class="empty-state">
+                <div class="empty-state">
                 <div class="empty-icon">?</div>
                 <div class="empty-title">No pricing entries</div>
                 <div class="empty-copy">
                     No pricing configuration entries are available.
                 </div>
             </div>
-        `;
+                `;
                 return;
             }
 
             container.innerHTML = `
-        <div
+                <div
             class="admin-pricing-status"
-            id="adminPricingStatus"
-        ></div>
+    id="adminPricingStatus"
+                ></div>
 
-        <div class="admin-pricing-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Region</th>
-                        <th>Currency</th>
-                        <th>Product</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Billing</th>
-                        <th>Credits</th>
-                        <th>Available</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+                    <div class="admin-pricing-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Region</th>
+                                    <th>Currency</th>
+                                    <th>Product</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Billing</th>
+                                    <th>Credits</th>
+                                    <th>Available</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
 
-                <tbody>
-                    ${adminPricingEntries.map((entry) => `
+                            <tbody>
+                                ${adminPricingEntries.map((entry) => `
                         <tr>
                             <td>${escapeHtml(entry.region)}</td>
                             <td>${escapeHtml(entry.currency)}</td>
@@ -4789,10 +5251,10 @@ ADMIN PROFESSIONALS
                             </td>
                         </tr>
                     `).join("")}
-                </tbody>
-            </table>
-        </div>
-    `;
+                            </tbody>
+                        </table>
+                    </div>
+            `;
         }
 
 
@@ -4838,7 +5300,7 @@ ADMIN PROFESSIONALS
             document.getElementById("adminPricingModalStatus").textContent = "";
 
             document.getElementById("adminPricingModalSubtitle").textContent =
-                `${entry.region} · ${entry.product_key}`;
+                `${entry.region} ┬╖ ${entry.product_key} `;
 
             document.getElementById("adminPricingModal").style.display = "flex";
         }
@@ -4903,14 +5365,14 @@ ADMIN PROFESSIONALS
             }
 
             button.disabled = true;
-            button.textContent = "Saving…";
+            button.textContent = "Saving...";
 
             status.textContent = "";
             status.className = "admin-pricing-status";
 
             try {
                 const response = await fetch(
-                    `${API}/admin/pricing/${adminPricingEditingId}`,
+                    `${API} /admin/pricing / ${adminPricingEditingId} `,
                     {
                         method: "PUT",
                         headers: {
@@ -5015,7 +5477,7 @@ ADMIN PROFESSIONALS
                 document.getElementById("userPlan").textContent =
                     dashboardMode === "home"
                         ? workspaceLabel
-                        : `${workspaceLabel} · ${plan}`;
+                        : `${workspaceLabel} ┬╖ ${plan}`;
 
                 document.getElementById("avatar").textContent =
                     initials(firstName, lastName, email);
@@ -5026,12 +5488,12 @@ ADMIN PROFESSIONALS
                 document.getElementById("sidebarPlan").textContent =
                     dashboardMode === "home"
                         ? workspaceLabel
-                        : `${workspaceLabel} · ${plan}`;
+                        : `${workspaceLabel} ┬╖ ${plan}`;
 
                 document.getElementById("businessPlan").textContent =
-    professionalDemoActive
-        ? "Professional Demo"
-        : plan;
+                    professionalDemoActive
+                        ? "Professional Demo"
+                        : plan;
                 document.getElementById("businessCredits").textContent = credits;
                 document.getElementById("summaryCredits").textContent = credits;
                 document.getElementById("summaryPlan").textContent =
@@ -5060,7 +5522,7 @@ ADMIN PROFESSIONALS
 
                     if (billingBusinessCredits) {
                         billingBusinessCredits.textContent =
-                            `Active · ${remainingDays} day${remainingDays === 1 ? "" : "s"} remaining · Full Business access`;
+                            `Active ┬╖ ${remainingDays} day${remainingDays === 1 ? "" : "s"} remaining ┬╖ Full Business access`;
                     }
                 } else {
                     if (billingBusinessPlan) {
@@ -5098,6 +5560,7 @@ ADMIN PROFESSIONALS
                 if (data.is_admin === true) {
                     loadAdminPricing();
                     loadAdminProfessionalRequests();
+                    loadAdminProfessionalDemos();
                 }
 
                 return data;
@@ -5602,7 +6065,7 @@ ADMIN PROFESSIONALS
 
                     container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">□</div>
+                    <div class="empty-icon">Γûí</div>
                     <div class="empty-title">${title}</div>
                     <div class="empty-copy">${copy}</div>
                 </div>
@@ -5629,7 +6092,7 @@ ADMIN PROFESSIONALS
                         <div class="row-title">${name}</div>
                         <div class="row-meta">
                             Project #${escapeHtml(id)}
-                            ${created ? ` · ${created}` : ""}
+                            ${created ? ` ┬╖ ${created}` : ""}
                         </div>
                     </div>
 
@@ -5757,7 +6220,7 @@ ADMIN PROFESSIONALS
                 if (!list.length) {
                     container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">▧</div>
+                        <div class="empty-icon">Γûº</div>
                         <div class="empty-title">No reports yet</div>
                         <div class="empty-copy">Generated reports will appear here.</div>
                     </div>
@@ -5804,7 +6267,7 @@ ADMIN PROFESSIONALS
             const company_name = document.getElementById("company_name").value.trim();
             const company_email = document.getElementById("company_email").value.trim();
 
-            message.textContent = "Saving…";
+            message.textContent = "Saving...";
             message.style.color = "var(--muted)";
 
             try {
@@ -5840,7 +6303,7 @@ ADMIN PROFESSIONALS
 
             const form = new FormData();
             form.append("file", file);
-            message.textContent = "Uploading…";
+            message.textContent = "Uploading...";
             message.style.color = "var(--muted)";
 
             try {

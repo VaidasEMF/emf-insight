@@ -28,6 +28,7 @@ def get_db():
 
 class DemoCreateRequest(BaseModel):
     duration_days: int = 7
+    request_feedback: bool = True
 
 class DemoManagementRequest(BaseModel):
     action: str
@@ -59,6 +60,7 @@ def list_professional_demos(
                 d.token,
                 d.status,
                 d.duration_days,
+                d.request_feedback,
                 d.user_id,
                 d.created_at,
                 d.activated_at,
@@ -145,19 +147,22 @@ def create_professional_demo(
             INSERT INTO professional_demo_links (
                 token,
                 status,
-                duration_days
+                duration_days,
+                request_feedback
             )
             VALUES (
                 :token,
                 'available',
-                :duration_days
+                :duration_days,
+                :request_feedback
             )
-            RETURNING id, token, status, duration_days, created_at
+            RETURNING id, token, status, duration_days, request_feedback, created_at
             """
         ),
         {
             "token": token,
             "duration_days": data.duration_days,
+            "request_feedback": data.request_feedback,
         },
     )
 
@@ -169,6 +174,7 @@ def create_professional_demo(
         "token": demo["token"],
         "status": demo["status"],
         "duration_days": demo["duration_days"],
+        "request_feedback": demo["request_feedback"],
         "created_at": demo["created_at"],
         "demo_url": f"/professional-demo/{demo['token']}",
     }

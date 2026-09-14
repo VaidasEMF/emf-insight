@@ -228,6 +228,15 @@ def init_db():
                 )
             )
 
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_demo_links
+                    ADD COLUMN IF NOT EXISTS request_feedback BOOLEAN NOT NULL DEFAULT TRUE
+                    """
+                )
+            )
+
     # ==================================================
 
     if engine.dialect.name == "postgresql":
