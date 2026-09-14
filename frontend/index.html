@@ -26340,7 +26340,12 @@
 
 
 
-      const pdfWindow = window.open("about:blank", "_blank");
+      const pdfWindow = window.open("", "_blank");
+
+      if (pdfWindow) {
+        pdfWindow.document.write(`<html><head><title>Generating PDF</title></head><body style="font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><div style="text-align:center;"><h2>Generating PDF...</h2><p>Please wait.</p></div></body></html>`);
+        pdfWindow.document.close();
+      }
 
       const res = await fetch(
 

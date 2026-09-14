@@ -180,6 +180,7 @@ def init_db():
                         id SERIAL PRIMARY KEY,
                         token VARCHAR(255) NOT NULL UNIQUE,
                         status VARCHAR(30) NOT NULL DEFAULT 'available',
+                        duration_days INTEGER NOT NULL DEFAULT 7,
                         user_id VARCHAR(255),
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         activated_at TIMESTAMP,
@@ -190,6 +191,17 @@ def init_db():
             )
 
     # DATABASE MIGRATIONS
+
+    if engine.dialect.name == "postgresql":
+        with engine.begin() as connection:
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_demo_links
+                    ADD COLUMN IF NOT EXISTS duration_days INTEGER NOT NULL DEFAULT 7
+                    """
+                )
+            )
     # ==================================================
 
     if engine.dialect.name == "postgresql":
