@@ -4055,7 +4055,7 @@ ADMIN PROFESSIONALS
                         <th>Started</th>
                         <th>Expires</th>
                         <th>Days</th>
-                        <th>Request Feedback</th>
+
                         <th>Feedback</th>
                         <th>Sent</th>
                         <th>Actions</th>
@@ -4104,8 +4104,8 @@ ADMIN PROFESSIONALS
                             <button
                                 type="button"
                                 class="btn-secondary"
-                                onclick="copyAdminProfessionalDemoLinkById(${demo.id});"
-                                Copy
+                                onclick="copyAdminProfessionalDemoLinkById(${demo.id});">
+                                Copy Link
                             </button>
                         `;
 
@@ -4200,10 +4200,7 @@ ADMIN PROFESSIONALS
                                     ${escapeHtml(days)}
                                 </td>
 
-                                <td>
-                                    ${demo.request_feedback ? "Yes" : "No"}
-                                </td>
-
+                
                                 <td>
                                     ${escapeHtml(
                             demo.feedback_status === "submitted"
