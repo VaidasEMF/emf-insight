@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMF Insight — Professional Demo</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            background: #f6f8fb;
+            color: #172033;
+        }
+
+        .demo-card {
+            width: min(460px, calc(100% - 40px));
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 28px;
+        }
+
+        p {
+            color: #667085;
+            line-height: 1.6;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 13px 18px;
+            border: 0;
+            border-radius: 9px;
+            background: #172033;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .error {
+            color: #b42318;
+            margin-top: 20px;
+        }
+
+        .loading {
+            color: #667085;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="demo-card">
+        <div id="content">
+            <div class="loading">Checking your Demo invitation…</div>
+        </div>
+    </div>
+
+    <script>
+        const API = "https://emf-insight.onrender.com";
+
+        const token =
+            new URLSearchParams(window.location.search)
+                .get("token");
+
+        async function initProfessionalDemo() {
+            const content =
+                document.getElementById("content");
+
+            if (!token || token === "professional-demo") {
+                content.innerHTML = `
+            <h1>Invalid Demo Link</h1>
+            <p>This Professional Demo link is not valid.</p>
+        `;
+                return;
+            }
+
+            try {
+                const response =
+                    await fetch(
+                        `${API}/professional-demo/${encodeURIComponent(token)}`
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok || !data.valid) {
+                    content.innerHTML = `
+                <h1>Demo Unavailable</h1>
+                <p>This Professional Demo link is no longer available.</p>
+            `;
+                    return;
+                }
+
+                content.innerHTML = `
+            <h1>EMF Insight Professional Demo</h1>
+            <p>
+                You've been invited to try
+                Professional Demo.
+            </p>
+            <button onclick="startDemo()">
+                Start Demo
+            </button>
+        `;
+
+            } catch (error) {
+                console.error(
+                    "Professional Demo initialization failed:",
+                    error
+                );
+
+                content.innerHTML = `
+            <h1>Unable to Load Demo</h1>
+            <p>Please try again later.</p>
+        `;
+            }
+        }
+
+        function startDemo() {
+            document.getElementById("content").innerHTML = `
+        <h1>Start Your Demo</h1>
+
+        <p>
+            Create your Professional Demo account.
+        </p>
+
+        <form onsubmit="activateDemo(event)">
+            <input
+                id="firstName"
+                placeholder="First name"
+                required
+                style="width:100%;box-sizing:border-box;padding:12px;margin-top:10px;"
+            >
+
+            <input
+                id="lastName"
+                placeholder="Last name"
+                required
+                style="width:100%;box-sizing:border-box;padding:12px;margin-top:10px;"
+            >
+
+            <input
+                id="email"
+                type="email"
+                placeholder="Email"
+                required
+                style="width:100%;box-sizing:border-box;padding:12px;margin-top:10px;"
+            >
+
+            <input
+                id="password"
+                type="password"
+                placeholder="Password"
+                required
+                style="width:100%;box-sizing:border-box;padding:12px;margin-top:10px;"
+            >
+
+            <button type="submit">
+                Activate Demo
+            </button>
+        </form>
+
+        <div id="activationError"></div>
+    `;
+        }
+
+        async function activateDemo(event) {
+            event.preventDefault();
+
+            const errorBox =
+                document.getElementById("activationError");
+
+            errorBox.innerHTML = "";
+
+            const body = new URLSearchParams({
+                first_name:
+                    document.getElementById("firstName").value.trim(),
+
+                last_name:
+                    document.getElementById("lastName").value.trim(),
+
+                email:
+                    document.getElementById("email").value.trim(),
+
+                password:
+                    document.getElementById("password").value
+            });
+
+            try {
+                const response =
+                    await fetch(
+                        `${API}/professional-demo/${encodeURIComponent(token)}/activate`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded"
+                            },
+                            body
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Unable to activate Demo."
+                    );
+                }
+
+                /*
+                 * The next step will connect this
+                 * successful activation to the
+                 * existing Business Project flow.
+                 */
+                localStorage.setItem(
+                    "token",
+                    data.access_token
+                );
+
+                localStorage.setItem(
+                    "workspaceMode",
+                    "business"
+                );
+
+                localStorage.setItem(
+                    "professional_demo_activated",
+                    "true"
+                );
+
+                window.location.href =
+                    "index.html";
+
+            } catch (error) {
+                console.error(
+                    "Professional Demo activation failed:",
+                    error
+                );
+
+                errorBox.innerHTML = `
+            <div class="error">
+                ${error.message}
+            </div>
+        `;
+            }
+        }
+
+        initProfessionalDemo();
+    </script>
+
+</body>
+
+</html>
