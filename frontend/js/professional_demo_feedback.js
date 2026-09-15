@@ -1,5 +1,5 @@
 (function () {
-  const FEEDBACK_API = `${API}/professional-demo-feedback/`;
+  const FEEDBACK_API = `${API}/professional-demo-feedback`;
 
   let feedbackSubmitted = false;
 
@@ -13,18 +13,23 @@
       "professionalDemoFeedbackSection"
     );
 
-    if (!token || !section) return;
+    if (!section) return;
 
     section.style.display = "none";
 
+    if (!token) return;
+
     try {
       const meResponse = await fetch(`${API}/me`, {
+        method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`
         }
       });
 
-      if (!meResponse.ok) return;
+      if (!meResponse.ok) {
+        return;
+      }
 
       const me = await meResponse.json();
 
@@ -32,18 +37,23 @@
         return;
       }
 
-      section.style.display = "";
+      // Professional Demo is active:
+      // explicitly override the base .business-only display:none.
+      section.style.display = "block";
 
       const response = await fetch(
         `${API}/professional-demo-feedback/my`,
         {
+          method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`
           }
         }
       );
 
-      if (!response.ok) return;
+      if (!response.ok) {
+        return;
+      }
 
       const data = await response.json();
 
