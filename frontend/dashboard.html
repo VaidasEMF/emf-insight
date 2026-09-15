@@ -4138,7 +4138,18 @@ ADMIN PROFESSIONALS
                                                 Revoke
                                             </button>
                                         `
-                                : ""
+                                : (
+                                    demo.status === "revoked"
+                                        ? `
+                                            <button
+                                                type="button"
+                                                class="btn-secondary"
+                                                onclick="reactivateAdminProfessionalDemo(${demo.id});">
+                                                Reactivate
+                                            </button>
+                                        `
+                                        : ""
+                                )
                         );
 
                 const feedbackButton =
@@ -6956,6 +6967,62 @@ ADMIN PROFESSIONALS
             }
         }
 
+
+        async function reactivateAdminProfessionalDemo(demoId) {
+            const demo = adminProfessionalDemoEntries.find(
+                item => Number(item.id) === Number(demoId)
+            );
+
+            if (!demo || demo.status !== "revoked") {
+                return;
+            }
+
+            if (
+                !confirm(
+                    "Reactivate this Professional Demo?"
+                )
+            ) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo/admin/${demoId}`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            action: "reactivate"
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Failed to reactivate Demo."
+                    );
+                }
+
+                await loadAdminProfessionalDemos();
+
+            } catch (error) {
+                console.error(
+                    "Failed to reactivate Professional Demo:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Failed to reactivate Demo."
+                );
+            }
+        }
 
         async function viewAdminProfessionalDemoFeedback(demoId) {
             const modal = document.getElementById(
