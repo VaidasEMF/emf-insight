@@ -18587,7 +18587,26 @@
         </div>
 
 
-        <!-- GUIDE -->
+        <!-- ===================== -->
+        <!-- PROFESSIONAL DEMO FEEDBACK -->
+        <!-- ===================== -->
+
+        <div id="professionalDemoFeedbackSection" class="business-only">
+          <div class="sidebar-section">
+            <div class="sidebar-section-header">
+              Demo Feedback
+            </div>
+
+            <button
+              id="professionalDemoFeedbackButton"
+              class="workflow-action-btn"
+              type="button"
+              onclick="openProfessionalDemoFeedback();">
+              Demo Feedback
+            </button>
+          </div>
+        </div>
+          <!-- GUIDE -->
 
         <div id="guideText" class="mutedText">
         </div>
@@ -22569,6 +22588,139 @@
       </div>
 
       <!-- ================================================== -->
+      <!-- PROFESSIONAL DEMO FEEDBACK MODAL -->
+      <!-- ================================================== -->
+
+      <div id="professionalDemoFeedbackModal" class="modal hidden">
+
+        <div class="modal-box" style="width: min(620px, 92vw); max-height: 90vh; overflow-y: auto;">
+
+          <h2 style="margin-top: 0;">Demo Feedback</h2>
+
+          <p class="mutedText">Please share your experience using EMF Maps Professional Demo.</p>
+
+          <form id="professionalDemoFeedbackForm">
+
+            <div style="margin-top: 18px;">
+              <label><strong>Overall experience</strong></label>
+              <select name="overall_rating" required>
+                <option value="">Select rating</option>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Good</option>
+                <option value="3">3 — Average</option>
+                <option value="2">2 — Poor</option>
+                <option value="1">1 — Very poor</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>Business Survey</strong></label>
+              <select name="business_survey_rating" required>
+                <option value="">Select rating</option>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Good</option>
+                <option value="3">3 — Average</option>
+                <option value="2">2 — Poor</option>
+                <option value="1">1 — Very poor</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>Measurements</strong></label>
+              <select name="measurements_rating" required>
+                <option value="">Select rating</option>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Good</option>
+                <option value="3">3 — Average</option>
+                <option value="2">2 — Poor</option>
+                <option value="1">1 — Very poor</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>Results / Insights</strong></label>
+              <select name="results_rating" required>
+                <option value="">Select rating</option>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Good</option>
+                <option value="3">3 — Average</option>
+                <option value="2">2 — Poor</option>
+                <option value="1">1 — Very poor</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>PDF Report</strong></label>
+              <select name="pdf_rating" required>
+                <option value="">Select rating</option>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Good</option>
+                <option value="3">3 — Average</option>
+                <option value="2">2 — Poor</option>
+                <option value="1">1 — Very poor</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 18px;">
+              <label><strong>What was confusing?</strong></label>
+              <textarea name="confusing_text" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="Tell us what was unclear or difficult to understand."></textarea>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>What is missing?</strong></label>
+              <textarea name="missing_features" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="What features or information would you expect?"></textarea>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>Bugs or technical problems</strong></label>
+              <textarea name="bugs_text" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="Describe anything that did not work correctly."></textarea>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>What would you improve?</strong></label>
+              <textarea name="improvements_text" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="What should we improve or change?"></textarea>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>Would you use EMF Maps professionally?</strong></label>
+              <select name="professional_use">
+                <option value="">Select an option</option>
+                <option value="yes">Yes</option>
+                <option value="maybe">Maybe</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label><strong>How likely are you to recommend EMF Maps?</strong></label>
+              <select name="recommendation_score">
+                <option value="">Select score</option>
+                <option value="10">10</option>
+                <option value="9">9</option>
+                <option value="8">8</option>
+                <option value="7">7</option>
+                <option value="6">6</option>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+                <option value="0">0</option>
+              </select>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+              <button type="button" class="btn-secondary" onclick="closeProfessionalDemoFeedback();">Cancel</button>
+              <button type="button" class="btn-primary" id="professionalDemoFeedbackSubmit" onclick="submitProfessionalDemoFeedback();">Submit Feedback</button>
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+      <!-- ================================================== -->
       <!-- HOME FLOOR CONTEXT -->
       <!-- ================================================== -->
 
@@ -22659,6 +22811,7 @@
 
       <script src="js/api.js"></script>
       <script src="js/professional_profile.js"></script>
+      <script src="js/professional_demo_feedback.js"></script>
 
       <!-- ===================== -->
       <!-- 🔥 SHARED HELPERS -->

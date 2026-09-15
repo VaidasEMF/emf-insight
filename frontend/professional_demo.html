@@ -107,6 +107,34 @@
                     return;
                 }
 
+                if (data.status === "active") {
+                    let sameUser = false;
+                    const storedToken = localStorage.getItem("token");
+
+                    if (storedToken && data.user_id) {
+                        try {
+                            const meResponse = await fetch(API + "/me", {
+                                headers: {"Authorization": "Bearer " + storedToken}
+                            });
+
+                            if (meResponse.ok) {
+                                const me = await meResponse.json();
+                                sameUser = String(me.id) === String(data.user_id);
+                            }
+                        } catch (error) {
+                            console.warn("Unable to check current Demo user:", error);
+                        }
+                    }
+
+                    if (sameUser) {
+                        content.innerHTML = "<h1>Demo Already Activated</h1><p>Your Professional Demo is already activated.</p><button onclick='openProfessionalDemo()'>Open EMF Maps</button>";
+                    } else {
+                        content.innerHTML = "<h1>Demo Already Activated</h1><p>This Professional Demo has already been activated.</p><p>Please continue with the account that activated this Demo.</p>";
+                    }
+
+                    return;
+                }
+
                 content.innerHTML = `
             <h1>EMF Insight Professional Demo</h1>
             <p>
@@ -129,6 +157,11 @@
             <p>Please try again later.</p>
         `;
             }
+        }
+
+        function openProfessionalDemo() {
+            localStorage.setItem('workspaceMode', 'business');
+            window.location.href = 'index.html';
         }
 
         function startDemo() {

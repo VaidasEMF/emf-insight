@@ -632,7 +632,8 @@ def get_professional_demo(
                 status,
                 created_at,
                 activated_at,
-                expires_at
+                expires_at,
+                user_id
             FROM professional_demo_links
             WHERE token = :token
             """
@@ -676,6 +677,7 @@ def get_professional_demo(
         "created_at": demo["created_at"],
         "activated_at": demo["activated_at"],
         "expires_at": demo["expires_at"],
+        "user_id": str(demo["user_id"]) if demo["user_id"] is not None else None,
     }
 
 
