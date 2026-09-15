@@ -1,5 +1,9 @@
-﻿from datetime import datetime, timedelta
+from datetime import datetime, timedelta
+import json
+import os
 import secrets
+import urllib.error
+import urllib.request
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -61,6 +65,8 @@ def list_professional_demos(
                 d.status,
                 d.duration_days,
                 d.request_feedback,
+                d.sent_to,
+                d.sent_at,
                 d.user_id,
                 d.created_at,
                 d.activated_at,
@@ -85,12 +91,14 @@ def list_professional_demos(
         item = dict(row)
         expires_at = item.get("expires_at")
 
+        # Automatically mark expired active demos.
         if (
             item["status"] == "active"
             and expires_at is not None
             and expires_at <= now
         ):
             item["status"] = "expired"
+
             db.execute(
                 text(
                     """
@@ -102,19 +110,47 @@ def list_professional_demos(
                 {"id": item["id"]},
             )
 
+        # Calculate remaining days only for demos with a future expiry.
         if expires_at is not None and expires_at > now:
-            item["days_remaining"] = max(0, (expires_at - now).days)
+            item["days_remaining"] = max(
+                0,
+                (expires_at - now).days,
+            )
         else:
             item["days_remaining"] = 0
 
-        item["demo_url"] = f"/professional-demo/{item['token']}"
-        item["feedback_status"] = "pending"
+        # Canonical public Demo URL.
+        item["demo_url"] = (
+            f"https://app.emfinsight.com/professional-demo/"
+            f"{item['token']}"
+        )
+
+        # Determine actual feedback state.
+        feedback = db.execute(
+            text(
+                """
+                SELECT id
+                FROM professional_demo_feedback
+                WHERE demo_id = :demo_id
+                ORDER BY created_at DESC
+                LIMIT 1
+                """
+            ),
+            {"demo_id": item["id"]},
+        ).first()
+
+        if feedback:
+            item["feedback_status"] = "submitted"
+        elif item["request_feedback"]:
+            item["feedback_status"] = "requested"
+        else:
+            item["feedback_status"] = "not_requested"
+
         result.append(item)
 
     db.commit()
 
     return result
-
 
 
 # =====================
@@ -359,6 +395,225 @@ def manage_professional_demo(
     ).mappings().first()
 
     return dict(updated)
+
+# =====================
+# ADMIN — DELETE DEMO LINK
+# =====================
+
+@router.delete("/admin/{demo_id}")
+def delete_professional_demo(
+    demo_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    demo = db.execute(
+        text(
+            """
+            SELECT
+                id,
+                status
+            FROM professional_demo_links
+            WHERE id = :id
+            """
+        ),
+        {"id": demo_id},
+    ).mappings().first()
+
+    if not demo:
+        raise HTTPException(
+            status_code=404,
+            detail="Demo link not found",
+        )
+
+    if demo["status"] != "available":
+        raise HTTPException(
+            status_code=400,
+            detail="Only unused available Demo links can be deleted",
+        )
+
+    db.execute(
+        text(
+            """
+            DELETE FROM professional_demo_links
+            WHERE id = :id
+              AND status = 'available'
+            """
+        ),
+        {"id": demo_id},
+    )
+
+    db.commit()
+
+    return {
+        "status": "deleted",
+        "demo_id": demo_id,
+    }
+
+# =====================
+# ADMIN — SEND DEMO LINK
+# =====================
+
+class DemoSendRequest(BaseModel):
+    recipient_email: str
+    message: str = ""
+
+
+@router.post("/admin/{demo_id}/send")
+def send_professional_demo(
+    demo_id: int,
+    data: DemoSendRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    recipient_email = data.recipient_email.strip()
+
+    if not recipient_email or "@" not in recipient_email:
+        raise HTTPException(
+            status_code=400,
+            detail="Valid recipient email is required",
+        )
+
+    demo = db.execute(
+        text(
+            """
+            SELECT
+                id,
+                token,
+                status
+            FROM professional_demo_links
+            WHERE id = :id
+            """
+        ),
+        {"id": demo_id},
+    ).mappings().first()
+
+    if not demo:
+        raise HTTPException(
+            status_code=404,
+            detail="Demo link not found",
+        )
+
+    if demo["status"] not in ("available", "active"):
+        raise HTTPException(
+            status_code=400,
+            detail="This Demo link cannot be sent",
+        )
+
+    demo_url = f"https://app.emfinsight.com/professional-demo/{demo['token']}"
+
+    message = data.message.strip()
+
+    if not message:
+        message = (
+            "You have been invited to try EMF Insight Professional Demo. "
+            "Use the link below to activate your 7-day Demo access."
+        )
+
+    html_content = f"""
+    <html>
+        <body>
+            <p>{message}</p>
+            <p>
+                <a href="{demo_url}">Open EMF Insight Professional Demo</a>
+            </p>
+            <p>{demo_url}</p>
+        </body>
+    </html>
+    """
+
+    brevo_api_key = os.getenv("BREVO_API_KEY")
+
+    if not brevo_api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="BREVO_API_KEY is not configured.",
+        )
+
+    payload = {
+        "sender": {
+            "name": "EMF Insight",
+            "email": "info@emfinsight.com",
+        },
+        "to": [
+            {
+                "email": recipient_email,
+            }
+        ],
+        "subject": "EMF Insight Professional Demo",
+        "htmlContent": html_content,
+    }
+
+    request = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "accept": "application/json",
+            "api-key": brevo_api_key,
+            "content-type": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            response_body = response.read().decode("utf-8")
+    except urllib.error.HTTPError as exc:
+        try:
+            error_body = exc.read().decode("utf-8")
+        except Exception:
+            error_body = ""
+
+        raise HTTPException(
+            status_code=502,
+            detail=f"Brevo email failed: {error_body or exc.reason}",
+        )
+    except urllib.error.URLError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Brevo email failed: {exc.reason}",
+        )
+
+    sent_at = datetime.utcnow()
+
+    db.execute(
+        text(
+            """
+            UPDATE professional_demo_links
+            SET
+                sent_to = :sent_to,
+                sent_at = :sent_at
+            WHERE id = :id
+            """
+        ),
+        {
+            "id": demo_id,
+            "sent_to": recipient_email,
+            "sent_at": sent_at,
+        },
+    )
+
+    db.commit()
+
+    return {
+        "status": "sent",
+        "demo_id": demo_id,
+        "recipient_email": recipient_email,
+        "sent_at": sent_at,
+        "demo_url": demo_url,
+        "brevo_response": response_body,
+    }
 
 # =====================
 # PUBLIC — CHECK DEMO LINK

@@ -4028,7 +4028,7 @@ ADMIN PROFESSIONALS
             if (!adminProfessionalDemoEntries.length) {
                 container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">Demo</div>
+                <div class="empty-icon">◆</div>
                 <div class="empty-title">
                     No Professional Demos
                 </div>
@@ -4040,92 +4040,185 @@ ADMIN PROFESSIONALS
                 return;
             }
 
-
             container.innerHTML = `
-                <div class="admin-pricing-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Professional</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Started</th>
-                                <th>Expires</th>
-                                <th>Days</th>
-                                <th>Request Feedback</th>
-                                <th>Feedback</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            ${adminProfessionalDemoEntries.map(demo => `
+        <div class="admin-pricing-table">
+            <table>
+                <thead>
                     <tr>
-                        <td>
-                            ${escapeHtml(
-                [demo.first_name, demo.last_name]
-                    .filter(Boolean)
-                    .join(" ") || "-"
-            )}
-                        </td>
-
-                        <td>
-                            ${escapeHtml(demo.email || "-")}
-                        </td>
-
-                        <td>
-                            ${escapeHtml(demo.status || "-")}
-                        </td>
-
-                        <td>
-                            ${demo.activated_at
-                    ? escapeHtml(
-                        new Date(demo.activated_at)
-                            .toLocaleDateString()
-                    )
-                    : "-"}
-                        </td>
-
-                        <td>
-                            ${demo.expires_at
-                    ? escapeHtml(
-                        new Date(demo.expires_at)
-                            .toLocaleDateString()
-                    )
-                    : "-"}
-                        </td>
-
-                        <td>
-                            ${demo.status === "active"
-                    ? (
-                        Number.isFinite(Number(demo.days_remaining))
-                            ? escapeHtml(String(demo.days_remaining))
-                            : "-"
-                    )
-                    : (
-                        Number.isFinite(Number(demo.duration_days))
-                            ? escapeHtml(String(demo.duration_days))
-                            : "-"
-                    )}
-                        </td>
-
-                        <td>
-                            ${demo.request_feedback ? "Yes" : "No"}
-                        </td>
-
-                        <td>
-                            ${escapeHtml(
-                        demo.feedback_status || "Pending"
-                    )}
-                        </td>
+                        <th>Professional</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                        <th>Expires</th>
+                        <th>Days</th>
+                        <th>Request Feedback</th>
+                        <th>Feedback</th>
+                        <th>Sent</th>
+                        <th>Actions</th>
                     </tr>
-                `).join("")}
-                        </tbody>
-                    </table>
-    </div>
-                `;
+                </thead>
+
+                <tbody>
+                    ${adminProfessionalDemoEntries.map(demo => {
+                const professionalName =
+                    [demo.first_name, demo.last_name]
+                        .filter(Boolean)
+                        .join(" ") || "—";
+
+                const sentInfo = demo.sent_to
+                    ? `
+                                <div>${escapeHtml(demo.sent_to)}</div>
+                                ${demo.sent_at
+                        ? `<div style="font-size:12px; opacity:0.7;">
+                                        ${escapeHtml(
+                            new Date(demo.sent_at)
+                                .toLocaleString()
+                        )}
+                                    </div>`
+                        : ""}
+                            `
+                    : "—";
+
+                const days =
+                    demo.status === "active"
+                        ? (
+                            Number.isFinite(
+                                Number(demo.days_remaining)
+                            )
+                                ? String(demo.days_remaining)
+                                : "—"
+                        )
+                        : (
+                            Number.isFinite(
+                                Number(demo.duration_days)
+                            )
+                                ? String(demo.duration_days)
+                                : "—"
+                        );
+
+                const copyButton = `
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                onclick="copyAdminProfessionalDemoLinkById(${demo.id});"
+                                Copy
+                            </button>
+                        `;
+
+                const sendButton = `
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                onclick="openAdminProfessionalDemoSend(${demo.id});">
+                                Send
+                            </button>
+                        `;
+
+                const statusAction =
+                    demo.status === "available"
+                        ? `
+                                    <button
+                                        type="button"
+                                        class="btn-secondary"
+                                        onclick="deleteAdminProfessionalDemo(${demo.id});">
+                                        Delete
+                                    </button>
+                                `
+                        : (
+                            demo.status === "active"
+                                ? `
+                                            <button
+                                                type="button"
+                                                class="btn-secondary"
+                                                onclick="revokeAdminProfessionalDemo(${demo.id});">
+                                                Revoke
+                                            </button>
+                                        `
+                                : ""
+                        );
+
+                const feedbackButton =
+                    demo.feedback_status === "submitted"
+                        ? `
+                                    <button
+                                        type="button"
+                                        class="btn-secondary"
+                                        onclick="viewAdminProfessionalDemoFeedback(${demo.id});">
+                                        View Feedback
+                                    </button>
+                                `
+                        : "";
+
+                return `
+                            <tr>
+                                <td>
+                                    ${escapeHtml(professionalName)}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(demo.email || "—")}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(demo.status || "—")}
+                                </td>
+
+                                <td>
+                                    ${demo.activated_at
+                        ? escapeHtml(
+                            new Date(demo.activated_at)
+                                .toLocaleDateString()
+                        )
+                        : "—"}
+                                </td>
+
+                                <td>
+                                    ${demo.expires_at
+                        ? escapeHtml(
+                            new Date(demo.expires_at)
+                                .toLocaleDateString()
+                        )
+                        : "—"}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(days)}
+                                </td>
+
+                                <td>
+                                    ${demo.request_feedback ? "Yes" : "No"}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                            demo.feedback_status === "submitted"
+                                ? "Submitted"
+                                : demo.feedback_status === "requested"
+                                    ? "Requested"
+                                    : "Not requested"
+                        )}
+                                </td>
+
+                                <td>
+                                    ${sentInfo}
+                                </td>
+
+                                <td>
+                                    <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                                        ${copyButton}
+                                        ${sendButton}
+                                        ${statusAction}
+                                        ${feedbackButton}
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+            }).join("")}
+                </tbody>
+            </table>
+        </div>
+    `;
         }
-
-
         function openAdminProfessionalDemoCreate() {
             const modal = document.getElementById("adminProfessionalDemoModal");
             const status = document.getElementById("adminProfessionalDemoModalStatus");
@@ -6551,12 +6644,578 @@ ADMIN PROFESSIONALS
 
 
 
-    </script>
+
+
+        function openAdminProfessionalDemoSend(demoId) {
+            const demo = adminProfessionalDemoEntries.find(
+                item => Number(item.id) === Number(demoId)
+            );
+
+            const modal = document.getElementById(
+                "adminProfessionalDemoSendModal"
+            );
+            const status = document.getElementById(
+                "adminProfessionalDemoSendModalStatus"
+            );
+            const recipient = document.getElementById(
+                "adminProfessionalDemoSendRecipient"
+            );
+            const link = document.getElementById(
+                "adminProfessionalDemoSendLink"
+            );
+            const message = document.getElementById(
+                "adminProfessionalDemoSendMessage"
+            );
+
+            if (!demo || !modal) {
+                return;
+            }
+
+            window.adminProfessionalDemoSendId = demoId;
+
+            const demoUrl =
+                demo.demo_url ||
+                `https://app.emfinsight.com/professional-demo/${demo.token}`;
+
+            if (status) {
+                status.textContent = "";
+            }
+
+            if (recipient) {
+                recipient.value = demo.sent_to || demo.email || "";
+            }
+
+            if (link) {
+                link.value = demoUrl;
+            }
+
+            if (message) {
+                message.value =
+                    "You have been invited to try EMF Insight Professional Demo. " +
+                    "Use the link below to activate your 7-day Demo access.";
+            }
+
+            modal.classList.add("open");
+        }
+
+
+        function closeAdminProfessionalDemoSend() {
+            const modal = document.getElementById(
+                "adminProfessionalDemoSendModal"
+            );
+
+            if (modal) {
+                modal.classList.remove("open");
+            }
+        }
+
+
+        async function sendAdminProfessionalDemo() {
+            const demoId =
+                window.adminProfessionalDemoSendId ||
+                null;
+
+            const modal =
+                document.getElementById(
+                    "adminProfessionalDemoSendModal"
+                );
+
+            const recipient =
+                document.getElementById(
+                    "adminProfessionalDemoSendRecipient"
+                );
+
+            const message =
+                document.getElementById(
+                    "adminProfessionalDemoSendMessage"
+                );
+
+            const status =
+                document.getElementById(
+                    "adminProfessionalDemoSendModalStatus"
+                );
+
+            const button =
+                document.getElementById(
+                    "adminProfessionalDemoSendButton"
+                );
+
+            if (!recipient || !status || !button) {
+                return;
+            }
+
+            const recipientEmail = recipient.value.trim();
+            const messageText = message
+                ? message.value.trim()
+                : "";
+
+            if (!recipientEmail || !recipientEmail.includes("@")) {
+                status.textContent =
+                    "Please enter a valid recipient email.";
+                return;
+            }
+
+            if (!demoId) {
+                status.textContent =
+                    "Demo link could not be identified.";
+                return;
+            }
+
+            button.disabled = true;
+            status.textContent = "Sending...";
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo/admin/${demoId}/send`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            recipient_email: recipientEmail,
+                            message: messageText
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Failed to send Demo email."
+                    );
+                }
+
+                status.textContent = "Demo sent successfully.";
+
+                await loadAdminProfessionalDemos();
+
+                setTimeout(() => {
+                    closeAdminProfessionalDemoSend();
+                }, 700);
+
+            } catch (error) {
+                console.error(
+                    "Failed to send Professional Demo:",
+                    error
+                );
+
+                status.textContent =
+                    error.message ||
+                    "Failed to send Demo email.";
+
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+
+        function copyAdminProfessionalDemoLinkById(demoId) {
+            const demo = adminProfessionalDemoEntries.find(
+                item => Number(item.id) === Number(demoId)
+            );
+
+            if (!demo) {
+                return;
+            }
+
+            const demoUrl =
+                demo.demo_url ||
+                `https://app.emfinsight.com/professional-demo/${demo.token}`;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(demoUrl)
+                    .then(() => {
+                        console.log(
+                            "Professional Demo link copied."
+                        );
+                    })
+                    .catch(error => {
+                        console.error(
+                            "Failed to copy Demo link:",
+                            error
+                        );
+                    });
+            }
+        }
+
+
+        async function deleteAdminProfessionalDemo(demoId) {
+            const demo = adminProfessionalDemoEntries.find(
+                item => Number(item.id) === Number(demoId)
+            );
+
+            if (!demo || demo.status !== "available") {
+                return;
+            }
+
+            if (
+                !confirm(
+                    "Delete this unused Professional Demo link?"
+                )
+            ) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo/admin/${demoId}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Failed to delete Demo link."
+                    );
+                }
+
+                await loadAdminProfessionalDemos();
+
+            } catch (error) {
+                console.error(
+                    "Failed to delete Professional Demo:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Failed to delete Demo link."
+                );
+            }
+        }
+
+
+        async function revokeAdminProfessionalDemo(demoId) {
+            const demo = adminProfessionalDemoEntries.find(
+                item => Number(item.id) === Number(demoId)
+            );
+
+            if (!demo || demo.status !== "active") {
+                return;
+            }
+
+            if (
+                !confirm(
+                    "Revoke this active Professional Demo?"
+                )
+            ) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo/admin/${demoId}`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            action: "revoke"
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Failed to revoke Demo."
+                    );
+                }
+
+                await loadAdminProfessionalDemos();
+
+            } catch (error) {
+                console.error(
+                    "Failed to revoke Professional Demo:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Failed to revoke Demo."
+                );
+            }
+        }
+
+
+        async function viewAdminProfessionalDemoFeedback(demoId) {
+            const modal = document.getElementById(
+                "adminProfessionalDemoFeedbackModal"
+            );
+
+            const status = document.getElementById(
+                "adminProfessionalDemoFeedbackModalStatus"
+            );
+
+            const content = document.getElementById(
+                "adminProfessionalDemoFeedbackContent"
+            );
+
+            if (!modal || !status || !content) {
+                return;
+            }
+
+            modal.classList.add("open");
+            status.textContent = "Loading feedback...";
+            content.innerHTML = "";
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo-feedback/admin/${demoId}`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Failed to load Demo feedback."
+                    );
+                }
+
+                status.textContent = "";
+                renderAdminProfessionalDemoFeedback(data);
+
+            } catch (error) {
+                console.error(
+                    "Failed to load Professional Demo feedback:",
+                    error
+                );
+
+                status.textContent =
+                    error.message ||
+                    "Failed to load feedback.";
+
+                content.innerHTML = "";
+            }
+        }
+
+
+        function renderAdminProfessionalDemoFeedback(data) {
+            const content = document.getElementById(
+                "adminProfessionalDemoFeedbackContent"
+            );
+
+            if (!content) {
+                return;
+            }
+
+            const feedback =
+                Array.isArray(data)
+                    ? data[0]
+                    : data;
+
+            if (!feedback) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-title">
+                            No feedback found
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const value = key =>
+                feedback[key] === null ||
+                feedback[key] === undefined ||
+                feedback[key] === ""
+                    ? "—"
+                    : escapeHtml(String(feedback[key]));
+
+            content.innerHTML = `
+                <div class="admin-modal-grid">
+
+                    <div class="admin-modal-field">
+                        <label>Overall Rating</label>
+                        <div>${value("overall_rating")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Business Survey</label>
+                        <div>${value("business_survey_rating")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Measurements</label>
+                        <div>${value("measurements_rating")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Results</label>
+                        <div>${value("results_rating")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>PDF</label>
+                        <div>${value("pdf_rating")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Professional Use</label>
+                        <div>${value("professional_use")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Recommendation Score</label>
+                        <div>${value("recommendation_score")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>What was confusing?</label>
+                        <div>${value("confusing_text")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Missing Features</label>
+                        <div>${value("missing_features")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Bugs</label>
+                        <div>${value("bugs_text")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Improvements</label>
+                        <div>${value("improvements_text")}</div>
+                    </div>
+
+                </div>
+            `;
+        }
+
+
+        function closeAdminProfessionalDemoFeedback() {
+            const modal = document.getElementById(
+                "adminProfessionalDemoFeedbackModal"
+            );
+
+            if (modal) {
+                modal.classList.remove("open");
+            }
+        }
+
+</script>
 
 
 
 
 
+
+
+<!-- =========================
+     ADMIN PROFESSIONAL DEMO SEND MODAL
+========================= -->
+
+    <div class="admin-modal-backdrop" id="adminProfessionalDemoSendModal" role="dialog" aria-modal="true"
+        aria-labelledby="adminProfessionalDemoSendModalTitle">
+
+        <div class="admin-modal">
+
+            <div class="admin-modal-header">
+                <h3 id="adminProfessionalDemoSendModalTitle">
+                    Send Professional Demo
+                </h3>
+
+                <p>
+                    Send the Professional Demo link by email.
+                </p>
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div class="admin-professionals-status" id="adminProfessionalDemoSendModalStatus"></div>
+
+                <div class="admin-modal-field">
+                    <label for="adminProfessionalDemoSendRecipient">
+                        Recipient Email
+                    </label>
+
+                    <input type="email" id="adminProfessionalDemoSendRecipient" placeholder="recipient@example.com"
+                        autocomplete="email">
+                </div>
+
+                <div class="admin-modal-field">
+                    <label for="adminProfessionalDemoSendLink">
+                        Demo Link
+                    </label>
+
+                    <input type="text" id="adminProfessionalDemoSendLink" readonly
+                        style="width:100%; box-sizing:border-box;">
+                </div>
+
+                <div class="admin-modal-field">
+                    <label for="adminProfessionalDemoSendMessage">
+                        Message
+                    </label>
+
+                    <textarea id="adminProfessionalDemoSendMessage" rows="6"
+                        style="width:100%; box-sizing:border-box; resize:vertical;"
+                        placeholder="Enter a message for the Professional Demo tester..."></textarea>
+                </div>
+
+            </div>
+
+
+<!-- =========================
+     ADMIN PROFESSIONAL DEMO FEEDBACK MODAL
+========================= -->
+
+    <div class="admin-modal-backdrop" id="adminProfessionalDemoFeedbackModal" role="dialog" aria-modal="true"
+        aria-labelledby="adminProfessionalDemoFeedbackModalTitle">
+
+        <div class="admin-modal">
+
+            <div class="admin-modal-header">
+                <h3 id="adminProfessionalDemoFeedbackModalTitle">
+                    Professional Demo Feedback
+                </h3>
+
+                <p>
+                    Tester feedback submitted for this Demo.
+                </p>
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div class="admin-professionals-status" id="adminProfessionalDemoFeedbackModalStatus">
+                </div>
+
+                <div id="adminProfessionalDemoFeedbackContent">
+                </div>
+
+            </div>
+
+            <div class="admin-modal-actions">
+
+                <button type="button" class="btn-primary" onclick="closeAdminProfessionalDemoFeedback();">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
 </body>
 
 </html>

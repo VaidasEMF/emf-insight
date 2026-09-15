@@ -237,6 +237,24 @@ def init_db():
                 )
             )
 
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_demo_links
+                    ADD COLUMN IF NOT EXISTS sent_to VARCHAR(255)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_demo_links
+                    ADD COLUMN IF NOT EXISTS sent_at TIMESTAMP
+                    """
+                )
+            )
+
     # ==================================================
 
     if engine.dialect.name == "postgresql":
