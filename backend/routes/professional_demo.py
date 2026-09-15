@@ -5,7 +5,7 @@ import secrets
 import urllib.error
 import urllib.request
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form
 from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -686,10 +686,10 @@ def get_professional_demo(
 @router.post("/{token}/activate")
 def activate_professional_demo(
     token: str,
-    first_name: str,
-    last_name: str,
-    email: str,
-    password: str,
+    first_name: str = Form(),
+    last_name: str = Form(),
+    email: str = Form(),
+    password: str = Form(),
     db: Session = Depends(get_db),
 ):
     demo = db.execute(
