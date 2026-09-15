@@ -18606,7 +18606,7 @@
             </button>
           </div>
         </div>
-          <!-- GUIDE -->
+        <!-- GUIDE -->
 
         <div id="guideText" class="mutedText">
         </div>
@@ -22603,6 +22603,9 @@
 
             <div style="margin-top: 18px;">
               <label><strong>Overall experience</strong></label>
+              <p class="mutedText">
+                How would you rate your overall experience with EMF Maps Professional Demo?
+              </p>
               <select name="overall_rating" required>
                 <option value="">Select rating</option>
                 <option value="5">5 — Excellent</option>
@@ -22613,8 +22616,12 @@
               </select>
             </div>
 
-            <div style="margin-top: 14px;">
+            <div style="margin-top: 18px;">
               <label><strong>Business Survey</strong></label>
+              <p class="mutedText">
+                How easy was it to create a Business Survey, add rooms and zones, take measurements, and work with the
+                project?
+              </p>
               <select name="business_survey_rating" required>
                 <option value="">Select rating</option>
                 <option value="5">5 — Excellent</option>
@@ -22625,8 +22632,11 @@
               </select>
             </div>
 
-            <div style="margin-top: 14px;">
+            <div style="margin-top: 18px;">
               <label><strong>Measurements</strong></label>
+              <p class="mutedText">
+                How clear and easy was the process of adding and reviewing EMF measurements?
+              </p>
               <select name="measurements_rating" required>
                 <option value="">Select rating</option>
                 <option value="5">5 — Excellent</option>
@@ -22637,8 +22647,11 @@
               </select>
             </div>
 
-            <div style="margin-top: 14px;">
+            <div style="margin-top: 18px;">
               <label><strong>Results / Insights</strong></label>
+              <p class="mutedText">
+                How clear and useful were the results, heatmaps, risk information, and insights provided by EMF Maps?
+              </p>
               <select name="results_rating" required>
                 <option value="">Select rating</option>
                 <option value="5">5 — Excellent</option>
@@ -22649,8 +22662,11 @@
               </select>
             </div>
 
-            <div style="margin-top: 14px;">
+            <div style="margin-top: 18px;">
               <label><strong>PDF Report</strong></label>
+              <p class="mutedText">
+                How useful and professional did you find the generated PDF report?
+              </p>
               <select name="pdf_rating" required>
                 <option value="">Select rating</option>
                 <option value="5">5 — Excellent</option>
@@ -22659,6 +22675,106 @@
                 <option value="2">2 — Poor</option>
                 <option value="1">1 — Very poor</option>
               </select>
+            </div>
+
+            <hr style="margin: 24px 0; border: 0; border-top: 1px solid #e5e7eb;">
+
+            <h3 style="margin: 0 0 6px;">About your experience</h3>
+
+            <p class="mutedText" style="margin-top: 0;">
+              This helps us understand who is testing EMF Maps and how we can improve it.
+            </p>
+
+            <div style="margin-top: 18px;">
+              <label><strong>How would you describe your experience with EMF measurements?</strong></label>
+              <select name="experience_level">
+                <option value="">Select one</option>
+                <option value="Professional EMF measurement / building biology professional">
+                  I work professionally as an EMF measurement / building biology professional
+                </option>
+                <option value="Professional related field">
+                  I work with EMF measurements professionally, but not as my main occupation
+                </option>
+                <option value="Hobby / enthusiast">
+                  I measure EMF as a hobby / enthusiast
+                </option>
+                <option value="Learning">
+                  I am learning about EMF measurements
+                </option>
+                <option value="No previous experience">
+                  I have no previous EMF measurement experience
+                </option>
+              </select>
+            </div>
+
+            <div style="margin-top: 18px;">
+              <label><strong>How many years of experience do you have with EMF measurements?</strong></label>
+              <select name="experience_years">
+                <option value="">Select one</option>
+                <option value="No experience">No experience</option>
+                <option value="Less than 1 year">Less than 1 year</option>
+                <option value="1–2 years">1–2 years</option>
+                <option value="3–5 years">3–5 years</option>
+                <option value="6–10 years">6–10 years</option>
+                <option value="More than 10 years">More than 10 years</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 18px;">
+              <label><strong>What type of work do you mainly do?</strong></label>
+              <select name="work_type">
+                <option value="">Select one</option>
+                <option value="Residential / Home EMF assessments">
+                  Residential / Home EMF assessments
+                </option>
+                <option value="Commercial / Building assessments">
+                  Commercial / Building assessments
+                </option>
+                <option value="Both Home and Business">
+                  Both Home and Business
+                </option>
+                <option value="Research / Education">
+                  Research / Education
+                </option>
+                <option value="Personal interest">
+                  Personal interest
+                </option>
+                <option value="Other">
+                  Other
+                </option>
+              </select>
+            </div>
+
+            <div style="margin-top: 18px;">
+              <label><strong>Tell us a little about your background</strong></label>
+              <p class="mutedText" style="margin: 4px 0 8px;">
+                For example: your professional role, experience with EMF measurements,
+                building biology, consulting, or related fields.
+              </p>
+              <textarea name="background_text" rows="4"
+                placeholder="A few sentences about your background..."></textarea>
+            </div>
+
+
+            <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e5e7eb;">
+
+            <h3 style="margin: 0 0 6px;">About Home Projects</h3>
+
+            <div style="margin-top: 18px;">
+              <label><strong>How clear was the “Want to work with Home Projects?” section?</strong></label>
+              <select name="home_projects_clarity">
+                <option value="">Select one</option>
+                <option value="Very clear">Very clear</option>
+                <option value="Clear">Clear</option>
+                <option value="Somewhat unclear">Somewhat unclear</option>
+                <option value="Very unclear">Very unclear</option>
+              </select>
+            </div>
+
+            <div style="margin-top: 18px;">
+              <label><strong>What would make the Home Projects section clearer?</strong></label>
+              <textarea name="home_projects_clarity_text" rows="3"
+                placeholder="Optional — tell us what was unclear or what you would change..."></textarea>
             </div>
 
             <div style="margin-top: 18px;">

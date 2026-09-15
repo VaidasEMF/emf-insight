@@ -255,6 +255,48 @@ def init_db():
                 )
             )
 
+            connection.execute(
+                text("""
+                    ALTER TABLE professional_demo_feedback
+                    ADD COLUMN IF NOT EXISTS experience_level TEXT
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE professional_demo_feedback
+                    ADD COLUMN IF NOT EXISTS experience_years TEXT
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE professional_demo_feedback
+                    ADD COLUMN IF NOT EXISTS background_text TEXT
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE professional_demo_feedback
+                    ADD COLUMN IF NOT EXISTS home_projects_clarity TEXT
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE professional_demo_feedback
+                    ADD COLUMN IF NOT EXISTS home_projects_clarity_text TEXT
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE professional_demo_feedback
+                    ADD COLUMN IF NOT EXISTS work_type TEXT
+                """)
+            )
+
     # ==================================================
 
     if engine.dialect.name == "postgresql":

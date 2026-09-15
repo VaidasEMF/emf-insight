@@ -28,6 +28,12 @@ class DemoFeedbackRequest(BaseModel):
     measurements_rating: int | None = None
     results_rating: int | None = None
     pdf_rating: int | None = None
+    experience_level: Optional[str] = None
+    experience_years: Optional[str] = None
+    background_text: Optional[str] = None
+    home_projects_clarity: Optional[str] = None
+    home_projects_clarity_text: Optional[str] = None
+    work_type: Optional[str] = None
 
     confusing_text: str | None = None
     missing_features: str | None = None
@@ -129,6 +135,12 @@ def submit_demo_feedback(
                 measurements_rating,
                 results_rating,
                 pdf_rating,
+                experience_level,
+                experience_years,
+                background_text,
+                home_projects_clarity,
+                home_projects_clarity_text,
+                work_type,
                 confusing_text,
                 missing_features,
                 bugs_text,
@@ -144,6 +156,12 @@ def submit_demo_feedback(
                 :measurements_rating,
                 :results_rating,
                 :pdf_rating,
+                :experience_level,
+                :experience_years,
+                :background_text,
+                :home_projects_clarity,
+                :home_projects_clarity_text,
+                :work_type,
                 :confusing_text,
                 :missing_features,
                 :bugs_text,
@@ -161,6 +179,12 @@ def submit_demo_feedback(
             "measurements_rating": payload.measurements_rating,
             "results_rating": payload.results_rating,
             "pdf_rating": payload.pdf_rating,
+            "experience_level": payload.experience_level,
+            "experience_years": payload.experience_years,
+            "background_text": payload.background_text,
+            "home_projects_clarity": payload.home_projects_clarity,
+            "home_projects_clarity_text": payload.home_projects_clarity_text,
+            "work_type": payload.work_type,
             "confusing_text": payload.confusing_text,
             "missing_features": payload.missing_features,
             "bugs_text": payload.bugs_text,
@@ -201,6 +225,12 @@ def get_my_demo_feedback(
                 f.measurements_rating,
                 f.results_rating,
                 f.pdf_rating,
+                f.experience_level,
+                f.experience_years,
+                f.background_text,
+                f.home_projects_clarity,
+                f.home_projects_clarity_text,
+                f.work_type,
                 f.confusing_text,
                 f.missing_features,
                 f.bugs_text,
@@ -323,6 +353,12 @@ def get_demo_feedback_admin(
                 f.measurements_rating,
                 f.results_rating,
                 f.pdf_rating,
+                f.experience_level,
+                f.experience_years,
+                f.background_text,
+                f.home_projects_clarity,
+                f.home_projects_clarity_text,
+                f.work_type,
                 f.confusing_text,
                 f.missing_features,
                 f.bugs_text,

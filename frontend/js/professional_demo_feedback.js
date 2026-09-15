@@ -105,6 +105,13 @@
       measurements_rating: Number(form.measurements_rating.value),
       results_rating: Number(form.results_rating.value),
       pdf_rating: Number(form.pdf_rating.value),
+      experience_level: form.experience_level.value || null,
+      experience_years: form.experience_years.value || null,
+      background_text: form.background_text.value.trim() || null,
+      home_projects_clarity: form.home_projects_clarity.value || null,
+      home_projects_clarity_text:
+      form.home_projects_clarity_text.value.trim() || null,
+      work_type: form.work_type.value || null,
       confusing_text: form.confusing_text.value.trim() || null,
       missing_features: form.missing_features.value.trim() || null,
       bugs_text: form.bugs_text.value.trim() || null,
@@ -149,9 +156,13 @@
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          result.detail || "Failed to submit feedback."
-        );
+        let message = "We couldn't submit your feedback. Please try again.";
+
+        if (typeof result.detail === "string") {
+          message = result.detail;
+        }
+
+        throw new Error(message);
       }
 
       feedbackSubmitted = true;
@@ -163,7 +174,6 @@
       closeProfessionalDemoFeedback();
       updateProfessionalDemoFeedbackUI();
 
-      alert("Thank you - your feedback has been submitted.");
     } catch (error) {
       console.error(
         "Failed to submit Professional Demo feedback:",
@@ -268,6 +278,21 @@
 
   window.loadProfessionalDemoFeedbackState =
     loadProfessionalDemoFeedbackState;
+
+  document.addEventListener("keydown", function (event) {
+    const target = event.target;
+
+    if (
+      target &&
+      (
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "INPUT" ||
+        target.tagName === "SELECT"
+      )
+    ) {
+      event.stopPropagation();
+    }
+  });
 
   document.addEventListener("DOMContentLoaded", function () {
     loadProfessionalDemoFeedbackState();
