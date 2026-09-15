@@ -156,6 +156,10 @@
 
       feedbackSubmitted = true;
 
+      localStorage.removeItem(
+        "professional_demo_feedback_prompt_count"
+      );
+
       closeProfessionalDemoFeedback();
       updateProfessionalDemoFeedbackUI();
 
@@ -176,6 +180,90 @@
         submitButton.textContent = "Submit Feedback";
       }
     }
+  };
+
+    window.maybePromptProfessionalDemoFeedback = function () {
+      const token = getFeedbackToken();
+
+    if (!token || feedbackSubmitted) return;
+
+    const promptCount =
+      Number(
+        localStorage.getItem(
+          "professional_demo_feedback_prompt_count"
+        ) || "0"
+      );
+
+    if (promptCount >= 3) return;
+
+    if (
+      document.getElementById(
+        "professionalDemoFeedbackPrompt"
+      )
+    ) {
+      return;
+    }
+
+    const prompt =
+      document.createElement("div");
+
+    prompt.id =
+      "professionalDemoFeedbackPrompt";
+
+    prompt.style.position = "fixed";
+    prompt.style.inset = "0";
+    prompt.style.display = "flex";
+    prompt.style.alignItems = "center";
+    prompt.style.justifyContent = "center";
+    prompt.style.background = "rgba(15, 23, 42, 0.42)";
+    prompt.style.zIndex = "10000";
+    prompt.style.padding = "20px";
+    prompt.style.boxSizing = "border-box";
+
+    prompt.innerHTML =
+      "<div style=\"width:min(520px, 92vw); background:#fff; border-radius:14px; padding:30px; box-shadow:0 20px 50px rgba(0,0,0,.18); text-align:center;\">" +
+      "<h2 style=\"margin:0 0 12px;\">Help us improve EMF Maps</h2>" +
+      "<p style=\"margin:0 0 24px; color:#64748b; line-height:1.5;\">You've completed the main Professional Demo workflow. We'd really appreciate your feedback - it takes about 2 minutes.</p>" +
+      "<div style=\"display:flex; justify-content:center; gap:12px; align-items:center;\">" +
+      "<button type=\"button\" id=\"professionalDemoFeedbackPromptButton\" style=\"padding:11px 18px; border:0; border-radius:8px; background:#17202a; color:#fff; font-weight:600; cursor:pointer;\">Give Feedback</button>" +
+      "<button type=\"button\" id=\"professionalDemoFeedbackPromptSkip\" style=\"padding:11px 14px; border:0; background:transparent; color:#64748b; cursor:pointer;\">Skip for now</button>" +
+      "</div>" +
+      "</div>";
+
+    document.body.appendChild(prompt);
+
+    const giveFeedbackButton =
+      document.getElementById(
+        "professionalDemoFeedbackPromptButton"
+      );
+
+    const skipButton =
+      document.getElementById(
+        "professionalDemoFeedbackPromptSkip"
+      );
+
+    giveFeedbackButton?.addEventListener(
+      "click",
+      function () {
+        prompt.remove();
+        openProfessionalDemoFeedback();
+      }
+    );
+
+    skipButton?.addEventListener(
+      "click",
+      function () {
+        const nextCount =
+          promptCount + 1;
+
+        localStorage.setItem(
+          "professional_demo_feedback_prompt_count",
+          String(nextCount)
+        );
+
+        prompt.remove();
+      }
+    );
   };
 
   window.loadProfessionalDemoFeedbackState =
