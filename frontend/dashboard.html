@@ -1651,6 +1651,21 @@
             box-shadow: 0 24px 60px rgba(21, 39, 63, 0.18);
         }
 
+        #adminProfessionalDemoFeedbackModal .admin-modal {
+            width: min(760px, 100%);
+            max-height: 90vh;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #adminProfessionalDemoFeedbackModal .admin-modal-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
         .admin-modal-header {
             padding: 18px 20px;
             border-bottom: 1px solid var(--line);
@@ -7551,7 +7566,7 @@ ADMIN PROFESSIONALS
     <div class="admin-modal-backdrop" id="adminProfessionalDemoFeedbackModal" role="dialog" aria-modal="true"
         aria-labelledby="adminProfessionalDemoFeedbackModalTitle">
 
-        <div class="admin-modal-body" style="overflow-y:auto; min-height:0;">
+        <div class="admin-modal">
 
             <div class="admin-modal-header">
                 <h3 id="adminProfessionalDemoFeedbackModalTitle">
@@ -7562,7 +7577,6 @@ ADMIN PROFESSIONALS
                     Tester feedback submitted for this Demo.
                 </p>
             </div>
-
             <div class="admin-modal-body">
 
                 <div class="admin-professionals-status" id="adminProfessionalDemoFeedbackModalStatus">
@@ -7573,19 +7587,17 @@ ADMIN PROFESSIONALS
 
             </div>
 
-            <button type="button" class="btn-secondary" onclick="exportAdminProfessionalDemoFeedback();">
-                Export DOCX
-            </button>
-
             <div class="admin-modal-actions">
+
+                <button type="button" class="btn-secondary" onclick="exportAdminProfessionalDemoFeedback();">
+                    Export DOCX
+                </button>
 
                 <button type="button" class="btn-primary" onclick="closeAdminProfessionalDemoFeedback();">
                     Close
                 </button>
 
             </div>
-
-        </div>
 </body>
 
 </html>
