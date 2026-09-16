@@ -18,7 +18,7 @@
     })();
   </script>
 
-
+  <script>
     (function () {
       const token = localStorage.getItem("token");
 
@@ -27,7 +27,6 @@
       }
     })();
   </script>
-
   <meta charset="utf-8">
   <title>EMF Planner</title>
 
@@ -18597,10 +18596,7 @@
               Demo Feedback
             </div>
 
-            <button
-              id="professionalDemoFeedbackButton"
-              class="workflow-action-btn"
-              type="button"
+            <button id="professionalDemoFeedbackButton" class="workflow-action-btn" type="button"
               onclick="openProfessionalDemoFeedback();">
               Demo Feedback
             </button>
@@ -22779,22 +22775,26 @@
 
             <div style="margin-top: 18px;">
               <label><strong>What was confusing?</strong></label>
-              <textarea name="confusing_text" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="Tell us what was unclear or difficult to understand."></textarea>
+              <textarea name="confusing_text" rows="3" style="width: 100%; box-sizing: border-box;"
+                placeholder="Tell us what was unclear or difficult to understand."></textarea>
             </div>
 
             <div style="margin-top: 14px;">
               <label><strong>What is missing?</strong></label>
-              <textarea name="missing_features" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="What features or information would you expect?"></textarea>
+              <textarea name="missing_features" rows="3" style="width: 100%; box-sizing: border-box;"
+                placeholder="What features or information would you expect?"></textarea>
             </div>
 
             <div style="margin-top: 14px;">
               <label><strong>Bugs or technical problems</strong></label>
-              <textarea name="bugs_text" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="Describe anything that did not work correctly."></textarea>
+              <textarea name="bugs_text" rows="3" style="width: 100%; box-sizing: border-box;"
+                placeholder="Describe anything that did not work correctly."></textarea>
             </div>
 
             <div style="margin-top: 14px;">
               <label><strong>What would you improve?</strong></label>
-              <textarea name="improvements_text" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="What should we improve or change?"></textarea>
+              <textarea name="improvements_text" rows="3" style="width: 100%; box-sizing: border-box;"
+                placeholder="What should we improve or change?"></textarea>
             </div>
 
             <div style="margin-top: 14px;">
@@ -22827,7 +22827,8 @@
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
               <button type="button" class="btn-secondary" onclick="closeProfessionalDemoFeedback();">Cancel</button>
-              <button type="button" class="btn-primary" id="professionalDemoFeedbackSubmit" onclick="submitProfessionalDemoFeedback();">Submit Feedback</button>
+              <button type="button" class="btn-primary" id="professionalDemoFeedbackSubmit"
+                onclick="submitProfessionalDemoFeedback();">Submit Feedback</button>
             </div>
 
           </form>
@@ -29117,45 +29118,45 @@
   });
 </script>
 <script>
-(function () {
+  (function () {
     if (!localStorage.getItem("professional_demo_activated")) return;
 
     window.addEventListener("load", async function () {
-        if (!window.createProject) {
-            console.error("Professional Demo: createProject() not available");
-            return;
+      if (!window.createProject) {
+        console.error("Professional Demo: createProject() not available");
+        return;
+      }
+
+      try {
+        console.log("Professional Demo: creating Business project...");
+
+        const projectId = await window.createProject({
+          type: "business",
+          name: "Professional Demo",
+          confirmed: true
+        });
+
+        if (!projectId) {
+          throw new Error("Business project was not created");
         }
 
-        try {
-            console.log("Professional Demo: creating Business project...");
+        localStorage.removeItem("professional_demo_activated");
 
-            const projectId = await window.createProject({
-                type: "business",
-                name: "Professional Demo",
-                confirmed: true
-            });
+        console.log(
+          "Professional Demo: Business project created",
+          projectId
+        );
 
-            if (!projectId) {
-                throw new Error("Business project was not created");
-            }
+        window.location.reload();
 
-            localStorage.removeItem("professional_demo_activated");
-
-            console.log(
-                "Professional Demo: Business project created",
-                projectId
-            );
-
-            window.location.reload();
-
-        } catch (error) {
-            console.error(
-                "Professional Demo: project creation failed",
-                error
-            );
-        }
+      } catch (error) {
+        console.error(
+          "Professional Demo: project creation failed",
+          error
+        );
+      }
     });
-})();
+  })();
 </script>
 </body>
 
