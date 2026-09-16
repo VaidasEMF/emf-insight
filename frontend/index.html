@@ -26682,7 +26682,9 @@
       if (data.pdf_url) {
         const pdfUrl = `${API}${data.pdf_url}`;
 
-        window.maybePromptProfessionalDemoFeedback?.();
+        setTimeout(function () {
+          window.maybePromptProfessionalDemoFeedback?.();
+        }, 3000);
 
         if (pdfWindow) {
           pdfWindow.location.href = pdfUrl;
