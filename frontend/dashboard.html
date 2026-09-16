@@ -4191,13 +4191,13 @@ ADMIN PROFESSIONALS
             <table>
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Professional</th>
                         <th>Email</th>
                         <th>Status</th>
                         <th>Started</th>
                         <th>Expires</th>
                         <th>Days</th>
-
                         <th>Feedback</th>
                         <th>Sent</th>
                         <th>Actions</th>
@@ -4308,6 +4308,10 @@ ADMIN PROFESSIONALS
 
                 return `
                             <tr>
+                                <td>
+                                    ${escapeHtml(String(demo.id))}
+                                </td>
+
                                 <td>
                                     ${escapeHtml(professionalName)}
                                 </td>
@@ -7231,9 +7235,11 @@ ADMIN PROFESSIONALS
             }
 
             const feedback =
-                Array.isArray(data)
-                    ? data[0]
-                    : data;
+                data && data.feedback
+                    ? data.feedback
+                    : Array.isArray(data)
+                        ? data[0]
+                        : data;
 
             window.adminProfessionalDemoFeedbackCurrent = feedback;
 
