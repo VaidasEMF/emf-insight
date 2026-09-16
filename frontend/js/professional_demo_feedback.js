@@ -313,6 +313,8 @@
   }
 
   window.addEventListener("load", function () {
-    loadProfessionalDemoFeedbackState();
+    setTimeout(function () {
+      loadProfessionalDemoFeedbackState();
+    }, 3000);
   });
 })();
