@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7449,6 +7449,23 @@ ADMIN PROFESSIONALS
             }
         }
 
+        document.addEventListener("keydown", function (event) {
+            if (event.key !== "Escape") {
+                return;
+            }
+
+            const modal = document.getElementById(
+                "adminProfessionalDemoFeedbackModal"
+            );
+
+            if (
+                modal &&
+                modal.classList.contains("open")
+            ) {
+                closeAdminProfessionalDemoFeedback();
+            }
+        });
+
     </script>
 
 
@@ -7534,7 +7551,7 @@ ADMIN PROFESSIONALS
     <div class="admin-modal-backdrop" id="adminProfessionalDemoFeedbackModal" role="dialog" aria-modal="true"
         aria-labelledby="adminProfessionalDemoFeedbackModalTitle">
 
-        <div class="admin-modal">
+        <div class="admin-modal-body" style="overflow-y:auto; min-height:0;">
 
             <div class="admin-modal-header">
                 <h3 id="adminProfessionalDemoFeedbackModalTitle">
