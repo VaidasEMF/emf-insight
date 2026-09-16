@@ -1961,7 +1961,119 @@
                         </div>
                     </section>
 
+                    <!-- PROFESSIONAL DEMO -->
+                    <section class="section" id="professionalDemoSection" style="display:none;">
 
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title">Professional Demo</h2>
+                                <p class="section-description">
+                                    Your Professional Demo access and feedback status.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="workspace-card professional-status-card">
+
+                            <div class="professional-status-row">
+
+                                <div class="professional-status-icon account-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="8"></circle>
+                                        <path d="M12 8v5l3 2"></path>
+                                    </svg>
+                                </div>
+
+                                <div class="professional-status-label">
+                                    Demo Access
+                                </div>
+
+                                <div class="professional-status-content">
+
+                                    <div class="professional-status-pill" id="professionalDemoStatus">
+                                        Checking...
+                                    </div>
+
+                                    <div class="professional-status-note" id="professionalDemoStatusNote">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="professional-status-row">
+
+                                <div class="professional-status-icon availability-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="4" y="5" width="16" height="15" rx="2"></rect>
+                                        <path d="M8 3v4M16 3v4M4 9h16"></path>
+                                        <path d="M8 13h8M8 16h5"></path>
+                                    </svg>
+                                </div>
+
+                                <div class="professional-status-label">
+                                    Demo Expires
+                                </div>
+
+                                <div class="professional-status-content">
+
+                                    <div id="professionalDemoExpires">
+                                        —
+                                    </div>
+
+                                    <div class="professional-status-note">
+                                        Your current Professional Demo access period.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="professional-status-row">
+
+                                <div class="professional-status-icon profile-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <path d="M5 5h14v14H5z"></path>
+                                        <path d="M8 9h8M8 13h6"></path>
+                                    </svg>
+                                </div>
+
+                                <div class="professional-status-label">
+                                    Feedback
+                                </div>
+
+                                <div class="professional-status-content">
+
+                                    <div id="professionalDemoFeedbackStatus" class="professional-status-pill">
+                                        Checking...
+                                    </div>
+
+                                    <div class="professional-status-note" id="professionalDemoFeedbackStatusNote">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="professional-status-action">
+
+                                <button type="button" class="professional-complete-profile-button"
+                                    id="professionalDemoFeedbackDashboardButton"
+                                    onclick="openProfessionalDemoFeedback();">
+
+                                    <span>Give Feedback</span>
+                                    <span class="professional-complete-profile-arrow">&#8594;</span>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </section>
 
 
                     <!-- QUICK ACTIONS -->
@@ -5716,6 +5828,11 @@ ADMIN PROFESSIONALS
                 const professionalDemoExpiresAt =
                     data.professional_demo_expires_at || null;
 
+                await loadProfessionalDemoManagement(
+                    professionalDemoActive,
+                    professionalDemoExpiresAt
+                );
+
                 document.getElementById("userName").textContent = displayName;
                 const dashboardMode =
                     localStorage.getItem("workspaceMode") || "business";
@@ -6044,6 +6161,151 @@ ADMIN PROFESSIONALS
             window.location.href = "index.html";
         }
 
+        async function loadProfessionalDemoManagement(
+            professionalDemoActive,
+            professionalDemoExpiresAt
+        ) {
+            const section = document.getElementById(
+                "professionalDemoSection"
+            );
+
+            const statusEl = document.getElementById(
+                "professionalDemoStatus"
+            );
+
+            const statusNoteEl = document.getElementById(
+                "professionalDemoStatusNote"
+            );
+
+            const expiresEl = document.getElementById(
+                "professionalDemoExpires"
+            );
+
+            const feedbackStatusEl = document.getElementById(
+                "professionalDemoFeedbackStatus"
+            );
+
+            const feedbackStatusNoteEl = document.getElementById(
+                "professionalDemoFeedbackStatusNote"
+            );
+
+            const feedbackButton = document.getElementById(
+                "professionalDemoFeedbackDashboardButton"
+            );
+
+            if (!section) {
+                return;
+            }
+
+            if (!professionalDemoActive) {
+                section.style.display = "none";
+                return;
+            }
+
+            section.style.display = "block";
+
+            if (professionalDemoActive) {
+                if (statusEl) {
+                    statusEl.textContent = "Active";
+                    statusEl.className =
+                        "professional-status-pill success";
+                }
+
+                if (statusNoteEl) {
+                    statusNoteEl.textContent =
+                        "Your Professional Demo access is active.";
+                }
+
+                if (expiresEl && professionalDemoExpiresAt) {
+                    expiresEl.textContent =
+                        new Date(
+                            professionalDemoExpiresAt
+                        ).toLocaleDateString();
+                }
+            } else {
+                if (statusEl) {
+                    statusEl.textContent = "Inactive";
+                    statusEl.className =
+                        "professional-status-pill";
+                }
+
+                if (statusNoteEl) {
+                    statusNoteEl.textContent =
+                        "Your Professional Demo access is no longer active.";
+                }
+
+                if (expiresEl) {
+                    expiresEl.textContent = "—";
+                }
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo-feedback/my`,
+                    {
+                        headers: authHeaders()
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Unable to load feedback status."
+                    );
+                }
+
+                const feedbackData =
+                    await response.json();
+
+                const submitted =
+                    feedbackData.submitted === true;
+
+                if (feedbackStatusEl) {
+                    feedbackStatusEl.textContent =
+                        submitted
+                            ? "Submitted"
+                            : "Not submitted";
+
+                    feedbackStatusEl.className =
+                        "professional-status-pill" +
+                        (submitted ? " success" : "");
+                }
+
+                if (feedbackStatusNoteEl) {
+                    feedbackStatusNoteEl.textContent =
+                        submitted
+                            ? "Thank you — your feedback has been submitted."
+                            : "We would appreciate your feedback on the Professional Demo.";
+                }
+
+                if (feedbackButton) {
+                    if (submitted) {
+                        feedbackButton.disabled = true;
+                        feedbackButton.textContent =
+                            "Feedback Submitted";
+                    } else {
+                        feedbackButton.disabled = false;
+                        feedbackButton.textContent =
+                            "Give Feedback";
+                    }
+                }
+
+            } catch (error) {
+                console.error(
+                    "Failed to load Professional Demo feedback status:",
+                    error
+                );
+
+                if (feedbackStatusEl) {
+                    feedbackStatusEl.textContent =
+                        "Unavailable";
+                }
+
+                if (feedbackStatusNoteEl) {
+                    feedbackStatusNoteEl.textContent =
+                        "Feedback status could not be loaded.";
+                }
+            }
+        }
 
         async function loadProfessionalDashboardStatus() {
             const section = document.getElementById("professionalStatusSection");

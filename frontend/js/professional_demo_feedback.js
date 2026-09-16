@@ -83,6 +83,41 @@
     }
   }
 
+  function showProfessionalDemoFeedbackSubmittedPopup() {
+  if (document.getElementById("professionalDemoFeedbackSubmittedPopup")) {
+    return;
+  }
+
+  const popup = document.createElement("div");
+
+  popup.id = "professionalDemoFeedbackSubmittedPopup";
+
+  popup.style.position = "fixed";
+  popup.style.inset = "0";
+  popup.style.display = "flex";
+  popup.style.alignItems = "center";
+  popup.style.justifyContent = "center";
+  popup.style.background = "rgba(15, 23, 42, 0.42)";
+  popup.style.zIndex = "10000";
+  popup.style.padding = "20px";
+  popup.style.boxSizing = "border-box";
+
+  popup.innerHTML =
+    "<div style=\"width:min(480px, 92vw); background:#fff; border-radius:14px; padding:30px; box-shadow:0 20px 50px rgba(0,0,0,.18); text-align:center;\">" +
+    "<h2 style=\"margin:0 0 12px;\">Thank you for your feedback!</h2>" +
+    "<p style=\"margin:0 0 24px; color:#64748b; line-height:1.5;\">Your feedback has been successfully submitted.</p>" +
+    "<button type=\"button\" id=\"professionalDemoFeedbackSubmittedPopupButton\" style=\"padding:11px 22px; border:0; border-radius:8px; background:#17202a; color:#fff; font-weight:600; cursor:pointer;\">Done</button>" +
+    "</div>";
+
+  document.body.appendChild(popup);
+
+  document
+    .getElementById("professionalDemoFeedbackSubmittedPopupButton")
+    ?.addEventListener("click", function () {
+      popup.remove();
+    });
+}
+
   window.openProfessionalDemoFeedback = function () {
     if (feedbackSubmitted) return;
 
@@ -176,13 +211,11 @@
       }
 
       feedbackSubmitted = true;
-
-      localStorage.removeItem(
-        "professional_demo_feedback_prompt_count"
-      );
-
+      localStorage.removeItem("professional_demo_feedback_prompt_count");
       closeProfessionalDemoFeedback();
       updateProfessionalDemoFeedbackUI();
+
+      showProfessionalDemoFeedbackSubmittedPopup();
 
     } catch (error) {
       console.error(
