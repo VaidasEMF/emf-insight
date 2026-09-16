@@ -311,4 +311,8 @@
   } else {
     loadProfessionalDemoFeedbackState();
   }
+
+  window.addEventListener("load", function () {
+    loadProfessionalDemoFeedbackState();
+  });
 })();
