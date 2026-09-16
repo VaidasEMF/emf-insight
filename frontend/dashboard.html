@@ -1921,21 +1921,6 @@
                             </div>
 
                             <div class="professional-status-row">
-                                <div class="professional-status-icon availability-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                        <rect x="4" y="5" width="16" height="15" rx="2"></rect>
-                                        <path d="M8 3v4M16 3v4M4 9h16"></path>
-                                        <path d="M8 13h3M8 16h5"></path>
-                                    </svg>
-                                </div>
-                                <div class="professional-status-label">Availability</div>
-                                <div class="professional-status-content">
-                                    <div id="professionalStatusAvailability">Checking...</div>
-                                    <div class="professional-status-note" id="professionalStatusAvailabilityNote"></div>
-                                </div>
-                            </div>
-
-                            <div class="professional-status-row">
                                 <div class="professional-status-icon home-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" fill="none">
                                         <path d="M3.5 11.5L12 4l8.5 7.5"></path>
@@ -1950,7 +1935,7 @@
                                 </div>
                             </div>
 
-                            <div class="professional-status-action">
+                            <div class="professional-status-action" id="professionalCompleteProfileAction">
                                 <button type="button" class="professional-complete-profile-button"
                                     onclick="completeProfessionalProfileFromDashboard();">
                                     <span>Complete Your Professional Profile</span>
@@ -2103,7 +2088,7 @@
                             </button>
 
                             <button type="button" class="professional-quick-action"
-                                onclick="navigateProfessionalDashboardSection(\'service-areas\');">
+                                onclick="openProfessionalProfileServiceAreas();">
                                 <span class="professional-quick-action-icon service-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" fill="none">
                                         <path d="M12 21s6-5.1 6-10a6 6 0 1 0-12 0c0 4.9 6 10 6 10z"></path>
@@ -2117,26 +2102,7 @@
                                 <span class="professional-quick-action-arrow">&#8250;</span>
                             </button>
 
-                            <button type="button" class="professional-quick-action"
-                                onclick="openProfessionalProfile();">
-                                <span class="professional-quick-action-icon availability-action-icon"
-                                    aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                        <rect x="4" y="5" width="16" height="15" rx="2"></rect>
-                                        <path d="M8 3v4M16 3v4M4 9h16"></path>
-                                        <path d="M8 13h3M8 16h5"></path>
-                                    </svg>
-                                </span>
-                                <span class="professional-quick-action-text">
-                                    <strong>Availability</strong>
-                                    <span>Manage your availability for Home Projects.</span>
-                                </span>
-                                <span class="professional-quick-action-arrow">&#8250;</span>
-                            </button>
-
                         </div>
-
-
 
                         <!-- =========================
                      PROFESSIONAL SERVICE AREAS
@@ -6380,6 +6346,16 @@ ADMIN PROFESSIONALS
 
                 const profileComplete =
                     requiredFields.every(value => String(value || "").trim());
+
+                const completeProfileAction =
+                    document.getElementById(
+                        "professionalCompleteProfileAction"
+                    );
+
+                if (completeProfileAction) {
+                    completeProfileAction.style.display =
+                        profileComplete ? "none" : "";
+                }
 
                 const profileRow =
                     document.getElementById("professionalStatusProfileRow");
