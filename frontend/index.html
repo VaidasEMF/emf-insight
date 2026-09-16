@@ -26688,7 +26688,9 @@
           window.open(pdfUrl, "_blank");
         }
 
-        window.maybePromptProfessionalDemoFeedback?.();
+        setTimeout(function () {
+          window.maybePromptProfessionalDemoFeedback?.();
+        }, 1000);
       }
 
       else {
