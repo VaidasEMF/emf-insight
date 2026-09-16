@@ -1,8 +1,12 @@
+from io import BytesIO
+
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from docx import Document
 
 from db.database import SessionLocal
 from models.user import User
@@ -349,32 +353,247 @@ def get_demo_feedback_admin(
                 f.id,
                 f.demo_id,
                 f.user_id,
+
+                u.first_name,
+                u.last_name,
+                u.email,
+
+                p.country,
+                p.city,
+
                 f.overall_rating,
                 f.business_survey_rating,
                 f.measurements_rating,
                 f.results_rating,
                 f.pdf_rating,
+
                 f.experience_level,
                 f.experience_years,
                 f.background_text,
                 f.home_projects_clarity,
                 f.home_projects_clarity_text,
                 f.work_type,
+
                 f.confusing_text,
                 f.missing_features,
                 f.bugs_text,
                 f.improvements_text,
+
                 f.professional_use,
                 f.recommendation_score,
+
                 f.created_at,
                 f.updated_at
+
             FROM professional_demo_feedback f
+
+            LEFT JOIN users u
+                ON CAST(u.id AS VARCHAR) = f.user_id
+
+            LEFT JOIN professional_profiles p
+                ON CAST(p.user_id AS VARCHAR) = f.user_id
+
+            WHERE f.demo_id = :demo_id
+            LIMIT 1
+            """
+        ),
+        {"demo_id": demo_id},
+        ).mappings().first()
+
+    if not feedback:
+        return {
+            "submitted": False,
+            "demo_id": demo_id,
+        }
+
+    return {
+        "submitted": True,
+        "feedback": dict(feedback),
+    }
+
+
+@router.get("/admin/{demo_id}/docx")
+def export_demo_feedback_docx(
+    demo_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    feedback = db.execute(
+        text(
+            """
+            SELECT
+                f.demo_id,
+                u.first_name,
+                u.last_name,
+                u.email,
+                p.country,
+                p.city,
+
+                f.overall_rating,
+                f.business_survey_rating,
+                f.measurements_rating,
+                f.results_rating,
+                f.pdf_rating,
+
+                f.experience_level,
+                f.experience_years,
+                f.background_text,
+                f.home_projects_clarity,
+                f.home_projects_clarity_text,
+                f.work_type,
+
+                f.professional_use,
+                f.recommendation_score,
+
+                f.confusing_text,
+                f.missing_features,
+                f.bugs_text,
+                f.improvements_text,
+
+                f.created_at
+
+            FROM professional_demo_feedback f
+
+            LEFT JOIN users u
+                ON CAST(u.id AS VARCHAR) = f.user_id
+
+            LEFT JOIN professional_profiles p
+                ON CAST(p.user_id AS VARCHAR) = f.user_id
+
             WHERE f.demo_id = :demo_id
             LIMIT 1
             """
         ),
         {"demo_id": demo_id},
     ).mappings().first()
+
+    if not feedback:
+        raise HTTPException(
+            status_code=404,
+            detail="Feedback not found",
+        )
+
+    def display(value):
+        if value is None or value == "":
+            return "—"
+        return str(value)
+
+    document = Document()
+
+    document.add_heading(
+        "EMF Insight — Professional Demo Feedback",
+        level=0,
+    )
+
+    document.add_paragraph(
+        "Tester feedback submitted for Professional Demo."
+    )
+
+    document.add_heading("Tester Information", level=1)
+
+    tester_fields = [
+        ("First Name", feedback["first_name"]),
+        ("Last Name", feedback["last_name"]),
+        ("Email", feedback["email"]),
+        ("Country", feedback["country"]),
+        ("City", feedback["city"]),
+        ("Feedback Date", feedback["created_at"]),
+    ]
+
+    table = document.add_table(rows=0, cols=2)
+    table.style = "Light Shading Accent 1"
+
+    for label, value in tester_fields:
+        cells = table.add_row().cells
+        cells[0].text = label
+        cells[1].text = display(value)
+
+    sections = [
+        (
+            "Product Experience",
+            [
+                ("Overall Rating", feedback["overall_rating"]),
+                ("Business Survey", feedback["business_survey_rating"]),
+                ("Measurements", feedback["measurements_rating"]),
+                ("Results", feedback["results_rating"]),
+                ("PDF", feedback["pdf_rating"]),
+            ],
+        ),
+        (
+            "Professional Background",
+            [
+                ("EMF Experience", feedback["experience_level"]),
+                ("Years of Experience", feedback["experience_years"]),
+                ("Main Type of Work", feedback["work_type"]),
+                ("Background", feedback["background_text"]),
+            ],
+        ),
+        (
+            "Home Projects",
+            [
+                ("Home Projects Clarity", feedback["home_projects_clarity"]),
+                (
+                    "What Would Make Home Projects Clearer?",
+                    feedback["home_projects_clarity_text"],
+                ),
+            ],
+        ),
+        (
+            "Professional Use",
+            [
+                ("Professional Use", feedback["professional_use"]),
+                (
+                    "Recommendation Score",
+                    feedback["recommendation_score"],
+                ),
+            ],
+        ),
+        (
+            "Open Feedback",
+            [
+                ("What was confusing?", feedback["confusing_text"]),
+                ("Missing Features", feedback["missing_features"]),
+                ("Bugs", feedback["bugs_text"]),
+                ("Improvements", feedback["improvements_text"]),
+            ],
+        ),
+    ]
+
+    for section_title, fields in sections:
+        document.add_heading(section_title, level=1)
+
+        table = document.add_table(rows=0, cols=2)
+        table.style = "Light Shading Accent 1"
+
+        for label, value in fields:
+            cells = table.add_row().cells
+            cells[0].text = label
+            cells[1].text = display(value)
+
+    output = BytesIO()
+    document.save(output)
+    output.seek(0)
+
+    filename = f"professional_demo_feedback_{demo_id}.docx"
+
+    return StreamingResponse(
+        output,
+        media_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "wordprocessingml.document"
+        ),
+        headers={
+            "Content-Disposition": (
+                f'attachment; filename="{filename}"'
+            )
+        },
+    )
 
     if not feedback:
         return {

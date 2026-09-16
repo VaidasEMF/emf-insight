@@ -2465,6 +2465,69 @@ ADMIN PROFESSIONALS
                         </button>
                     </div>
 
+                    <div class="content-card" style="margin-bottom:14px;">
+                        <div class="content-body">
+
+                            <div style="
+                display:grid;
+                grid-template-columns:
+                    minmax(220px, 1.5fr)
+                    minmax(150px, 1fr)
+                    minmax(150px, 1fr)
+                    auto;
+                gap:10px;
+                align-items:end;
+            ">
+
+                                <div class="admin-modal-field">
+                                    <label for="adminProfessionalDemoSearch">
+                                        Search
+                                    </label>
+                                    <input id="adminProfessionalDemoSearch" type="search" placeholder="Name or email..."
+                                        oninput="renderAdminProfessionalDemos();">
+                                </div>
+
+                                <div class="admin-modal-field">
+                                    <label for="adminProfessionalDemoStatusFilter">
+                                        Status
+                                    </label>
+                                    <select id="adminProfessionalDemoStatusFilter"
+                                        onchange="renderAdminProfessionalDemos();">
+                                        <option value="">All statuses</option>
+                                        <option value="available">Available</option>
+                                        <option value="active">Active</option>
+                                        <option value="expired">Expired</option>
+                                        <option value="revoked">Revoked</option>
+                                    </select>
+                                </div>
+
+                                <div class="admin-modal-field">
+                                    <label for="adminProfessionalDemoFeedbackFilter">
+                                        Feedback
+                                    </label>
+                                    <select id="adminProfessionalDemoFeedbackFilter"
+                                        onchange="renderAdminProfessionalDemos();">
+                                        <option value="">All feedback</option>
+                                        <option value="submitted">Submitted</option>
+                                        <option value="requested">Requested</option>
+                                        <option value="not_requested">Not requested</option>
+                                    </select>
+                                </div>
+
+                                <div id="adminProfessionalDemoFilterCount" style="
+                    padding:10px 0;
+                    color:#64748b;
+                    font-size:12px;
+                    white-space:nowrap;
+                ">
+                                    Showing all
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
                     <div class="content-card">
                         <div class="content-body">
                             <div id="adminProfessionalDemosContainer">
@@ -4029,6 +4092,70 @@ ADMIN PROFESSIONALS
                 return;
             }
 
+            const search =
+                (
+                    document.getElementById(
+                        "adminProfessionalDemoSearch"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const statusFilter =
+                document.getElementById(
+                    "adminProfessionalDemoStatusFilter"
+                )?.value || "";
+
+            const feedbackFilter =
+                document.getElementById(
+                    "adminProfessionalDemoFeedbackFilter"
+                )?.value || "";
+
+            const filteredEntries =
+                adminProfessionalDemoEntries.filter(demo => {
+
+                    const professionalName =
+                        [
+                            demo.first_name,
+                            demo.last_name
+                        ]
+                            .filter(Boolean)
+                            .join(" ")
+                            .toLowerCase();
+
+                    const email =
+                        String(demo.email || "").toLowerCase();
+
+                    const matchesSearch =
+                        !search ||
+                        professionalName.includes(search) ||
+                        email.includes(search);
+
+                    const matchesStatus =
+                        !statusFilter ||
+                        demo.status === statusFilter;
+
+                    const matchesFeedback =
+                        !feedbackFilter ||
+                        demo.feedback_status === feedbackFilter;
+
+                    return (
+                        matchesSearch &&
+                        matchesStatus &&
+                        matchesFeedback
+                    );
+                });
+
+            const filterCount =
+                document.getElementById(
+                    "adminProfessionalDemoFilterCount"
+                );
+
+            if (filterCount) {
+                filterCount.textContent =
+                    `Showing ${filteredEntries.length} of ${adminProfessionalDemoEntries.length}`;
+            }
+
             if (!adminProfessionalDemoEntries.length) {
                 container.innerHTML = `
             <div class="empty-state">
@@ -4063,7 +4190,7 @@ ADMIN PROFESSIONALS
                 </thead>
 
                 <tbody>
-                    ${adminProfessionalDemoEntries.map(demo => {
+                    ${filteredEntries.map(demo => {
                 const professionalName =
                     [demo.first_name, demo.last_name]
                         .filter(Boolean)
@@ -7093,6 +7220,8 @@ ADMIN PROFESSIONALS
                     ? data[0]
                     : data;
 
+            window.adminProfessionalDemoFeedbackCurrent = feedback;
+
             if (!feedback) {
                 content.innerHTML = `
                     <div class="empty-state">
@@ -7106,13 +7235,62 @@ ADMIN PROFESSIONALS
 
             const value = key =>
                 feedback[key] === null ||
-                feedback[key] === undefined ||
-                feedback[key] === ""
+                    feedback[key] === undefined ||
+                    feedback[key] === ""
                     ? "—"
                     : escapeHtml(String(feedback[key]));
 
+            const feedbackDate =
+                feedback.created_at
+                    ? escapeHtml(
+                        new Date(feedback.created_at).toLocaleString()
+                    )
+                    : "—";
+
             content.innerHTML = `
                 <div class="admin-modal-grid">
+
+                    <div style="grid-column:1 / -1; margin-bottom:4px;">
+                        <h3 style="margin:0; font-size:16px;">
+                            Tester Information
+                        </h3>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>First Name</label>
+                        <div>${value("first_name")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Last Name</label>
+                        <div>${value("last_name")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Email</label>
+                        <div>${value("email")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Country</label>
+                        <div>${value("country")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>City</label>
+                        <div>${value("city")}</div>
+                    </div>
+
+                    <div class="admin-modal-field">
+                        <label>Feedback Date</label>
+                        <div>${feedbackDate}</div>
+                    </div>
+
+                    <div style="grid-column:1 / -1; margin:12px 0 4px;">
+                        <h3 style="margin:0; font-size:16px;">
+                            Product Experience
+                        </h3>
+                    </div>
 
                     <div class="admin-modal-field">
                         <label>Overall Rating</label>
@@ -7203,6 +7381,63 @@ ADMIN PROFESSIONALS
             `;
         }
 
+        async function exportAdminProfessionalDemoFeedback() {
+            const feedback =
+                window.adminProfessionalDemoFeedbackCurrent;
+
+            if (!feedback || !feedback.demo_id) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-demo-feedback/admin/${feedback.demo_id}/docx`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    let message = "Failed to export feedback.";
+
+                    try {
+                        const data = await response.json();
+                        message = data.detail || message;
+                    } catch (_) { }
+
+                    throw new Error(message);
+                }
+
+                const blob = await response.blob();
+
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+
+                link.href = url;
+                link.download =
+                    `professional_demo_feedback_${feedback.demo_id}.docx`;
+
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+
+                URL.revokeObjectURL(url);
+
+            } catch (error) {
+                console.error(
+                    "Failed to export Professional Demo feedback:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Failed to export feedback."
+                );
+            }
+        }
+
 
         function closeAdminProfessionalDemoFeedback() {
             const modal = document.getElementById(
@@ -7214,7 +7449,7 @@ ADMIN PROFESSIONALS
             }
         }
 
-</script>
+    </script>
 
 
 
@@ -7222,7 +7457,7 @@ ADMIN PROFESSIONALS
 
 
 
-<!-- =========================
+    <!-- =========================
      ADMIN PROFESSIONAL DEMO SEND MODAL
 ========================= -->
 
@@ -7292,7 +7527,7 @@ ADMIN PROFESSIONALS
         </div>
     </div>
 
-<!-- =========================
+    <!-- =========================
      ADMIN PROFESSIONAL DEMO FEEDBACK MODAL
 ========================= -->
 
@@ -7320,6 +7555,10 @@ ADMIN PROFESSIONALS
                 </div>
 
             </div>
+
+            <button type="button" class="btn-secondary" onclick="exportAdminProfessionalDemoFeedback();">
+                Export DOCX
+            </button>
 
             <div class="admin-modal-actions">
 
