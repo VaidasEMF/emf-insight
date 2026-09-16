@@ -5529,6 +5529,155 @@
       display: none;
     }
 
+    /* =========================
+   PROFESSIONAL DEMO FEEDBACK
+   ========================= */
+
+    #professionalDemoFeedbackModal {
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    #professionalDemoFeedbackModal:not(.hidden) {
+      display: flex;
+    }
+
+    #professionalDemoFeedbackModal .modal-content {
+      width: min(760px, 100%);
+      max-width: 760px;
+      max-height: 90vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 18px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #professionalDemoFeedbackModal .modal-content>h2 {
+      margin: 0;
+      padding: 28px 32px 8px;
+      font-size: 26px;
+      line-height: 1.2;
+      color: #17202a;
+    }
+
+    #professionalDemoFeedbackModal .modal-content>p {
+      margin: 0;
+      padding: 0 32px 22px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    #professionalDemoFeedbackModal form {
+      min-height: 0;
+      overflow-y: auto;
+      padding: 0 32px 28px;
+    }
+
+    #professionalDemoFeedbackModal form>div {
+      border-top: 1px solid #e5e7eb;
+      padding-top: 18px;
+    }
+
+    #professionalDemoFeedbackModal form>div:first-of-type {
+      border-top: 0;
+    }
+
+    #professionalDemoFeedbackModal label {
+      display: block;
+      margin-bottom: 7px;
+      color: #17202a;
+      font-size: 15px;
+    }
+
+    #professionalDemoFeedbackModal .mutedText {
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    #professionalDemoFeedbackModal select,
+    #professionalDemoFeedbackModal textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #d7dee8;
+      border-radius: 9px;
+      background: #ffffff;
+      color: #17202a;
+      font: inherit;
+      padding: 10px 12px;
+    }
+
+    #professionalDemoFeedbackModal select {
+      min-height: 42px;
+    }
+
+    #professionalDemoFeedbackModal textarea {
+      resize: vertical;
+      min-height: 78px;
+      line-height: 1.45;
+    }
+
+    #professionalDemoFeedbackModal select:focus,
+    #professionalDemoFeedbackModal textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+    }
+
+    #professionalDemoFeedbackModal hr {
+      border: 0;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .professional-demo-required {
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    .professional-demo-required-note {
+      margin: 4px 0 20px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    #professionalDemoFeedbackModal form>div:last-child {
+      position: sticky;
+      bottom: 0;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 18px;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 700px) {
+      #professionalDemoFeedbackModal {
+        padding: 12px;
+      }
+
+      #professionalDemoFeedbackModal .modal-content {
+        max-height: 94vh;
+        border-radius: 14px;
+      }
+
+      #professionalDemoFeedbackModal .modal-content>h2 {
+        padding: 22px 20px 8px;
+        font-size: 23px;
+      }
+
+      #professionalDemoFeedbackModal .modal-content>p {
+        padding: 0 20px 18px;
+      }
+
+      #professionalDemoFeedbackModal form {
+        padding: 0 20px 22px;
+      }
+    }
+
     /* ===================== */
     /* 🔥 GRID */
     /* ===================== */
@@ -10415,7 +10564,6 @@
 
     }
 
-
     /* =========================================================
    PROGRESS BAR
    ---------------------------------------------------------
@@ -10428,7 +10576,6 @@
       display: none;
 
     }
-
 
     /* =========================================================
    ADD FLOOR
@@ -12111,7 +12258,6 @@
       display: none;
     }
 
-
     /* =========================================================
    FLOOR ITEM
    ========================================================= */
@@ -12836,7 +12982,6 @@
     #businessFloorTabs::-webkit-scrollbar {
       display: none;
     }
-
 
     /* =========================================================
    FLOOR ITEM
@@ -22597,8 +22742,15 @@
 
           <form id="professionalDemoFeedbackForm">
 
+            <div class="professional-demo-required-note">
+              <span class="professional-demo-required">*</span>
+              Required
+            </div>
+
             <div style="margin-top: 18px;">
-              <label><strong>Overall experience</strong></label>
+              <label>
+                <strong>Overall experience <span class="professional-demo-required">*</span></strong>
+              </label>
               <p class="mutedText">
                 How would you rate your overall experience with EMF Maps Professional Demo?
               </p>
@@ -22613,7 +22765,9 @@
             </div>
 
             <div style="margin-top: 18px;">
-              <label><strong>Business Survey</strong></label>
+              <label>
+                <strong>Business Survey <span class="professional-demo-required">*</span></strong>
+              </label>
               <p class="mutedText">
                 How easy was it to create a Business Survey, add rooms and zones, take measurements, and work with the
                 project?
@@ -22629,7 +22783,9 @@
             </div>
 
             <div style="margin-top: 18px;">
-              <label><strong>Measurements</strong></label>
+              <label>
+                <strong>Measurements <span class="professional-demo-required">*</span></strong>
+              </label>
               <p class="mutedText">
                 How clear and easy was the process of adding and reviewing EMF measurements?
               </p>
@@ -22644,7 +22800,9 @@
             </div>
 
             <div style="margin-top: 18px;">
-              <label><strong>Results / Insights</strong></label>
+              <label>
+                <strong>Results / Insights <span class="professional-demo-required">*</span></strong>
+              </label>
               <p class="mutedText">
                 How clear and useful were the results, heatmaps, risk information, and insights provided by EMF Maps?
               </p>
@@ -22659,7 +22817,9 @@
             </div>
 
             <div style="margin-top: 18px;">
-              <label><strong>PDF Report</strong></label>
+              <label>
+                <strong>PDF Report <span class="professional-demo-required">*</span></strong>
+              </label>
               <p class="mutedText">
                 How useful and professional did you find the generated PDF report?
               </p>
