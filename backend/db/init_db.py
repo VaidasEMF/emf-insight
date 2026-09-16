@@ -60,6 +60,7 @@ def init_db():
                         company_name VARCHAR(200),
                         professional_email VARCHAR(255),
                         professional_phone VARCHAR(50),
+                        phone_country_code VARCHAR(10),
                         country_code VARCHAR(2),
                         country VARCHAR(100),
                         city VARCHAR(100),
@@ -127,6 +128,15 @@ def init_db():
                     """
                     ALTER TABLE professional_profiles
                     ADD COLUMN IF NOT EXISTS professional_phone VARCHAR(50)
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE professional_profiles
+                    ADD COLUMN IF NOT EXISTS phone_country_code VARCHAR(10)
                     """
                 )
             )

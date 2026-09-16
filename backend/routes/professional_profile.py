@@ -28,6 +28,7 @@ class ProfessionalProfileUpdate(BaseModel):
     company_name: str | None = None
     professional_email: str | None = None
     professional_phone: str | None = None
+    phone_country_code: str | None = None
     country_code: str | None = None
     country: str | None = None
     city: str | None = None
@@ -39,7 +40,7 @@ def get_professional_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if current_user.role != "professional":
+    if current_user.role != "professional" and not current_user.is_admin:
         raise HTTPException(
             status_code=403,
             detail="Professional account required",
@@ -56,6 +57,7 @@ def get_professional_profile(
                 company_name,
                 professional_email,
                 professional_phone,
+                phone_country_code,
                 country_code,
                 country,
                 city,
@@ -85,7 +87,7 @@ def update_professional_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if current_user.role != "professional":
+    if current_user.role != "professional" and not current_user.is_admin:
         raise HTTPException(
             status_code=403,
             detail="Professional account required",
@@ -122,6 +124,7 @@ def update_professional_profile(
         "company_name",
         "professional_email",
         "professional_phone",
+        "phone_country_code",
         "country_code",
         "country",
         "city",

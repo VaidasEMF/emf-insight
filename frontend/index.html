@@ -17323,6 +17323,173 @@
       background: #293aa8;
       border-color: #293aa8;
     }
+
+
+    /* =========================================
+   PROFESSIONAL PROFILE MODAL
+   ========================================= */
+
+    #professionalProfileModal {
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    #professionalProfileModal .professional-profile-dialog {
+      width: min(760px, 100%) !important;
+      max-width: 760px !important;
+      max-height: 90vh !important;
+      overflow-y: auto !important;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      background: #ffffff;
+      border-radius: 18px !important;
+      padding: 0 !important;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22) !important;
+    }
+
+    #professionalProfileModal .professional-profile-header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin-bottom: 0 !important;
+      padding: 28px 32px 20px;
+      box-sizing: border-box;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    #professionalProfileModal .professional-profile-header>div:first-child>div:first-child {
+      font-size: 26px !important;
+      line-height: 1.2;
+      color: #17202a;
+    }
+
+    #professionalProfileModal .professional-profile-header>div:first-child>div:last-child {
+      margin-top: 6px !important;
+      color: #64748b !important;
+      line-height: 1.5;
+    }
+
+    #professionalProfileModal .professional-profile-header button {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #64748b;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    #professionalProfileModal .professional-profile-header button:hover {
+      background: #f1f5f9;
+      color: #17202a;
+    }
+
+    #professionalProfileModal .professional-profile-dialog>.professional-profile-header~* {
+      box-sizing: border-box;
+    }
+
+    #professionalProfileModal #professionalProfileStatus {
+      margin: 0 !important;
+      padding: 0;
+      box-sizing: border-box;
+      background: #ffffff;
+    }
+
+    #professionalProfileModal .professional-profile-service-areas {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+      box-sizing: border-box;
+    }
+
+    #professionalProfileModal .professional-profile-actions {
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
+      margin-top: 0 !important;
+      padding: 10px 32px 14px;
+      box-sizing: border-box;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    #professionalProfileModal .professional-profile-actions>div:last-child {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    #professionalProfileModal .professional-profile-dialog>div:not(.professional-profile-header):not(.professional-profile-actions) {
+      margin-left: 32px;
+      margin-right: 32px;
+    }
+
+    #professionalProfileModal .professional-profile-actions button {
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #professionalProfileModal .professional-profile-actions button:first-child {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+    }
+
+    #professionalProfileModal .professional-profile-actions button:first-child:hover {
+      background: #f8fafc;
+    }
+
+    #professionalProfileModal .professional-profile-actions button:last-child {
+      border: 1px solid #2563eb;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    #professionalProfileModal .professional-profile-actions button:last-child:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    @media (max-width: 700px) {
+      #professionalProfileModal {
+        padding: 12px;
+      }
+
+      #professionalProfileModal .professional-profile-dialog {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 94vh !important;
+        border-radius: 14px !important;
+      }
+
+      #professionalProfileModal .professional-profile-header {
+        padding: 22px 20px 16px;
+      }
+
+      #professionalProfileModal .professional-profile-header>div:first-child>div:first-child {
+        font-size: 23px !important;
+      }
+
+      #professionalProfileModal .professional-profile-actions {
+        padding: 16px 20px 20px;
+      }
+
+      #professionalProfileModal .professional-profile-dialog>div:not(.professional-profile-header):not(.professional-profile-actions) {
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+
+
+    }
   </style>
 </head>
 
@@ -28824,7 +28991,7 @@
             align-items:center;
             justify-content:center;">
 
-  <div style="width:520px;
+  <div class="professional-profile-dialog" style="width:520px;
               max-width:calc(100vw - 40px);
               max-height:calc(100vh - 40px);
               overflow:auto;
@@ -28833,7 +29000,7 @@
               padding:24px;
               box-shadow:0 20px 60px rgba(0,0,0,.25);">
 
-    <div style="display:flex;
+    <div class="professional-profile-header" style="display:flex;
                 justify-content:space-between;
                 align-items:center;
                 margin-bottom:20px;">
@@ -28901,12 +29068,12 @@
         <input id="professionalProfileLastName" type="text" style="width:100%;box-sizing:border-box;">
       </label>
 
-      <label style="grid-column:1/-1;">
+      <label>
         <div>Company name</div>
         <input id="professionalProfileCompanyName" type="text" style="width:100%;box-sizing:border-box;">
       </label>
 
-      <label style="grid-column:1/-1;">
+      <label>
         <div>Professional email</div>
         <input id="professionalProfileEmail" type="email" style="width:100%;box-sizing:border-box;">
       </label>
@@ -29144,7 +29311,7 @@
         <input id="professionalProfilePostalCode" type="text" style="width:100%;box-sizing:border-box;">
       </label>
 
-      <div style="grid-column:1/-1;margin-top:8px;">
+      <div class="professional-profile-service-areas" style="grid-column:1/-1;margin-top:8px;">
         <div style="font-weight:600;margin-bottom:8px;">Property Service Areas</div>
 
         <div style="font-size:13px;font-weight:600;margin-bottom:4px;">
@@ -29189,21 +29356,28 @@
 
     </div>
 
-    <div id="professionalProfileStatus" style="margin-top:14px;font-size:13px;">
-    </div>
-
-    <div style="display:flex;
-                justify-content:flex-end;
-                gap:10px;
+    <div class="professional-profile-actions" style="display:flex;
+                flex-direction:column;
+                align-items:stretch;
+                gap:12px;
                 margin-top:22px;">
 
-      <button type="button" onclick="closeProfessionalProfile()">
-        Cancel
-      </button>
+      <div id="professionalProfileStatus" style="font-size:13px;">
+      </div>
 
-      <button type="button" onclick="saveProfessionalProfileForm()">
-        Save
-      </button>
+      <div style="display:flex;
+              justify-content:flex-end;
+              gap:10px;">
+
+        <button type="button" onclick="closeProfessionalProfile()">
+          Cancel
+        </button>
+
+        <button type="button" onclick="saveProfessionalProfileForm()">
+          Save
+        </button>
+
+      </div>
 
     </div>
 

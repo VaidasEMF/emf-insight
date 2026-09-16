@@ -291,6 +291,14 @@ async function openProfessionalProfile() {
 
     modal.style.display = "flex";
 
+    const modalCard = modal.querySelector(
+        "#professionalProfileModal > div"
+    );
+
+    if (modalCard) {
+        modalCard.scrollTop = 0;
+    }
+
     initializeProfessionalServiceAreas();
     initializeProfessionalPhoneCountryCode();
 
@@ -336,6 +344,11 @@ async function openProfessionalProfile() {
         ).value =
             profile.professional_phone || "";
 
+
+        document.getElementById(
+            "professionalProfilePhoneCountryCode"
+        ).value =
+            profile.phone_country_code || "";
 
         document.getElementById(
             "professionalProfileCountry"
@@ -401,30 +414,6 @@ async function openProfessionalProfile() {
                 "professionalServiceAreaCountry"
             )
         );
-
-
-        const phoneCountryCode =
-            document.getElementById(
-                "professionalProfilePhoneCountryCode"
-            );
-
-        if (
-            phoneCountryCode &&
-            profile.country
-        ) {
-            const option =
-                Array.from(phoneCountryCode.options)
-                    .find(
-                        (item) =>
-                            item.dataset.country ===
-                            profile.country
-                    );
-
-            if (option) {
-                phoneCountryCode.value =
-                    option.value;
-            }
-        }
 
 
         const completionStatus =
@@ -1679,26 +1668,8 @@ function initializeProfessionalPhoneCountryCode() {
         }
     );
 
-
-    countryField.addEventListener(
-        "change",
-        () => {
-
-            const country =
-                countryField.value.trim();
-
-            const code =
-                callingCodes[country];
-
-            codeField.value =
-                code || "";
-        }
-    );
-
-
     codeField.dataset.initialized = "1";
 }
-
 
 // =====================================================
 // SAVE PROFESSIONAL PROFILE FORM
@@ -1783,6 +1754,11 @@ async function saveProfessionalProfileForm() {
                 "professionalProfilePhone"
             ).value.trim(),
 
+
+        phone_country_code:
+            document.getElementById(
+                "professionalProfilePhoneCountryCode"
+            ).value,
 
         country:
             country,
