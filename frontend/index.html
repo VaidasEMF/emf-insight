@@ -26682,15 +26682,13 @@
       if (data.pdf_url) {
         const pdfUrl = `${API}${data.pdf_url}`;
 
+        window.maybePromptProfessionalDemoFeedback?.();
+
         if (pdfWindow) {
           pdfWindow.location.href = pdfUrl;
         } else {
           window.open(pdfUrl, "_blank");
         }
-
-        setTimeout(function () {
-          window.maybePromptProfessionalDemoFeedback?.();
-        }, 1000);
       }
 
       else {
