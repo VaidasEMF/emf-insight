@@ -304,7 +304,11 @@
     }
   });
 
-  document.addEventListener("DOMContentLoaded", function () {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      loadProfessionalDemoFeedbackState();
+    });
+  } else {
     loadProfessionalDemoFeedbackState();
-  });
+  }
 })();
