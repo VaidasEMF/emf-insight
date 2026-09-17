@@ -211,9 +211,25 @@ def _ensure_stripe_events_table(db):
     """))
 
 def _ensure_home_entitlements_table(db):
+    # Legacy user-level entitlement table.
+    # Kept intact for backward compatibility during the project-level migration.
     db.execute(text("""
         CREATE TABLE IF NOT EXISTS home_entitlements (
             user_id VARCHAR(255) PRIMARY KEY,
+            full_report_unlocked BOOLEAN NOT NULL DEFAULT FALSE,
+            stripe_session_id VARCHAR(255),
+            unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+
+def _ensure_home_project_entitlements_table(db):
+    # Canonical Home Premium Report entitlement:
+    # one entitlement belongs to one Home Project.
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS home_project_entitlements (
+            project_id VARCHAR(255) PRIMARY KEY,
+            user_id VARCHAR(255) NOT NULL,
             full_report_unlocked BOOLEAN NOT NULL DEFAULT FALSE,
             stripe_session_id VARCHAR(255),
             unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -261,6 +277,7 @@ def create_checkout(
 ):
     plan = body.get("plan")
     currency = str(body.get("currency") or "EUR").upper()
+    project_id = body.get("project_id")
 
     if plan not in STRIPE_ALLOWED_PLANS:
         raise HTTPException(400, "Invalid or unavailable plan")
@@ -275,6 +292,34 @@ def create_checkout(
             503,
             "Stripe price is not configured for this currency",
         )
+
+    # Home Full Report is project-scoped.
+    # The authenticated user must own the Home Project being purchased.
+    if plan == "home_full_report":
+        if not project_id:
+            raise HTTPException(
+                400,
+                "Home project ID is required for the Full EMF Insight Report",
+            )
+
+        project = db.execute(
+            text("""
+                SELECT id
+                FROM projects
+                WHERE id = :project_id
+                  AND user_id = :user_id
+            """),
+            {
+                "project_id": str(project_id),
+                "user_id": str(current_user.id),
+            },
+        ).first()
+
+        if not project:
+            raise HTTPException(
+                404,
+                "Home project not found",
+            )
 
     # Business Pro is the only recurring V1 product.
     # Business Single and Home Full Report are one-time payments.
@@ -296,6 +341,11 @@ def create_checkout(
                 "user_id": str(current_user.id),
                 "plan": plan,
                 "currency": currency,
+                **(
+                    {"project_id": str(project_id)}
+                    if plan == "home_full_report"
+                    else {}
+                ),
             },
             subscription_data={
                 "metadata": {
@@ -339,6 +389,7 @@ async def stripe_webhook(request: Request):
         # same delivery, the second delivery is ignored safely.
         _ensure_stripe_events_table(db)
         _ensure_home_entitlements_table(db)
+        _ensure_home_project_entitlements_table(db)
         if not _claim_stripe_event(db, event_id):
             db.rollback()
             print("Stripe webhook already processed:", event_id)
@@ -377,19 +428,64 @@ async def stripe_webhook(request: Request):
                 user.credits = 5
 
             elif plan == "home_full_report":
-                # Home Full Report is deliberately separate from Business credits.
+                # Home Full Report is deliberately separate from Business credits
+                # and is scoped to the purchased Home Project.
+                project_id = metadata.get("project_id")
+
+                if not project_id:
+                    print(
+                        "Stripe Home Full Report webhook missing project_id:",
+                        session.get("id"),
+                    )
+                    db.commit()
+                    return {"status": "ok"}
+
+                project = db.execute(
+                    text("""
+                        SELECT id
+                        FROM projects
+                        WHERE id = :project_id
+                          AND user_id = :user_id
+                    """),
+                    {
+                        "project_id": str(project_id),
+                        "user_id": str(user.id),
+                    },
+                ).first()
+
+                if not project:
+                    print(
+                        "Stripe Home Full Report project not found or not owned:",
+                        project_id,
+                        user.id,
+                    )
+                    db.commit()
+                    return {"status": "ok"}
+
                 db.execute(
                     text("""
-                        INSERT INTO home_entitlements
-                            (user_id, full_report_unlocked, stripe_session_id)
+                        INSERT INTO home_project_entitlements
+                            (
+                                project_id,
+                                user_id,
+                                full_report_unlocked,
+                                stripe_session_id
+                            )
                         VALUES
-                            (:user_id, TRUE, :stripe_session_id)
-                        ON CONFLICT (user_id) DO UPDATE SET
+                            (
+                                :project_id,
+                                :user_id,
+                                TRUE,
+                                :stripe_session_id
+                            )
+                        ON CONFLICT (project_id) DO UPDATE SET
+                            user_id = EXCLUDED.user_id,
                             full_report_unlocked = TRUE,
                             stripe_session_id = EXCLUDED.stripe_session_id,
                             unlocked_at = CURRENT_TIMESTAMP
                     """),
                     {
+                        "project_id": str(project_id),
                         "user_id": str(user.id),
                         "stripe_session_id": session.get("id"),
                     },

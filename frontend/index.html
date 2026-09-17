@@ -25827,9 +25827,31 @@
       "token",
     );
 
+    const body = {
+      plan: plan,
+    };
 
+    // Home Full Report is scoped to the currently active Home Project.
+    if (plan === "home_full_report") {
+      const homeProject =
+        window.AppState?.homeProject ||
+        window.AppState?.project ||
+        null;
 
-    const me = await meRes.json();
+      const projectId =
+        homeProject?.project_id ??
+        homeProject?.id ??
+        null;
+
+      if (!projectId) {
+        alert(
+          "Please open a Home Project before purchasing the Full EMF Insight Report."
+        );
+        return;
+      }
+
+      body.project_id = String(projectId);
+    }
 
     const res = await fetch(
       "http://127.0.0.1:8000/create-checkout-session",
@@ -25838,22 +25860,35 @@
 
         headers: {
           "Content-Type": "application/json",
+          ...(token
+            ? {
+              "Authorization": `Bearer ${token}`
+            }
+            : {}),
         },
 
-        body: JSON.stringify({
-          user_id: me.id,
-          plan: plan,
-        }),
+        body: JSON.stringify(body),
       }
     );
 
     const data = await res.json();
 
+    if (!res.ok) {
+      console.error(
+        "Stripe checkout creation failed:",
+        data
+      );
 
+      alert(
+        data?.detail ||
+        "Unable to start checkout."
+      );
+
+      return;
+    }
 
     window.location.href = data.url;
   }
-
 
   function setActiveMode(
     newMode
@@ -28737,8 +28772,20 @@
         const token = localStorage.getItem("token");
 
         if (token) {
+          const activeHomeProjectId =
+            window.AppState?.homeProject?.project_id ??
+            window.AppState?.homeProject?.id ??
+            window.AppState?.project?.project_id ??
+            window.AppState?.project?.id ??
+            null;
+
+          const meUrl =
+            activeHomeProjectId
+              ? `${API}/me?project_id=${encodeURIComponent(activeHomeProjectId)}`
+              : `${API}/me`;
+
           const meRes = await fetch(
-            `${API}/me`,
+            meUrl,
             {
               headers: {
                 "Authorization": `Bearer ${token}`

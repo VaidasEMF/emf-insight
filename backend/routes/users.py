@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Query,
 )
 
 from auth.dependencies import (
@@ -25,12 +26,9 @@ router = APIRouter()
 
 @router.get("/me")
 def me(
-    current_user=Depends(
-        get_current_user,
-    ),
-    db: Session = Depends(
-        get_db,
-    ),
+    project_id: int | None = Query(default=None),
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
 
     home_full_report_unlocked = False
@@ -70,19 +68,52 @@ def me(
     try:
         from sqlalchemy import text
 
-        result = db.execute(
-            text("""
-                SELECT full_report_unlocked
-                FROM home_entitlements
-                WHERE user_id = :user_id
-            """),
-            {
-                "user_id": str(current_user.id),
-            },
-        ).scalar()
+        if project_id is not None:
+            project_owner = db.execute(
+                text("""
+                    SELECT id
+                    FROM projects
+                    WHERE id = :project_id
+                      AND user_id = :user_id
+                """),
+                {
+                    "project_id": project_id,
+                    "user_id": str(current_user.id),
+                },
+            ).scalar()
+
+            if project_owner is None:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Home project not found.",
+                )
+
+            result = db.execute(
+                text("""
+                    SELECT full_report_unlocked
+                    FROM home_project_entitlements
+                    WHERE project_id = :project_id
+                      AND user_id = :user_id
+                """),
+                {
+                    "project_id": project_id,
+                    "user_id": str(current_user.id),
+                },
+            ).scalar()
+        else:
+            result = db.execute(
+                text("""
+                    SELECT full_report_unlocked
+                    FROM home_entitlements
+                    WHERE user_id = :user_id
+                """),
+                {"user_id": str(current_user.id)},
+            ).scalar()
 
         home_full_report_unlocked = bool(result)
 
+    except HTTPException:
+        raise
     except Exception:
         home_full_report_unlocked = False
 
@@ -150,6 +181,15 @@ def delete_me(
         db.execute(
             text("""
                 DELETE FROM home_entitlements
+                WHERE user_id = :user_id
+            """),
+            {"user_id": user_id},
+        )
+
+        # Delete Home Project entitlements
+        db.execute(
+            text("""
+                DELETE FROM home_project_entitlements
                 WHERE user_id = :user_id
             """),
             {"user_id": user_id},
