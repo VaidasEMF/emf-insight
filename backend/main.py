@@ -41,6 +41,7 @@ from db.database import SessionLocal
 
 from models.user import User
 from models.project import Project
+from models.report_credit_ledger import ReportCreditLedger
 from models.report import Report
 
 from auth.entitlements import (
@@ -421,6 +422,17 @@ async def stripe_webhook(request: Request):
             if plan == "single":
                 # One successful Business Single purchase = one Business credit.
                 user.credits = (user.credits or 0) + 1
+
+                db.add(
+                    ReportCreditLedger(
+                        user_id=user.id,
+                        transaction_type="PURCHASE",
+                        amount=1,
+                        balance_after=user.credits,
+                        reference_type="stripe_checkout",
+                        reference_id=session.get("id"),
+                    )
+                )
 
             elif plan == "pro":
                 # First Pro billing cycle = 5 Business report credits.
