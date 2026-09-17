@@ -23366,6 +23366,7 @@
     </div>
 
 
+
 </body>
 
 </html>
@@ -29491,6 +29492,48 @@
       }
     });
   })();
+</script>
+
+<script>
+  window.addEventListener("load", function () {
+    const params = new URLSearchParams(window.location.search);
+    const professionalProfileAction =
+      params.get("professional_profile");
+
+    if (!professionalProfileAction) return;
+
+    if (typeof window.openProfessionalProfile !== "function") {
+      console.error(
+        "Professional Profile: openProfessionalProfile() not available"
+      );
+      return;
+    }
+
+    window.openProfessionalProfile();
+
+    if (professionalProfileAction === "service_areas") {
+      setTimeout(() => {
+        const target = document.getElementById(
+          "professionalServiceAreaCountry"
+        );
+
+        if (target) {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+      }, 250);
+    }
+
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.hash
+      );
+    }
+  });
 </script>
 </body>
 

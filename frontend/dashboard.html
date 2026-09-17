@@ -1052,6 +1052,8 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            min-height: 0;
+            height: auto;
         }
 
         .professional-quick-action {
@@ -2001,7 +2003,7 @@
 
                             <div class="professional-status-action" id="professionalCompleteProfileAction">
                                 <button type="button" class="professional-complete-profile-button"
-                                    onclick="completeProfessionalProfileFromDashboard();">
+                                    onclick="window.location.href='index.html?professional_profile=profile';">
                                     <span>Complete Your Professional Profile</span>
                                     <span class="professional-complete-profile-arrow">&#8594;</span>
                                 </button>
@@ -2137,7 +2139,7 @@
                         <div class="workspace-card professional-quick-actions">
 
                             <button type="button" class="professional-quick-action"
-                                onclick="openProfessionalProfile();">
+                                onclick="window.location.href='index.html?professional_profile=profile';">
                                 <span class="professional-quick-action-icon profile-icon" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" fill="none">
                                         <circle cx="12" cy="8" r="3.5"></circle>
@@ -2153,111 +2155,111 @@
 
 
                         </div>
+                    </section>
 
-                        <!-- =========================
+                    <!-- =========================
                      PROFESSIONAL SERVICE AREAS
                      ========================= -->
-                        <section class="section" id="service-areas">
-                            <div class="section-heading">
-                                <div>
-                                    <h2 class="section-title">Service Areas</h2>
-                                    <p class="section-description">
-                                        Where you provide property services.
-                                    </p>
+                    <section class="section" id="service-areas">
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title">Service Areas</h2>
+                                <p class="section-description">
+                                    Where you provide property services.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="workspace-card professional-dashboard-settings-card">
+
+                            <div class="professional-dashboard-location">
+                                <div class="professional-dashboard-location-title">
+                                    Primary professional location
+                                </div>
+
+                                <div class="professional-dashboard-location-value"
+                                    id="professionalDashboardPrimaryLocation">
+                                    Loading...
                                 </div>
                             </div>
 
-                            <div class="workspace-card professional-dashboard-settings-card">
-
-                                <div class="professional-dashboard-location">
-                                    <div class="professional-dashboard-location-title">
-                                        Primary professional location
-                                    </div>
-
-                                    <div class="professional-dashboard-location-value"
-                                        id="professionalDashboardPrimaryLocation">
-                                        Loading...
-                                    </div>
+                            <div class="professional-dashboard-location">
+                                <div class="professional-dashboard-location-title">
+                                    Additional service areas
                                 </div>
 
-                                <div class="professional-dashboard-location">
-                                    <div class="professional-dashboard-location-title">
-                                        Additional service areas
-                                    </div>
-
-                                    <div class="professional-dashboard-location-value"
-                                        id="professionalDashboardAdditionalAreas">
-                                        No additional service areas added yet.
-                                    </div>
+                                <div class="professional-dashboard-location-value"
+                                    id="professionalDashboardAdditionalAreas">
+                                    No additional service areas added yet.
                                 </div>
+                            </div>
 
-                                <button type="button" class="professional-dashboard-settings-action"
-                                    onclick="openProfessionalProfileServiceAreas();">
-                                    Manage Service Areas
-                                    <span>&#8594;</span>
+                            <button type="button" class="professional-dashboard-settings-action"
+                                onclick="window.location.href='index.html?professional_profile=service_areas';">
+                                Manage Service Areas
+                                <span>&#8594;</span>
+                            </button>
+
+                        </div>
+                    </section>
+
+
+                    <!-- =========================
+                     PROFESSIONAL AVAILABILITY
+                     ========================= -->
+                    <section class="section" id="availability">
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title">Availability</h2>
+                                <p class="section-description">
+                                    Manage your availability for Home Projects.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="workspace-card professional-dashboard-settings-card">
+
+                            <div class="professional-dashboard-location-title">
+                                Availability for Home Projects
+                            </div>
+
+                            <div class="professional-dashboard-availability-options">
+
+                                <button type="button" class="professional-dashboard-availability-option"
+                                    data-availability="available"
+                                    onclick="selectProfessionalAvailability('available');">
+                                    <strong>Available</strong>
+                                    <span>
+                                        Can receive new Home Project requests.
+                                    </span>
+                                </button>
+
+                                <button type="button" class="professional-dashboard-availability-option"
+                                    data-availability="limited" onclick="selectProfessionalAvailability('limited');">
+                                    <strong>Limited</strong>
+                                    <span>
+                                        Available with limited capacity.
+                                    </span>
+                                </button>
+
+                                <button type="button" class="professional-dashboard-availability-option"
+                                    data-availability="unavailable"
+                                    onclick="selectProfessionalAvailability('unavailable');">
+                                    <strong>Unavailable</strong>
+                                    <span>
+                                        Do not receive new Home Project requests.
+                                    </span>
                                 </button>
 
                             </div>
-                        </section>
 
-
-                        <!-- =========================
-                     PROFESSIONAL AVAILABILITY
-                     ========================= -->
-                        <section class="section" id="availability">
-                            <div class="section-heading">
-                                <div>
-                                    <h2 class="section-title">Availability</h2>
-                                    <p class="section-description">
-                                        Manage your availability for Home Projects.
-                                    </p>
-                                </div>
+                            <div class="professional-dashboard-availability-current"
+                                id="professionalDashboardAvailabilityCurrent">
+                                Current status: Unavailable
                             </div>
 
-                            <div class="workspace-card professional-dashboard-settings-card">
-
-                                <div class="professional-dashboard-location-title">
-                                    Availability for Home Projects
-                                </div>
-
-                                <div class="professional-dashboard-availability-options">
-
-                                    <button type="button" class="professional-dashboard-availability-option"
-                                        data-availability="available"
-                                        onclick="selectProfessionalAvailability('available');">
-                                        <strong>Available</strong>
-                                        <span>
-                                            Can receive new Home Project requests.
-                                        </span>
-                                    </button>
-
-                                    <button type="button" class="professional-dashboard-availability-option"
-                                        data-availability="limited"
-                                        onclick="selectProfessionalAvailability('limited');">
-                                        <strong>Limited</strong>
-                                        <span>
-                                            Available with limited capacity.
-                                        </span>
-                                    </button>
-
-                                    <button type="button" class="professional-dashboard-availability-option"
-                                        data-availability="unavailable"
-                                        onclick="selectProfessionalAvailability('unavailable');">
-                                        <strong>Unavailable</strong>
-                                        <span>
-                                            Do not receive new Home Project requests.
-                                        </span>
-                                    </button>
-
-                                </div>
-
-                                <div class="professional-dashboard-availability-current"
-                                    id="professionalDashboardAvailabilityCurrent">
-                                    Current status: Unavailable
-                                </div>
-
-                            </div>
-                        </section>
+                        </div>
+                    </section>
 
                     </section>
 
