@@ -1088,6 +1088,45 @@
         }
 
 
+        .professional-dashboard-subnav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin: 4px 0 8px 12px;
+            padding-left: 10px;
+            border-left: 1px solid var(--line);
+        }
+
+        .professional-dashboard-subnav-item {
+            width: 100%;
+            min-height: 34px;
+            padding: 7px 10px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--muted);
+            font: inherit;
+            font-size: 13px;
+            line-height: 1.3;
+            text-align: left;
+            cursor: pointer;
+            transition:
+                background 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .professional-dashboard-subnav-item:hover {
+            background: var(--surface-soft);
+            color: var(--text);
+        }
+
+        .professional-dashboard-subnav-item.active {
+            background: var(--surface-soft);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+
         .professional-status-content {
             min-width: 0;
         }
@@ -1801,6 +1840,31 @@
                 <div class="nav-group">
                     <div class="nav-label">ACCOUNT</div>
                     <a class="nav-link" href="#overview"><span class="nav-icon">Γùë</span><span>Overview</span></a>
+                    <div class="professional-dashboard-subnav">
+                        <button type="button" class="professional-dashboard-subnav-item active"
+                            data-professional-section="professionalStatusSection"
+                            onclick="navigateProfessionalDashboardSection('professionalStatusSection');">
+                            Professional Status
+                        </button>
+
+                        <button type="button" class="professional-dashboard-subnav-item"
+                            data-professional-section="professionalQuickActionsSection"
+                            onclick="navigateProfessionalDashboardSection('professionalQuickActionsSection');">
+                            Quick Actions
+                        </button>
+
+                        <button type="button" class="professional-dashboard-subnav-item"
+                            data-professional-section="service-areas"
+                            onclick="navigateProfessionalDashboardSection('service-areas');">
+                            Service Areas
+                        </button>
+
+                        <button type="button" class="professional-dashboard-subnav-item"
+                            data-professional-section="availability"
+                            onclick="navigateProfessionalDashboardSection('availability');">
+                            Availability
+                        </button>
+                    </div>
                     <a class="nav-link" href="#projects"><span class="nav-icon">Γûú</span><span>Projects</span></a>
                     <a class="nav-link" href="#reports"><span class="nav-icon">Γûº</span><span>Reports</span></a>
                     <a class="nav-link" href="#billing"><span class="nav-icon">Γé¼</span><span>Billing &amp;
@@ -2087,20 +2151,6 @@
                                 <span class="professional-quick-action-arrow">&#8250;</span>
                             </button>
 
-                            <button type="button" class="professional-quick-action"
-                                onclick="openProfessionalProfileServiceAreas();">
-                                <span class="professional-quick-action-icon service-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 21s6-5.1 6-10a6 6 0 1 0-12 0c0 4.9 6 10 6 10z"></path>
-                                        <circle cx="12" cy="11" r="2"></circle>
-                                    </svg>
-                                </span>
-                                <span class="professional-quick-action-text">
-                                    <strong>Service Areas</strong>
-                                    <span>Manage the areas where you provide property services.</span>
-                                </span>
-                                <span class="professional-quick-action-arrow">&#8250;</span>
-                            </button>
 
                         </div>
 
@@ -5778,6 +5828,8 @@ ADMIN PROFESSIONALS
 
                 const data = await res.json();
                 await loadProfessionalDashboardStatus();
+                initializeProfessionalDashboardSubnav();
+
                 const email = data.email || "Account";
                 const firstName = data.first_name || "";
                 const lastName = data.last_name || "";
@@ -6045,10 +6097,22 @@ ADMIN PROFESSIONALS
         }
 
 
+        function setProfessionalDashboardSubnavActive(sectionId) {
+            document
+                .querySelectorAll(".professional-dashboard-subnav-item")
+                .forEach((item) => {
+                    item.classList.toggle(
+                        "active",
+                        item.dataset.professionalSection === sectionId
+                    );
+                });
+        }
 
         function navigateProfessionalDashboardSection(sectionId) {
             const target = document.getElementById(sectionId);
             if (!target) return;
+
+            setProfessionalDashboardSubnavActive(sectionId);
 
             requestAnimationFrame(() => {
                 target.scrollIntoView({
@@ -6064,6 +6128,48 @@ ADMIN PROFESSIONALS
                     );
                 }
             });
+        }
+
+        function initializeProfessionalDashboardSubnav() {
+            const sections = [
+                "professionalStatusSection",
+                "professionalQuickActionsSection",
+                "service-areas",
+                "availability"
+            ];
+
+            const targets = sections
+                .map((id) => document.getElementById(id))
+                .filter(Boolean);
+
+            if (!targets.length) return;
+
+            if (!window.IntersectionObserver) return;
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    const visibleEntries = entries
+                        .filter((entry) => entry.isIntersecting)
+                        .sort(
+                            (a, b) =>
+                                a.boundingClientRect.top -
+                                b.boundingClientRect.top
+                        );
+
+                    if (!visibleEntries.length) return;
+
+                    setProfessionalDashboardSubnavActive(
+                        visibleEntries[0].target.id
+                    );
+                },
+                {
+                    root: null,
+                    rootMargin: "-10% 0px -70% 0px",
+                    threshold: 0
+                }
+            );
+
+            targets.forEach((section) => observer.observe(section));
         }
 
 
