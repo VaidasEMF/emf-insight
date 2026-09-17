@@ -10,6 +10,7 @@ from models.user import User
 from models.project import Project
 from models.report import Report
 from models.pricing import Pricing
+from models.report_credit_ledger import ReportCreditLedger
 
 
 def init_db():
