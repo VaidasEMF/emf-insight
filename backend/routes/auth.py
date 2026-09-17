@@ -171,7 +171,7 @@ def register(
         hashed_password=hash_password(
             password,
         ),
-        credits=1,
+        credits=0,
     )
 
     db.add(
