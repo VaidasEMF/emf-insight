@@ -439,6 +439,17 @@ async def stripe_webhook(request: Request):
                 user.plan = "pro"
                 user.credits = 5
 
+                db.add(
+                    ReportCreditLedger(
+                        user_id=user.id,
+                        transaction_type="ALLOCATION",
+                        amount=5,
+                        balance_after=user.credits,
+                        reference_type="stripe_checkout",
+                        reference_id=session.get("id"),
+                    )
+                )
+
             elif plan == "home_full_report":
                 # Home Full Report is deliberately separate from Business credits
                 # and is scoped to the purchased Home Project.
@@ -530,14 +541,29 @@ async def stripe_webhook(request: Request):
                     user = db.query(User).filter(User.id == user_id).first()
 
                     if user:
-                        # New successful monthly billing cycle = fresh 5-credit allowance.
-                        user.plan = "pro"
-                        user.credits = 5
-                        print(
-                            "PRO MONTHLY RENEWAL",
-                            user.email,
-                            "5 credits",
-                        )
+                        billing_reason = invoice.get("billing_reason")
+
+                        if billing_reason == "subscription_cycle":
+                            # New successful monthly billing cycle = fresh 5-credit allowance.
+                            user.plan = "pro"
+                            user.credits = 5
+
+                            db.add(
+                                ReportCreditLedger(
+                                    user_id=user.id,
+                                    transaction_type="ALLOCATION",
+                                    amount=5,
+                                    balance_after=user.credits,
+                                    reference_type="stripe_invoice",
+                                    reference_id=invoice.get("id"),
+                                )
+                            )
+
+                            print(
+                                "PRO MONTHLY RENEWAL",
+                                user.email,
+                                "5 credits",
+                            )
 
             db.commit()
 
