@@ -38,6 +38,7 @@ def init_db():
                         region VARCHAR(100),
                         city VARCHAR(100),
                         postal_code VARCHAR(30),
+                        requested_service VARCHAR(100),
                         status VARCHAR(50) NOT NULL DEFAULT 'open',
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
@@ -48,6 +49,11 @@ def init_db():
             connection.execute(text("""
                 ALTER TABLE professional_requests
                 ADD COLUMN IF NOT EXISTS postal_code VARCHAR(30)
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE professional_requests
+                ADD COLUMN IF NOT EXISTS requested_service VARCHAR(100)
             """))
 
             connection.execute(

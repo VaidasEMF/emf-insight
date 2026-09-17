@@ -101,6 +101,7 @@ def create_professional_request(
     region = body.get("region")
     city = body.get("city")
     postal_code = body.get("postal_code")
+    requested_service = body.get("requested_service")
 
     if not project_id:
         raise HTTPException(
@@ -121,6 +122,7 @@ def create_professional_request(
                 country,
                 region,
                 city,
+                requested_service,
                 status,
                 created_at
             FROM professional_requests
@@ -145,6 +147,7 @@ def create_professional_request(
             "region": existing_request["region"],
             "city": existing_request["city"],
             "postal_code": existing_request["postal_code"],
+            "requested_service": existing_request["requested_service"],
             "status": existing_request["status"],
             "created_at": existing_request["created_at"],
             "already_exists": True,
@@ -158,7 +161,7 @@ def create_professional_request(
         text("""
             INSERT INTO professional_requests
                 (
-                   user_id, project_id, country, region, city, postal_code, status
+                   user_id, project_id, country, region, city, postal_code, requested_service, status
                 )
             VALUES
                 (
@@ -168,6 +171,7 @@ def create_professional_request(
                     :region,
                     :city,
                     :postal_code,
+                    :requested_service,
                     'open'
                 )
             RETURNING
@@ -178,6 +182,7 @@ def create_professional_request(
                 region,
                 city,
                 postal_code,
+                requested_service,
                 status,
                 created_at
         """),
@@ -188,6 +193,7 @@ def create_professional_request(
             "region": region,
             "city": city,
             "postal_code": postal_code,
+            "requested_service": requested_service,
         },
     )
 
@@ -203,6 +209,7 @@ def create_professional_request(
         "region": request["region"],
         "city": request["city"],
         "postal_code": request["postal_code"],
+        "requested_service": request["requested_service"],
         "status": request["status"],
         "created_at": request["created_at"],
     }
@@ -287,6 +294,7 @@ def get_professional_request(
             "region": request["region"],
             "city": request["city"],
             "postal_code": request["postal_code"],
+            "requested_service": request["requested_service"],
             "status": request["status"],
             "created_at": request["created_at"],
         }
@@ -313,6 +321,7 @@ def get_admin_professional_requests(
             region,
             city,
             postal_code,
+            requested_service,
             status,
             created_at
         FROM professional_requests
@@ -330,6 +339,7 @@ def get_admin_professional_requests(
                 "region": request["region"],
                 "city": request["city"],
                 "postal_code": request["postal_code"],
+                "requested_service": request["requested_service"],
                 "status": request["status"],
                 "created_at": request["created_at"],
             }
