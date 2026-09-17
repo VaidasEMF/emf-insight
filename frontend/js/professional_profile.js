@@ -387,6 +387,19 @@ async function openProfessionalProfile() {
         ).value =
             profile.postal_code || "";
 
+        professionalServiceAreas =
+            Array.isArray(profile.service_areas)
+                ? profile.service_areas.map((area) => ({
+                    id: area.id,
+                    country: area.country || "",
+                    region: area.region || "",
+                    city: area.city || "",
+                    postal_code: area.postal_code || ""
+                }))
+                : [];
+
+        renderProfessionalServiceAreas();
+
 
         // Refresh validation after profile values are loaded.
         initializeProfessionalProfileValidation();
@@ -1778,9 +1791,17 @@ async function saveProfessionalProfileForm() {
         postal_code:
             document.getElementById(
                 "professionalProfilePostalCode"
-            ).value.trim()
+            ).value.trim(),
+
+        service_areas:
+            professionalServiceAreas
 
     };
+
+    console.log(
+        "Professional Profile SAVE payload:",
+        JSON.stringify(data, null, 2)
+    );
 
 
     if (status) {

@@ -74,6 +74,22 @@ def init_db():
             )
 
 
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS professional_service_areas (
+                        id SERIAL PRIMARY KEY,
+                        professional_profile_id INTEGER NOT NULL,
+                        country VARCHAR(100) NOT NULL,
+                        region VARCHAR(100),
+                        city VARCHAR(100),
+                        postal_code VARCHAR(30),
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
+
             # =====================
             # PROFESSIONAL PROFILE COLUMNS
             # =====================

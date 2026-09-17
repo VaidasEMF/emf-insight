@@ -33,6 +33,7 @@ class ProfessionalProfileUpdate(BaseModel):
     country: str | None = None
     city: str | None = None
     postal_code: str | None = None
+    service_areas: list[dict] | None = None
 
 
 @router.get("/profile")
@@ -78,7 +79,27 @@ def get_professional_profile(
             detail="Professional profile not found",
         )
 
-    return dict(profile)
+    service_areas = db.execute(
+        text(
+            """
+            SELECT
+                id,
+                country,
+                region,
+                city,
+                postal_code
+            FROM professional_service_areas
+            WHERE professional_profile_id = :profile_id
+            ORDER BY id
+            """
+        ),
+        {"profile_id": profile["id"]},
+    ).mappings().all()
+
+    result = dict(profile)
+    result["service_areas"] = [dict(area) for area in service_areas]
+
+    return result
 
 
 @router.patch("/profile")
@@ -110,13 +131,12 @@ def update_professional_profile(
             detail="Professional profile not found",
         )
 
-    fields = payload.model_dump(exclude_none=True)
+    service_areas = payload.service_areas
 
-    if not fields:
-        raise HTTPException(
-            status_code=400,
-            detail="No profile fields supplied",
-        )
+    fields = payload.model_dump(
+        exclude_none=True,
+        exclude={"service_areas"},
+    )
 
     allowed_fields = {
         "first_name",
@@ -137,29 +157,81 @@ def update_professional_profile(
         if key in allowed_fields
     }
 
-    if not fields:
-        raise HTTPException(
-            status_code=400,
-            detail="No valid profile fields supplied",
+    if fields:
+        assignments = ", ".join(
+            f"{key} = :{key}"
+            for key in fields
         )
 
-    assignments = ", ".join(
-        f"{key} = :{key}"
-        for key in fields
-    )
+        fields["profile_id"] = profile["id"]
 
-    fields["profile_id"] = profile["id"]
+        db.execute(
+            text(
+                f"""
+                UPDATE professional_profiles
+                SET {assignments}
+                WHERE id = :profile_id
+                """
+            ),
+            fields,
+        )
 
-    db.execute(
-        text(
-            f"""
-            UPDATE professional_profiles
-            SET {assignments}
-            WHERE id = :profile_id
-            """
-        ),
-        fields,
-    )
+    if service_areas is not None:
+        db.execute(
+            text(
+                """
+                DELETE FROM professional_service_areas
+                WHERE professional_profile_id = :profile_id
+                """
+            ),
+            {"profile_id": profile["id"]},
+        )
+
+        for area in service_areas:
+            country = str(area.get("country") or "").strip()
+            region = str(area.get("region") or "").strip() or None
+            city = str(area.get("city") or "").strip() or None
+            postal_code = str(area.get("postal_code") or "").strip() or None
+
+            if not country:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Service area country is required",
+                )
+
+            if not any([region, city, postal_code]):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Service area must include region, city, or postal code",
+                )
+
+            db.execute(
+                text(
+                    """
+                    INSERT INTO professional_service_areas (
+                        professional_profile_id,
+                        country,
+                        region,
+                        city,
+                        postal_code
+                    )
+                    VALUES (
+                        :profile_id,
+                        :country,
+                        :region,
+                        :city,
+                        :postal_code
+                    )
+                    """
+                ),
+                {
+                    "profile_id": profile["id"],
+                    "country": country,
+                    "region": region,
+                    "city": city,
+                    "postal_code": postal_code,
+                },
+            )
 
     db.commit()
 
