@@ -6425,12 +6425,9 @@ ADMIN PROFESSIONALS
                     );
 
                 if (additionalAreasEl) {
-                    const areas = Array.isArray(
-                        window.professionalServiceAreas
-                    )
-                        ? window.professionalServiceAreas
+                    const areas = Array.isArray(profile.service_areas)
+                        ? profile.service_areas
                         : [];
-
                     additionalAreasEl.textContent =
                         areas.length
                             ? `${areas.length} additional service area${areas.length === 1 ? "" : "s"} added`
