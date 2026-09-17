@@ -1445,9 +1445,7 @@ def generate_pdf(
 
         elif getattr(user, "credits", 0) > 0:
 
-            user.credits -= 1
-
-            db.commit()
+            pass
 
         else:
 
@@ -1467,7 +1465,20 @@ def generate_pdf(
             user=user,
         )
 
+        if not is_preview and not active_demo and user.plan != "premium":
 
+            user.credits -= 1
+
+            db.add(
+                ReportCreditLedger(
+                    user_id=user.id,
+                    transaction_type="USAGE",
+                    amount=-1,
+                    balance_after=user.credits,
+                    reference_type="business_report",
+                    reference_id=str(project_row.id),
+                )
+            )
 
         # =====================
         # 🔥 SAVE REPORT
