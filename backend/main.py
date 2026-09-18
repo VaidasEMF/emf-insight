@@ -1178,6 +1178,8 @@ def generate_pdf(
 
         sessionB = data.get("sessionB") or "session_2"
 
+        workspace = data.get("workspace") or "business"
+
         plan = "premium"
 
         # =====================
@@ -1223,7 +1225,18 @@ def generate_pdf(
 
         project = project_row.data
 
+        # =====================
+        # WORKSPACE
+        # =====================
 
+        is_home_project = (
+            workspace == "home"
+            or project.get("assessmentContext") == "home"
+            or project.get("type") == "home"
+        )
+
+        if is_home_project:
+            workspace = "home"
 
         project["meta"] = {
             "company": "EMF Maps",
@@ -1428,27 +1441,29 @@ def generate_pdf(
         # 🔥 VALIDATE DATA
         # =====================
 
-        try:
-            pts_before = engine.collect_points(
-                project,
-                sessionA,
-            )
-        except IndexError:
-            pts_before = []
+        if workspace != "home":
 
-        if pts_before:
+            try:
+                pts_before = engine.collect_points(
+                    project,
+                    sessionA,
+                )
+            except IndexError:
+                pts_before = []
 
-            print(
-                "FIRST POINT:",
-                pts_before[0],
-            )
+            if pts_before:
 
-        if not pts_before:
+                print(
+                    "FIRST POINT:",
+                    pts_before[0],
+                )
 
-            raise HTTPException(
-                400,
-                "No measurement data found",
-            )
+            if not pts_before:
+
+                raise HTTPException(
+                    400,
+                    "No measurement data found",
+                )
 
         # =====================
         # 🔥 CREDIT CHECK
@@ -1461,7 +1476,25 @@ def generate_pdf(
             db,
         )
 
-        if active_demo:
+        if workspace == "home":
+
+            entitlement = db.execute(
+                text("""
+                    SELECT full_report_unlocked
+                    FROM home_project_entitlements
+                    WHERE project_id = :project_id
+                      AND user_id = :user_id
+                """),
+                {
+                    "project_id": str(project_row.id),
+                    "user_id": str(user.id),
+                },
+            ).scalar()
+
+            if not entitlement:
+                is_preview = True
+
+        elif active_demo:
 
             pass
 
@@ -1489,9 +1522,15 @@ def generate_pdf(
             plan=plan,
             preview=is_preview,
             user=user,
+            workspace=workspace,
         )
 
-        if not is_preview and not active_demo and user.plan != "premium":
+        if (
+            workspace != "home"
+            and not is_preview
+            and not active_demo
+            and user.plan != "premium"
+        ):
 
             user.credits -= 1
 

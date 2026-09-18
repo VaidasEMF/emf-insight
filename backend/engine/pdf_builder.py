@@ -26,6 +26,18 @@ from engine.analysis.business.analysis import (
     build_business_analysis,
 )
 
+
+from engine.analysis.home.property_assessment import (
+    build_home_analysis,
+)
+
+from engine.analysis.home.home_presentation import (
+    build_home_presentation,
+)
+
+from engine.pdf_pages.home_pdf import (
+    render_home_pdf,
+)
 # ==========================================================
 # COMPONENTS
 # ==========================================================
@@ -87,10 +99,80 @@ def build_pdf(
     plan="premium",
     preview=False,
     user=None,
+    workspace="business",
 ):
     """
     Build PHI PDF report.
     """
+
+    # ------------------------------------------------------
+    # HOME PDF
+    # ------------------------------------------------------
+
+    if workspace == "home":
+        analysis = build_home_analysis(project)
+        analysis["project_id"] = pid
+
+        presentation = build_home_presentation(
+            project,
+            analysis,
+        )
+
+        output_dir = os.path.join(
+            os.path.dirname(__file__),
+            "../output",
+        )
+
+        os.makedirs(
+            output_dir,
+            exist_ok=True,
+        )
+
+        pdf_path = os.path.join(
+            output_dir,
+            f"{pid}.pdf",
+        )
+
+        doc = SimpleDocTemplate(
+            pdf_path,
+            leftMargin=0,
+            rightMargin=0,
+            topMargin=0,
+            bottomMargin=0,
+        )
+
+        story = []
+
+        render_home_pdf(
+            story=story,
+            project=project,
+            analysis=analysis,
+            presentation=presentation,
+            user=user,
+        )
+
+        def add_preview_watermark(
+            canvas,
+            doc,
+        ):
+            if preview:
+                draw_watermark(
+                    canvas,
+                    "PREVIEW",
+                )
+
+        doc.build(
+            story,
+            onFirstPage=add_preview_watermark,
+            onLaterPages=add_preview_watermark,
+        )
+
+        print(
+            "HOME PDF GENERATED:",
+            pdf_path,
+        )
+
+        return pdf_path
 
     # ------------------------------------------------------
     # OUTPUT
@@ -128,7 +210,7 @@ def build_pdf(
     # ------------------------------------------------------
     # ANALYSIS
     # ------------------------------------------------------
-    
+
 
     analysis = build_business_analysis(
         project,
