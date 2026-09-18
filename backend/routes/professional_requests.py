@@ -245,6 +245,181 @@ def check_professional_availability(
     }
 
 # =====================
+# GET AVAILABLE HOME PROJECTS
+# =====================
+
+@router.get("/professional-requests/available")
+def get_available_home_projects(
+    current_user=Depends(
+        get_current_user,
+    ),
+    db: Session = Depends(
+        get_db,
+    ),
+):
+    # ---------------------
+    # PROFESSIONAL ELIGIBILITY
+    # ---------------------
+
+    if getattr(current_user, "role", None) != "professional":
+        raise HTTPException(
+            status_code=403,
+            detail="Professional account required.",
+        )
+
+    credits = int(getattr(current_user, "credits", 0) or 0)
+
+    if credits < 1:
+        return {
+            "requests": [],
+            "locked": True,
+            "reason": "Report Credit required.",
+        }
+
+    profile = db.execute(
+        text("""
+            SELECT
+                id,
+                country,
+                city,
+                postal_code,
+                availability_status,
+                verification_status
+            FROM professional_profiles
+            WHERE user_id = :user_id
+            LIMIT 1
+        """),
+        {
+            "user_id": str(current_user.id),
+        },
+    ).mappings().first()
+
+    if not profile:
+        raise HTTPException(
+            status_code=404,
+            detail="Professional profile not found.",
+        )
+
+    if profile["verification_status"] != "verified":
+        return {
+            "requests": [],
+            "locked": False,
+            "reason": "Professional verification required.",
+        }
+
+    if profile["availability_status"] != "available":
+        return {
+            "requests": [],
+            "locked": False,
+            "reason": "Professional availability is not active.",
+        }
+
+    # ---------------------
+    # AVAILABLE REQUESTS
+    # ---------------------
+
+    requests = db.execute(
+        text("""
+            SELECT
+                pr.id,
+                pr.project_id,
+                pr.country,
+                pr.region,
+                pr.city,
+                pr.postal_code,
+                pr.requested_service,
+                pr.created_at
+            FROM professional_requests pr
+            WHERE pr.status = 'open'
+            AND pr.user_id != :user_id
+            AND EXISTS (
+                SELECT 1
+                FROM home_project_entitlements hpe
+                WHERE hpe.project_id = pr.project_id
+                    AND hpe.user_id = pr.user_id
+                    AND hpe.full_report_unlocked = TRUE
+            )
+            AND (
+                (
+                    pr.country IS NOT NULL
+                    AND :profile_country IS NOT NULL
+                    AND LOWER(pr.country) =
+                        LOWER(:profile_country)
+                    AND (
+                        (
+                            pr.city IS NOT NULL
+                            AND :profile_city IS NOT NULL
+                            AND LOWER(pr.city) =
+                                LOWER(:profile_city)
+                        )
+                        OR
+                        (
+                            pr.postal_code IS NOT NULL
+                            AND :profile_postal_code IS NOT NULL
+                            AND LOWER(pr.postal_code) =
+                                LOWER(:profile_postal_code)
+                        )
+                    )
+                )
+                OR EXISTS (
+                    SELECT 1
+                    FROM professional_service_areas psa
+                    WHERE psa.professional_profile_id = :profile_id
+                        AND psa.country IS NOT NULL
+                        AND pr.country IS NOT NULL
+                        AND LOWER(psa.country) =
+                            LOWER(pr.country)
+                        AND (
+                            (
+                                psa.city IS NOT NULL
+                                AND pr.city IS NOT NULL
+                                AND LOWER(psa.city) =
+                                    LOWER(pr.city)
+                            )
+                            OR (
+                                psa.region IS NOT NULL
+                                AND pr.region IS NOT NULL
+                                AND LOWER(psa.region) =
+                                    LOWER(pr.region)
+                            )
+                            OR (
+                                psa.postal_code IS NOT NULL
+                                AND pr.postal_code IS NOT NULL
+                                AND LOWER(psa.postal_code) =
+                                    LOWER(pr.postal_code)
+                            )
+                        )
+                )
+            )
+            ORDER BY pr.created_at DESC
+        """),
+        {
+            "user_id": str(current_user.id),
+            "profile_id": profile["id"],
+            "profile_country": profile["country"],
+            "profile_city": profile["city"],
+            "profile_postal_code": profile["postal_code"],
+        },
+    ).mappings().all()
+
+    return {
+        "requests": [
+            {
+                "request_id": request["id"],
+                "project_id": request["project_id"],
+                "country": request["country"],
+                "region": request["region"],
+                "city": request["city"],
+                "postal_code": request["postal_code"],
+                "requested_service": request["requested_service"],
+                "created_at": request["created_at"],
+            }
+            for request in requests
+        ],
+        "locked": False,
+    }
+
+# =====================
 # GET CURRENT PROFESSIONAL REQUEST
 # =====================
 

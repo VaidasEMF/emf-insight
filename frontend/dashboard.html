@@ -434,6 +434,11 @@
             background: var(--surface-soft);
         }
 
+        .professional-home-projects-billing-button {
+            display: inline-block;
+            margin-top: 12px;
+        }
+
         /* =========================
            SUMMARY
            ========================= */
@@ -1866,6 +1871,12 @@
                             onclick="navigateProfessionalDashboardSection('availability');">
                             Availability
                         </button>
+
+                        <button type="button" class="professional-dashboard-subnav-item"
+                            data-professional-section="home-projects"
+                            onclick="navigateProfessionalDashboardSection('home-projects');">
+                            Home Projects
+                        </button>
                     </div>
                     <a class="nav-link" href="#projects"><span class="nav-icon">Γûú</span><span>Projects</span></a>
                     <a class="nav-link" href="#reports"><span class="nav-icon">Γûº</span><span>Reports</span></a>
@@ -2261,6 +2272,30 @@
                         </div>
                     </section>
 
+                    <!-- =====================================================
+                         PROFESSIONAL HOME PROJECTS
+                         ===================================================== -->
+                    <section class="section" id="home-projects">
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title">Home Projects</h2>
+                                <p class="section-description">
+                                    Find Home Projects that match your professional service areas and availability.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="workspace-card">
+                            <div class="content-body" id="professionalHomeProjectsContainer">
+                                <div class="empty-state">
+                                    <div class="empty-icon">⌂</div>
+                                    <div class="empty-title">No Home Projects available</div>
+                                    <div class="empty-copy">
+                                        Matching Home Projects will appear here.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </section>
 
                 </div>
@@ -5840,6 +5875,8 @@ ADMIN PROFESSIONALS
                     : email;
                 const plan = data.plan || "free";
                 const credits = Number.isFinite(Number(data.credits)) ? Number(data.credits) : 0;
+                window.businessReportCredits = credits;
+                updateProfessionalHomeProjectsAccess();
                 const homeFullReportUnlocked = data.home_full_report_unlocked === true;
 
                 const professionalDemoActive =
@@ -6132,12 +6169,162 @@ ADMIN PROFESSIONALS
             });
         }
 
+        async function updateProfessionalHomeProjectsAccess() {
+            const container = document.getElementById(
+                "professionalHomeProjectsContainer"
+            );
+
+            if (!container) return;
+
+            const credits = Number(window.businessReportCredits || 0);
+
+            if (credits < 1) {
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔒</div>
+                <div class="empty-title">Home Projects locked</div>
+                <div class="empty-copy">
+                    You need at least 1 Report Credit to find Home Projects.
+                </div>
+                <a
+                    class="btn-secondary professional-home-projects-billing-button"
+                    href="#billing">
+                    Get Report Credits
+                </a>
+            </div>
+        `;
+                return;
+            }
+
+            container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">⌛</div>
+            <div class="empty-title">Loading Home Projects</div>
+            <div class="empty-copy">
+                Finding Home Projects that match your service areas and availability.
+            </div>
+        </div>
+    `;
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-requests/available`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail || "Unable to load Home Projects."
+                    );
+                }
+
+                if (data.locked) {
+                    container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔒</div>
+                    <div class="empty-title">Home Projects locked</div>
+                    <div class="empty-copy">
+                        ${data.reason || "Report Credit required."}
+                    </div>
+                    <a
+                        class="btn-secondary professional-home-projects-billing-button"
+                        href="#billing">
+                        Get Report Credits
+                    </a>
+                </div>
+            `;
+                    return;
+                }
+
+                if (data.reason && (!data.requests || !data.requests.length)) {
+                    container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">⌂</div>
+                    <div class="empty-title">Home Projects unavailable</div>
+                    <div class="empty-copy">
+                        ${data.reason}
+                    </div>
+                </div>
+            `;
+                    return;
+                }
+
+                const requests = Array.isArray(data.requests)
+                    ? data.requests
+                    : [];
+
+                if (!requests.length) {
+                    container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">⌂</div>
+                    <div class="empty-title">No Home Projects available</div>
+                    <div class="empty-copy">
+                        No matching Home Projects are currently available.
+                    </div>
+                </div>
+            `;
+                    return;
+                }
+
+                container.innerHTML = `
+            <div class="professional-home-projects-list">
+                ${requests.map((request) => `
+                    <div class="workspace-card professional-home-project-card">
+                        <div class="content-body">
+                            <div class="section-title">
+                                Home Project #${request.project_id}
+                            </div>
+
+                            <div class="section-description">
+                                ${request.city || ""}
+                                ${request.region ? ` · ${request.region}` : ""}
+                                ${request.country ? ` · ${request.country}` : ""}
+                            </div>
+
+                            <div class="section-description">
+                                Requested service:
+                                ${request.requested_service || "Professional EMF Assessment"}
+                            </div>
+
+                            <div class="section-description">
+                                Request #${request.request_id}
+                            </div>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+            } catch (error) {
+                console.error(
+                    "Failed to load available Home Projects:",
+                    error
+                );
+
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠</div>
+                <div class="empty-title">Unable to load Home Projects</div>
+                <div class="empty-copy">
+                    Please try again later.
+                </div>
+            </div>
+        `;
+            }
+        }
+
         function initializeProfessionalDashboardSubnav() {
             const sections = [
                 "professionalStatusSection",
                 "professionalQuickActionsSection",
                 "service-areas",
-                "availability"
+                "availability",
+                "home-projects"
             ];
 
             const targets = sections
