@@ -25818,7 +25818,6 @@
     ].includes(type);
   }
 
-
   async function buyPlan(
     plan,
   ) {
@@ -25827,12 +25826,33 @@
       "token",
     );
 
+    if (!token) {
+      alert(
+        "Please log in before purchasing the Full EMF Insight Report."
+      );
+      return;
+    }
+
+    const currency =
+      String(
+        window.EMF_SELECTED_CURRENCY ||
+        localStorage.getItem("emf_selected_currency") ||
+        "EUR"
+      ).toUpperCase();
+
     const body = {
       plan: plan,
+      currency: currency,
     };
 
-    // Home Full Report is scoped to the currently active Home Project.
+
+    // ==================================================
+    // HOME FULL REPORT
+    // Project-specific entitlement
+    // ==================================================
+
     if (plan === "home_full_report") {
+
       const homeProject =
         window.AppState?.homeProject ||
         window.AppState?.project ||
@@ -25844,50 +25864,128 @@
         null;
 
       if (!projectId) {
+
         alert(
           "Please open a Home Project before purchasing the Full EMF Insight Report."
         );
+
         return;
       }
 
       body.project_id = String(projectId);
+
+      // ==================================================
+      // DEBUG — HOME PROJECT USED FOR STRIPE CHECKOUT
+      // ==================================================
+
+      console.log("🔥 HOME CHECKOUT PROJECT DEBUG", {
+        homeProject: window.AppState?.homeProject,
+        project: window.AppState?.project,
+        resolvedProject: homeProject,
+        projectId: projectId,
+        currentUser: window.AppState?.user,
+      });
+
     }
 
-    const res = await fetch(
-      "http://127.0.0.1:8000/create-checkout-session",
-      {
-        method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-          ...(token
-            ? {
-              "Authorization": `Bearer ${token}`
-            }
-            : {}),
-        },
+    // ==================================================
+    // API ENVIRONMENT
+    // ==================================================
 
-        body: JSON.stringify(body),
+    const API =
+      window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:8000"
+        : "https://emf-insight.onrender.com";
+
+
+    // ==================================================
+    // CREATE STRIPE CHECKOUT SESSION
+    // ==================================================
+
+    console.log("🔥 STRIPE CHECKOUT BODY", body);
+
+    try {
+
+      const res = await fetch(
+        `${API}/create-checkout-session`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+
+            "Authorization":
+              `Bearer ${token}`,
+          },
+
+          body: JSON.stringify(body),
+        }
+      );
+
+      let data = null;
+
+      try {
+        data = await res.json();
       }
-    );
+      catch {
+        data = null;
+      }
 
-    const data = await res.json();
 
-    if (!res.ok) {
+      if (!res.ok) {
+
+        console.error(
+          "Stripe checkout creation failed:",
+          {
+            status: res.status,
+            data: data,
+          }
+        );
+
+        alert(
+          data?.detail ||
+          "Unable to start checkout."
+        );
+
+        return;
+      }
+
+
+      if (!data?.url) {
+
+        console.error(
+          "Stripe checkout response did not contain a URL:",
+          data
+        );
+
+        alert(
+          "Unable to start checkout."
+        );
+
+        return;
+      }
+
+
+      // ==================================================
+      // REDIRECT TO STRIPE
+      // ==================================================
+
+      window.location.href = data.url;
+
+    }
+    catch (error) {
+
       console.error(
-        "Stripe checkout creation failed:",
-        data
+        "Stripe checkout request failed:",
+        error
       );
 
       alert(
-        data?.detail ||
-        "Unable to start checkout."
+        "Unable to start checkout. Please try again."
       );
-
-      return;
     }
-
-    window.location.href = data.url;
   }
 
   function setActiveMode(
