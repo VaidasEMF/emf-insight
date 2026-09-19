@@ -54,6 +54,8 @@ from engine.analysis.common.property.property_overview_builder import (
     build_property_overview,
 )
 
+from reportlab.platypus import PageBreak
+
 
 # ==========================================================
 # RENDER COVER
@@ -256,3 +258,5 @@ def render_cover(
         cover_path=cover_path,
         story=story,
     )
+
+    story.append(PageBreak())
