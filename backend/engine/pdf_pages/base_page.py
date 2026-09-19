@@ -96,6 +96,18 @@ def create_page(
 
     fonts = load_cover_fonts()
 
+    print(
+        ">>> PDF FONT DEBUG:",
+        {
+            "page_title": fonts["page_title"],
+            "page_title_size": getattr(fonts["page_title"], "size", None),
+            "body_size": getattr(fonts["body"], "size", None),
+            "kpi_size": getattr(fonts["kpi_value"], "size", None),
+        },
+        flush=True,
+    )
+
+
     return PageContext(
 
         img=img,
