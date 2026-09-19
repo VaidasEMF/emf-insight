@@ -4248,50 +4248,30 @@ function updateHomeOutputState(
         return;
     }
 
+    // ==================================================
+    // HOME VIEW RESULTS
+    //
+    // FREE HOME ASSESSMENT RESULT.
+    // This is NOT gated by Premium Report entitlement.
+    // ==================================================
+
+    resultsBtn.classList.remove(
+        "output-locked"
+    );
+
+    resultsBtn.disabled = false;
+
+    resultsBtn.style.pointerEvents =
+        "auto";
+
     const lock =
         resultsBtn.querySelector(
             ".output-lock"
         );
 
-    if (assessmentReady) {
-        resultsBtn.classList.remove(
-            "output-locked"
-        );
-
-        const subtitle =
-            resultsBtn.querySelector(
-                ".workflow-action-subtitle"
-            );
-
-        if (subtitle) {
-            subtitle.textContent =
-                "Heatmaps, scores & analytics";
-        }
-
-        resultsBtn.disabled = false;
-
-        resultsBtn.style.pointerEvents =
-            "auto";
-
-        if (lock) {
-            lock.style.display = "none";
-        }
-
-        if (!wasReady) {
-            showHomeAssessmentReadyMessage?.();
-        }
-
-        return;
+    if (lock) {
+        lock.style.display = "none";
     }
-
-    resultsBtn.classList.add(
-        "output-locked"
-    );
-
-    resultsBtn.disabled = true;
-
-    resultsBtn.style.pointerEvents =
-        "none";
 
     const subtitle =
         resultsBtn.querySelector(
@@ -4300,11 +4280,15 @@ function updateHomeOutputState(
 
     if (subtitle) {
         subtitle.textContent =
-            "Complete your assessment to view results";
+            "View your Home Assessment results";
     }
 
-    if (lock) {
-        lock.style.display = "";
+    // Keep the readiness message.
+    if (
+        assessmentReady &&
+        !wasReady
+    ) {
+        showHomeAssessmentReadyMessage?.();
     }
 }
 

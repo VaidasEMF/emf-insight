@@ -3894,6 +3894,40 @@ ADMIN PROFESSIONALS
         }
 
         function renderPricing() {
+
+            window.EMF_SELECTED_CURRENCY =
+                String(
+                    pricingCurrency ||
+                    "EUR"
+                ).toUpperCase();
+
+            localStorage.setItem(
+                "emf_selected_currency",
+                window.EMF_SELECTED_CURRENCY
+            );
+
+
+            const homePrice =
+                window.EMF_PRICING
+                    ?.home
+                    ?.fullReport
+                    ?.prices
+                ?.[
+                window.EMF_SELECTED_CURRENCY
+                ];
+
+            if (
+                Number.isFinite(
+                    Number(homePrice)
+                )
+            ) {
+
+                localStorage.setItem(
+                    "emf_home_full_report_price",
+                    String(homePrice)
+                );
+
+            }
             if (!pricingLoaded || !window.EMF_PRICING) return;
 
             const select = document.getElementById("currencySelect");
