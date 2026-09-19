@@ -3182,7 +3182,11 @@ ADMIN PROFESSIONALS
     <script src="js/professional_profile.js"></script>
 
     <script>
-        const API = "https://emf-insight.onrender.com";
+        const API =
+            window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1"
+                ? "http://127.0.0.1:8000"
+                : "https://emf-insight.onrender.com";
 
         let adminPricingEntries = [];
         let adminPricingEditingId = null;

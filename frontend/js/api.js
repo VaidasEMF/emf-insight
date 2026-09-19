@@ -5,7 +5,10 @@ console.error(
 );
 
 const API =
-    "https://emf-insight.onrender.com";
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:8000"
+        : "https://emf-insight.onrender.com";
 
 // =====================
 // 🔥 AUTH HEADERS
