@@ -134,6 +134,13 @@ def finish_page(
         fonts=ctx.fonts,
     )
 
+    print(
+        ">>> CALLING SAVE_COVER:",
+        ctx.page_path,
+        ctx.img.size,
+        flush=True,
+    )
+
     save_cover(
 
         img=ctx.img,

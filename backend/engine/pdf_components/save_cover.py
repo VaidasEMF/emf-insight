@@ -1,6 +1,8 @@
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import Image
 
+from PIL import Image as PILImage
+
 
 def save_cover(
     img,
@@ -11,7 +13,25 @@ def save_cover(
     Save cover image and append it to PDF.
     """
 
+    print(
+        ">>> SOURCE IMG:",
+        img.size,
+        "PATH:",
+        cover_path,
+        flush=True,
+    )
+
     img.save(cover_path)
+
+    check = PILImage.open(cover_path)
+
+    print(
+        ">>> PDF IMAGE:",
+        cover_path,
+        "SIZE:",
+        check.size,
+        flush=True,
+    )
 
     page_w, page_h = A4
 
