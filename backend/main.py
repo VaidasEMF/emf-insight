@@ -87,7 +87,11 @@ from routes.reports import (
     router as reports_router,
 )
 
+from routes.admin_users import router as admin_users_router
 
+from routes.admin_payments import (
+    router as admin_payments_router,
+)
 # =====================
 # INIT
 # =====================
@@ -125,6 +129,8 @@ app.include_router(
     projects_router,
 )
 
+app.include_router(admin_users_router)
+
 app.include_router(pricing_router)
 
 app.include_router(admin_pricing_router)
@@ -133,6 +139,9 @@ app.include_router(
     admin_professionals_router
 )
 
+app.include_router(
+    admin_payments_router
+)
 
 app.include_router(
     auth_router,
@@ -276,91 +285,107 @@ def create_checkout(
     body: dict,
     current_user=Depends(get_current_user),
 ):
-    plan = body.get("plan")
-    currency = str(body.get("currency") or "EUR").upper()
-    project_id = body.get("project_id")
-
-    if plan not in STRIPE_ALLOWED_PLANS:
-        raise HTTPException(400, "Invalid or unavailable plan")
-
-    if currency not in STRIPE_PRICE_IDS:
-        raise HTTPException(400, "Unsupported currency")
-
-    price_id = STRIPE_PRICE_IDS[currency].get(plan)
-
-    if not price_id:
-        raise HTTPException(
-            503,
-            "Stripe price is not configured for this currency",
-        )
-
-    # Home Full Report is project-scoped.
-    # The authenticated user must own the Home Project being purchased.
-    if plan == "home_full_report":
-        if not project_id:
-            raise HTTPException(
-                400,
-                "Home project ID is required for the Full EMF Insight Report",
-            )
-
-        project = db.execute(
-            text("""
-                SELECT id
-                FROM projects
-                WHERE id = :project_id
-                  AND user_id = :user_id
-            """),
-            {
-                "project_id": str(project_id),
-                "user_id": str(current_user.id),
-            },
-        ).first()
-
-        if not project:
-            raise HTTPException(
-                404,
-                "Home project not found",
-            )
-
-    # Business Pro is the only recurring V1 product.
-    # Business Single and Home Full Report are one-time payments.
-    mode = "subscription" if plan == "pro" else "payment"
+    db = SessionLocal()
 
     try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[
+        plan = body.get("plan")
+        currency = str(body.get("currency") or "EUR").upper()
+        project_id = body.get("project_id")
+
+        if plan not in STRIPE_ALLOWED_PLANS:
+            raise HTTPException(
+                400,
+                "Invalid or unavailable plan",
+            )
+
+        if currency not in STRIPE_PRICE_IDS:
+            raise HTTPException(
+                400,
+                "Unsupported currency",
+            )
+
+        price_id = STRIPE_PRICE_IDS[currency].get(plan)
+
+        if not price_id:
+            raise HTTPException(
+                503,
+                "Stripe price is not configured for this currency",
+            )
+
+        # Home Full Report is project-scoped.
+        # The authenticated user must own the Home Project being purchased.
+        if plan == "home_full_report":
+            if not project_id:
+                raise HTTPException(
+                    400,
+                    "Home project ID is required for the Full EMF Insight Report",
+                )
+
+            project = db.execute(
+                text("""
+                    SELECT id
+                    FROM projects
+                    WHERE id = :project_id
+                      AND user_id = :user_id
+                """),
                 {
-                    "price": price_id,
-                    "quantity": 1,
-                }
-            ],
-            mode=mode,
-            success_url=f"{STRIPE_APP_URL}/success.html",
-            cancel_url=f"{STRIPE_APP_URL}/dashboard.html#billing",
-            metadata={
-                "user_id": str(current_user.id),
-                "plan": plan,
-                "currency": currency,
-                **(
-                    {"project_id": str(project_id)}
-                    if plan == "home_full_report"
-                    else {}
-                ),
-            },
-            subscription_data={
-                "metadata": {
+                    "project_id": str(project_id),
+                    "user_id": str(current_user.id),
+                },
+            ).first()
+
+            if not project:
+                raise HTTPException(
+                    404,
+                    "Home project not found",
+                )
+
+        # Business Pro is the only recurring V1 product.
+        # Business Single and Home Full Report are one-time payments.
+        mode = "subscription" if plan == "pro" else "payment"
+
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=[
+                    {
+                        "price": price_id,
+                        "quantity": 1,
+                    }
+                ],
+                mode=mode,
+                success_url=f"{STRIPE_APP_URL}/success.html",
+                cancel_url=f"{STRIPE_APP_URL}/dashboard.html#billing",
+                metadata={
                     "user_id": str(current_user.id),
                     "plan": plan,
                     "currency": currency,
-                }
-            } if mode == "subscription" else None,
-        )
-    except Exception as exc:
-        print("Stripe checkout error:", repr(exc))
-        raise HTTPException(502, "Unable to create Stripe checkout session")
+                    **(
+                        {"project_id": str(project_id)}
+                        if plan == "home_full_report"
+                        else {}
+                    ),
+                },
+                subscription_data={
+                    "metadata": {
+                        "user_id": str(current_user.id),
+                        "plan": plan,
+                        "currency": currency,
+                    }
+                } if mode == "subscription" else None,
+            )
 
-    return {"url": session.url}
+        except Exception as exc:
+            print("Stripe checkout error:", repr(exc))
+            raise HTTPException(
+                502,
+                "Unable to create Stripe checkout session",
+            )
+
+        return {"url": session.url}
+
+    finally:
+        db.close()
 
 
 # =====================
