@@ -758,6 +758,19 @@ def build_pdf(
     # BUILD
     # ------------------------------------------------------
 
+    print(
+        ">>> BUSINESS STORY FLOWABLES:",
+        [
+            (
+                type(item).__name__,
+                getattr(item, "_width", None),
+                getattr(item, "_height", None),
+            )
+            for item in story
+        ],
+        flush=True,
+    )
+
     doc.build(
         story,
         onFirstPage=add_preview_watermark,
