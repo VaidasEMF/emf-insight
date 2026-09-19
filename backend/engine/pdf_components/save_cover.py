@@ -35,10 +35,19 @@ def save_cover(
 
     page_w, page_h = A4
 
-    story.append(
-        Image(
-            cover_path,
-            width=page_w - 20,
-            height=page_h - 20,
-        )
+    pdf_image = Image(
+        cover_path,
+        width=page_w - 20,
+        height=page_h - 20,
     )
+
+    print(
+        ">>> REPORTLAB IMAGE:",
+        "width=", pdf_image.width,
+        "height=", pdf_image.height,
+        "drawWidth=", pdf_image.drawWidth,
+        "drawHeight=", pdf_image.drawHeight,
+        flush=True,
+    )
+
+    story.append(pdf_image)
