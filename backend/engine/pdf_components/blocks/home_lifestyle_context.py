@@ -9,7 +9,7 @@ No physical measurements are used here.
 from engine.pdf_components.framework.colors import (
     PRIMARY,
     TEXT,
-    TEXT_DARK,
+    TEXT_PRIMARY,
     SECONDARY_TEXT,
     CARD_BG,
     CARD_BORDER,
@@ -138,7 +138,7 @@ def draw_home_lifestyle_context(
             ),
             "No lifestyle areas identified",
             font=fonts["title"],
-            fill=TEXT_DARK,
+            fill=TEXT_PRIMARY,
         )
 
         draw.text(
@@ -211,7 +211,7 @@ def draw_home_lifestyle_context(
             ),
             zone_name,
             font=fonts["title"],
-            fill=TEXT_DARK,
+            fill=TEXT_PRIMARY,
         )
 
         draw.text(

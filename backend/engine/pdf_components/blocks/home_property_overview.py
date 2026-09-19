@@ -12,7 +12,7 @@ from PIL import ImageDraw
 from engine.pdf_components.framework.colors import (
     PRIMARY,
     TEXT,
-    TEXT_DARK,
+    TEXT_PRIMARY,
     SECONDARY_TEXT,
     CARD_BG,
     CARD_BORDER,
@@ -157,7 +157,7 @@ def draw_home_property_overview(
         (card_x + 28, card_y + 25),
         property_name,
         font=fonts["title"],
-        fill=TEXT_DARK,
+        fill=TEXT_PRIMARY,
     )
 
     draw.text(
