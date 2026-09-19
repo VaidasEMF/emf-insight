@@ -1,61 +1,114 @@
+import os
+
 from PIL import ImageFont
 
 
 def load_cover_fonts():
     """
     Load all fonts used by Premium PDF.
+
+    Fonts are loaded from the project repository rather than
+    relying on fonts installed in the operating system.
     """
+
+    # ==========================================================
+    # PROJECT FONT PATHS
+    # ==========================================================
+
+    fonts_dir = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "fonts",
+        )
+    )
+
+    arial_regular = os.path.join(
+        fonts_dir,
+        "arial.ttf",
+    )
+
+    arial_bold = os.path.join(
+        fonts_dir,
+        "arialbd.ttf",
+    )
+
+    # ==========================================================
+    # FONT VALIDATION
+    # ==========================================================
+
+    if not os.path.isfile(arial_regular):
+        raise FileNotFoundError(
+            f"PDF font not found: {arial_regular}"
+        )
+
+    if not os.path.isfile(arial_bold):
+        raise FileNotFoundError(
+            f"PDF font not found: {arial_bold}"
+        )
+
+    print(
+        ">>> PDF FONT PATH:",
+        {
+            "regular": arial_regular,
+            "bold": arial_bold,
+        },
+        flush=True,
+    )
+
+    # ==========================================================
+    # LOAD FONTS
+    # ==========================================================
 
     try:
 
         return {
 
-        
             # -------------------------------------------------
             # Titles
             # -------------------------------------------------
 
             "page_title": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 50,
             ),
 
             "title": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 48,
             ),
 
             "subtitle": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 28,
             ),
 
-           # -------------------------------------------------
+            # -------------------------------------------------
             # Body
             # -------------------------------------------------
 
             "body": ImageFont.truetype(
-                "arial.ttf",
+                arial_regular,
                 20,
             ),
 
             "body_bold": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 20,
             ),
 
             "small": ImageFont.truetype(
-                "arial.ttf",
+                arial_regular,
                 16,
             ),
 
             "caption": ImageFont.truetype(
-                "arial.ttf",
+                arial_regular,
                 16,
             ),
 
             "tiny": ImageFont.truetype(
-                "arial.ttf",
+                arial_regular,
                 14,
             ),
 
@@ -64,12 +117,12 @@ def load_cover_fonts():
             # -------------------------------------------------
 
             "header_title": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 30,
             ),
 
             "header_meta": ImageFont.truetype(
-                "arial.ttf",
+                arial_regular,
                 14,
             ),
 
@@ -78,7 +131,7 @@ def load_cover_fonts():
             # -------------------------------------------------
 
             "score": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 74,
             ),
 
@@ -87,18 +140,17 @@ def load_cover_fonts():
             # -------------------------------------------------
 
             "kpi_value": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 40,
             ),
 
-
             "room_score": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 30,
             ),
 
             "room_metric": ImageFont.truetype(
-                "arial.ttf",
+                arial_regular,
                 22,
             ),
 
@@ -107,36 +159,17 @@ def load_cover_fonts():
             # -------------------------------------------------
 
             "company": ImageFont.truetype(
-                "arialbd.ttf",
+                arial_bold,
                 26,
             ),
         }
 
     except Exception as e:
-        print(">>> PDF FONT LOAD ERROR:", repr(e), flush=True)
 
-        default = ImageFont.load_default()
+        print(
+            ">>> PDF FONT LOAD ERROR:",
+            repr(e),
+            flush=True,
+        )
 
-        return {
-
-            "page_title": default,
-            "title": default,
-            "subtitle": default,
-
-            "body": default,
-            "small": default,
-            "caption": default,
-            "tiny": default,
-
-            "header_title": default,
-            "header_meta": default,
-
-            "score": default,
-            "kpi_value": default,
-
-            "company": default,
-            "body_bold": default,
-
-            "room_score": default,
-            "room_metric": default,
-        }
+        raise
