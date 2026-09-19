@@ -43,10 +43,7 @@ def save_cover(
 
     print(
         ">>> REPORTLAB IMAGE:",
-        "width=", pdf_image.width,
-        "height=", pdf_image.height,
-        "drawWidth=", pdf_image.drawWidth,
-        "drawHeight=", pdf_image.drawHeight,
+        pdf_image.__dict__,
         flush=True,
     )
 
