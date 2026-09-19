@@ -112,7 +112,8 @@ def load_cover_fonts():
             ),
         }
 
-    except Exception:
+    except Exception as e:
+        print(">>> PDF FONT LOAD ERROR:", repr(e), flush=True)
 
         default = ImageFont.load_default()
 
