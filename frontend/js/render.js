@@ -661,14 +661,6 @@ function drawScaleLayer() {
 // ---------------------
 function drawHeatmapLayer(floor) { if (!heatmapEnabled) return; drawHeatmapSmooth?.(); }
 
-// ---------------------
-// EXPORTS
-// ---------------------
-
-console.error(
-    "EXPORT drawRoomsLayer",
-    drawRoomsLayer
-);
 
 window.drawRoomsLayer = drawRoomsLayer;
 

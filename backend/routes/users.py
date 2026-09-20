@@ -15,9 +15,13 @@ import uuid
 
 from fastapi import UploadFile
 from fastapi import File
+from sqlalchemy import text
 from sqlalchemy.orm import Session
+from models.user import User
 
 router = APIRouter()
+
+from routes.admin_users import require_admin
 
 # =====================
 # ME
@@ -140,6 +144,71 @@ def me(
             if professional_demo_expires_at
             else None
         ),
+    }
+
+
+# =========================================================
+# HOME PROJECT SUMMARY
+# =========================================================
+
+@router.get("/users/{user_id}/home-summary")
+def get_admin_home_summary(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    total_projects = db.execute(
+        text("""
+            SELECT COUNT(*)
+            FROM projects
+            WHERE user_id = :user_id
+        """),
+        {
+            "user_id": user_id,
+        },
+    ).scalar() or 0
+
+    purchased_reports = db.execute(
+        text("""
+            SELECT COUNT(*)
+            FROM home_project_entitlements
+            WHERE user_id = :user_id
+              AND stripe_session_id IS NOT NULL
+        """),
+        {
+            "user_id": user_id,
+        },
+    ).scalar() or 0
+
+    unlocked_reports = db.execute(
+        text("""
+            SELECT COUNT(*)
+            FROM home_project_entitlements
+            WHERE user_id = :user_id
+              AND full_report_unlocked = TRUE
+        """),
+        {
+            "user_id": user_id,
+        },
+    ).scalar() or 0
+
+    return {
+        "user_id": user_id,
+        "total_projects": int(total_projects),
+        "purchased_reports": int(purchased_reports),
+        "unlocked_reports": int(unlocked_reports),
     }
 
 

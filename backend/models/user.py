@@ -76,6 +76,12 @@ class User(Base):
         nullable=False
     )
 
+    account_status: Mapped[str] = mapped_column(
+        String,
+        default="active",
+        nullable=False
+    )
+
     role: Mapped[str] = mapped_column(
         String,
         default="user",
@@ -90,6 +96,16 @@ class User(Base):
     company_email: Mapped[str] = mapped_column(
         String,
         default=""
+    )
+
+    country: Mapped[str] = mapped_column(
+        String,
+        default="",
+    )
+
+    city: Mapped[str] = mapped_column(
+        String,
+        default="",
     )
 
     logo_path: Mapped[str] = mapped_column(

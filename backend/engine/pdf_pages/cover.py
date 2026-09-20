@@ -259,4 +259,6 @@ def render_cover(
         story=story,
     )
 
-    story.append(PageBreak())
+    story.append(
+        PageBreak(),
+    )

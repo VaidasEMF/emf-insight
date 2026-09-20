@@ -61,6 +61,17 @@ function exportCanvasImage() {
 // 🔥 BUSINESS PDF
 // =====================
 
+function getHomeApiBase() {
+
+    return (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+    )
+        ? "http://127.0.0.1:8000"
+        : "https://emf-insight.onrender.com";
+
+}
+
 function getHomePurchaseCurrency() {
 
     const currency =
@@ -73,24 +84,11 @@ function getHomePurchaseCurrency() {
 
 async function getHomePurchasePrice(currency) {
 
-    const storedPrice =
-        Number(
-            localStorage.getItem(
-                "emf_home_full_report_price"
-            )
-        );
-
-    if (
-        Number.isFinite(storedPrice) &&
-        storedPrice > 0
-    ) {
-        return storedPrice;
-    }
-
     try {
 
-        const response =
-            await fetch("/pricing");
+        const response = await fetch(
+            `${getHomeApiBase()}/pricing`
+        );
 
         if (!response.ok) {
             throw new Error(
@@ -98,50 +96,27 @@ async function getHomePurchasePrice(currency) {
             );
         }
 
-        const pricing =
-            await response.json();
+        const pricing = await response.json();
 
         const region =
-            pricing.default_region ||
-            "EU";
+            currency === "USD"
+                ? pricing?.regions?.US
+                : pricing?.regions?.EU;
 
-        const selectedCurrency =
-            currency ||
-            pricing.default_currency ||
-            "EUR";
+        const product =
+            region?.products?.HOME_FULL_REPORT;
 
-        const homePrice =
-            pricing
-                ?.regions
-                ?.[region]
-                ?.products
-                ?.HOME_FULL_REPORT
-                ?.price;
+        const price =
+            Number(product?.price);
 
-        if (
-            Number.isFinite(
-                Number(homePrice)
-            ) &&
-            Number(homePrice) > 0
-        ) {
-
-            return Number(homePrice);
-
+        if (Number.isFinite(price) && price > 0) {
+            return price;
         }
-
-        console.warn(
-            "Home Full Report price not found in pricing API.",
-            {
-                region,
-                selectedCurrency,
-                pricing
-            }
-        );
 
     }
     catch (error) {
 
-        console.error(
+        console.warn(
             "Unable to load Home Full Report pricing.",
             error
         );
@@ -150,6 +125,7 @@ async function getHomePurchasePrice(currency) {
 
     return null;
 }
+
 
 function formatHomePurchasePrice(
     price,
@@ -180,6 +156,42 @@ function formatHomePurchasePrice(
     }
 }
 
+function getApiBase() {
+    return (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+    )
+        ? "http://127.0.0.1:8000"
+        : "https://emf-insight.onrender.com";
+}
+
+async function getHomePurchasePricing() {
+
+    try {
+
+        const response = await fetch(
+            `${getApiBase()}/pricing`
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Pricing request failed: ${response.status}`
+            );
+        }
+
+        return await response.json();
+
+    } catch (error) {
+
+        console.error(
+            "Unable to load Home pricing:",
+            error
+        );
+
+        return null;
+    }
+}
+
 
 async function openHomeUnlockCta() {
 
@@ -190,14 +202,26 @@ async function openHomeUnlockCta() {
         ?.remove();
 
 
-    const currency =
-        getHomePurchaseCurrency();
+    const pricing =
+        await getHomePurchasePricing();
 
+    const currency =
+        String(
+            pricing?.default_currency ||
+            getHomePurchaseCurrency() ||
+            "EUR"
+        ).toUpperCase();
+
+    const region =
+        pricing?.default_region || "EU";
 
     const price =
-        await getHomePurchasePrice(
-            currency
-        );
+        pricing
+            ?.regions
+            ?. [region]
+            ?.products
+            ?.HOME_FULL_REPORT
+            ?.price ?? null;
 
 
     const priceText =

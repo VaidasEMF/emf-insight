@@ -212,6 +212,36 @@ def init_db():
                 )
             )
 
+            # =====================
+            # USER LOCATION
+            # =====================
+
+            connection.execute(
+                text("""
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS country VARCHAR(100)
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS city VARCHAR(100)
+                """)
+            )
+
+
+            connection.execute(
+                text(
+                    """
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS
+                    account_status VARCHAR(20)
+                    NOT NULL DEFAULT 'active'
+                    """
+                )
+            )
+
     # ==================================================
     # PROFESSIONAL DEMO LINKS
     # ==================================================

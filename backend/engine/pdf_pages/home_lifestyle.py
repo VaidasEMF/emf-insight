@@ -17,22 +17,23 @@ def render_home_lifestyle(
     project,
     analysis,
     presentation,
+    lifestyle_area,
     page_number,
     total_pages,
 ):
     """
-    Render Home Lifestyle & Human Context page.
+    Render one Home Lifestyle & Human Context page.
     """
 
     ctx = create_page(
-        filename="home_lifestyle.png",
+        filename=f"home_lifestyle_{page_number}.png",
         page_number=page_number,
         total_pages=total_pages,
     )
 
     draw_home_lifestyle_context(
         draw=ctx.draw,
-        presentation=presentation,
+        lifestyle_area=lifestyle_area,
         fonts=ctx.fonts,
     )
 

@@ -14,12 +14,6 @@ from engine.pdf_layouts.heatmap_layout import (
 )
 
 
-print("=" * 70)
-print("🔥 ASSESSMENT INTERPRETATION HEIGHT")
-print("LEGACY INTERPRETATION_HEIGHT:", INTERPRETATION_HEIGHT)
-print("=" * 70)
-
-
 def draw_property_interpretation(
     img,
     draw,

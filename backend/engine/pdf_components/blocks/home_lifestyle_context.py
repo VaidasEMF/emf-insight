@@ -66,19 +66,16 @@ def _zone_meta(zone):
 def draw_home_lifestyle_context(
     *,
     draw,
-    presentation,
+    lifestyle_area,
     fonts,
 ):
     """
-    Draw lifestyle / human-context overview.
+    Draw one lifestyle / human-context area.
 
     Returns the bottom Y coordinate.
     """
 
-    zones = presentation.get(
-        "lifestyle_areas",
-        [],
-    )
+    zone = lifestyle_area or {}
 
     card_x = 60
     card_w = 1120
@@ -111,202 +108,153 @@ def draw_home_lifestyle_context(
     y += 58
 
     # ------------------------------------------------------
-    # EMPTY STATE
+    # AREA
     # ------------------------------------------------------
 
-    if not zones:
-
-        empty_h = 150
-
-        draw.rounded_rectangle(
-            (
-                card_x,
-                y,
-                card_x + card_w,
-                y + empty_h,
-            ),
-            radius=18,
-            fill=CARD_BG,
-            outline=CARD_BORDER,
-            width=2,
-        )
-
-        draw.text(
-            (
-                card_x + 28,
-                y + 28,
-            ),
-            "No lifestyle areas identified",
-            font=fonts["title"],
-            fill=TEXT_PRIMARY,
-        )
-
-        draw.text(
-            (
-                card_x + 28,
-                y + 82,
-            ),
-            (
-                "Add Sleep, Work, Rest or Child areas "
-                "to provide human context."
-            ),
-            font=fonts["body"],
-            fill=TEXT,
-        )
-
-        return y + empty_h
-
-    # ------------------------------------------------------
-    # ZONE CARDS
-    # ------------------------------------------------------
+    meta = _zone_meta(zone)
 
     card_h = 155
-    gap = 20
 
-    for index, zone in enumerate(zones):
+    draw.rounded_rectangle(
+        (
+            card_x,
+            y,
+            card_x + card_w,
+            y + card_h,
+        ),
+        radius=18,
+        fill=CARD_BG,
+        outline=CARD_BORDER,
+        width=2,
+    )
 
-        meta = _zone_meta(zone)
+    # ------------------------------------------------------
+    # ACCENT STRIP
+    # ------------------------------------------------------
 
-        card_y = y
+    draw.rounded_rectangle(
+        (
+            card_x,
+            y,
+            card_x + 8,
+            y + card_h,
+        ),
+        radius=4,
+        fill=meta["color"],
+    )
 
-        draw.rounded_rectangle(
-            (
-                card_x,
-                card_y,
-                card_x + card_w,
-                card_y + card_h,
-            ),
-            radius=18,
-            fill=CARD_BG,
-            outline=CARD_BORDER,
-            width=2,
-        )
+    # ------------------------------------------------------
+    # NAME
+    # ------------------------------------------------------
 
-        # Accent strip
+    zone_name = (
+        zone.get("name")
+        or meta["label"]
+    )
 
-        draw.rounded_rectangle(
-            (
-                card_x,
-                card_y,
-                card_x + 8,
-                card_y + card_h,
-            ),
-            radius=4,
-            fill=meta["color"],
-        )
+    draw.text(
+        (
+            card_x + 32,
+            y + 22,
+        ),
+        zone_name,
+        font=fonts["title"],
+        fill=TEXT_PRIMARY,
+    )
 
-        # --------------------------------------------------
-        # NAME
-        # --------------------------------------------------
+    draw.text(
+        (
+            card_x + 32,
+            y + 68,
+        ),
+        meta["description"],
+        font=fonts["body"],
+        fill=SECONDARY_TEXT,
+    )
 
-        zone_name = (
-            zone.get("name")
-            or meta["label"]
-        )
+    # ------------------------------------------------------
+    # OCCUPANCY
+    # ------------------------------------------------------
 
-        draw.text(
-            (
-                card_x + 32,
-                card_y + 22,
-            ),
-            zone_name,
-            font=fonts["title"],
-            fill=TEXT_PRIMARY,
-        )
-
-        draw.text(
-            (
-                card_x + 32,
-                card_y + 68,
-            ),
-            meta["description"],
-            font=fonts["body"],
-            fill=SECONDARY_TEXT,
-        )
-
-        # --------------------------------------------------
-        # OCCUPANCY
-        # --------------------------------------------------
-
-        occupancy = zone.get(
-            "occupancyHours",
+    occupancy = zone.get(
+        "occupancyHours",
+        zone.get(
+            "occupancy_hours",
             zone.get(
-                "occupancy_hours",
+                "hours",
                 zone.get(
-                    "hours",
+                    "hoursPerDay",
                     None,
                 ),
             ),
+        ),
+    )
+
+    if occupancy is not None:
+
+        occupancy_text = (
+            f"{occupancy} hours/day"
         )
 
-        if occupancy is not None:
+    else:
 
-            occupancy_text = (
-                f"{occupancy} hours/day"
-            )
-
-        else:
-
-            occupancy_text = (
-                "Occupancy not specified"
-            )
-
-        draw.text(
-            (
-                card_x + 32,
-                card_y + 112,
-            ),
-            occupancy_text,
-            font=fonts["small"],
-            fill=TEXT,
+        occupancy_text = (
+            "Occupancy not specified"
         )
 
-        # --------------------------------------------------
-        # SOURCE CONTEXT
-        # --------------------------------------------------
+    draw.text(
+        (
+            card_x + 32,
+            y + 112,
+        ),
+        occupancy_text,
+        font=fonts["small"],
+        fill=TEXT,
+    )
 
-        related_sources = zone.get(
-            "sources",
-            zone.get(
-                "source_count",
-                None,
-            ),
+    # ------------------------------------------------------
+    # SOURCE CONTEXT
+    # ------------------------------------------------------
+
+    related_sources = zone.get(
+        "sources",
+        zone.get(
+            "source_count",
+            None,
+        ),
+    )
+
+    if isinstance(
+        related_sources,
+        list,
+    ):
+
+        source_count = len(
+            related_sources
         )
 
-        if isinstance(
-            related_sources,
-            list,
-        ):
+    elif related_sources is not None:
 
-            source_count = len(
-                related_sources
-            )
+        source_count = related_sources
 
-        elif related_sources is not None:
+    else:
 
-            source_count = related_sources
+        source_count = 0
 
-        else:
+    source_text = (
+        f"{source_count} nearby source"
+        if source_count == 1
+        else
+        f"{source_count} nearby sources"
+    )
 
-            source_count = 0
-
-        source_text = (
-            f"{source_count} nearby source"
-            if source_count == 1
-            else
-            f"{source_count} nearby sources"
-        )
-
-        draw.text(
-            (
-                card_x + card_w - 270,
-                card_y + 112,
-            ),
-            source_text,
-            font=fonts["small"],
-            fill=meta["color"],
-        )
-
-        y += card_h + gap
-
-    return y - gap
+    draw.text(
+        (
+            card_x + card_w - 270,
+            y + 112,
+        ),
+        source_text,
+        font=fonts["small"],
+        fill=meta["color"],
+    )
+    return y + card_h

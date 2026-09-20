@@ -12,9 +12,7 @@ Atsakingas už:
 ✔ zonų overlay
 """
 
-print(
-    "HEATMAP FUNCTION CALLED"
-)
+
 
 # =====================
 # IMPORTS

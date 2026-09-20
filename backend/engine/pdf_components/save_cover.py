@@ -4,6 +4,7 @@ from reportlab.platypus import Image
 from PIL import Image as PILImage
 
 
+
 def save_cover(
     img,
     cover_path,
