@@ -1611,21 +1611,75 @@
     .user-account-switcher {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
 
-      height: 40px;
-      padding: 0 14px;
+      min-height: 52px;
+      max-width: 270px;
+      padding: 6px 12px 6px 9px;
 
       border: 1px solid #d1d5db;
-      border-radius: 8px;
+      border-radius: 12px;
 
       background: #ffffff;
       color: #374151;
 
-      font-size: 14px;
-      font-weight: 600;
-
       cursor: pointer;
+      text-align: left;
+    }
+
+    .user-account-icon {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 50%;
+      background: #eef4f8;
+
+      font-size: 15px;
+    }
+
+    .user-account-info {
+      min-width: 0;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+
+      line-height: 1.15;
+    }
+
+    .user-account-email {
+      display: block;
+
+      max-width: 175px;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      font-size: 13px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .user-account-plan {
+      display: block;
+
+      font-size: 11px;
+      font-weight: 500;
+      color: #8a94a6;
+    }
+
+    .user-account-chevron {
+      margin-left: auto;
+
+      font-size: 10px;
+      color: #6b7280;
     }
 
     .user-account-switcher:hover {
@@ -19107,14 +19161,23 @@
 
             <div class="user-selector">
 
-              <button id="userAccountBtn" class="user-account-switcher" type="button" onclick="toggleUserMenu()">
+              <button id="userAccountBtn" class="user-account-switcher" type="button" onclick="toggleUserMenu()"
+                aria-expanded="false" aria-haspopup="true">
 
                 <span class="user-account-icon">
                   👤
                 </span>
 
-                <span id="userAccountLabel">
-                  User
+                <span class="user-account-info">
+
+                  <span id="userAccountLabel" class="user-account-email">
+                    Loading...
+                  </span>
+
+                  <span id="userAccountPlan" class="user-account-plan">
+                    Account
+                  </span>
+
                 </span>
 
                 <span class="user-account-chevron">
@@ -19246,8 +19309,7 @@
                 </div>
 
 
-                <div class="user-menu-item user-menu-item-danger" id="userSignOutItem">
-
+                <div class="user-menu-item user-menu-item-danger" id="userSignOutItem" onclick="signOut()">
                   <span class="user-menu-icon">
                     🚪
                   </span>
@@ -25540,6 +25602,55 @@
     "wind_turbine"
   ];
 
+  function toggleUserMenu() {
+    const menu = document.getElementById("userAccountMenu");
+    const button = document.getElementById("userAccountBtn");
+
+    if (!menu || !button) {
+      return;
+    }
+
+    const isOpen = menu.style.display === "block";
+
+    menu.style.display = isOpen ? "none" : "block";
+
+    button.classList.toggle("menu-open", !isOpen);
+    button.setAttribute("aria-expanded", String(!isOpen));
+  }
+
+
+  function closeUserMenu() {
+    const menu = document.getElementById("userAccountMenu");
+    const button = document.getElementById("userAccountBtn");
+
+    if (!menu || !button) {
+      return;
+    }
+
+    menu.style.display = "none";
+    button.classList.remove("menu-open");
+    button.setAttribute("aria-expanded", "false");
+  }
+
+
+  // ==================================================
+  // CLOSE USER MENU WHEN CLICKING OUTSIDE
+  // ==================================================
+
+  document.addEventListener("click", (event) => {
+    const selector =
+      document.querySelector(".user-selector");
+
+    if (!selector) {
+      return;
+    }
+
+    if (!selector.contains(event.target)) {
+      closeUserMenu();
+    }
+  });
+
+
   function getDistanceWeight(
     distance
   ) {
@@ -25888,18 +25999,6 @@
 
     }
 
-
-    // ==================================================
-    // API ENVIRONMENT
-    // ==================================================
-
-    const API =
-      window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-        ? "http://127.0.0.1:8000"
-        : "https://emf-insight.onrender.com";
-
-
     // ==================================================
     // CREATE STRIPE CHECKOUT SESSION
     // ==================================================
@@ -25987,6 +26086,101 @@
       );
     }
   }
+
+  const ACCOUNT_API =
+    window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+      ? "http://127.0.0.1:8000"
+      : "https://emf-insight.onrender.com";
+
+  async function loadUserAccountUI() {
+
+    const token =
+      localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+
+      const response =
+        await fetch(
+          `${API}/me`,
+          {
+            headers: {
+              "Authorization":
+                `Bearer ${token}`
+            }
+          }
+        );
+
+      if (response.status === 401) {
+        signOut();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          `User request failed: ${response.status}`
+        );
+      }
+
+      const user =
+        await response.json();
+
+      const email =
+        user.email ||
+        "Account";
+
+      const rawPlan =
+        String(
+          user.plan ||
+          "free"
+        )
+          .trim()
+          .toLowerCase();
+
+      let planLabel =
+        "Free plan";
+
+      if (rawPlan === "pro") {
+        planLabel =
+          "Pro plan";
+      }
+
+      const emailElement =
+        document.getElementById(
+          "userAccountLabel"
+        );
+
+      const planElement =
+        document.getElementById(
+          "userAccountPlan"
+        );
+
+      if (emailElement) {
+        emailElement.textContent =
+          email;
+      }
+
+      if (planElement) {
+        planElement.textContent =
+          planLabel;
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load account information:",
+        error
+      );
+
+    }
+  }
+
+  loadUserAccountUI();
 
   function setActiveMode(
     newMode
@@ -27083,7 +27277,25 @@
         return;
       }
 
+      // ==================================================
+      // HOME — FULL REPORT ENTITLEMENT
+      // ==================================================
 
+      const isHomeProject =
+        window.AppMode?.current === "home";
+
+      if (
+        isHomeProject &&
+        window.isAdmin !== true &&
+        window.homeFullReportUnlocked !== true
+      ) {
+
+        alert(
+          "Unlock the Full EMF Insight Report for this Home Project before generating the PDF."
+        );
+
+        return;
+      }
 
 
       const pdfWindow = window.open("", "_blank");
@@ -27422,6 +27634,25 @@
     }
 
   }
+
+  function signOut() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_id");
+
+    localStorage.removeItem("project_id");
+    localStorage.removeItem("home_project_id");
+    localStorage.removeItem("homeProjectId");
+    localStorage.removeItem("business_project_id");
+    localStorage.removeItem("businessProjectId");
+
+    localStorage.removeItem("workspaceMode");
+
+    sessionStorage.removeItem("requestedWorkspace");
+
+    window.location.href = "login.html";
+  }
+
+  window.signOut = signOut;
 
   function updateHomeProfessionalAssessment() {
 
@@ -28903,6 +29134,8 @@
             window.homeFullReportUnlocked =
               me.home_full_report_unlocked === true;
 
+            window.isAdmin =
+              me.is_admin === true;
             updateHomeProfessionalAssessment?.();
 
             await loadProfessionalAssessmentRequest();
@@ -29029,82 +29262,6 @@
 
 </script>
 
-<script>
-  document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-      const signOutItem =
-        document.getElementById(
-          "workspaceSignOutItem"
-        );
-
-      if (!signOutItem) {
-        console.warn(
-          "⚠️ SIGN OUT ITEM NOT FOUND"
-        );
-        return;
-      }
-
-      signOutItem.addEventListener(
-        "click",
-        () => {
-
-          console.log(
-            "🔥 SIGN OUT"
-          );
-
-          // ==========================================
-          // AUTH
-          // ==========================================
-
-          localStorage.removeItem(
-            "token"
-          );
-
-          localStorage.removeItem(
-            "user_id"
-          );
-
-
-          // ==========================================
-          // ACTIVE PROJECT
-          // ==========================================
-
-          localStorage.removeItem(
-            "project_id"
-          );
-
-          localStorage.removeItem(
-            "home_project_id"
-          );
-
-          localStorage.removeItem(
-            "business_project_id"
-          );
-
-
-          // ==========================================
-          // WORKSPACE
-          // ==========================================
-
-          localStorage.removeItem(
-            "workspaceMode"
-          );
-
-
-          // ==========================================
-          // REDIRECT
-          // ==========================================
-
-          window.location.href =
-            "login.html";
-        }
-      );
-
-    }
-  );
-</script>
 
 <script>
   document.addEventListener(

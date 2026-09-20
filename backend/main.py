@@ -1525,14 +1525,19 @@ def generate_pdf(
             db,
         )
 
-        if workspace == "home":
+        if user.is_admin:
+
+            # Admin has unrestricted PDF access.
+            pass
+
+        elif workspace == "home":
 
             entitlement = db.execute(
                 text("""
                     SELECT full_report_unlocked
                     FROM home_project_entitlements
                     WHERE project_id = :project_id
-                      AND user_id = :user_id
+                    AND user_id = :user_id
                 """),
                 {
                     "project_id": str(project_row.id),
@@ -1541,7 +1546,14 @@ def generate_pdf(
             ).scalar()
 
             if not entitlement:
-                is_preview = True
+                raise HTTPException(
+                    status_code=403,
+                    detail="Full EMF Insight Report purchase required for this Home project.",
+                )
+
+        elif active_demo:
+
+            pass
 
         elif active_demo:
 
