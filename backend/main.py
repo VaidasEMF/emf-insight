@@ -92,10 +92,7 @@ from routes.admin_users import router as admin_users_router
 from routes.admin_payments import (
     router as admin_payments_router,
 )
-# =====================
-# INIT
-# =====================
-init_db()
+
 
 app = FastAPI()
 
@@ -220,6 +217,7 @@ def _ensure_stripe_events_table(db):
         )
     """))
 
+
 def _ensure_home_entitlements_table(db):
     # Legacy user-level entitlement table.
     # Kept intact for backward compatibility during the project-level migration.
@@ -244,6 +242,18 @@ def _ensure_home_project_entitlements_table(db):
             stripe_session_id VARCHAR(255),
             unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
+    """))
+
+def _ensure_user_admin_fields(db):
+    db.execute(text("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS account_status VARCHAR DEFAULT 'active'
+    """))
+
+    db.execute(text("""
+        UPDATE users
+        SET account_status = 'active'
+        WHERE account_status IS NULL
     """))
 
 def _ensure_professional_requests_table(db):
@@ -278,6 +288,19 @@ def _claim_stripe_event(db, event_id):
         {"event_id": event_id},
     )
     return result.rowcount == 1
+
+# =====================
+# INIT
+# =====================
+init_db()
+
+db = SessionLocal()
+
+try:
+    _ensure_user_admin_fields(db)
+    db.commit()
+finally:
+    db.close()
 
 
 @app.post("/create-checkout-session")
@@ -416,6 +439,7 @@ async def stripe_webhook(request: Request):
         _ensure_stripe_events_table(db)
         _ensure_home_entitlements_table(db)
         _ensure_home_project_entitlements_table(db)
+        _ensure_user_admin_fields(db)
         if not _claim_stripe_event(db, event_id):
             db.rollback()
             print("Stripe webhook already processed:", event_id)

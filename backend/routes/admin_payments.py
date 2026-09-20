@@ -28,6 +28,27 @@ def require_admin(
     return current_user
 
 
+def stripe_dashboard_url(object_type, object_id, livemode):
+    if not object_id:
+        return None
+
+    mode = "" if livemode else "/test"
+
+    paths = {
+        "checkout_session": f"{mode}/checkout/sessions/{object_id}",
+        "invoice": f"{mode}/invoices/{object_id}",
+        "payment_intent": f"{mode}/payments/{object_id}",
+        "subscription": f"{mode}/subscriptions/{object_id}",
+    }
+
+    path = paths.get(object_type)
+
+    if not path:
+        return None
+
+    return f"https://dashboard.stripe.com{path}"
+
+
 def stripe_object_dict(obj):
     if obj is None:
         return {}
@@ -123,6 +144,19 @@ def get_admin_payments(
         for session_obj in sessions:
 
             session = stripe_object_dict(session_obj)
+
+            print(
+                "ADMIN STRIPE SESSION:",
+                session.get("id"),
+                "livemode=",
+                session.get("livemode"),
+                "dashboard_url=",
+                stripe_dashboard_url(
+                    "checkout_session",
+                    session.get("id"),
+                    bool(session.get("livemode")),
+                ),
+            )
 
             metadata = (
                 session.get("metadata")
@@ -343,12 +377,68 @@ def get_admin_payments(
 
                 "status": normalized_status,
 
-                "stripe_session_id": (
-                    session.get("id")
+                # Stripe objects
+                "stripe_session_id": session.get("id"),
+                "source_id": session.get("id"),
+
+                "stripe_payment_intent_id": (
+                    session.get("payment_intent")
+                    if session.get("payment_intent")
+                    else None
                 ),
 
-                "source_id": (
-                    session.get("id")
+                "stripe_subscription_id": (
+                    session.get("subscription")
+                    if session.get("subscription")
+                    else None
+                ),
+
+                "stripe_object_type": (
+                    "payment_intent"
+                    if session.get("payment_intent")
+                    else (
+                        "subscription"
+                        if session.get("subscription")
+                        else "checkout_session"
+                    )
+                ),
+
+                "stripe_object_id": (
+                    session.get("payment_intent")
+                    if session.get("payment_intent")
+                    else (
+                        session.get("subscription")
+                        if session.get("subscription")
+                        else session.get("id")
+                    )
+                ),
+
+                "stripe_livemode": bool(
+                    session.get("livemode")
+                ),
+
+                "stripe_dashboard_url": stripe_dashboard_url(
+                    (
+                        "payment_intent"
+                        if session.get("payment_intent")
+                        else (
+                            "subscription"
+                            if session.get("subscription")
+                            else "checkout_session"
+                        )
+                    ),
+                    (
+                        session.get("payment_intent")
+                        if session.get("payment_intent")
+                        else (
+                            session.get("subscription")
+                            if session.get("subscription")
+                            else session.get("id")
+                        )
+                    ),
+                    bool(
+                        session.get("livemode")
+                    ),
                 ),
 
                 "payment_source": "stripe_checkout",
@@ -572,20 +662,59 @@ def get_admin_payments(
 
                 "status": normalized_status,
 
-                "stripe_session_id": (
-                    invoice.get("id")
+                # Stripe objects
+                "stripe_session_id": None,
+                "source_id": invoice.get("id"),
+
+                "stripe_payment_intent_id": (
+                    invoice.get("payment_intent")
+                    if invoice.get("payment_intent")
+                    else None
                 ),
 
-                "source_id": (
-                    invoice.get("id")
+                "stripe_subscription_id": (
+                    invoice.get("subscription")
+                    if invoice.get("subscription")
+                    else None
+                ),
+
+                "stripe_object_type": (
+                    "payment_intent"
+                    if invoice.get("payment_intent")
+                    else "invoice"
+                ),
+
+                "stripe_object_id": (
+                    invoice.get("payment_intent")
+                    if invoice.get("payment_intent")
+                    else invoice.get("id")
+                ),
+
+                "stripe_livemode": bool(
+                    invoice.get("livemode")
+                ),
+
+                "stripe_dashboard_url": stripe_dashboard_url(
+                    (
+                        "payment_intent"
+                        if invoice.get("payment_intent")
+                        else "invoice"
+                    ),
+                    (
+                        invoice.get("payment_intent")
+                        if invoice.get("payment_intent")
+                        else invoice.get("id")
+                    ),
+                    bool(
+                        invoice.get("livemode")
+                    ),
                 ),
 
                 "payment_source": "stripe_invoice",
 
                 "checkout_status": None,
-                "payment_status": (
-                    invoice_status
-                ),
+
+                "payment_status": invoice_status,
 
                 "subscription_id": subscription_id,
             })
