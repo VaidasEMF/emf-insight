@@ -1804,6 +1804,528 @@
             color: var(--accent-dark);
             font-weight: 600;
         }
+
+        /* =========================
+   ADMIN TABLE TOOLBAR
+   ========================= */
+
+        .admin-table-toolbar {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .admin-table-filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1 1 auto;
+        }
+
+        .admin-table-filters input,
+        .admin-table-filters select,
+        .admin-table-page-size select {
+            min-height: 34px;
+            padding: 7px 9px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text);
+            font-size: 11px;
+            outline: none;
+        }
+
+        .admin-table-filters input {
+            min-width: 210px;
+        }
+
+        .admin-table-filters input:focus,
+        .admin-table-filters select:focus,
+        .admin-table-page-size select:focus {
+            border-color: var(--accent);
+        }
+
+        .admin-table-page-size {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--muted);
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .admin-table-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+            flex-wrap: wrap;
+        }
+
+        .admin-pagination-info {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .admin-pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .admin-pagination-button {
+            min-width: 30px;
+            height: 30px;
+            padding: 0 8px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: #fff;
+            color: var(--text);
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .admin-pagination-button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .admin-pagination-button.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .admin-pagination-button:disabled {
+            opacity: .45;
+            cursor: default;
+        }
+
+        .admin-pagination-ellipsis {
+            padding: 0 4px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .admin-user-name {
+            font-weight: 700;
+        }
+
+        .admin-user-email {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .admin-action-button {
+            padding: 5px 8px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text);
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .admin-action-button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        @media (max-width: 760px) {
+
+            .admin-table-toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .admin-table-page-size {
+                justify-content: flex-end;
+            }
+
+            .admin-table-filters input {
+                width: 100%;
+                min-width: 0;
+            }
+
+        }
+
+
+        .admin-user-modal-section {
+            margin-bottom: 22px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .admin-user-modal-section:last-child {
+            border-bottom: none;
+        }
+
+        .admin-user-modal-section h4 {
+            margin: 0 0 14px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .admin-user-project {
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--surface-soft);
+        }
+
+        .admin-user-project-meta {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .admin-user-empty {
+            padding: 14px;
+            border: 1px dashed var(--line);
+            border-radius: 9px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .admin-user-business-balance {
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--surface-soft);
+            font-size: 11px;
+        }
+
+        .admin-user-ledger {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+        }
+
+        .admin-user-ledger-header,
+        .admin-user-ledger-row {
+            display: grid;
+            grid-template-columns:
+                1.4fr 1.4fr .7fr .7fr;
+            gap: 10px;
+            padding: 9px 11px;
+            font-size: 10px;
+        }
+
+        .admin-user-ledger-header {
+            background: var(--surface-soft);
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+        .admin-user-ledger-row {
+            border-top: 1px solid var(--line);
+        }
+
+        .admin-user-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .admin-user-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 7px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .admin-user-status.active {
+            background: #edf8f0;
+            color: #247a3b;
+        }
+
+        .admin-user-status.suspended {
+            background: #fff1f1;
+            color: #b42318;
+        }
+
+        /* =========================
+   ADMIN PAYMENTS
+   ========================= */
+
+        .admin-payment-summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .admin-payment-kpi {
+            min-height: 112px;
+            padding: 20px 22px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .admin-payment-kpi-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .admin-payment-kpi-value {
+            font-size: 28px;
+            line-height: 1.15;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .admin-payment-kpi-secondary {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .admin-payment-activity {
+            margin: 20px 0 16px;
+        }
+
+        .admin-payment-activity-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+
+        .admin-payment-activity-value {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        @media (max-width: 1000px) {
+
+            .admin-payment-summary {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .admin-payment-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        .admin-payment-date-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-payment-date-filter label {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .admin-payment-date-filter input {
+            height: 42px;
+            padding: 0 10px;
+            border: 1px solid #dbe3ee;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #0f172a;
+            font: inherit;
+        }
+
+        .admin-table-toolbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .admin-table-filters {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .admin-table-page-size {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            flex: 0 0 auto;
+            white-space: nowrap;
+            padding-top: 0;
+        }
+
+        .admin-payment-date-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+        }
+
+        .admin-payment-date-filter label {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .admin-payment-date-filter input {
+            height: 42px;
+            padding: 0 10px;
+            border: 1px solid #dbe3ee;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #0f172a;
+            font: inherit;
+        }
+
+
+        .admin-table-toolbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .admin-payment-filter-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .admin-table-filters {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .admin-payment-date-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-payment-date-filter label {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .admin-payment-date-filter input {
+            height: 42px;
+            padding: 0 10px;
+            border: 1px solid #dbe3ee;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #0f172a;
+            font: inherit;
+        }
+
+        .admin-table-page-size {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+
+        .admin-stripe-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2563eb;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .admin-stripe-link:hover {
+            text-decoration: underline;
+        }
+
+
+        .admin-payment-stripe-link {
+            font-size: 11px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .admin-payment-stripe-link:hover {
+            text-decoration: underline;
+        }
+
+        .admin-payment-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .admin-payment-status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .admin-payment-status-badge.paid {
+            background: #ecfdf3;
+            color: #15803d;
+        }
+
+        .admin-payment-status-badge.pending {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .admin-payment-status-badge.expired {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .admin-payment-status-badge.failed {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .admin-payment-stripe-link {
+            font-size: 11px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .admin-payment-stripe-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -1886,6 +2408,24 @@
                             Branding</span></a>
                     <a class="nav-link" href="#settings"><span class="nav-icon">⚙️</span><span>Settings</span></a>
                     <a class="nav-link" href="#help"><span class="nav-icon">?</span><span>Help &amp; Support</span></a>
+                    <a class="nav-link" id="adminUsersNav" href="#admin-users" style="display:none;">
+                        <span class="nav-icon">👥</span>
+                        <span>Users</span>
+                    </a>
+
+                    <a class="nav-link" id="adminPaymentsNav" href="#admin-payments" style="display:none;">
+                        <span class="nav-icon">💳</span>
+                        <span>Payments</span>
+                    </a>
+                    <a class="nav-link" id="adminUsersNav" href="#admin-users" style="display:none;">
+                        <span class="nav-icon">👥</span>
+                        <span>Users</span>
+                    </a>
+
+                    <a class="nav-link" id="adminPaymentsNav" href="#admin-payments" style="display:none;">
+                        <span class="nav-icon">💳</span>
+                        <span>Payments</span>
+                    </a>
                     <a class="nav-link" id="adminPricingNav" href="#admin-pricing" style="display:none;">
                         <span class="nav-icon">Demo</span>
                         <span>Pricing Management</span>
@@ -2717,7 +3257,343 @@ ADMIN PROFESSIONALS
                     </div>
                 </section>
 
+                <!-- =========================
+                ADMIN USERS
+                ========================= -->
 
+                <section class="section" id="admin-users" style="display:none;">
+                    <div class="section-heading">
+                        <div>
+                            <h2 class="section-title">Users</h2>
+                            <p class="section-description">
+                                Registered users and account status.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-body">
+
+                            <div class="admin-table-toolbar">
+
+                                <div class="admin-users-filters">
+
+                                    <input type="text" id="adminUsersSearch" placeholder="Search users..."
+                                        oninput="filterAdminUsers();">
+
+                                    <select id="adminUsersCountryFilter" onchange="filterAdminUsers();">
+                                        <option value="">All countries</option>
+                                    </select>
+
+                                    <select id="adminUsersCityFilter" onchange="filterAdminUsers();">
+                                        <option value="">All cities</option>
+                                    </select>
+
+                                    <select id="adminUsersRoleFilter" onchange="filterAdminUsers();">
+                                        <option value="">All roles</option>
+                                        <option value="user">User</option>
+                                        <option value="professional">Professional</option>
+                                    </select>
+
+                                    <select id="adminUsersPlanFilter" onchange="filterAdminUsers();">
+                                        <option value="">All plans</option>
+                                        <option value="free">Free</option>
+                                        <option value="pro">Pro</option>
+                                    </select>
+
+                                    <select id="adminUsersAdminFilter" onchange="filterAdminUsers();">
+                                        <option value="">All accounts</option>
+                                        <option value="yes">Admins</option>
+                                        <option value="no">Non-admins</option>
+                                    </select>
+
+                                    <select id="adminUsersStatusFilter" onchange="filterAdminUsers();">
+                                        <option value="">All statuses</option>
+                                        <option value="active">Active</option>
+                                        <option value="suspended">Suspended</option>
+                                    </select>
+
+                                </div>
+
+                                <div class="admin-table-page-size">
+                                    <label for="adminUsersPageSize">
+                                        Per page
+                                    </label>
+
+                                    <select id="adminUsersPageSize" onchange="changeAdminUsersPageSize();">
+                                        <option value="10">10</option>
+                                        <option value="20" selected>20</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div id="adminUsersStatus" class="admin-pricing-status">
+                                Loading users...
+                            </div>
+
+                            <div class="admin-pricing-table">
+
+                                <table>
+
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>User</th>
+                                            <th>Country</th>
+                                            <th>City</th>
+                                            <th>Plan</th>
+                                            <th>Role</th>
+                                            <th>Admin</th>
+                                            <th>Credits</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="adminUsersBody">
+                                        <tr>
+                                            <td colspan="10">
+                                                Loading...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                            <div id="adminUsersPagination" class="admin-table-pagination"></div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- =========================
+ADMIN PAYMENTS
+========================= -->
+
+                <section class="section" id="admin-payments" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h2 class="section-title">Payments</h2>
+                            <p class="section-description">
+                                Home Full Report purchases and Business payments.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-body">
+
+                            <!-- =========================
+                 PAYMENT SUMMARY
+                 ========================= -->
+
+                            <div class="admin-payment-summary">
+
+                                <div class="admin-payment-kpi">
+                                    <div class="admin-payment-kpi-label">
+                                        Revenue
+                                    </div>
+
+                                    <div id="adminPaymentsRevenue" class="admin-payment-kpi-value">
+                                        —
+                                    </div>
+
+                                    <div id="adminPaymentsRevenueSecondary" class="admin-payment-kpi-secondary">
+                                        —
+                                    </div>
+                                </div>
+
+                                <div class="admin-payment-kpi">
+                                    <div class="admin-payment-kpi-label">
+                                        Paid Payments
+                                    </div>
+
+                                    <div id="adminPaymentsPaidCount" class="admin-payment-kpi-value">
+                                        —
+                                    </div>
+                                </div>
+
+                                <div class="admin-payment-kpi">
+                                    <div class="admin-payment-kpi-label">
+                                        Checkout Started
+                                    </div>
+
+                                    <div id="adminPaymentsCheckoutCount" class="admin-payment-kpi-value">
+                                        —
+                                    </div>
+                                </div>
+
+                                <div class="admin-payment-kpi">
+                                    <div class="admin-payment-kpi-label">
+                                        Incomplete
+                                    </div>
+
+                                    <div id="adminPaymentsIncompleteCount" class="admin-payment-kpi-value">
+                                        —
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================
+                 PAYMENT FILTERS
+                 ========================= -->
+
+                            <div class="admin-table-toolbar">
+
+                                <div class="admin-payment-filter-area">
+
+                                    <div class="admin-table-filters">
+
+                                        <input type="search" id="adminPaymentsSearch" placeholder="Search payments..."
+                                            oninput="filterAdminPayments();">
+
+                                        <select id="adminPaymentsProductFilter" onchange="filterAdminPayments();">
+                                            <option value="">All products</option>
+                                            <option value="home_full_report">
+                                                Full EMF Insight Report
+                                            </option>
+                                            <option value="single">
+                                                Business Single Report
+                                            </option>
+                                            <option value="pro">
+                                                Business Pro
+                                            </option>
+                                        </select>
+
+                                        <select id="adminPaymentsStatusFilter" onchange="
+        adminPaymentsActivityFilter = '';
+        filterAdminPayments();
+    ">
+                                            <option value="paid" selected>Paid</option>
+                                            <option value="">All statuses</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="failed">Failed</option>
+                                            <option value="expired">Expired</option>
+                                        </select>
+
+                                        <select id="adminPaymentsCurrencyFilter" onchange="filterAdminPayments();">
+                                            <option value="">All currencies</option>
+                                            <option value="EUR">EUR</option>
+                                            <option value="USD">USD</option>
+                                        </select>
+
+                                        <select id="adminPaymentsSourceFilter" onchange="filterAdminPayments();">
+                                            <option value="">All sources</option>
+                                            <option value="home">Home</option>
+                                            <option value="business">Business</option>
+                                        </select>
+
+                                    </div>
+
+                                    <div class="admin-payment-date-filter">
+
+                                        <label for="adminPaymentsDateFrom">
+                                            From
+                                        </label>
+
+                                        <input type="date" id="adminPaymentsDateFrom" onchange="filterAdminPayments();">
+
+                                        <label for="adminPaymentsDateTo">
+                                            To
+                                        </label>
+
+                                        <input type="date" id="adminPaymentsDateTo" onchange="filterAdminPayments();">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="admin-table-page-size">
+
+                                    <label for="adminPaymentsPageSize">
+                                        Per page
+                                    </label>
+
+                                    <select id="adminPaymentsPageSize" onchange="changeAdminPaymentsPageSize();">
+                                        <option value="10">10</option>
+                                        <option value="20" selected>20</option>
+                                        <option value="50">50</option>
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================
+                 PAYMENT ACTIVITY
+                 ========================= -->
+
+                            <div class="admin-payment-activity">
+
+                                <div class="admin-payment-activity-title">
+                                    Payment activity
+                                </div>
+
+                                <div id="adminPaymentsActivity" class="admin-payment-activity-segments">
+                                    —
+                                </div>
+
+                            </div>
+
+
+                            <div id="adminPaymentsStatus" class="admin-pricing-status">
+                                Loading payments...
+                            </div>
+
+
+                            <!-- =========================
+                 PAYMENT TABLE
+                 ========================= -->
+
+                            <div class="admin-pricing-table">
+
+                                <table>
+
+                                    <thead>
+
+                                        <tr>
+                                            <th>DATE</th>
+                                            <th>USER</th>
+                                            <th>SOURCE</th>
+                                            <th>PROJECT</th>
+                                            <th>PRODUCT</th>
+                                            <th>AMOUNT</th>
+                                            <th>CURRENCY</th>
+                                            <th>STATUS</th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody id="adminPaymentsBody">
+
+                                        <tr>
+                                            <td colspan="8">
+                                                Loading...
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+
+                            <div id="adminPaymentsPagination" class="admin-table-pagination"></div>
+
+                        </div>
+                    </div>
+
+                </section>
 
                 <section class="section" id="admin-pricing" aria-labelledby="admin-pricing-title" style="display:none;">
                     <div class="section-heading">
@@ -3187,6 +4063,16 @@ ADMIN PROFESSIONALS
                 window.location.hostname === "127.0.0.1"
                 ? "http://127.0.0.1:8000"
                 : "https://emf-insight.onrender.com";
+
+        let adminUsersEntries = [];
+        let adminPaymentsEntries = [];
+        let adminPaymentsActivityFilter = "";
+
+        let adminUsersPage = 1;
+        let adminUsersPageSize = 20;
+
+        let adminPaymentsPage = 1;
+        let adminPaymentsPageSize = 20;
 
         let adminPricingEntries = [];
         let adminPricingEditingId = null;
@@ -4110,6 +4996,2833 @@ ADMIN PROFESSIONALS
 
         loadPricing();
 
+        function adminEscapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function populateAdminUserLocationFilters() {
+            const countrySelect =
+                document.getElementById("adminUsersCountryFilter");
+
+            const citySelect =
+                document.getElementById("adminUsersCityFilter");
+
+            if (!countrySelect || !citySelect) {
+                return;
+            }
+
+            const selectedCountry =
+                countrySelect.value || "";
+
+            const selectedCity =
+                citySelect.value || "";
+
+            const countries = [
+                ...new Set(
+                    adminUsersEntries
+                        .map(user => String(user.country || "").trim())
+                        .filter(Boolean)
+                )
+            ].sort((a, b) =>
+                a.localeCompare(b)
+            );
+
+            /*
+             * Preserve currently selected country
+             * when filters are rebuilt.
+             */
+            countrySelect.innerHTML = `
+        <option value="">All countries</option>
+
+        ${countries.map(country => `
+            <option
+                value="${adminEscapeHtml(country)}"
+                ${country === selectedCountry ? "selected" : ""}
+            >
+                ${adminEscapeHtml(country)}
+            </option>
+        `).join("")}
+    `;
+
+            updateAdminUserCityFilter(
+                selectedCountry,
+                selectedCity
+            );
+        }
+
+        function updateAdminUserCityFilter(
+            selectedCountry = "",
+            selectedCity = ""
+        ) {
+            const citySelect =
+                document.getElementById(
+                    "adminUsersCityFilter"
+                );
+
+            if (!citySelect) {
+                return;
+            }
+
+            const cities = [
+                ...new Set(
+                    adminUsersEntries
+                        .filter(user => {
+
+                            if (!selectedCountry) {
+                                return true;
+                            }
+
+                            return String(
+                                user.country || ""
+                            ).trim() === selectedCountry;
+                        })
+                        .map(user =>
+                            String(
+                                user.city || ""
+                            ).trim()
+                        )
+                        .filter(Boolean)
+                )
+            ].sort((a, b) =>
+                a.localeCompare(b)
+            );
+
+            const cityStillValid =
+                cities.includes(selectedCity);
+
+            citySelect.innerHTML = `
+        <option value="">
+            All cities
+        </option>
+
+        ${cities.map(city => `
+            <option
+                value="${adminEscapeHtml(city)}"
+                ${cityStillValid &&
+                    city === selectedCity
+                    ? "selected"
+                    : ""
+                }
+            >
+                ${adminEscapeHtml(city)}
+            </option>
+        `).join("")}
+    `;
+        }
+
+
+        function changeAdminUsersCountry() {
+            const countrySelect =
+                document.getElementById(
+                    "adminUsersCountryFilter"
+                );
+
+            const citySelect =
+                document.getElementById(
+                    "adminUsersCityFilter"
+                );
+
+            const selectedCountry =
+                countrySelect?.value || "";
+
+            if (citySelect) {
+                citySelect.value = "";
+            }
+
+            updateAdminUserCityFilter(
+                selectedCountry,
+                ""
+            );
+
+            adminUsersPage = 1;
+
+            renderAdminUsers();
+        }
+
+        function getFilteredAdminUsers() {
+
+            const search =
+                String(
+                    document.getElementById(
+                        "adminUsersSearch"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const country =
+                String(
+                    document.getElementById(
+                        "adminUsersCountryFilter"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const city =
+                String(
+                    document.getElementById(
+                        "adminUsersCityFilter"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const role =
+                String(
+                    document.getElementById(
+                        "adminUsersRoleFilter"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const plan =
+                String(
+                    document.getElementById(
+                        "adminUsersPlanFilter"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const adminFilter =
+                String(
+                    document.getElementById(
+                        "adminUsersAdminFilter"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const status =
+                String(
+                    document.getElementById(
+                        "adminUsersStatusFilter"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            return adminUsersEntries.filter(user => {
+
+                const firstName =
+                    String(
+                        user.first_name || ""
+                    ).toLowerCase();
+
+                const lastName =
+                    String(
+                        user.last_name || ""
+                    ).toLowerCase();
+
+                const email =
+                    String(
+                        user.email || ""
+                    ).toLowerCase();
+
+                const userCountry =
+                    String(
+                        user.country || ""
+                    ).toLowerCase();
+
+                const userCity =
+                    String(
+                        user.city || ""
+                    ).toLowerCase();
+
+                const userRole =
+                    String(
+                        user.role || ""
+                    ).toLowerCase();
+
+                const userPlan =
+                    String(
+                        user.plan || ""
+                    ).toLowerCase();
+
+                const userStatus =
+                    String(
+                        user.account_status || "active"
+                    ).toLowerCase();
+
+
+                // SEARCH
+
+                if (
+                    search &&
+                    ![
+                        String(user.id || ""),
+                        firstName,
+                        lastName,
+                        email,
+                        userCountry,
+                        userCity,
+                        userRole,
+                        userPlan
+                    ]
+                        .join(" ")
+                        .includes(search)
+                ) {
+                    return false;
+                }
+
+
+                // COUNTRY
+
+                if (
+                    country &&
+                    userCountry !== country
+                ) {
+                    return false;
+                }
+
+
+                // CITY
+
+                if (
+                    city &&
+                    userCity !== city
+                ) {
+                    return false;
+                }
+
+
+                // ROLE
+
+                if (
+                    role &&
+                    userRole !== role
+                ) {
+                    return false;
+                }
+
+
+                // PLAN
+
+                if (
+                    plan &&
+                    userPlan !== plan
+                ) {
+                    return false;
+                }
+
+
+                // ADMIN
+
+                if (
+                    adminFilter === "yes" &&
+                    user.is_admin !== true
+                ) {
+                    return false;
+                }
+
+                if (
+                    adminFilter === "no" &&
+                    user.is_admin === true
+                ) {
+                    return false;
+                }
+
+
+                // STATUS
+
+                if (
+                    status &&
+                    userStatus !== status
+                ) {
+                    return false;
+                }
+
+
+                return true;
+            });
+        }
+
+        function renderAdminUsers() {
+
+            const body =
+                document.getElementById("adminUsersBody");
+
+            const pagination =
+                document.getElementById("adminUsersPagination");
+
+            const status =
+                document.getElementById("adminUsersStatus");
+
+            if (!body || !pagination) {
+                return;
+            }
+
+            const filtered =
+                getFilteredAdminUsers();
+
+            const pageSize =
+                Number(adminUsersPageSize) || 20;
+
+            const total =
+                filtered.length;
+
+            const totalPages =
+                Math.max(
+                    1,
+                    Math.ceil(total / pageSize)
+                );
+
+            if (adminUsersPage > totalPages) {
+                adminUsersPage = totalPages;
+            }
+
+            const start =
+                (adminUsersPage - 1) * pageSize;
+
+            const end =
+                Math.min(
+                    start + pageSize,
+                    total
+                );
+
+            const pageEntries =
+                filtered.slice(start, end);
+
+            body.innerHTML = "";
+
+            if (!pageEntries.length) {
+
+                body.innerHTML = `
+            <tr>
+                <td colspan="10">
+                    No users found.
+                </td>
+            </tr>
+        `;
+
+            } else {
+
+                pageEntries.forEach(user => {
+
+                    const row =
+                        document.createElement("tr");
+
+                    const name = [
+                        user.first_name,
+                        user.last_name
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
+
+                    const accountStatus =
+                        String(
+                            user.account_status || "active"
+                        ).toLowerCase();
+
+                    const statusLabel =
+                        accountStatus === "suspended"
+                            ? "Suspended"
+                            : "Active";
+
+                    const statusClass =
+                        accountStatus === "suspended"
+                            ? "suspended"
+                            : "active";
+
+                    row.innerHTML = `
+                <td>
+                    ${adminEscapeHtml(user.id)}
+                </td>
+
+                <td>
+                    <div class="admin-user-name">
+                        ${adminEscapeHtml(
+                        name || "—"
+                    )}
+                    </div>
+
+                    <div class="admin-user-email">
+                        ${adminEscapeHtml(
+                        user.email || ""
+                    )}
+                    </div>
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        user.country || "—"
+                    )}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        user.city || "—"
+                    )}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        user.plan || "—"
+                    )}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        user.role || "—"
+                    )}
+                </td>
+
+                <td>
+                    ${user.is_admin ? "Yes" : "No"}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        user.credits ?? 0
+                    )}
+                </td>
+
+                <td>
+                    <span
+                        class="admin-user-status ${statusClass}"
+                    >
+                        ${statusLabel}
+                    </span>
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="admin-action-button"
+                        onclick="openAdminUserActions(${Number(user.id)});"
+                    >
+                        Manage
+                    </button>
+                </td>
+            `;
+
+                    body.appendChild(row);
+                });
+            }
+
+            if (status) {
+                status.textContent =
+                    total === 0
+                        ? "0 users."
+                        : `Showing ${start + 1}–${end} of ${total} users.`;
+            }
+
+            renderAdminPagination(
+                pagination,
+                adminUsersPage,
+                totalPages,
+                page => {
+                    adminUsersPage = page;
+                    renderAdminUsers();
+                }
+            );
+        }
+
+
+        function filterAdminUsers() {
+
+            adminUsersPage = 1;
+
+            renderAdminUsers();
+        }
+
+
+        function changeAdminUsersPageSize() {
+
+            const select =
+                document.getElementById("adminUsersPageSize");
+
+            adminUsersPageSize =
+                Number(select?.value) || 20;
+
+            adminUsersPage = 1;
+
+            renderAdminUsers();
+        }
+
+
+        async function loadAdminUsers() {
+
+            const nav =
+                document.getElementById("adminUsersNav");
+
+            const section =
+                document.getElementById("admin-users");
+
+            if (!nav || !section) {
+                return;
+            }
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/users`,
+                        {
+                            headers: authHeaders()
+                        }
+                    );
+
+                if (response.status === 401) {
+                    signOut();
+                    return;
+                }
+
+                if (response.status === 403) {
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                if (!Array.isArray(data)) {
+                    throw new Error(
+                        "Invalid users response"
+                    );
+                }
+
+                adminUsersEntries = data;
+
+                nav.style.display = "";
+                section.style.display = "";
+
+                adminUsersPage = 1;
+
+                populateAdminUserLocationFilters();
+
+                renderAdminUsers();
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load admin users:",
+                    error
+                );
+
+                const status =
+                    document.getElementById(
+                        "adminUsersStatus"
+                    );
+
+                const body =
+                    document.getElementById(
+                        "adminUsersBody"
+                    );
+
+                if (status) {
+                    status.textContent =
+                        "Unable to load users.";
+                }
+
+                if (body) {
+                    body.innerHTML = `
+                <tr>
+                    <td colspan="10">
+                        Unable to load users.
+                    </td>
+                </tr>
+            `;
+                }
+            }
+        }
+
+        async function openAdminUserActions(userId) {
+            try {
+                const response = await fetch(
+                    `${API}/admin/users/${encodeURIComponent(userId)}`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                let data = null;
+
+                try {
+                    data = await response.json();
+                } catch (_) {
+                    data = null;
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.detail ||
+                        `Unable to load user (${response.status})`
+                    );
+                }
+
+                showAdminUserModal(data);
+
+            } catch (error) {
+                console.error(
+                    "Admin user detail failed:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to load user details."
+                );
+            }
+        }
+
+        function showAdminUserModal(data) {
+
+            const user = data?.user || {};
+
+            const homeProjects =
+                Array.isArray(data?.home_projects)
+                    ? data.home_projects
+                    : [];
+
+            const homeSummary =
+                data?.home_summary || {
+                    total_projects: homeProjects.length,
+                    purchased_reports: homeProjects.filter(
+                        project => project.full_report_unlocked === true
+                    ).length,
+                    unlocked_reports: homeProjects.filter(
+                        project => project.full_report_unlocked === true
+                    ).length
+                };
+
+            const creditLedger =
+                Array.isArray(data?.credit_ledger)
+                    ? data.credit_ledger
+                    : [];
+
+            const existing =
+                document.getElementById(
+                    "adminUserManageModal"
+                );
+
+            if (existing) {
+                existing.remove();
+            }
+
+
+            const modal =
+                document.createElement("div");
+
+            modal.id =
+                "adminUserManageModal";
+
+            modal.className =
+                "admin-modal-backdrop open";
+
+
+            const escape =
+                value =>
+                    adminEscapeHtml(
+                        value ?? ""
+                    );
+
+
+            const status =
+                String(
+                    user.account_status ||
+                    "active"
+                ).toLowerCase();
+
+            const isSuspended =
+                status === "suspended";
+
+
+            const homeHtml = `
+    <div class="admin-home-summary-grid">
+
+        <div class="admin-home-summary-card">
+            <span>Total projects</span>
+            <strong>
+                ${escape(homeSummary.total_projects ?? 0)}
+            </strong>
+        </div>
+
+        <div class="admin-home-summary-card">
+            <span>Purchased reports</span>
+            <strong>
+                ${escape(homeSummary.purchased_reports ?? 0)}
+            </strong>
+        </div>
+
+        <div class="admin-home-summary-card">
+            <span>Unlocked reports</span>
+            <strong>
+                ${escape(homeSummary.unlocked_reports ?? 0)}
+            </strong>
+        </div>
+
+    </div>
+
+    <div style="margin-top:12px;">
+        <button
+            type="button"
+            class="admin-action-button"
+            onclick="
+                openAdminHomeProjects(
+                    ${Number(user.id)}
+                );
+            "
+        >
+            View All Projects
+        </button>
+    </div>
+`;
+
+
+            const ledgerHtml =
+                creditLedger.length
+                    ? creditLedger.map(item => `
+                <div class="admin-user-ledger-row">
+
+                    <div>
+                        ${escape(
+                        item.created_at
+                    )}
+                    </div>
+
+                    <div>
+                        ${escape(
+                        item.transaction_type
+                    )}
+                    </div>
+
+                    <div>
+                        ${Number(item.amount || 0) > 0
+                            ? "+"
+                            : ""
+                        }${escape(item.amount)}
+                    </div>
+
+                    <div>
+                        ${escape(
+                            item.balance_after
+                        )}
+                    </div>
+
+                </div>
+            `).join("")
+                    : `
+                <div class="admin-user-empty">
+                    No credit ledger entries found.
+                </div>
+            `;
+
+
+            modal.innerHTML = `
+        <div
+            class="admin-modal"
+            style="
+                width:min(820px,100%);
+                max-height:90vh;
+                overflow:auto;
+            "
+        >
+
+            <div class="admin-modal-header">
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:16px;
+                    "
+                >
+
+                    <div>
+
+                        <h3>
+                            Manage User
+                        </h3>
+
+                        <p>
+                            User #${escape(user.id)}
+                            ·
+                            ${escape(user.email)}
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="admin-action-button"
+                        onclick="
+                            document
+                                .getElementById('adminUserManageModal')
+                                ?.remove();
+                        "
+                    >
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-modal-body">
+
+
+                <!-- ACCOUNT -->
+
+                <div class="admin-user-modal-section">
+
+                    <h4>
+                        Account
+                    </h4>
+
+                    <div class="admin-modal-grid">
+
+                        <div class="admin-modal-field">
+                            <label>User ID</label>
+                            <div>${escape(user.id)}</div>
+                        </div>
+
+                        <div class="admin-modal-field">
+                            <label>Status</label>
+
+                            <div>
+                                <strong>
+                                    ${isSuspended
+                    ? "Suspended"
+                    : "Active"
+                }
+                                </strong>
+                            </div>
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                First Name
+                            </label>
+
+                            <input
+                                id="adminUserFirstName"
+                                value="${escape(
+                    user.first_name
+                )}"
+                            >
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Last Name
+                            </label>
+
+                            <input
+                                id="adminUserLastName"
+                                value="${escape(
+                    user.last_name
+                )}"
+                            >
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Email
+                            </label>
+
+                            <input
+                                id="adminUserEmail"
+                                type="email"
+                                value="${escape(
+                    user.email
+                )}"
+                            >
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Role
+                            </label>
+
+                            <select
+                                id="adminUserRole"
+                            >
+                                <option
+                                    value="user"
+                                    ${user.role === "user"
+                    ? "selected"
+                    : ""
+                }
+                                >
+                                    User
+                                </option>
+
+                                <option
+                                    value="professional"
+                                    ${user.role === "professional"
+                    ? "selected"
+                    : ""
+                }
+                                >
+                                    Professional
+                                </option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Country
+                            </label>
+
+                            <input
+                                id="adminUserCountry"
+                                value="${escape(
+                    user.country
+                )}"
+                            >
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                City
+                            </label>
+
+                            <input
+                                id="adminUserCity"
+                                value="${escape(
+                    user.city
+                )}"
+                            >
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Plan
+                            </label>
+
+                            <select
+                                id="adminUserPlan"
+                            >
+
+                                <option
+                                    value="free"
+                                    ${user.plan === "free"
+                    ? "selected"
+                    : ""
+                }
+                                >
+                                    Free
+                                </option>
+
+                                <option
+                                    value="pro"
+                                    ${user.plan === "pro"
+                    ? "selected"
+                    : ""
+                }
+                                >
+                                    Pro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Credits
+                            </label>
+
+                            <div>
+                                <strong>
+                                    ${escape(
+                    user.credits ?? 0
+                )}
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Admin
+                            </label>
+
+                            <div>
+                                ${user.is_admin
+                    ? "Yes"
+                    : "No"
+                }
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HOME -->
+
+                <div class="admin-user-modal-section">
+
+                    <h4>
+                        Home Projects
+                    </h4>
+
+                    <div>
+                        ${homeHtml}
+                    </div>
+
+                </div>
+
+
+                <!-- BUSINESS -->
+
+                <div class="admin-user-modal-section">
+
+                    <h4>
+                        Business Credits
+                    </h4>
+
+                    <div
+                        class="admin-user-business-balance"
+                    >
+                        Current balance:
+                        <strong>
+                            ${escape(
+                    user.credits ?? 0
+                )}
+                        </strong>
+                    </div>
+
+                    <div
+    style="
+        display:flex;
+        gap:8px;
+        margin-bottom:12px;
+        flex-wrap:wrap;
+    "
+>
+    <button
+        type="button"
+        class="admin-action-button"
+        onclick="
+            adjustAdminUserCredits(
+                ${Number(user.id)},
+                1
+            );
+        "
+    >
+        + Add Credits
+    </button>
+
+    <button
+        type="button"
+        class="admin-action-button"
+        onclick="
+            adjustAdminUserCredits(
+                ${Number(user.id)},
+                -1
+            );
+        "
+    >
+        − Remove Credits
+    </button>
+</div>
+
+
+                    <div
+                        class="admin-user-ledger"
+                    >
+
+                        <div
+                            class="admin-user-ledger-header"
+                        >
+                            <div>Date</div>
+                            <div>Type</div>
+                            <div>Amount</div>
+                            <div>Balance</div>
+                        </div>
+
+                        ${ledgerHtml}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div
+                    class="admin-user-modal-actions"
+                >
+
+                    <button
+                        type="button"
+                        class="admin-action-button"
+                        onclick="
+                            saveAdminUser(
+                                ${Number(user.id)}
+                            );
+                        "
+                    >
+                        Save Changes
+                    </button>
+
+
+                    ${isSuspended
+                    ? `
+                                <button
+                                    type="button"
+                                    class="admin-action-button"
+                                    onclick="
+                                        activateAdminUser(
+                                            ${Number(user.id)}
+                                        );
+                                    "
+                                >
+                                    Activate Account
+                                </button>
+                            `
+                    : `
+                                <button
+                                    type="button"
+                                    class="admin-action-button"
+                                    onclick="
+                                        suspendAdminUser(
+                                            ${Number(user.id)}
+                                        );
+                                    "
+                                >
+                                    Suspend Account
+                                </button>
+                            `
+                }
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+
+            document.body.appendChild(modal);
+        }
+
+        function getFilteredAdminPayments() {
+
+            const search =
+                (
+                    document.getElementById("adminPaymentsSearch")?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const product =
+                document.getElementById(
+                    "adminPaymentsProductFilter"
+                )?.value || "";
+
+            const paymentStatus =
+                document.getElementById(
+                    "adminPaymentsStatusFilter"
+                )?.value || "";
+
+            const currency =
+                document.getElementById(
+                    "adminPaymentsCurrencyFilter"
+                )?.value || "";
+
+            const source =
+                document.getElementById(
+                    "adminPaymentsSourceFilter"
+                )?.value || "";
+
+            const dateFrom =
+                document.getElementById(
+                    "adminPaymentsDateFrom"
+                )?.value || "";
+
+            const dateTo =
+                document.getElementById(
+                    "adminPaymentsDateTo"
+                )?.value || "";
+
+            return adminPaymentsEntries.filter(payment => {
+
+                const searchText = [
+                    payment.user_id,
+                    payment.email,
+                    payment.first_name,
+                    payment.last_name,
+                    payment.project_id,
+                    payment.product,
+                    payment.plan,
+                    payment.stripe_session_id,
+                    payment.status,
+                    payment.source
+                ]
+                    .filter(
+                        value =>
+                            value !== null &&
+                            value !== undefined
+                    )
+                    .join(" ")
+                    .toLowerCase();
+
+                if (
+                    search &&
+                    !searchText.includes(search)
+                ) {
+                    return false;
+                }
+
+                if (
+                    product &&
+                    String(payment.plan || "") !== product
+                ) {
+                    return false;
+                }
+
+                if (
+                    paymentStatus &&
+                    String(payment.status || "unknown").toLowerCase() !==
+                    paymentStatus.toLowerCase()
+                ) {
+                    return false;
+                }
+
+                if (
+                    currency &&
+                    String(payment.currency || "").toUpperCase() !== currency
+                ) {
+                    return false;
+                }
+
+                if (source) {
+
+                    const paymentSource =
+                        String(
+                            payment.source || ""
+                        ).toLowerCase();
+
+                    if (
+                        paymentSource !==
+                        source.toLowerCase()
+                    ) {
+                        return false;
+                    }
+                }
+
+                const paymentDate =
+                    payment.date
+                        ? new Date(payment.date)
+                        : null;
+
+                if (
+                    dateFrom &&
+                    (
+                        !paymentDate ||
+                        Number.isNaN(paymentDate.getTime()) ||
+                        paymentDate < new Date(`${dateFrom}T00:00:00`)
+                    )
+                ) {
+                    return false;
+                }
+
+                if (
+                    dateTo &&
+                    (
+                        !paymentDate ||
+                        Number.isNaN(paymentDate.getTime()) ||
+                        paymentDate > new Date(`${dateTo}T23:59:59.999`)
+                    )
+                ) {
+                    return false;
+                }
+
+                if (adminPaymentsActivityFilter) {
+
+                    if (
+                        adminPaymentsActivityFilter ===
+                        "started"
+                    ) {
+
+                        if (
+                            payment.payment_source !==
+                            "stripe_checkout"
+                        ) {
+                            return false;
+                        }
+                    }
+
+                    if (
+                        adminPaymentsActivityFilter ===
+                        "paid"
+                    ) {
+
+                        if (
+                            String(
+                                payment.status || ""
+                            ).toLowerCase() !== "paid"
+                        ) {
+                            return false;
+                        }
+                    }
+
+                    if (
+                        adminPaymentsActivityFilter ===
+                        "pending"
+                    ) {
+
+                        if (
+                            String(
+                                payment.status || ""
+                            ).toLowerCase() !== "pending"
+                        ) {
+                            return false;
+                        }
+                    }
+
+                    if (
+                        adminPaymentsActivityFilter ===
+                        "expired"
+                    ) {
+
+                        if (
+                            String(
+                                payment.status || ""
+                            ).toLowerCase() !== "expired"
+                        ) {
+                            return false;
+                        }
+                    }
+
+                    if (
+                        adminPaymentsActivityFilter ===
+                        "failed"
+                    ) {
+
+                        if (
+                            String(
+                                payment.status || ""
+                            ).toLowerCase() !== "failed"
+                        ) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            });
+        }
+        async function saveAdminUser(userId) {
+
+            const body = {
+                first_name:
+                    document.getElementById(
+                        "adminUserFirstName"
+                    )?.value || "",
+
+                last_name:
+                    document.getElementById(
+                        "adminUserLastName"
+                    )?.value || "",
+
+                email:
+                    document.getElementById(
+                        "adminUserEmail"
+                    )?.value || "",
+
+                country:
+                    document.getElementById(
+                        "adminUserCountry"
+                    )?.value || "",
+
+                city:
+                    document.getElementById(
+                        "adminUserCity"
+                    )?.value || "",
+
+                role:
+                    document.getElementById(
+                        "adminUserRole"
+                    )?.value || "user",
+
+                plan:
+                    document.getElementById(
+                        "adminUserPlan"
+                    )?.value || "free"
+            };
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/users/${encodeURIComponent(userId)}`,
+                        {
+                            method: "PATCH",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "Authorization":
+                                    `Bearer ${token}`
+                            },
+
+                            body:
+                                JSON.stringify(body)
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.detail ||
+                        "Unable to update user."
+                    );
+                }
+
+
+                alert(
+                    "User updated successfully."
+                );
+
+
+                document
+                    .getElementById(
+                        "adminUserManageModal"
+                    )
+                    ?.remove();
+
+
+                await loadAdminUsers();
+
+            } catch (error) {
+
+                console.error(
+                    "Admin user update failed:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to update user."
+                );
+            }
+        }
+
+
+        async function adjustAdminUserCredits(
+            userId,
+            direction
+        ) {
+            const label =
+                direction > 0
+                    ? "Add credits"
+                    : "Remove credits";
+
+            const rawAmount =
+                prompt(
+                    `${label}. Enter number of credits:`
+                );
+
+            if (rawAmount === null) {
+                return;
+            }
+
+            const amount =
+                Number.parseInt(
+                    rawAmount,
+                    10
+                );
+
+            if (
+                !Number.isInteger(amount) ||
+                amount <= 0
+            ) {
+                alert(
+                    "Please enter a positive whole number."
+                );
+                return;
+            }
+
+            const finalAmount =
+                direction > 0
+                    ? amount
+                    : -amount;
+
+            const reason =
+                prompt(
+                    "Reason for this adjustment (optional):"
+                ) || "";
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/users/${encodeURIComponent(userId)}/credits`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "Authorization":
+                                    `Bearer ${token}`
+                            },
+
+                            body: JSON.stringify({
+                                amount: finalAmount,
+                                reason: reason
+                            })
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.detail ||
+                        "Unable to adjust credits."
+                    );
+                }
+
+                alert(
+                    `Credits updated. New balance: ${data.balance}`
+                );
+
+                document
+                    .getElementById(
+                        "adminUserManageModal"
+                    )
+                    ?.remove();
+
+                await loadAdminUsers();
+
+            } catch (error) {
+
+                console.error(
+                    "Admin credit adjustment failed:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to adjust credits."
+                );
+            }
+        }
+
+
+        async function suspendAdminUser(userId) {
+
+            if (
+                !confirm(
+                    "Suspend this user account?"
+                )
+            ) {
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/users/${encodeURIComponent(userId)}/suspend`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.detail ||
+                        "Unable to suspend user."
+                    );
+                }
+
+
+                document
+                    .getElementById(
+                        "adminUserManageModal"
+                    )
+                    ?.remove();
+
+
+                await loadAdminUsers();
+
+            } catch (error) {
+
+                console.error(
+                    "Suspend user failed:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to suspend user."
+                );
+            }
+        }
+
+        async function activateAdminUser(userId) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/users/${encodeURIComponent(userId)}/activate`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.detail ||
+                        "Unable to activate user."
+                    );
+                }
+
+
+                document
+                    .getElementById(
+                        "adminUserManageModal"
+                    )
+                    ?.remove();
+
+
+                await loadAdminUsers();
+
+            } catch (error) {
+
+                console.error(
+                    "Activate user failed:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to activate user."
+                );
+            }
+        }
+
+        function updateAdminPaymentsSummary() {
+
+            const allEntries =
+                Array.isArray(adminPaymentsEntries)
+                    ? adminPaymentsEntries
+                    : [];
+
+            const dateFrom =
+                document.getElementById(
+                    "adminPaymentsDateFrom"
+                )?.value || "";
+
+            const dateTo =
+                document.getElementById(
+                    "adminPaymentsDateTo"
+                )?.value || "";
+
+            const currencyFilter =
+                document.getElementById(
+                    "adminPaymentsCurrencyFilter"
+                )?.value || "";
+
+            const productFilter =
+                document.getElementById(
+                    "adminPaymentsProductFilter"
+                )?.value || "";
+
+            const sourceFilter =
+                document.getElementById(
+                    "adminPaymentsSourceFilter"
+                )?.value || "";
+
+            const entries =
+                allEntries.filter(payment => {
+
+                    const paymentDate =
+                        payment.date
+                            ? new Date(payment.date)
+                            : null;
+
+                    if (
+                        dateFrom &&
+                        (
+                            !paymentDate ||
+                            Number.isNaN(paymentDate.getTime()) ||
+                            paymentDate <
+                            new Date(
+                                `${dateFrom}T00:00:00`
+                            )
+                        )
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        dateTo &&
+                        (
+                            !paymentDate ||
+                            Number.isNaN(paymentDate.getTime()) ||
+                            paymentDate >
+                            new Date(
+                                `${dateTo}T23:59:59.999`
+                            )
+                        )
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        currencyFilter &&
+                        String(
+                            payment.currency || ""
+                        ).toUpperCase() !==
+                        currencyFilter.toUpperCase()
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        productFilter &&
+                        String(
+                            payment.plan || ""
+                        ) !== productFilter
+                    ) {
+                        return false;
+                    }
+
+                    if (sourceFilter) {
+
+                        const paymentSource =
+                            String(
+                                payment.source || ""
+                            ).toLowerCase();
+
+                        if (
+                            paymentSource !==
+                            sourceFilter.toLowerCase()
+                        ) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+
+            const revenue =
+                document.getElementById(
+                    "adminPaymentsRevenue"
+                );
+
+            const revenueSecondary =
+                document.getElementById(
+                    "adminPaymentsRevenueSecondary"
+                );
+
+            const paidCount =
+                document.getElementById(
+                    "adminPaymentsPaidCount"
+                );
+
+            const checkoutCount =
+                document.getElementById(
+                    "adminPaymentsCheckoutCount"
+                );
+
+            const incompleteCount =
+                document.getElementById(
+                    "adminPaymentsIncompleteCount"
+                );
+
+            const activity =
+                document.getElementById(
+                    "adminPaymentsActivity"
+                );
+
+            if (!revenue) {
+                return;
+            }
+
+
+            // =========================
+            // REVENUE
+            // =========================
+
+            const revenueByCurrency = {};
+
+            entries.forEach(payment => {
+
+                if (
+                    String(payment.status || "")
+                        .toLowerCase() !== "paid"
+                ) {
+                    return;
+                }
+
+                const currency =
+                    String(
+                        payment.currency || ""
+                    ).toUpperCase();
+
+                const amount =
+                    Number(payment.amount);
+
+                if (
+                    !currency ||
+                    !Number.isFinite(amount)
+                ) {
+                    return;
+                }
+
+                revenueByCurrency[currency] =
+                    (
+                        revenueByCurrency[currency] || 0
+                    ) + amount;
+            });
+
+
+            const formatRevenue =
+                (currency) => {
+
+                    const value =
+                        revenueByCurrency[currency];
+
+                    if (
+                        value === undefined
+                    ) {
+                        return null;
+                    }
+
+                    return `${currencySymbol(currency)}${formatPaymentAmount(value)} ${currency}`;
+                };
+
+
+            const eurRevenue =
+                formatRevenue("EUR");
+
+            const usdRevenue =
+                formatRevenue("USD");
+
+
+            if (eurRevenue) {
+
+                revenue.textContent =
+                    eurRevenue;
+
+            } else if (usdRevenue) {
+
+                revenue.textContent =
+                    usdRevenue;
+
+            } else {
+
+                revenue.textContent =
+                    "—";
+            }
+
+
+            if (
+                eurRevenue &&
+                usdRevenue
+            ) {
+
+                revenueSecondary.textContent =
+                    usdRevenue;
+
+            } else {
+
+                revenueSecondary.textContent =
+                    "";
+            }
+
+
+            // =========================
+            // PAID PAYMENTS
+            // =========================
+
+            const paidEntries =
+                entries.filter(
+                    payment =>
+                        String(
+                            payment.status || ""
+                        ).toLowerCase() === "paid"
+                );
+
+            paidCount.textContent =
+                paidEntries.length;
+
+
+            // =========================
+            // CHECKOUT STARTED
+            // =========================
+
+            const checkoutEntries =
+                entries.filter(
+                    payment =>
+                        payment.payment_source ===
+                        "stripe_checkout"
+                );
+
+            checkoutCount.textContent =
+                checkoutEntries.length;
+
+
+            // =========================
+            // INCOMPLETE CHECKOUTS
+            // =========================
+
+            const incompleteEntries =
+                checkoutEntries.filter(
+                    payment =>
+                        String(
+                            payment.status || ""
+                        ).toLowerCase() !== "paid"
+                );
+
+            incompleteCount.textContent =
+                incompleteEntries.length;
+
+
+            // =========================
+            // PAYMENT ACTIVITY
+            // =========================
+
+            const pending =
+                entries.filter(
+                    payment =>
+                        String(
+                            payment.status || ""
+                        ).toLowerCase() === "pending"
+                ).length;
+
+            const expired =
+                entries.filter(
+                    payment =>
+                        String(
+                            payment.status || ""
+                        ).toLowerCase() === "expired"
+                ).length;
+
+            const failed =
+                entries.filter(
+                    payment =>
+                        String(
+                            payment.status || ""
+                        ).toLowerCase() === "failed"
+                ).length;
+
+            activity.innerHTML = `
+    <button
+        type="button"
+        class="admin-payment-activity-segment"
+        data-activity-filter="started"
+        onclick="setAdminPaymentsActivityFilter('started')"
+    >
+        <span class="admin-payment-activity-count">
+            ${checkoutEntries.length}
+        </span>
+        <span>started</span>
+    </button>
+
+    <button
+        type="button"
+        class="admin-payment-activity-segment"
+        data-activity-filter="paid"
+        onclick="setAdminPaymentsActivityFilter('paid')"
+    >
+        <span class="admin-payment-activity-count">
+            ${paidEntries.length}
+        </span>
+        <span>paid</span>
+    </button>
+
+    <button
+        type="button"
+        class="admin-payment-activity-segment"
+        data-activity-filter="pending"
+        onclick="setAdminPaymentsActivityFilter('pending')"
+    >
+        <span class="admin-payment-activity-count">
+            ${pending}
+        </span>
+        <span>pending</span>
+    </button>
+
+    <button
+        type="button"
+        class="admin-payment-activity-segment"
+        data-activity-filter="expired"
+        onclick="setAdminPaymentsActivityFilter('expired')"
+    >
+        <span class="admin-payment-activity-count">
+            ${expired}
+        </span>
+        <span>expired</span>
+    </button>
+
+    <button
+        type="button"
+        class="admin-payment-activity-segment"
+        data-activity-filter="failed"
+        onclick="setAdminPaymentsActivityFilter('failed')"
+    >
+        <span class="admin-payment-activity-count">
+            ${failed}
+        </span>
+        <span>failed</span>
+    </button>
+`;
+
+            document
+                .querySelectorAll(
+                    ".admin-payment-activity-segment"
+                )
+                .forEach(button => {
+
+                    if (
+                        button.dataset.activityFilter ===
+                        adminPaymentsActivityFilter
+                    ) {
+                        button.classList.add("active");
+                    }
+                });
+        }
+
+        function currencySymbol(currency) {
+
+            const value =
+                String(currency || "")
+                    .toUpperCase();
+
+            if (value === "EUR") {
+                return "€";
+            }
+
+            if (value === "USD") {
+                return "$";
+            }
+
+            return "";
+        }
+
+
+        function formatPaymentAmount(value) {
+
+            const number =
+                Number(value);
+
+            if (!Number.isFinite(number)) {
+                return "0";
+            }
+
+            if (
+                Number.isInteger(number)
+            ) {
+                return String(number);
+            }
+
+            return number.toFixed(2);
+        }
+
+
+        function renderAdminPayments() {
+
+            updateAdminPaymentsSummary();
+
+            const body =
+                document.getElementById(
+                    "adminPaymentsBody"
+                );
+
+            const pagination =
+                document.getElementById(
+                    "adminPaymentsPagination"
+                );
+
+            const status =
+                document.getElementById(
+                    "adminPaymentsStatus"
+                );
+
+            if (!body || !pagination) {
+                return;
+            }
+
+            const filtered =
+                getFilteredAdminPayments();
+
+            const pageSize =
+                Number(adminPaymentsPageSize) || 20;
+
+            const total =
+                filtered.length;
+
+            const totalPages =
+                Math.max(
+                    1,
+                    Math.ceil(total / pageSize)
+                );
+
+            if (
+                adminPaymentsPage >
+                totalPages
+            ) {
+                adminPaymentsPage =
+                    totalPages;
+            }
+
+            const start =
+                (adminPaymentsPage - 1) *
+                pageSize;
+
+            const end =
+                Math.min(
+                    start + pageSize,
+                    total
+                );
+
+            const pageEntries =
+                filtered.slice(start, end);
+
+            body.innerHTML = "";
+
+            if (!pageEntries.length) {
+
+                body.innerHTML = `
+            <tr>
+                <td colspan="8">
+                    No payments found.
+                </td>
+            </tr>
+        `;
+
+            } else {
+
+                pageEntries.forEach(payment => {
+
+                    const row =
+                        document.createElement("tr");
+
+                    const userName = [
+                        payment.first_name,
+                        payment.last_name
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
+
+                    // Backend now returns:
+                    // "Home" or "Business"
+                    const source =
+                        payment.source === "Home"
+                            ? "Home"
+                            : payment.source === "Business"
+                                ? "Business"
+                                : "—";
+
+                    const amount =
+                        payment.amount !== null &&
+                            payment.amount !== undefined
+                            ? payment.amount
+                            : "—";
+
+                    // Display a compact date in the table.
+                    let displayDate = "—";
+
+                    if (payment.date) {
+                        try {
+                            displayDate =
+                                new Date(
+                                    payment.date
+                                ).toLocaleDateString(
+                                    "en-GB",
+                                    {
+                                        day: "2-digit",
+                                        month: "short"
+                                    }
+                                );
+                        } catch (_) {
+                            displayDate =
+                                payment.date;
+                        }
+                    }
+
+                    let stripeLink = "—";
+
+                    if (
+                        payment.stripe_session_id
+                    ) {
+
+                        const stripeMode =
+                            window.location.hostname.includes(
+                                "localhost"
+                            )
+                                ? "test"
+                                : "test";
+
+                        stripeLink = `
+        <a
+            href="https://dashboard.stripe.com/${stripeMode}/checkout/sessions/${encodeURIComponent(
+                            payment.stripe_session_id
+                        )}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="admin-stripe-link"
+            title="${adminEscapeHtml(
+                            payment.stripe_session_id
+                        )}"
+        >
+            View Stripe
+        </a>
+    `;
+                    }
+
+                    row.innerHTML = `
+                <td>
+                    ${adminEscapeHtml(
+                        displayDate
+                    )}
+                </td>
+
+                <td>
+                    <div class="admin-user-name">
+                        ${adminEscapeHtml(
+                        userName || "—"
+                    )}
+                    </div>
+
+                    <div class="admin-user-email">
+                        ${adminEscapeHtml(
+                        payment.email || ""
+                    )}
+                    </div>
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        source
+                    )}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        payment.project_id || "—"
+                    )}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        payment.product || "—"
+                    )}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        amount
+                    )}
+                </td>
+
+                <td>
+                    ${adminEscapeHtml(
+                        payment.currency || "—"
+                    )}
+                </td>
+
+                <td>
+
+    <td>
+    <div class="admin-payment-status">
+
+        <span
+            class="admin-payment-status-badge ${adminEscapeHtml(
+                        String(
+                            payment.status || "unknown"
+                        ).toLowerCase()
+                    )}"
+        >
+            ${adminEscapeHtml(
+                        payment.status || "unknown"
+                    )}
+        </span>
+
+        ${payment.stripe_dashboard_url
+                            ? `
+                    <a
+                        href="${adminEscapeHtml(
+                                payment.stripe_dashboard_url
+                            )}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="admin-payment-stripe-link"
+                    >
+                        View Stripe
+                    </a>
+                `
+                            : ""
+                        }
+
+    </div>
+</td>
+            `;
+
+                    body.appendChild(row);
+                });
+            }
+
+            if (status) {
+
+                status.textContent =
+                    total === 0
+                        ? "0 payments."
+                        : `Showing ${start + 1}–${end} of ${total} payments.`;
+            }
+
+            renderAdminPagination(
+                pagination,
+                adminPaymentsPage,
+                totalPages,
+                page => {
+                    adminPaymentsPage = page;
+                    renderAdminPayments();
+                }
+            );
+        }
+
+        function filterAdminPayments() {
+
+            adminPaymentsPage = 1;
+
+            renderAdminPayments();
+        }
+
+        function setAdminPaymentsActivityFilter(filter) {
+
+            adminPaymentsActivityFilter =
+                filter || "";
+
+            const statusSelect =
+                document.getElementById(
+                    "adminPaymentsStatusFilter"
+                );
+
+            if (statusSelect) {
+
+                if (filter === "paid") {
+                    statusSelect.value = "paid";
+                } else if (
+                    filter === "pending" ||
+                    filter === "expired" ||
+                    filter === "failed"
+                ) {
+                    statusSelect.value = filter;
+                } else if (filter === "started") {
+                    statusSelect.value = "";
+                }
+            }
+
+            adminPaymentsPage = 1;
+
+            renderAdminPayments();
+        }
+
+
+        function changeAdminPaymentsPageSize() {
+
+            const select =
+                document.getElementById(
+                    "adminPaymentsPageSize"
+                );
+
+            adminPaymentsPageSize =
+                Number(select?.value) || 20;
+
+            adminPaymentsPage = 1;
+
+            renderAdminPayments();
+        }
+
+
+        async function loadAdminPayments() {
+
+            const nav =
+                document.getElementById(
+                    "adminPaymentsNav"
+                );
+
+            const section =
+                document.getElementById(
+                    "admin-payments"
+                );
+
+            if (!nav || !section) {
+                return;
+            }
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/payments`,
+                        {
+                            headers: authHeaders()
+                        }
+                    );
+
+                if (response.status === 401) {
+                    signOut();
+                    return;
+                }
+
+                if (response.status === 403) {
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                if (!Array.isArray(data)) {
+                    throw new Error(
+                        "Invalid payments response"
+                    );
+                }
+
+                adminPaymentsEntries =
+                    data;
+
+                nav.style.display = "";
+                section.style.display = "";
+
+                adminPaymentsPage = 1;
+
+                renderAdminPayments();
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load admin payments:",
+                    error
+                );
+
+                const status =
+                    document.getElementById(
+                        "adminPaymentsStatus"
+                    );
+
+                const body =
+                    document.getElementById(
+                        "adminPaymentsBody"
+                    );
+
+                if (status) {
+                    status.textContent =
+                        "Unable to load payments.";
+                }
+
+                if (body) {
+                    body.innerHTML = `
+                <tr>
+                    <td colspan="8">
+                        Unable to load payments.
+                    </td>
+                </tr>
+            `;
+                }
+            }
+        }
+
+        function renderAdminPagination(
+            container,
+            currentPage,
+            totalPages,
+            onPageChange
+        ) {
+
+            if (!container) {
+                return;
+            }
+
+            container.innerHTML = "";
+
+            if (totalPages <= 1) {
+                return;
+            }
+
+            const info =
+                document.createElement("div");
+
+            info.className =
+                "admin-pagination-info";
+
+            info.textContent =
+                `Page ${currentPage} of ${totalPages}`;
+
+            const buttons =
+                document.createElement("div");
+
+            buttons.className =
+                "admin-pagination-buttons";
+
+
+            const previous =
+                document.createElement("button");
+
+            previous.type = "button";
+            previous.className =
+                "admin-pagination-button";
+
+            previous.textContent =
+                "Previous";
+
+            previous.disabled =
+                currentPage <= 1;
+
+            previous.onclick = () => {
+
+                if (currentPage > 1) {
+                    onPageChange(
+                        currentPage - 1
+                    );
+                }
+            };
+
+            buttons.appendChild(previous);
+
+
+            const maxVisiblePages = 5;
+
+            let startPage =
+                Math.max(
+                    1,
+                    currentPage -
+                    Math.floor(
+                        maxVisiblePages / 2
+                    )
+                );
+
+            let endPage =
+                Math.min(
+                    totalPages,
+                    startPage +
+                    maxVisiblePages -
+                    1
+                );
+
+            if (
+                endPage - startPage + 1 <
+                maxVisiblePages
+            ) {
+
+                startPage =
+                    Math.max(
+                        1,
+                        endPage -
+                        maxVisiblePages +
+                        1
+                    );
+            }
+
+
+            if (startPage > 1) {
+
+                const first =
+                    document.createElement("button");
+
+                first.type = "button";
+                first.className =
+                    "admin-pagination-button";
+
+                first.textContent = "1";
+
+                first.onclick = () =>
+                    onPageChange(1);
+
+                buttons.appendChild(first);
+
+                if (startPage > 2) {
+
+                    const ellipsis =
+                        document.createElement("span");
+
+                    ellipsis.className =
+                        "admin-pagination-ellipsis";
+
+                    ellipsis.textContent = "…";
+
+                    buttons.appendChild(ellipsis);
+                }
+            }
+
+
+            for (
+                let page = startPage;
+                page <= endPage;
+                page++
+            ) {
+
+                const button =
+                    document.createElement("button");
+
+                button.type = "button";
+
+                button.className =
+                    "admin-pagination-button" +
+                    (
+                        page === currentPage
+                            ? " active"
+                            : ""
+                    );
+
+                button.textContent =
+                    String(page);
+
+                button.onclick = () =>
+                    onPageChange(page);
+
+                buttons.appendChild(button);
+            }
+
+
+            if (endPage < totalPages) {
+
+                if (
+                    endPage <
+                    totalPages - 1
+                ) {
+
+                    const ellipsis =
+                        document.createElement("span");
+
+                    ellipsis.className =
+                        "admin-pagination-ellipsis";
+
+                    ellipsis.textContent = "…";
+
+                    buttons.appendChild(ellipsis);
+                }
+
+                const last =
+                    document.createElement("button");
+
+                last.type = "button";
+                last.className =
+                    "admin-pagination-button";
+
+                last.textContent =
+                    String(totalPages);
+
+                last.onclick = () =>
+                    onPageChange(totalPages);
+
+                buttons.appendChild(last);
+            }
+
+
+            const next =
+                document.createElement("button");
+
+            next.type = "button";
+
+            next.className =
+                "admin-pagination-button";
+
+            next.textContent =
+                "Next";
+
+            next.disabled =
+                currentPage >= totalPages;
+
+            next.onclick = () => {
+
+                if (
+                    currentPage <
+                    totalPages
+                ) {
+                    onPageChange(
+                        currentPage + 1
+                    );
+                }
+            };
+
+            buttons.appendChild(next);
+
+
+            container.appendChild(info);
+            container.appendChild(buttons);
+        }
+
         async function loadAdminPricing() {
             const nav = document.getElementById("adminPricingNav");
             const section = document.getElementById("admin-pricing");
@@ -4548,8 +8261,6 @@ ADMIN PROFESSIONALS
                                 <td>
                                     ${escapeHtml(days)}
                                 </td>
-
-                
                                 <td>
                                     ${escapeHtml(
                             demo.feedback_status === "submitted"
@@ -5902,6 +9613,10 @@ ADMIN PROFESSIONALS
                 }
 
                 const data = await res.json();
+                window.currentUser = data;
+                window.currentUserRole =
+                    String(data.role || "").toLowerCase();
+
                 await loadProfessionalDashboardStatus();
                 initializeProfessionalDashboardSubnav();
 
@@ -6021,6 +9736,8 @@ ADMIN PROFESSIONALS
                 }
 
                 if (data.is_admin === true) {
+                    loadAdminUsers();
+                    loadAdminPayments();
                     loadAdminPricing();
                     loadAdminProfessionalRequests();
                     loadAdminProfessionalDemos();
@@ -6032,6 +9749,1426 @@ ADMIN PROFESSIONALS
                 return null;
             }
         }
+
+        function openAdminHomeProject(projectId) {
+
+            const project =
+                window.adminHomeProjectsById?.[String(projectId)];
+
+            if (!project) {
+                console.error(
+                    "Admin Home Project not found:",
+                    projectId
+                );
+
+                alert("Unable to load this Home Project.");
+                return;
+            }
+
+            const existing =
+                document.getElementById(
+                    "adminHomeProjectDetailModal"
+                );
+
+            if (existing) {
+                existing.remove();
+            }
+
+            const unlocked =
+                project.full_report_unlocked === true;
+
+            const paid =
+                !!project.stripe_session_id;
+
+            const modal =
+                document.createElement("div");
+
+            modal.id =
+                "adminHomeProjectDetailModal";
+
+            modal.className =
+                "admin-modal-backdrop open";
+
+            modal.innerHTML = `
+        <div
+            class="admin-modal"
+            style="
+                width:min(900px,96%);
+                max-height:90vh;
+                overflow:auto;
+            "
+        >
+
+            <div class="admin-modal-header">
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:20px;
+                    "
+                >
+
+                    <div>
+                        <h3>
+                            Home Project #${adminEscapeHtml(
+                project.id
+            )}
+                        </h3>
+
+                        <p>
+                            Project overview
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="admin-action-button"
+                        onclick="
+                            document
+                                .getElementById(
+                                    'adminHomeProjectDetailModal'
+                                )
+                                ?.remove();
+                        "
+                    >
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="admin-modal-body">
+
+                <!-- ================================================= -->
+                <!-- PROJECT OVERVIEW -->
+                <!-- ================================================= -->
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:
+                            repeat(4, minmax(0, 1fr));
+                        gap:16px;
+                        margin-bottom:22px;
+                    "
+                >
+
+                    <div class="admin-modal-field">
+                        <label>Project ID</label>
+
+                        <div
+                            style="
+                                font-size:18px;
+                                font-weight:600;
+                            "
+                        >
+                            #${adminEscapeHtml(
+                project.id
+            )}
+                        </div>
+                    </div>
+
+
+                    <div class="admin-modal-field">
+                        <label>Full Report</label>
+
+                        <div>
+                            <span
+                                class="admin-user-status ${unlocked
+                    ? "active"
+                    : "suspended"
+                }"
+                            >
+                                ${unlocked
+                    ? "Unlocked"
+                    : "Locked"
+                }
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div class="admin-modal-field">
+                        <label>Payment</label>
+
+                        <div
+                            style="
+                                font-size:16px;
+                                font-weight:500;
+                            "
+                        >
+                            ${paid
+                    ? "Paid"
+                    : "Not paid"
+                }
+                        </div>
+                    </div>
+
+
+                    <div class="admin-modal-field">
+                        <label>Unlocked At</label>
+
+                        <div>
+                            ${project.unlocked_at
+                    ? adminEscapeHtml(
+                        project.unlocked_at
+                    )
+                    : "—"
+                }
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- PROJECT INFORMATION -->
+                <!-- ================================================= -->
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:
+                            repeat(4, minmax(0, 1fr));
+                        gap:16px;
+                        padding-top:18px;
+                        border-top:1px solid #e5e7eb;
+                    "
+                >
+
+                    <div class="admin-modal-field">
+                        <label>Created</label>
+
+                        <div>
+                            ${project.created_at
+                    ? adminEscapeHtml(
+                        project.created_at
+                    )
+                    : "—"
+                }
+                        </div>
+                    </div>
+
+
+                    <div class="admin-modal-field">
+                        <label>Stripe Session</label>
+
+                        <div
+                            style="
+                                word-break:break-all;
+                            "
+                        >
+                            ${project.stripe_session_id
+                    ? adminEscapeHtml(
+                        project.stripe_session_id
+                    )
+                    : "—"
+                }
+                        </div>
+                    </div>
+
+
+                    <div class="admin-modal-field">
+                        <label>User</label>
+
+                        <div>
+                            #${adminEscapeHtml(
+                    project.user_id ??
+                    "—"
+                )}
+                        </div>
+                    </div>
+
+
+                    <div class="admin-modal-field">
+                        <label>Project Status</label>
+
+                        <div>
+                            Active
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- ACTIONS -->
+                <!-- ================================================= -->
+
+                <div
+                    style="
+                        margin-top:26px;
+                        padding-top:18px;
+                        border-top:1px solid #e5e7eb;
+                    "
+                >
+
+                    <div
+                        style="
+                            font-size:13px;
+                            font-weight:600;
+                            margin-bottom:10px;
+                        "
+                    >
+                        Project Actions
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:10px;
+                            flex-wrap:wrap;
+                        "
+                    >
+
+                        <button
+    type="button"
+    class="admin-action-button"
+    onclick="
+        openAdminHomeProjectReadOnly(
+            ${Number(project.id)},
+            ${Number(data.user_id)}
+        );
+    "
+>
+    Open Project
+</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+            document.body.appendChild(modal);
+        }
+
+
+        async function openAdminHomeProjectReadOnly(
+            projectId,
+            userId
+        ) {
+
+            const existing =
+                document.getElementById(
+                    "adminHomeProjectInspectorModal"
+                );
+
+            if (existing) {
+                existing.remove();
+            }
+
+            const modal =
+                document.createElement("div");
+
+            modal.id =
+                "adminHomeProjectInspectorModal";
+
+            modal.className =
+                "admin-modal-backdrop open";
+
+            modal.innerHTML = `
+        <div
+            class="admin-modal"
+            style="
+                width:min(1100px,96%);
+                max-height:92vh;
+                overflow:auto;
+            "
+        >
+
+            <div class="admin-modal-header">
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:20px;
+                    "
+                >
+
+                    <div>
+                        <h3>
+                            Home Project Inspector
+                        </h3>
+
+                        <p>
+                            Read-only · Project #${adminEscapeHtml(projectId)}
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="admin-action-button"
+                        onclick="
+                            document
+                                .getElementById(
+                                    'adminHomeProjectInspectorModal'
+                                )
+                                ?.remove();
+                        "
+                    >
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div
+                    id="adminHomeProjectInspectorStatus"
+                    class="admin-pricing-status"
+                >
+                    Loading project...
+                </div>
+
+                <div
+                    id="adminHomeProjectInspectorContent"
+                ></div>
+
+            </div>
+
+        </div>
+    `;
+
+            document.body.appendChild(modal);
+
+            const status =
+                document.getElementById(
+                    "adminHomeProjectInspectorStatus"
+                );
+
+            const content =
+                document.getElementById(
+                    "adminHomeProjectInspectorContent"
+                );
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/users/${encodeURIComponent(
+                            userId
+                        )}/home-projects/${encodeURIComponent(
+                            projectId
+                        )}`,
+                        {
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.detail ||
+                        "Unable to load Home Project."
+                    );
+                }
+
+                status.textContent =
+                    "Read-only project inspection";
+
+                renderAdminHomeProjectInspector(
+                    data,
+                    content
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Admin Home Project Inspector failed:",
+                    error
+                );
+
+                status.textContent =
+                    error.message ||
+                    "Unable to load Home Project.";
+            }
+        }
+
+        function renderAdminHomeProjectInspector(
+            project,
+            container
+        ) {
+
+            if (!container) {
+                return;
+            }
+
+            const data =
+                project?.data &&
+                    typeof project.data === "object"
+                    ? project.data
+                    : {};
+
+            const floors =
+                Array.isArray(data.floors)
+                    ? data.floors
+                    : [];
+
+            let roomCount = 0;
+            let zoneCount = 0;
+            let sourceCount = 0;
+            let measurementCount = 0;
+
+            floors.forEach(floor => {
+
+                const rooms =
+                    Array.isArray(floor?.rooms)
+                        ? floor.rooms
+                        : [];
+
+                const zones =
+                    Array.isArray(floor?.zones)
+                        ? floor.zones
+                        : [];
+
+                const sources =
+                    Array.isArray(floor?.sources)
+                        ? floor.sources
+                        : [];
+
+                roomCount += rooms.length;
+                zoneCount += zones.length;
+                sourceCount += sources.length;
+
+                rooms.forEach(room => {
+
+                    const grid =
+                        Array.isArray(room?.grid)
+                            ? room.grid
+                            : [];
+
+                    grid.forEach(point => {
+
+                        if (
+                            point?.measurements &&
+                            typeof point.measurements === "object"
+                        ) {
+                            measurementCount +=
+                                Object.keys(
+                                    point.measurements
+                                ).length;
+                        }
+                    });
+                });
+
+                zones.forEach(zone => {
+
+                    const grid =
+                        Array.isArray(zone?.grid)
+                            ? zone.grid
+                            : [];
+
+                    grid.forEach(point => {
+
+                        if (
+                            point?.measurements &&
+                            typeof point.measurements === "object"
+                        ) {
+                            measurementCount +=
+                                Object.keys(
+                                    point.measurements
+                                ).length;
+                        }
+                    });
+                });
+            });
+
+            const reportUnlocked =
+                project.full_report_unlocked === true;
+
+            const paymentStatus =
+                project.stripe_session_id
+                    ? "Paid"
+                    : "Not paid";
+
+            container.innerHTML = `
+
+        <!-- ================================================= -->
+        <!-- PROJECT SUMMARY -->
+        <!-- ================================================= -->
+
+        <div
+            style="
+                display:grid;
+                grid-template-columns:
+                    repeat(4,minmax(0,1fr));
+                gap:14px;
+                margin-bottom:22px;
+            "
+        >
+
+            <div class="admin-modal-field">
+                <label>Project</label>
+
+                <div
+                    style="
+                        font-size:18px;
+                        font-weight:600;
+                    "
+                >
+                    #${adminEscapeHtml(project.id)}
+                </div>
+            </div>
+
+            <div class="admin-modal-field">
+                <label>User</label>
+
+                <div>
+                    #${adminEscapeHtml(project.user_id)}
+                </div>
+            </div>
+
+            <div class="admin-modal-field">
+                <label>Full Report</label>
+
+                <div>
+                    <span
+                        class="admin-user-status ${reportUnlocked
+                    ? "active"
+                    : "suspended"
+                }"
+                    >
+                        ${reportUnlocked
+                    ? "Unlocked"
+                    : "Locked"
+                }
+                    </span>
+                </div>
+            </div>
+
+            <div class="admin-modal-field">
+                <label>Payment</label>
+
+                <div>
+                    ${paymentStatus}
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PROJECT CONTENT -->
+        <!-- ================================================= -->
+
+        <div
+            style="
+                display:grid;
+                grid-template-columns:
+                    repeat(4,minmax(0,1fr));
+                gap:14px;
+                margin-bottom:24px;
+            "
+        >
+
+            <div class="admin-modal-field">
+                <label>Floors</label>
+                <div
+                    style="
+                        font-size:20px;
+                        font-weight:600;
+                    "
+                >
+                    ${floors.length}
+                </div>
+            </div>
+
+            <div class="admin-modal-field">
+                <label>Rooms</label>
+                <div
+                    style="
+                        font-size:20px;
+                        font-weight:600;
+                    "
+                >
+                    ${roomCount}
+                </div>
+            </div>
+
+            <div class="admin-modal-field">
+                <label>Zones</label>
+                <div
+                    style="
+                        font-size:20px;
+                        font-weight:600;
+                    "
+                >
+                    ${zoneCount}
+                </div>
+            </div>
+
+            <div class="admin-modal-field">
+                <label>Sources</label>
+                <div
+                    style="
+                        font-size:20px;
+                        font-weight:600;
+                    "
+                >
+                    ${sourceCount}
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- MEASUREMENTS -->
+        <!-- ================================================= -->
+
+        <div
+            style="
+                padding:16px;
+                border:1px solid #e5e7eb;
+                border-radius:8px;
+                margin-bottom:22px;
+            "
+        >
+
+            <div
+                style="
+                    font-size:14px;
+                    font-weight:600;
+                    margin-bottom:5px;
+                "
+            >
+                Measurements
+            </div>
+
+            <div
+                style="
+                    font-size:22px;
+                    font-weight:600;
+                "
+            >
+                ${measurementCount}
+            </div>
+
+            <div
+                style="
+                    font-size:12px;
+                    color:#6b7280;
+                    margin-top:4px;
+                "
+            >
+                Measurement records found in the project data.
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- FLOORS -->
+        <!-- ================================================= -->
+
+        <div
+            style="
+                border-top:1px solid #e5e7eb;
+                padding-top:18px;
+            "
+        >
+
+            <div
+                style="
+                    font-size:15px;
+                    font-weight:600;
+                    margin-bottom:12px;
+                "
+            >
+                Floors
+            </div>
+
+            ${floors.length
+                    ? floors.map(
+                        (floor, index) => {
+
+                            const rooms =
+                                Array.isArray(
+                                    floor?.rooms
+                                )
+                                    ? floor.rooms
+                                    : [];
+
+                            const zones =
+                                Array.isArray(
+                                    floor?.zones
+                                )
+                                    ? floor.zones
+                                    : [];
+
+                            const sources =
+                                Array.isArray(
+                                    floor?.sources
+                                )
+                                    ? floor.sources
+                                    : [];
+
+                            return `
+                                <div
+                                    style="
+                                        border:1px solid #e5e7eb;
+                                        border-radius:8px;
+                                        padding:16px;
+                                        margin-bottom:12px;
+                                    "
+                                >
+
+                                    <div
+                                        style="
+                                            display:flex;
+                                            justify-content:space-between;
+                                            align-items:center;
+                                            margin-bottom:12px;
+                                        "
+                                    >
+
+                                        <strong>
+                                            ${adminEscapeHtml(
+                                floor?.name ||
+                                `Floor ${index + 1}`
+                            )}
+                                        </strong>
+
+                                        <span
+                                            style="
+                                                font-size:12px;
+                                                color:#6b7280;
+                                            "
+                                        >
+                                            Floor ${index + 1}
+                                        </span>
+
+                                    </div>
+
+                                    <div
+                                        style="
+                                            display:grid;
+                                            grid-template-columns:
+                                                repeat(3,minmax(0,1fr));
+                                            gap:12px;
+                                        "
+                                    >
+
+                                        <div>
+                                            <label>
+                                                Rooms
+                                            </label>
+
+                                            <div>
+                                                ${rooms.length}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label>
+                                                Zones
+                                            </label>
+
+                                            <div>
+                                                ${zones.length}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label>
+                                                Sources
+                                            </label>
+
+                                            <div>
+                                                ${sources.length}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            `;
+                        }
+                    ).join("")
+                    : `
+                        <div
+                            class="admin-user-empty"
+                        >
+                            No floor data found.
+                        </div>
+                    `
+                }
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- READ ONLY NOTICE -->
+        <!-- ================================================= -->
+
+        <div
+            style="
+                margin-top:20px;
+                padding:12px 14px;
+                background:#f8fafc;
+                border:1px solid #e5e7eb;
+                border-radius:8px;
+                font-size:12px;
+                color:#64748b;
+            "
+        >
+            Read-only Admin view. Project data cannot be edited
+            from this inspector.
+        </div>
+
+    `;
+        }
+
+
+        async function openAdminHomeProjects(userId) {
+
+            const existing =
+                document.getElementById(
+                    "adminHomeProjectsModal"
+                );
+
+            if (existing) {
+                existing.remove();
+            }
+
+            const modal =
+                document.createElement("div");
+
+            modal.id =
+                "adminHomeProjectsModal";
+
+            modal.className =
+                "admin-modal-backdrop open";
+
+            modal.innerHTML = `
+        <div
+            class="admin-modal"
+            style="
+                width:min(1100px,96%);
+                max-height:90vh;
+                overflow:auto;
+            "
+        >
+
+            <div class="admin-modal-header">
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:16px;
+                    "
+                >
+
+                    <div>
+                        <h3>Home Projects</h3>
+
+                        <p>
+                            User #${Number(userId)}
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="admin-action-button"
+                        onclick="
+                            document
+                                .getElementById(
+                                    'adminHomeProjectsModal'
+                                )
+                                ?.remove();
+                        "
+                    >
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div class="admin-home-project-toolbar">
+
+                    <input
+                        id="adminHomeProjectsSearch"
+                        type="text"
+                        placeholder="Search project ID..."
+                    >
+
+                    <select
+                        id="adminHomeProjectsReportFilter"
+                    >
+                        <option value="">
+                            All report statuses
+                        </option>
+
+                        <option value="unlocked">
+                            Unlocked
+                        </option>
+
+                        <option value="locked">
+                            Locked
+                        </option>
+                    </select>
+
+                    <select
+                        id="adminHomeProjectsPaymentFilter"
+                    >
+                        <option value="">
+                            All payments
+                        </option>
+
+                        <option value="paid">
+                            Paid
+                        </option>
+
+                        <option value="unpaid">
+                            Not paid
+                        </option>
+                    </select>
+
+                    <select
+                        id="adminHomeProjectsPageSize"
+                    >
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+
+                </div>
+
+                <div
+                    id="adminHomeProjectsStatus"
+                    class="admin-pricing-status"
+                >
+                    Loading projects...
+                </div>
+
+                <div
+                    id="adminHomeProjectsTable"
+                    class="admin-pricing-table"
+                >
+                    Loading...
+                </div>
+
+                <div
+                    id="adminHomeProjectsPagination"
+                ></div>
+
+            </div>
+
+        </div>
+    `;
+
+            document.body.appendChild(modal);
+
+            const search =
+                document.getElementById(
+                    "adminHomeProjectsSearch"
+                );
+
+            const reportFilter =
+                document.getElementById(
+                    "adminHomeProjectsReportFilter"
+                );
+
+            const paymentFilter =
+                document.getElementById(
+                    "adminHomeProjectsPaymentFilter"
+                );
+
+            const pageSize =
+                document.getElementById(
+                    "adminHomeProjectsPageSize"
+                );
+
+            let currentPage = 1;
+
+            async function loadPage() {
+
+                const params =
+                    new URLSearchParams();
+
+                params.set(
+                    "page",
+                    String(currentPage)
+                );
+
+                params.set(
+                    "page_size",
+                    String(
+                        Number(pageSize.value) || 20
+                    )
+                );
+
+                if (search.value.trim()) {
+                    params.set(
+                        "search",
+                        search.value.trim()
+                    );
+                }
+
+                if (reportFilter.value) {
+                    params.set(
+                        "report_status",
+                        reportFilter.value
+                    );
+                }
+
+                if (paymentFilter.value) {
+                    params.set(
+                        "payment_status",
+                        paymentFilter.value
+                    );
+                }
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `${API}/admin/users/${encodeURIComponent(userId)}/home-projects?${params.toString()}`,
+                            {
+                                headers: {
+                                    "Authorization":
+                                        `Bearer ${token}`
+                                }
+                            }
+                        );
+
+                    const data =
+                        await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data?.detail ||
+                            "Unable to load Home projects."
+                        );
+                    }
+
+                    renderAdminHomeProjectsPage(
+                        data
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "Admin Home Projects failed:",
+                        error
+                    );
+
+                    document.getElementById(
+                        "adminHomeProjectsStatus"
+                    ).textContent =
+                        error.message ||
+                        "Unable to load Home projects.";
+
+                }
+            }
+
+            window.renderAdminHomeProjectsPage =
+                renderAdminHomeProjectsPage;
+
+            search.addEventListener(
+                "input",
+                () => {
+                    currentPage = 1;
+                    loadPage();
+                }
+            );
+
+            reportFilter.addEventListener(
+                "change",
+                () => {
+                    currentPage = 1;
+                    loadPage();
+                }
+            );
+
+            paymentFilter.addEventListener(
+                "change",
+                () => {
+                    currentPage = 1;
+                    loadPage();
+                }
+            );
+
+            pageSize.addEventListener(
+                "change",
+                () => {
+                    currentPage = 1;
+                    loadPage();
+                }
+            );
+
+            loadPage();
+        }
+
+
+        function renderAdminHomeProjectsPage(data) {
+
+            const status =
+                document.getElementById(
+                    "adminHomeProjectsStatus"
+                );
+
+            const table =
+                document.getElementById(
+                    "adminHomeProjectsTable"
+                );
+
+            const pagination =
+                document.getElementById(
+                    "adminHomeProjectsPagination"
+                );
+
+            if (!table) return;
+
+            const projects =
+                Array.isArray(data?.projects)
+                    ? data.projects
+                    : [];
+
+            window.adminHomeProjectsById = {};
+
+            projects.forEach(project => {
+                window.adminHomeProjectsById[
+                    String(project.id)
+                ] = project;
+            });
+
+            status.textContent =
+                data.total === 0
+                    ? "0 Home projects."
+                    : `Showing ${(
+                        (data.page - 1) *
+                        data.page_size
+                    ) + 1}–${Math.min(
+                        data.page *
+                        data.page_size,
+                        data.total
+                    )} of ${data.total} projects.`;
+
+            if (!projects.length) {
+
+                table.innerHTML = `
+            <div class="admin-user-empty">
+                No Home projects found.
+            </div>
+        `;
+
+                pagination.innerHTML = "";
+
+                return;
+            }
+
+            table.innerHTML = `
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Created</th>
+                    <th>Report</th>
+                    <th>Payment</th>
+                    <th>Unlocked</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                ${projects.map(project => {
+
+                const unlocked =
+                    project.full_report_unlocked === true;
+
+                const paid =
+                    !!project.stripe_session_id;
+
+                return `
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    #${adminEscapeHtml(
+                    project.id
+                )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${adminEscapeHtml(
+                    project.created_at || "—"
+                )}
+                            </td>
+
+                            <td>
+                                <span
+                                    class="admin-user-status ${unlocked
+                        ? "active"
+                        : "suspended"
+                    }"
+                                >
+                                    ${unlocked
+                        ? "Unlocked"
+                        : "Locked"
+                    }
+                                </span>
+                            </td>
+
+                            <td>
+                                ${paid
+                        ? "Paid"
+                        : "Not paid"
+                    }
+                            </td>
+
+                            <td>
+                                ${project.unlocked_at
+                        ? adminEscapeHtml(
+                            project.unlocked_at
+                        )
+                        : "—"
+                    }
+                            </td>
+
+                            <td>
+
+                                <button
+    type="button"
+    class="admin-action-button"
+    onclick="
+        openAdminHomeProjectReadOnly(
+            ${Number(project.id)},
+            ${Number(data.user_id)}
+        );
+    "
+>
+    View
+</button>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+            }).join("")}
+
+            </tbody>
+
+        </table>
+    `;
+
+            renderAdminPagination(
+                pagination,
+                data.page,
+                data.total_pages,
+                page => {
+
+                    const search =
+                        document.getElementById(
+                            "adminHomeProjectsSearch"
+                        );
+
+                    const reportFilter =
+                        document.getElementById(
+                            "adminHomeProjectsReportFilter"
+                        );
+
+                    const paymentFilter =
+                        document.getElementById(
+                            "adminHomeProjectsPaymentFilter"
+                        );
+
+                    const pageSize =
+                        document.getElementById(
+                            "adminHomeProjectsPageSize"
+                        );
+
+                    const params =
+                        new URLSearchParams();
+
+                    params.set(
+                        "page",
+                        String(page)
+                    );
+
+                    params.set(
+                        "page_size",
+                        String(
+                            Number(pageSize.value) || 20
+                        )
+                    );
+
+                    if (search.value.trim()) {
+                        params.set(
+                            "search",
+                            search.value.trim()
+                        );
+                    }
+
+                    if (reportFilter.value) {
+                        params.set(
+                            "report_status",
+                            reportFilter.value
+                        );
+                    }
+
+                    if (paymentFilter.value) {
+                        params.set(
+                            "payment_status",
+                            paymentFilter.value
+                        );
+                    }
+
+                    fetch(
+                        `${API}/admin/users/${encodeURIComponent(
+                            data.user_id
+                        )}/home-projects?${params.toString()}`,
+                        {
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`
+                            }
+                        }
+                    )
+                        .then(response =>
+                            response.json()
+                        )
+                        .then(nextData =>
+                            renderAdminHomeProjectsPage(
+                                nextData
+                            )
+                        )
+                        .catch(error =>
+                            console.error(
+                                "Home project page failed:",
+                                error
+                            )
+                        );
+                }
+            );
+        }
+
 
         async function loadAdminProfessionalRequests() {
             const nav = document.getElementById("adminProfessionalRequestsNav");
@@ -6208,6 +11345,15 @@ ADMIN PROFESSIONALS
         }
 
         async function updateProfessionalHomeProjectsAccess() {
+            const role =
+                String(
+                    window.currentUser?.role || ""
+                ).toLowerCase();
+
+            if (role !== "professional") {
+                return;
+            }
+
             const container = document.getElementById(
                 "professionalHomeProjectsContainer"
             );
@@ -7185,15 +12331,41 @@ ADMIN PROFESSIONALS
 
         async function generatePdf(projectId) {
             try {
-                const meRes = await fetch(`${API}/me`, {
-                    headers: {"Authorization": `Bearer ${token}`}
-                });
-                if (!meRes.ok) throw new Error(`User request failed: ${meRes.status}`);
-                const me = await meRes.json();
+                // ---------------------------------------------------------
+                // Get current user + project-scoped Home entitlement
+                // ---------------------------------------------------------
+                const meRes = await fetch(
+                    `${API}/me?project_id=${encodeURIComponent(projectId)}`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
 
+                let me = null;
+
+                try {
+                    me = await meRes.json();
+                } catch {
+                    me = null;
+                }
+
+                if (!meRes.ok) {
+                    throw new Error(
+                        me?.detail || "Unable to load user information."
+                    );
+                }
+
+                // ---------------------------------------------------------
+                // Generate PDF
+                // ---------------------------------------------------------
                 const res = await fetch(`${API}/generate-pdf`, {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
                     body: JSON.stringify({
                         project_id: projectId,
                         user_id: me.id,
@@ -7203,14 +12375,35 @@ ADMIN PROFESSIONALS
                     })
                 });
 
-                const data = await res.json();
-                if (!res.ok || !data.pdf_url) throw new Error(data.detail || "PDF generation failed.");
-                window.open(`${API}${data.pdf_url}`, "_blank", "noopener");
+                let data = null;
+
+                try {
+                    data = await res.json();
+                } catch {
+                    data = null;
+                }
+
+                if (!res.ok || !data?.pdf_url) {
+                    throw new Error(
+                        data?.detail || "PDF generation failed."
+                    );
+                }
+
+                window.open(
+                    `${API}${data.pdf_url}`,
+                    "_blank",
+                    "noopener"
+                );
+
                 await loadReports();
                 await loadUser();
+
             } catch (error) {
                 console.error("Generate PDF error:", error);
-                alert("Unable to generate the PDF report. Please try again.");
+                alert(
+                    error?.message ||
+                    "Unable to generate the PDF report. Please try again."
+                );
             }
         }
 
