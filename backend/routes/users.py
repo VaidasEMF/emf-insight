@@ -36,10 +36,12 @@ def me(
     professional_demo_active = False
     professional_demo_expires_at = None
 
+    # ---------------------------------------------------------
+    # PROFESSIONAL DEMO
+    # ---------------------------------------------------------
     try:
         from auth.entitlements import is_professional_demo_active
         from sqlalchemy import text
-        from datetime import datetime
 
         professional_demo_active = is_professional_demo_active(
             current_user,
@@ -65,10 +67,16 @@ def me(
         professional_demo_active = False
         professional_demo_expires_at = None
 
-    try:
-        from sqlalchemy import text
+    # ---------------------------------------------------------
+    # HOME FULL REPORT ENTITLEMENT
+    # Project-scoped ONLY
+    # ---------------------------------------------------------
+    if project_id is not None:
+        try:
+            from sqlalchemy import text
 
-        if project_id is not None:
+            # First verify that this project belongs to
+            # the currently authenticated user.
             project_owner = db.execute(
                 text("""
                     SELECT id
@@ -88,6 +96,7 @@ def me(
                     detail="Home project not found.",
                 )
 
+            # Check entitlement ONLY for this project.
             result = db.execute(
                 text("""
                     SELECT full_report_unlocked
@@ -100,26 +109,26 @@ def me(
                     "user_id": str(current_user.id),
                 },
             ).scalar()
-        else:
-            result = db.execute(
-                text("""
-                    SELECT full_report_unlocked
-                    FROM home_entitlements
-                    WHERE user_id = :user_id
-                """),
-                {"user_id": str(current_user.id)},
-            ).scalar()
 
-        home_full_report_unlocked = bool(result)
+            home_full_report_unlocked = bool(result)
 
-    except HTTPException:
-        raise
-    except Exception:
-        home_full_report_unlocked = False
+        except HTTPException:
+            raise
+        except Exception:
+            home_full_report_unlocked = False
+
+    # IMPORTANT:
+    # If project_id is not supplied, the Home Full Report
+    # remains locked.
+    #
+    # Do NOT fall back to the old `home_entitlements` table.
+    # The entitlement is project-scoped.
 
     return {
         "id": current_user.id,
         "email": current_user.email,
+        "country": getattr(current_user, "country", None),
+        "city": getattr(current_user, "city", None),
         "credits": current_user.credits,
         "plan": current_user.plan,
         "role": current_user.role,
