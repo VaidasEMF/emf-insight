@@ -7,6 +7,8 @@ from db.database import SessionLocal
 from routes.auth import get_current_user
 from models.user import User
 
+from datetime import datetime, timezone
+
 
 router = APIRouter(
     prefix="/admin",
@@ -26,6 +28,20 @@ def require_admin(
     return current_user
 
 
+def stripe_object_dict(obj):
+    if obj is None:
+        return {}
+
+    try:
+        return obj.to_dict()
+    except Exception:
+        pass
+
+    try:
+        return dict(obj)
+    except Exception:
+        return {}
+
 @router.get("/payments")
 def get_admin_payments(
     current_user: User = Depends(require_admin),
@@ -35,228 +51,554 @@ def get_admin_payments(
     try:
         payments = []
 
-        # ============================================================
-        # HOME FULL REPORT PAYMENTS
-        # ============================================================
+        # =========================================================
+        # LOAD USERS
+        # =========================================================
 
-        home_rows = db.execute(
+        users = {}
+
+        user_rows = db.execute(
             text("""
                 SELECT
-                    e.project_id,
-                    e.user_id,
-                    e.full_report_unlocked,
-                    e.stripe_session_id,
-                    e.unlocked_at,
-                    u.email,
-                    u.first_name,
-                    u.last_name,
-                    u.country,
-                    u.city
-                FROM home_project_entitlements e
-                LEFT JOIN users u
-                    ON CAST(u.id AS VARCHAR) = e.user_id
-                WHERE e.stripe_session_id IS NOT NULL
-                ORDER BY e.unlocked_at DESC
+                    id,
+                    email,
+                    first_name,
+                    last_name,
+                    country,
+                    city
+                FROM users
             """)
         ).mappings().all()
 
-        for row in home_rows:
-            session_id = row["stripe_session_id"]
-
-            amount = None
-            currency = None
-            payment_status = "unknown"
-            stripe_created = None
-
-            if session_id:
-                try:
-                    session = stripe.checkout.Session.retrieve(
-                        session_id
-                    )
-
-                    amount_total = session.get("amount_total")
-
-                    if amount_total is not None:
-                        amount = amount_total / 100
-
-                    currency = (
-                        str(session.get("currency") or "")
-                        .upper()
-                        or None
-                    )
-
-                    payment_status = (
-                        session.get("payment_status")
-                        or session.get("status")
-                        or "unknown"
-                    )
-
-                    created = session.get("created")
-
-                    if created:
-                        from datetime import datetime, timezone
-
-                        stripe_created = datetime.fromtimestamp(
-                            created,
-                            tz=timezone.utc,
-                        ).isoformat()
-
-                except Exception as exc:
-                    print(
-                        "Admin payment Stripe lookup failed:",
-                        session_id,
-                        repr(exc),
-                    )
-
-            payments.append(
+        print(
+            "ADMIN PAYMENTS USERS:",
+            [
                 {
-                    "date": stripe_created or row["unlocked_at"],
-                    "user_id": row["user_id"],
+                    "id": row["id"],
                     "email": row["email"],
                     "first_name": row["first_name"],
                     "last_name": row["last_name"],
-                    "country": row["country"],
-                    "city": row["city"],
-                    "product": "Full EMF Insight Report",
-                    "plan": "home_full_report",
-                    "project_id": row["project_id"],
-                    "amount": amount,
-                    "currency": currency,
-                    "status": payment_status,
-                    "stripe_session_id": session_id,
-                    "source": "home_project_entitlement",
                 }
-            )
+                for row in user_rows
+                if str(row["id"]) == "18"
+            ]
+        )
 
-        # ============================================================
-        # BUSINESS CREDIT PAYMENTS
-        # ============================================================
+        for row in user_rows:
+            users[str(row["id"])] = dict(row)
 
-        ledger_rows = db.execute(
+        # =========================================================
+        # LOAD HOME PROJECTS
+        # =========================================================
+
+        projects = {}
+
+        project_rows = db.execute(
             text("""
                 SELECT
-                    l.id,
-                    l.user_id,
-                    l.transaction_type,
-                    l.amount,
-                    l.balance_after,
-                    l.reference_type,
-                    l.reference_id,
-                    l.created_at,
-                    u.email,
-                    u.first_name,
-                    u.last_name,
-                    u.country,
-                    u.city
-                FROM report_credit_ledger l
-                LEFT JOIN users u
-                    ON u.id = l.user_id
-                WHERE l.reference_type IN (
-                    'stripe_checkout',
-                    'stripe_invoice'
+                    id,
+                    user_id
+                FROM projects
+            """)
+        ).mappings().all()
+
+        for row in project_rows:
+            projects[str(row["id"])] = dict(row)
+
+        # =========================================================
+        # STRIPE CHECKOUT SESSIONS
+        # =========================================================
+
+        try:
+            sessions = stripe.checkout.Session.list(
+                limit=100
+            ).data
+        except Exception as exc:
+            print(
+                "Admin payments Stripe Checkout lookup failed:",
+                repr(exc)
+            )
+            sessions = []
+
+        for session_obj in sessions:
+
+            session = stripe_object_dict(session_obj)
+
+            metadata = (
+                session.get("metadata")
+                or {}
+            )
+
+            # Stripe metadata can sometimes be a StripeObject.
+            if not isinstance(metadata, dict):
+                try:
+                    metadata = dict(metadata)
+                except Exception:
+                    metadata = {}
+
+            plan = (
+                metadata.get("plan")
+                or ""
+            )
+
+            # Only EMF Insight products.
+            if plan not in {
+                "home_full_report",
+                "single",
+                "pro",
+            }:
+                continue
+
+            user_id = (
+                metadata.get("user_id")
+                or ""
+            )
+
+            project_id = (
+                metadata.get("project_id")
+                or None
+            )
+
+            user = users.get(
+                str(user_id)
+            ) or {}
+
+            if not user and user_id:
+                try:
+                    user_row = db.execute(
+                        text("""
+                            SELECT
+                                id,
+                                email,
+                                first_name,
+                                last_name,
+                                country,
+                                city
+                            FROM users
+                            WHERE id = :user_id
+                            LIMIT 1
+                        """),
+                        {
+                            "user_id": int(user_id),
+                        },
+                    ).mappings().first()
+
+                    if user_row:
+                        user = dict(user_row)
+
+                except Exception as exc:
+                    print(
+                        "Admin payment user lookup failed:",
+                        user_id,
+                        repr(exc)
+                    )
+
+            amount_total = (
+                session.get("amount_total")
+            )
+
+            amount = (
+                amount_total / 100
+                if amount_total is not None
+                else None
+            )
+
+            currency = (
+                str(
+                    session.get("currency")
+                    or metadata.get("currency")
+                    or ""
+                ).upper()
+                or None
+            )
+
+            checkout_status = (
+                session.get("status")
+                or ""
+            )
+
+            payment_status = (
+                session.get("payment_status")
+                or ""
+            )
+
+            # -----------------------------------------------------
+            # NORMALIZE STATUS
+            # -----------------------------------------------------
+
+            normalized_status = "pending"
+
+            if payment_status == "paid":
+                normalized_status = "paid"
+
+            elif checkout_status == "expired":
+                normalized_status = "expired"
+
+            else:
+                payment_intent_id = (
+                    session.get("payment_intent")
                 )
-                ORDER BY l.created_at DESC
-            """)
-        ).mappings().all()
 
-        for row in ledger_rows:
-            reference_id = row["reference_id"]
+                if payment_intent_id:
 
-            amount = None
-            currency = None
-            payment_status = "unknown"
-            product = "Business Payment"
+                    try:
+                        payment_intent_obj = (
+                            stripe.PaymentIntent.retrieve(
+                                payment_intent_id
+                            )
+                        )
 
-            if row["amount"] == 1:
+                        payment_intent = stripe_object_dict(
+                            payment_intent_obj
+                        )
+
+                        intent_status = (
+                            payment_intent.get("status")
+                            or ""
+                        )
+
+                        if intent_status in {
+                            "succeeded"
+                        }:
+                            normalized_status = "paid"
+
+                        elif intent_status in {
+                            "requires_payment_method",
+                            "canceled",
+                        }:
+                            normalized_status = "failed"
+
+                        elif intent_status in {
+                            "requires_action",
+                            "processing",
+                            "requires_confirmation",
+                            "requires_capture",
+                        }:
+                            normalized_status = "pending"
+
+                    except Exception as exc:
+                        print(
+                            "Admin payment intent lookup failed:",
+                            payment_intent_id,
+                            repr(exc)
+                        )
+
+            # -----------------------------------------------------
+            # SOURCE
+            # -----------------------------------------------------
+
+            if plan == "home_full_report":
+                source = "Home"
+                product = "Full EMF Insight Report"
+            elif plan == "single":
+                source = "Business"
                 product = "Business Single Report"
-
-            elif row["amount"] == 5:
+            elif plan == "pro":
+                source = "Business"
                 product = "Business Pro"
+            else:
+                source = "—"
+                product = plan or "Unknown"
 
-            if reference_id:
+            # -----------------------------------------------------
+            # CREATED
+            # -----------------------------------------------------
+
+            created = session.get("created")
+
+            date_value = None
+
+            if created:
                 try:
-                    if row["reference_type"] == "stripe_checkout":
-                        session = stripe.checkout.Session.retrieve(
-                            reference_id
-                        )
+                    date_value = datetime.fromtimestamp(
+                        created,
+                        tz=timezone.utc
+                    ).isoformat()
+                except Exception:
+                    date_value = None
 
-                        amount_total = session.get("amount_total")
+            payments.append({
+                "date": date_value,
+                "user_id": user_id or None,
+                "email": user.get("email"),
+                "first_name": user.get("first_name"),
+                "last_name": user.get("last_name"),
+                "country": user.get("country"),
+                "city": user.get("city"),
 
-                        if amount_total is not None:
-                            amount = amount_total / 100
+                "source": source,
+                "source_type": (
+                    "home"
+                    if source == "Home"
+                    else "business"
+                ),
 
-                        currency = (
-                            str(session.get("currency") or "")
-                            .upper()
-                            or None
-                        )
+                "project_id": project_id,
 
-                        payment_status = (
-                            session.get("payment_status")
-                            or session.get("status")
-                            or "unknown"
-                        )
+                "product": product,
+                "plan": plan,
 
-                    elif row["reference_type"] == "stripe_invoice":
-                        invoice = stripe.Invoice.retrieve(
-                            reference_id
-                        )
+                "amount": amount,
+                "currency": currency,
 
-                        amount_paid = invoice.get("amount_paid")
+                "status": normalized_status,
 
-                        if amount_paid is not None:
-                            amount = amount_paid / 100
+                "stripe_session_id": (
+                    session.get("id")
+                ),
 
-                        currency = (
-                            str(invoice.get("currency") or "")
-                            .upper()
-                            or None
-                        )
+                "source_id": (
+                    session.get("id")
+                ),
 
-                        payment_status = (
-                            invoice.get("status")
-                            or "unknown"
-                        )
+                "payment_source": "stripe_checkout",
+
+                "checkout_status": checkout_status,
+                "payment_status": payment_status,
+
+                "subscription_id": (
+                    session.get("subscription")
+                ),
+            })
+
+        # =========================================================
+        # STRIPE INVOICES
+        # =========================================================
+
+        try:
+            invoices = stripe.Invoice.list(
+                limit=100
+            ).data
+        except Exception as exc:
+            print(
+                "Admin payments Stripe Invoice lookup failed:",
+                repr(exc)
+            )
+            invoices = []
+
+        # Existing Checkout sessions.
+        # Used to prevent the initial Pro subscription payment
+        # from appearing twice as Checkout + Invoice.
+        checkout_subscription_ids = {
+            str(payment.get("subscription_id"))
+            for payment in payments
+            if payment.get("subscription_id")
+        }
+
+        for invoice_obj in invoices:
+
+            invoice = stripe_object_dict(
+                invoice_obj
+            )
+
+            metadata = (
+                invoice.get("metadata")
+                or {}
+            )
+
+            if not isinstance(metadata, dict):
+                try:
+                    metadata = dict(metadata)
+                except Exception:
+                    metadata = {}
+
+            user_id = (
+                metadata.get("user_id")
+                or ""
+            )
+
+            plan = (
+                metadata.get("plan")
+                or ""
+            )
+
+            subscription_id = (
+                invoice.get("subscription")
+            )
+
+            # -----------------------------------------------------
+            # Skip the first Pro invoice if it belongs to a
+            # subscription already represented by Checkout.
+            # Later recurring invoices are still shown.
+            # -----------------------------------------------------
+
+            billing_reason = (
+                invoice.get("billing_reason")
+                or ""
+            )
+
+            if (
+                plan == "pro"
+                and subscription_id
+                and str(subscription_id)
+                in checkout_subscription_ids
+                and billing_reason
+                in {
+                    "subscription_create",
+                    "subscription_cycle",
+                }
+            ):
+                # Only skip subscription_create.
+                if billing_reason == "subscription_create":
+                    continue
+
+            user = users.get(
+                str(user_id)
+            ) or {}
+
+            if not user and user_id:
+                try:
+                    user_row = db.execute(
+                        text("""
+                            SELECT
+                                id,
+                                email,
+                                first_name,
+                                last_name,
+                                country,
+                                city
+                            FROM users
+                            WHERE id = :user_id
+                            LIMIT 1
+                        """),
+                        {
+                            "user_id": int(user_id),
+                        },
+                    ).mappings().first()
+
+                    if user_row:
+                        user = dict(user_row)
 
                 except Exception as exc:
                     print(
-                        "Admin business payment Stripe lookup failed:",
-                        reference_id,
-                        repr(exc),
+                        "Admin payment user lookup failed:",
+                        user_id,
+                        repr(exc)
                     )
 
-            payments.append(
-                {
-                    "date": row["created_at"],
-                    "user_id": row["user_id"],
-                    "email": row["email"],
-                    "first_name": row["first_name"],
-                    "last_name": row["last_name"],
-                    "country": row["country"],
-                    "city": row["city"],
-                    "product": product,
-                    "plan": (
-                        "business_single"
-                        if row["amount"] == 1
-                        else "business_pro"
-                        if row["amount"] == 5
-                        else None
-                    ),
-                    "project_id": None,
-                    "amount": amount,
-                    "currency": currency,
-                    "status": payment_status,
-                    "stripe_session_id": reference_id,
-                    "source": "report_credit_ledger",
-                }
+            amount_paid = (
+                invoice.get("amount_paid")
             )
 
-        # ============================================================
-        # NEWEST FIRST
-        # ============================================================
+            amount_due = (
+                invoice.get("amount_due")
+            )
+
+            amount_value = (
+                amount_paid
+                if amount_paid is not None
+                else amount_due
+            )
+
+            amount = (
+                amount_value / 100
+                if amount_value is not None
+                else None
+            )
+
+            currency = (
+                str(
+                    invoice.get("currency")
+                    or metadata.get("currency")
+                    or ""
+                ).upper()
+                or None
+            )
+
+            invoice_status = (
+                invoice.get("status")
+                or ""
+            )
+
+            paid = (
+                invoice.get("paid")
+                is True
+            )
+
+            if paid or invoice_status == "paid":
+                normalized_status = "paid"
+
+            elif invoice_status in {
+                "uncollectible"
+            }:
+                normalized_status = "failed"
+
+            elif invoice_status in {
+                "void"
+            }:
+                normalized_status = "expired"
+
+            else:
+                normalized_status = "pending"
+
+            source = "Business"
+            product = "Business Pro"
+
+            created = (
+                invoice.get("created")
+            )
+
+            date_value = None
+
+            if created:
+                try:
+                    date_value = datetime.fromtimestamp(
+                        created,
+                        tz=timezone.utc
+                    ).isoformat()
+                except Exception:
+                    date_value = None
+
+            payments.append({
+                "date": date_value,
+
+                "user_id": user_id or None,
+                "email": user.get("email"),
+                "first_name": user.get("first_name"),
+                "last_name": user.get("last_name"),
+                "country": user.get("country"),
+                "city": user.get("city"),
+
+                "source": source,
+                "source_type": "business",
+
+                "project_id": None,
+
+                "product": product,
+                "plan": plan or "pro",
+
+                "amount": amount,
+                "currency": currency,
+
+                "status": normalized_status,
+
+                "stripe_session_id": (
+                    invoice.get("id")
+                ),
+
+                "source_id": (
+                    invoice.get("id")
+                ),
+
+                "payment_source": "stripe_invoice",
+
+                "checkout_status": None,
+                "payment_status": (
+                    invoice_status
+                ),
+
+                "subscription_id": subscription_id,
+            })
+
+        # =========================================================
+        # SORT
+        # =========================================================
 
         payments.sort(
-            key=lambda item: str(item.get("date") or ""),
+            key=lambda item: (
+                item.get("date")
+                or ""
+            ),
             reverse=True,
         )
 
@@ -272,6 +614,16 @@ def debug_admin_payments(
     db = SessionLocal()
 
     try:
+        result = {
+            "home_project_entitlements": [],
+            "stripe_checkout_sessions": [],
+            "stripe_invoices": [],
+        }
+
+        # ============================================================
+        # HOME ENTITLEMENTS
+        # ============================================================
+
         rows = db.execute(
             text("""
                 SELECT
@@ -285,7 +637,128 @@ def debug_admin_payments(
             """)
         ).mappings().all()
 
-        return [dict(row) for row in rows]
+        result["home_project_entitlements"] = [
+            dict(row)
+            for row in rows
+        ]
+
+        # ============================================================
+        # STRIPE CHECKOUT SESSIONS
+        # ============================================================
+
+        try:
+            sessions = stripe.checkout.Session.list(
+                limit=100,
+            )
+
+            for session in sessions.data:
+                metadata = getattr(session, "metadata", None)
+
+                if isinstance(metadata, dict):
+                    plan = metadata["plan"] if "plan" in metadata else None
+                else:
+                    plan = getattr(metadata, "plan", None)
+
+                if plan not in {
+                    "home_full_report",
+                    "single",
+                    "pro",
+                }:
+                    continue
+
+                result["stripe_checkout_sessions"].append(
+                    {
+                        "id": session.id,
+                        "status": getattr(
+                            session,
+                            "status",
+                            None,
+                        ),
+                        "payment_status": getattr(
+                            session,
+                            "payment_status",
+                            None,
+                        ),
+                        "amount_total": getattr(
+                            session,
+                            "amount_total",
+                            None,
+                        ),
+                        "currency": getattr(
+                            session,
+                            "currency",
+                            None,
+                        ),
+                        "metadata": {
+                            "plan": getattr(metadata, "plan", None),
+                            "user_id": getattr(metadata, "user_id", None),
+                            "project_id": getattr(metadata, "project_id", None),
+                        },
+                    }
+                )
+
+        except Exception as exc:
+            result["stripe_checkout_sessions"] = {
+                "error": repr(exc)
+            }
+
+                # ============================================================
+        # STRIPE INVOICES
+        # ============================================================
+
+        try:
+            invoices = stripe.Invoice.list(
+                limit=100,
+            )
+
+            for invoice in invoices.data:
+                metadata = (
+                    getattr(invoice, "metadata", None)
+                    or {}
+                )
+
+                plan = getattr(metadata, "plan", None)
+
+                if plan not in {
+                    "home_full_report",
+                    "single",
+                    "pro",
+                }:
+                    continue
+
+                result["stripe_invoices"].append(
+                    {
+                        "id": invoice.id,
+                        "status": getattr(
+                            invoice,
+                            "status",
+                            None,
+                        ),
+                        "amount_paid": getattr(
+                            invoice,
+                            "amount_paid",
+                            None,
+                        ),
+                        "currency": getattr(
+                            invoice,
+                            "currency",
+                            None,
+                        ),
+                        "metadata": dict(metadata),
+                        "created": getattr(
+                            invoice,
+                            "created",
+                            None,
+                        ),
+                    }
+                )
+
+        except Exception as exc:
+            result["stripe_invoices"] = {
+                "error": repr(exc)
+            }
+
+        return result
 
     finally:
         db.close()
