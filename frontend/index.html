@@ -27715,56 +27715,7 @@
 
 
     // ==========================================
-    // 2. INDOOR SOURCES EXIST
-    // ==========================================
-
-    if (hasIndoorSources) {
-
-      lockedMessage.textContent =
-        "Your Home assessment is ready for professional review.";
-
-      button.style.display = "";
-
-      button.onclick = function () {
-        openProfessionalAssessmentLocationModal();
-      };
-
-      const title =
-        button.querySelector(
-          ".workflow-action-title"
-        );
-
-      if (title) {
-        title.textContent =
-          "Find a Professional";
-      }
-
-      const subtitle =
-        button.querySelector(
-          ".workflow-action-subtitle"
-        );
-
-      if (subtitle) {
-        subtitle.textContent =
-          "Request an on-site EMF assessment";
-      }
-
-      const icon =
-        button.querySelector(
-          ".workflow-action-icon"
-        );
-
-      if (icon) {
-        icon.textContent =
-          "👤";
-      }
-
-      return;
-    }
-
-
-    // ==========================================
-    // 3. FULL REPORT UNLOCKED
+    // 2. FULL REPORT UNLOCKED
     // ==========================================
 
     if (unlocked) {
@@ -27813,7 +27764,7 @@
 
 
     // ==========================================
-    // 4. DEFAULT — UNLOCK FULL REPORT
+    // 3. DEFAULT — UNLOCK FULL REPORT
     // ==========================================
 
     lockedMessage.textContent =
@@ -27842,7 +27793,7 @@
 
     if (subtitle) {
       subtitle.textContent =
-        "Get the complete report & recommendations";
+        "Unlock your complete EMF Insight report";
     }
 
     const icon =
