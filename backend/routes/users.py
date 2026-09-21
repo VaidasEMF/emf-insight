@@ -118,7 +118,8 @@ def me(
 
         except HTTPException:
             raise
-        except Exception:
+        except Exception as e:
+            print("HOME ENTITLEMENT CHECK FAILED:", repr(e))
             home_full_report_unlocked = False
 
     # IMPORTANT:
