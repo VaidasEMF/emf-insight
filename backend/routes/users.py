@@ -109,7 +109,7 @@ def me(
                       AND user_id = :user_id
                 """),
                 {
-                    "project_id": project_id,
+                    "project_id": str(project_id),
                     "user_id": str(current_user.id),
                 },
             ).scalar()
