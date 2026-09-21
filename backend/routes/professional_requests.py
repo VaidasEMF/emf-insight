@@ -127,8 +127,8 @@ def create_professional_request(
                 created_at
             FROM professional_requests
             WHERE user_id = :user_id
-              AND project_id = :project_id
-              AND status = 'open'
+                AND project_id = :project_id
+                AND status IN ('submitted', 'available', 'contact_unlocked')
             ORDER BY created_at DESC
             LIMIT 1
         """),
@@ -172,7 +172,7 @@ def create_professional_request(
                     :city,
                     :postal_code,
                     :requested_service,
-                    'open'
+                    'available'
                 )
             RETURNING
                 id,
@@ -267,15 +267,6 @@ def get_available_home_projects(
             detail="Professional account required.",
         )
 
-    credits = int(getattr(current_user, "credits", 0) or 0)
-
-    if credits < 1:
-        return {
-            "requests": [],
-            "locked": True,
-            "reason": "Report Credit required.",
-        }
-
     profile = db.execute(
         text("""
             SELECT
@@ -330,7 +321,7 @@ def get_available_home_projects(
                 pr.requested_service,
                 pr.created_at
             FROM professional_requests pr
-            WHERE pr.status = 'open'
+            WHERE pr.status = 'available'
             AND pr.user_id != :user_id
             AND EXISTS (
                 SELECT 1
@@ -417,6 +408,222 @@ def get_available_home_projects(
             for request in requests
         ],
         "locked": False,
+    }
+
+
+@router.post("/professional-requests/{request_id}/unlock-contact")
+def unlock_professional_request_contact(
+    request_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if getattr(current_user, "role", None) != "professional":
+        raise HTTPException(
+            status_code=403,
+            detail="Professional account required.",
+        )
+
+    profile = db.execute(
+        text("""
+            SELECT id, verification_status, availability_status
+            FROM professional_profiles
+            WHERE user_id = :user_id
+            LIMIT 1
+        """),
+        {"user_id": str(current_user.id)},
+    ).mappings().first()
+
+    if not profile:
+        raise HTTPException(
+            status_code=404,
+            detail="Professional profile not found.",
+        )
+
+    if profile["verification_status"] != "verified":
+        raise HTTPException(
+            status_code=403,
+            detail="Professional verification required.",
+        )
+
+    request = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                project_id,
+                country,
+                region,
+                city,
+                postal_code,
+                requested_service,
+                status
+            FROM professional_requests
+            WHERE id = :request_id
+        """),
+        {"request_id": request_id},
+    ).mappings().first()
+
+    if not request:
+        raise HTTPException(
+            status_code=404,
+            detail="Professional assessment request not found.",
+        )
+
+    if str(request["user_id"]) == str(current_user.id):
+        raise HTTPException(
+            status_code=400,
+            detail="You cannot unlock your own request.",
+        )
+
+    if request["status"] != "available":
+        raise HTTPException(
+            status_code=400,
+            detail="This professional request is not available.",
+        )
+
+    existing_unlock = db.execute(
+        text("""
+            SELECT id, unlocked_at
+            FROM professional_request_contacts
+            WHERE request_id = :request_id
+              AND professional_user_id = :professional_user_id
+            LIMIT 1
+        """),
+        {
+            "request_id": request_id,
+            "professional_user_id": str(current_user.id),
+        },
+    ).mappings().first()
+
+    if existing_unlock:
+        return {
+            "status": "contact_unlocked",
+            "already_unlocked": True,
+            "request_id": request_id,
+            "unlocked_at": existing_unlock["unlocked_at"],
+        }
+
+    db.execute(
+        text("""
+            INSERT INTO professional_contact_points (user_id, balance)
+            VALUES (:user_id, 0)
+            ON CONFLICT (user_id) DO NOTHING
+        """),
+        {"user_id": str(current_user.id)},
+    )
+
+    balance_result = db.execute(
+        text("""
+            UPDATE professional_contact_points
+            SET balance = balance - 1,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = :user_id
+              AND balance >= 1
+            RETURNING balance
+        """),
+        {"user_id": str(current_user.id)},
+    ).scalar()
+
+    if balance_result is None:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=402,
+            detail="You need at least 1 Contact Point to unlock this contact.",
+        )
+
+    unlock_result = db.execute(
+        text("""
+            INSERT INTO professional_request_contacts (
+                request_id,
+                professional_user_id
+            )
+            VALUES (
+                :request_id,
+                :professional_user_id
+            )
+            ON CONFLICT (request_id, professional_user_id)
+            DO NOTHING
+            RETURNING id, unlocked_at
+        """),
+        {
+            "request_id": request_id,
+            "professional_user_id": str(current_user.id),
+        },
+    ).mappings().first()
+
+    if not unlock_result:
+        db.execute(
+            text("""
+                UPDATE professional_contact_points
+                SET balance = balance + 1,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE user_id = :user_id
+            """),
+            {"user_id": str(current_user.id)},
+        )
+
+        db.commit()
+
+        existing_unlock = db.execute(
+            text("""
+                SELECT id, unlocked_at
+                FROM professional_request_contacts
+                WHERE request_id = :request_id
+                  AND professional_user_id = :professional_user_id
+                LIMIT 1
+            """),
+            {
+                "request_id": request_id,
+                "professional_user_id": str(current_user.id),
+            },
+        ).mappings().first()
+
+        return {
+            "status": "contact_unlocked",
+            "already_unlocked": True,
+            "request_id": request_id,
+            "unlocked_at": (
+                existing_unlock["unlocked_at"]
+                if existing_unlock
+                else None
+            ),
+        }
+
+    db.execute(
+        text("""
+            INSERT INTO professional_contact_point_ledger (
+                user_id,
+                transaction_type,
+                amount,
+                balance_after,
+                reference_type,
+                reference_id
+            )
+            VALUES (
+                :user_id,
+                'CONTACT_UNLOCK',
+                -1,
+                :balance_after,
+                'professional_request',
+                :request_id
+            )
+        """),
+        {
+            "user_id": str(current_user.id),
+            "balance_after": int(balance_result),
+            "request_id": str(request_id),
+        },
+    )
+
+    db.commit()
+
+    return {
+        "status": "contact_unlocked",
+        "already_unlocked": False,
+        "request_id": request_id,
+        "unlocked_at": unlock_result["unlocked_at"],
+        "contact_points_remaining": int(balance_result),
     }
 
 # =====================

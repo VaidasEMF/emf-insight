@@ -278,6 +278,38 @@ def _ensure_professional_requests_table(db):
     """)
 )
 
+def _ensure_professional_contact_points_tables(db):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS professional_contact_points (
+            user_id VARCHAR(255) PRIMARY KEY,
+            balance INTEGER NOT NULL DEFAULT 0,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS professional_contact_point_ledger (
+            id SERIAL PRIMARY KEY,
+            user_id VARCHAR(255) NOT NULL,
+            transaction_type VARCHAR(50) NOT NULL,
+            amount INTEGER NOT NULL,
+            balance_after INTEGER NOT NULL,
+            reference_type VARCHAR(100),
+            reference_id VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS professional_request_contacts (
+            id SERIAL PRIMARY KEY,
+            request_id INTEGER NOT NULL,
+            professional_user_id VARCHAR(255) NOT NULL,
+            unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(request_id, professional_user_id)
+        )
+    """))
+
 def _claim_stripe_event(db, event_id):
     result = db.execute(
         text("""
@@ -298,6 +330,7 @@ db = SessionLocal()
 
 try:
     _ensure_user_admin_fields(db)
+    _ensure_professional_contact_points_tables(db)
     db.commit()
 finally:
     db.close()
