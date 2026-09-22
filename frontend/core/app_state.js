@@ -254,6 +254,148 @@ propertyType: "",
 //
 // =====================================================
 
+
+// ============================================================
+// EMF PRODUCT CONTEXT
+// ============================================================
+//
+// Account ≠ Workspace ≠ Property ≠ Assessment ≠ Entitlement
+//
+// This is the single runtime context used by product UX.
+// It does NOT replace AppState.
+// It provides a stable interpretation layer over AppState.
+// ============================================================
+
+window.EMFProductContext = {
+
+    account: {
+        role: null,
+        isAdmin: false
+    },
+
+    workspace: {
+        current: null
+    },
+
+    property: {
+        id: null
+    },
+
+    assessment: {
+        id: null,
+        type: null
+    },
+
+    entitlements: {
+        homeFullReport: false,
+        professionalDemo: false
+    }
+
+};
+
+// ============================================================
+// UPDATE EMF PRODUCT CONTEXT
+// ============================================================
+
+function updateEMFProductContext() {
+
+    const project =
+        window.AppState?.project ||
+        null;
+
+    const workspace =
+        window.AppMode?.current ||
+        project?.type ||
+        localStorage.getItem("workspaceMode") ||
+        null;
+
+    const assessmentId =
+        workspace === "home"
+            ? (
+                window.AppState?.propertyAssessment?.id ??
+                window.AppState?.homeProject?.assessmentId ??
+                null
+            )
+            : (
+                window.AppState?.businessProject?.assessmentId ??
+                null
+            );
+
+    const assessmentType =
+        workspace === "home"
+            ? "property"
+            : workspace === "business"
+                ? "professional"
+                : null;
+
+    window.EMFProductContext.workspace.current =
+        workspace;
+
+    window.EMFProductContext.property.id =
+        project?.propertyId ??
+        window.AppState?.homeProject?.propertyId ??
+        null;
+
+    window.EMFProductContext.assessment.id =
+        assessmentId;
+
+    window.EMFProductContext.assessment.type =
+        assessmentType;
+
+    return window.EMFProductContext;
+}
+
+window.updateEMFProductContext =
+    updateEMFProductContext;
+
+    // ============================================================
+// EMF ACCOUNT / PRODUCT HELPERS
+// ============================================================
+
+function isProfessionalAccount() {
+
+    return (
+        window.EMFProductContext?.account?.role ===
+        "professional"
+    );
+}
+
+function isAdminAccount() {
+
+    return (
+        window.EMFProductContext?.account?.isAdmin ===
+        true
+    );
+}
+
+function isHomeWorkspace() {
+
+    return (
+        window.EMFProductContext?.workspace?.current ===
+        "home"
+    );
+}
+
+function isBusinessWorkspace() {
+
+    return (
+        window.EMFProductContext?.workspace?.current ===
+        "business"
+    );
+}
+
+window.isProfessionalAccount =
+    isProfessionalAccount;
+
+window.isAdminAccount =
+    isAdminAccount;
+
+window.isHomeWorkspace =
+    isHomeWorkspace;
+
+window.isBusinessWorkspace =
+    isBusinessWorkspace;
+
 function createProfessionalAssessment() {
 
     // ==================================================

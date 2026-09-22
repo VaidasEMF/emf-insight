@@ -1563,6 +1563,149 @@
             color: var(--success);
         }
 
+        .admin-professionals-filters {
+            display: grid;
+            grid-template-columns:
+                minmax(240px, 1.7fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr);
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 14px;
+        }
+
+        .admin-professional-filter-search,
+        .admin-professional-filter-field {
+            min-width: 0;
+        }
+
+        .admin-professional-filter-search label,
+        .admin-professional-filter-field label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4e596b;
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .admin-professional-filter-search input,
+        .admin-professional-filter-field select {
+            width: 100%;
+            min-height: 38px;
+            box-sizing: border-box;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 8px 10px;
+            background: #fff;
+            color: var(--text);
+            font: inherit;
+            font-size: 11px;
+        }
+
+        .admin-professional-filter-search input:focus,
+        .admin-professional-filter-field select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .admin-professionals-pagination-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .admin-professionals-filter-count {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .admin-professionals-page-size {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+
+        .admin-professionals-page-size label {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .admin-professionals-page-size select {
+            min-height: 34px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 6px 9px;
+            background: #fff;
+            color: var(--text);
+            font-size: 11px;
+        }
+
+        .admin-professionals-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .admin-professionals-pagination-info {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .admin-professionals-pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .admin-professionals-page-button {
+            min-width: 32px;
+            height: 32px;
+            padding: 0 8px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: #4e596b;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .admin-professionals-page-button:hover:not(:disabled) {
+            background: var(--surface-soft);
+        }
+
+        .admin-professionals-page-button.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .admin-professionals-page-button:disabled {
+            opacity: .45;
+            cursor: default;
+        }
+
+        @media (max-width: 900px) {
+            .admin-professionals-filters {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .admin-professionals-filters {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-professionals-pagination-toolbar,
+            .admin-professionals-pagination {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
         @media (max-width: 760px) {
             .admin-professionals-toolbar {
                 align-items: flex-start;
@@ -2326,6 +2469,58 @@
         .admin-payment-stripe-link:hover {
             text-decoration: underline;
         }
+
+        .admin-professional-request-status {
+            display: inline-flex;
+            align-items: center;
+
+            min-height: 28px;
+            padding: 5px 10px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+            font-weight: 750;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .admin-professional-request-status.status-submitted {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .admin-professional-request-status.status-available,
+        .admin-professional-request-status.status-open {
+            background: #ecfdf3;
+            color: #15803d;
+        }
+
+        .admin-professional-request-status.status-contact_unlocked {
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
+
+        .admin-professional-request-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+
+            background: #eefaf3;
+            border: 1px solid #b7e1c8;
+
+            color: #166534;
+            font-size: 12px;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .admin-professional-request-status[data-status="contact_unlocked"] {
+            background: #eef4ff;
+            border-color: #bfd3f5;
+            color: #1d4ed8;
+        }
     </style>
 </head>
 
@@ -2359,6 +2554,10 @@
                     <a class="nav-link" href="index.html" onclick="startNewProject(); return false;">
                         <span class="nav-icon">➕</span>
                         <span>New Project</span>
+                    </a>
+                    <a class="nav-link" id="homeProfessionalRequestsNav" href="#home-professional-requests">
+                        <span class="nav-icon">👤</span>
+                        <span>My Professional Requests</span>
                     </a>
                     <a class="nav-link" href="#projects">
                         <span class="nav-icon">📁</span>
@@ -2973,6 +3172,51 @@
                     </div>
                 </section>
 
+                <!-- =========================
+     HOME PROFESSIONAL REQUESTS
+     ========================= -->
+                <section class="section" id="home-professional-requests"
+                    aria-labelledby="home-professional-requests-title">
+                    <div class="section-heading">
+                        <div>
+                            <h2 class="section-title" id="home-professional-requests-title">
+                                My Professional Requests
+                            </h2>
+
+                            <p class="section-description">
+                                Track requests submitted for an on-site EMF assessment.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+
+                        <div class="content-card-header">
+                            <div>
+                                <h3>Professional Assessment Requests</h3>
+                                <p>
+                                    Your Home Wellness requests and their current status.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="content-body" id="homeProfessionalRequestsContainer">
+                            <div class="empty-state">
+                                <div class="empty-icon">👤</div>
+
+                                <div class="empty-title">
+                                    Loading requests
+                                </div>
+
+                                <div class="empty-copy">
+                                    Please wait.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
                 <section class="section" id="reports" aria-labelledby="reports-title">
                     <div class="section-heading">
                         <div>
@@ -3136,10 +3380,78 @@ ADMIN PROFESSIONALS
                                     Loading professionals...
                                 </div>
 
-                                <button type="button" class="admin-professionals-add"
-                                    onclick="openAdminProfessionalCreate();">
-                                    + Add Professional
-                                </button>
+                            </div>
+
+                            <div class="admin-professionals-filters">
+
+                                <div class="admin-professional-filter-search">
+                                    <label for="adminProfessionalsSearch">
+                                        Search
+                                    </label>
+
+                                    <input type="search" id="adminProfessionalsSearch"
+                                        placeholder="Name, company, email, user ID..."
+                                        oninput="filterAdminProfessionals();">
+                                </div>
+
+                                <div class="admin-professional-filter-field">
+                                    <label for="adminProfessionalsAvailability">
+                                        Availability
+                                    </label>
+
+                                    <select id="adminProfessionalsAvailability" onchange="filterAdminProfessionals();">
+                                        <option value="">All availability</option>
+                                        <option value="available">Available</option>
+                                        <option value="unavailable">Unavailable</option>
+                                    </select>
+                                </div>
+
+                                <div class="admin-professional-filter-field">
+                                    <label for="adminProfessionalsVerification">
+                                        Verification
+                                    </label>
+
+                                    <select id="adminProfessionalsVerification" onchange="filterAdminProfessionals();">
+                                        <option value="">All verification</option>
+                                        <option value="verified">Verified</option>
+                                        <option value="not_requested">Not requested</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </div>
+
+                                <div class="admin-professional-filter-field">
+                                    <label for="adminProfessionalsCountry">
+                                        Country
+                                    </label>
+
+                                    <select id="adminProfessionalsCountry" onchange="filterAdminProfessionals();">
+                                        <option value="">All countries</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="admin-professionals-pagination-toolbar">
+
+                                <div class="admin-professionals-filter-count" id="adminProfessionalsFilterCount">
+                                    Showing all professionals
+                                </div>
+
+                                <div class="admin-professionals-page-size">
+
+                                    <label for="adminProfessionalsPageSize">
+                                        Per page
+                                    </label>
+
+                                    <select id="adminProfessionalsPageSize"
+                                        onchange="changeAdminProfessionalsPageSize();">
+                                        <option value="10" selected>10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                    </select>
+
+                                </div>
 
                             </div>
 
@@ -3722,11 +4034,11 @@ ADMIN PAYMENTS
             <div class="admin-modal-header">
 
                 <h3 id="adminProfessionalModalTitle">
-                    Add Professional
+                    Edit Professional
                 </h3>
 
                 <p id="adminProfessionalModalSubtitle">
-                    Create a professional profile.
+                    Update professional profile.
                 </p>
 
             </div>
@@ -3786,14 +4098,6 @@ ADMIN PAYMENTS
                     </div>
 
                     <div class="admin-modal-field">
-                        <label for="adminProfessionalCountryCode">
-                            Country Code
-                        </label>
-
-                        <input type="text" id="adminProfessionalCountryCode" placeholder="IE" maxlength="2">
-                    </div>
-
-                    <div class="admin-modal-field">
                         <label for="adminProfessionalCountry">
                             Country
                         </label>
@@ -3839,17 +4143,23 @@ ADMIN PAYMENTS
                         <label for="adminProfessionalVerification">
                             Verification
                         </label>
+                        <select id="adminProfessionalVerification" disabled>
+                            <option value="not_requested">
+                                Not requested
+                            </option>
 
-                        <select id="adminProfessionalVerification">
                             <option value="pending">
                                 Pending
                             </option>
+
                             <option value="verified">
                                 Verified
                             </option>
+
                             <option value="rejected">
                                 Rejected
                             </option>
+
                             <option value="suspended">
                                 Suspended
                             </option>
@@ -4080,6 +4390,9 @@ ADMIN PAYMENTS
         let adminProfessionalEntries = [];
         let adminProfessionalEditingId = null;
 
+        let adminProfessionalsPage = 1;
+        let adminProfessionalsPageSize = 10;
+
         let adminProfessionalDemoEntries = [];
 
         const token = localStorage.getItem("token");
@@ -4184,6 +4497,26 @@ ADMIN PAYMENTS
             if (brandingNav) {
                 brandingNav.style.display =
                     isHome ? "none" : "";
+            }
+
+            const homeProfessionalRequestsSection =
+                document.getElementById(
+                    "home-professional-requests"
+                );
+
+            const homeProfessionalRequestsNav =
+                document.getElementById(
+                    "homeProfessionalRequestsNav"
+                );
+
+            if (homeProfessionalRequestsSection) {
+                homeProfessionalRequestsSection.style.display =
+                    isHome ? "" : "none";
+            }
+
+            if (homeProfessionalRequestsNav) {
+                homeProfessionalRequestsNav.style.display =
+                    isHome ? "" : "none";
             }
 
 
@@ -5640,6 +5973,7 @@ ADMIN PAYMENTS
             }
         }
 
+
         async function openAdminUserActions(userId) {
             try {
                 const response = await fetch(
@@ -5681,9 +6015,16 @@ ADMIN PAYMENTS
             }
         }
 
+
         function showAdminUserModal(data) {
 
             const user = data?.user || {};
+
+            const professionalProfile =
+                data?.professional_profile || null;
+
+            window.adminActiveUserProfessionalProfile =
+                professionalProfile;
 
             const homeProjects =
                 Array.isArray(data?.home_projects)
@@ -5741,6 +6082,116 @@ ADMIN PAYMENTS
 
             const isSuspended =
                 status === "suspended";
+
+            const professionalProfileHtml =
+                professionalProfile
+                    ? `
+            <div class="admin-modal-grid">
+
+                <div class="admin-modal-field">
+                    <label>Name</label>
+                    <div>
+                        ${escape(
+                        [
+                            professionalProfile.first_name,
+                            professionalProfile.last_name
+                        ]
+                            .filter(Boolean)
+                            .join(" ") || "—"
+                    )}
+                    </div>
+                </div>
+
+                <div class="admin-modal-field">
+                    <label>Company</label>
+                    <div>
+                        ${escape(
+                        professionalProfile.company_name || "—"
+                    )}
+                    </div>
+                </div>
+
+                <div class="admin-modal-field">
+                    <label>Professional Email</label>
+                    <div>
+                        ${escape(
+                        professionalProfile.professional_email || "—"
+                    )}
+                    </div>
+                </div>
+
+                <div class="admin-modal-field">
+                    <label>Professional Phone</label>
+                    <div>
+                        ${escape(
+                        professionalProfile.professional_phone || "—"
+                    )}
+                    </div>
+                </div>
+
+                <div class="admin-modal-field">
+                    <label>Location</label>
+                    <div>
+                        ${escape(
+                        [
+                            professionalProfile.city,
+                            professionalProfile.country
+                        ]
+                            .filter(Boolean)
+                            .join(", ") || "—"
+                    )}
+                    </div>
+                </div>
+
+                <div class="admin-modal-field">
+                    <label>Postal Code</label>
+                    <div>
+                        ${escape(
+                        professionalProfile.postal_code || "—"
+                    )}
+                    </div>
+                </div>
+
+                <div class="admin-modal-field">
+                    <label>Availability</label>
+                    <div>
+                        ${escape(
+                        professionalProfile.availability_status || "—"
+                    )}
+                    </div>
+                </div>
+
+                <div class="admin-modal-field">
+                    <label>Verification</label>
+                    <div>
+                        ${escape(
+                        professionalProfile.verification_status || "—"
+                    )}
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="margin-top:12px;">
+                <button
+                    type="button"
+                    class="admin-action-button"
+                    onclick="
+                        openAdminUserProfessionalEdit(
+    ${Number(user.id)}
+);
+                    "
+                >
+                    Edit Professional Profile
+                </button>
+            </div>
+        `
+                    : `
+            <div class="admin-user-empty">
+                This user does not have a Professional Profile.
+            </div>
+
+        `;
 
 
             const homeHtml = `
@@ -6093,6 +6544,20 @@ ADMIN PAYMENTS
 
                 </div>
 
+                <!-- PROFESSIONAL PROFILE -->
+
+<div class="admin-user-modal-section">
+
+    <h4>
+        Professional Profile
+    </h4>
+
+    <div>
+        ${professionalProfileHtml}
+    </div>
+
+</div>
+
 
                 <!-- HOME -->
 
@@ -6242,6 +6707,7 @@ ADMIN PAYMENTS
 
             document.body.appendChild(modal);
         }
+
 
         function getFilteredAdminPayments() {
 
@@ -7935,6 +8401,8 @@ ADMIN PAYMENTS
                         `${data.length} professional${data.length === 1 ? "" : "s"}`;
                 }
 
+                adminProfessionalsPage = 1;
+
                 renderAdminProfessionals();
 
             } catch (error) {
@@ -8291,6 +8759,8 @@ ADMIN PAYMENTS
         </div>
     `;
         }
+
+
         function openAdminProfessionalDemoCreate() {
             const modal = document.getElementById("adminProfessionalDemoModal");
             const status = document.getElementById("adminProfessionalDemoModalStatus");
@@ -8498,27 +8968,240 @@ ADMIN PAYMENTS
                 return;
             }
 
-            if (!adminProfessionalEntries.length) {
+            const search =
+                (
+                    document.getElementById(
+                        "adminProfessionalsSearch"
+                    )?.value || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const availabilityFilter =
+                document.getElementById(
+                    "adminProfessionalsAvailability"
+                )?.value || "";
+
+            const verificationFilter =
+                document.getElementById(
+                    "adminProfessionalsVerification"
+                )?.value || "";
+
+            const countryFilter =
+                document.getElementById(
+                    "adminProfessionalsCountry"
+                )?.value || "";
+
+            const filteredEntries =
+                adminProfessionalEntries.filter(
+                    professional => {
+
+                        const fullName =
+                            [
+                                professional.first_name,
+                                professional.last_name
+                            ]
+                                .filter(Boolean)
+                                .join(" ")
+                                .toLowerCase();
+
+                        const company =
+                            String(
+                                professional.company_name || ""
+                            ).toLowerCase();
+
+                        const email =
+                            String(
+                                professional.professional_email || ""
+                            ).toLowerCase();
+
+                        const userId =
+                            String(
+                                professional.user_id || ""
+                            ).toLowerCase();
+
+                        const city =
+                            String(
+                                professional.city || ""
+                            ).toLowerCase();
+
+                        const country =
+                            String(
+                                professional.country || ""
+                            ).toLowerCase();
+
+                        const matchesSearch =
+                            !search ||
+                            fullName.includes(search) ||
+                            company.includes(search) ||
+                            email.includes(search) ||
+                            userId.includes(search) ||
+                            city.includes(search) ||
+                            country.includes(search);
+
+                        const availability =
+                            String(
+                                professional.availability_status ||
+                                "unavailable"
+                            ).toLowerCase();
+
+                        const verification =
+                            String(
+                                professional.verification_status ||
+                                "pending"
+                            ).toLowerCase();
+
+                        const matchesAvailability =
+                            !availabilityFilter ||
+                            availability === availabilityFilter;
+
+                        const matchesVerification =
+                            !verificationFilter ||
+                            verification === verificationFilter;
+
+                        const matchesCountry =
+                            !countryFilter ||
+                            country === countryFilter;
+
+                        return (
+                            matchesSearch &&
+                            matchesAvailability &&
+                            matchesVerification &&
+                            matchesCountry
+                        );
+                    }
+                );
+
+            /*
+             * Country filter options are generated from
+             * the complete Professional dataset.
+             */
+            const countrySelect =
+                document.getElementById(
+                    "adminProfessionalsCountry"
+                );
+
+            if (countrySelect) {
+
+                const currentCountry =
+                    countrySelect.value;
+
+                const countries =
+                    [...new Set(
+                        adminProfessionalEntries
+                            .map(
+                                professional =>
+                                    String(
+                                        professional.country || ""
+                                    ).trim()
+                            )
+                            .filter(Boolean)
+                    )]
+                        .sort(
+                            (a, b) =>
+                                a.localeCompare(b)
+                        );
+
+                countrySelect.innerHTML =
+                    `<option value="">All countries</option>` +
+                    countries
+                        .map(
+                            country =>
+                                `<option value="${escapeHtml(country)}">${escapeHtml(country)}</option>`
+                        )
+                        .join("");
+
+                if (
+                    countries.includes(
+                        currentCountry
+                    )
+                ) {
+                    countrySelect.value =
+                        currentCountry;
+                }
+            }
+
+            const total =
+                filteredEntries.length;
+
+            const totalPages =
+                Math.max(
+                    1,
+                    Math.ceil(
+                        total /
+                        adminProfessionalsPageSize
+                    )
+                );
+
+            if (
+                adminProfessionalsPage >
+                totalPages
+            ) {
+                adminProfessionalsPage =
+                    totalPages;
+            }
+
+            const start =
+                (
+                    adminProfessionalsPage - 1
+                ) *
+                adminProfessionalsPageSize;
+
+            const end =
+                Math.min(
+                    start +
+                    adminProfessionalsPageSize,
+                    total
+                );
+
+            const pageEntries =
+                filteredEntries.slice(
+                    start,
+                    end
+                );
+
+            const filterCount =
+                document.getElementById(
+                    "adminProfessionalsFilterCount"
+                );
+
+            if (filterCount) {
+
+                if (!total) {
+                    filterCount.textContent =
+                        "No professionals match the current filters";
+                } else {
+                    filterCount.textContent =
+                        `Showing ${start + 1}–${end} of ${total} professionals`;
+                }
+            }
+
+            if (!pageEntries.length) {
 
                 container.innerHTML = `
-                <div class="empty-state">
+            <div class="empty-state">
                 <div class="empty-icon">!</div>
 
                 <div class="empty-title">
-                    No professionals
+                    No professionals found
                 </div>
 
                 <div class="empty-copy">
-                    No professional profiles have been added yet.
+                    Try changing the search or filters.
                 </div>
             </div>
-                `;
+        `;
+
+                renderAdminProfessionalsPagination(
+                    total,
+                    totalPages
+                );
 
                 return;
             }
 
             container.innerHTML = `
-                <table>
+        <table>
 
             <thead>
                 <tr>
@@ -8533,7 +9216,7 @@ ADMIN PAYMENTS
 
             <tbody>
 
-                ${adminProfessionalEntries.map(
+                ${pageEntries.map(
                 professional => {
 
                     const fullName =
@@ -8543,7 +9226,8 @@ ADMIN PAYMENTS
                         ]
                             .filter(Boolean)
                             .join(" ")
-                        || "Unnamed professional";
+                        ||
+                        "Unnamed professional";
 
                     const location =
                         [
@@ -8552,19 +9236,23 @@ ADMIN PAYMENTS
                         ]
                             .filter(Boolean)
                             .join(", ")
-                        || "?";
+                        ||
+                        "?";
 
                     const email =
                         professional.professional_email
-                        || "?";
+                        ||
+                        "?";
 
                     const availability =
                         professional.availability_status
-                        || "unavailable";
+                        ||
+                        "unavailable";
 
                     const verification =
                         professional.verification_status
-                        || "pending";
+                        ||
+                        "pending";
 
                     return `
                             <tr>
@@ -8579,6 +9267,17 @@ ADMIN PAYMENTS
                                                 <div class="admin-professional-company">
                                                     ${escapeHtml(
                                 professional.company_name
+                            )}
+                                                </div>
+                                            `
+                            : ""
+                        }
+
+                                    ${professional.user_id
+                            ? `
+                                                <div class="admin-professional-company">
+                                                    User #${escapeHtml(
+                                professional.user_id
                             )}
                                                 </div>
                                             `
@@ -8616,7 +9315,8 @@ ADMIN PAYMENTS
                         )}">
                                         ${escapeHtml(
                             availability.charAt(0).toUpperCase()
-                            + availability.slice(1)
+                            +
+                            availability.slice(1)
                         )}
                                     </span>
                                 </td>
@@ -8627,7 +9327,8 @@ ADMIN PAYMENTS
                         )}">
                                         ${escapeHtml(
                             verification.charAt(0).toUpperCase()
-                            + verification.slice(1)
+                            +
+                            verification.slice(1)
                         )}
                                     </span>
                                 </td>
@@ -8636,9 +9337,19 @@ ADMIN PAYMENTS
                                     <button
                                         type="button"
                                         class="admin-edit-button"
-                                        onclick="${verification === "pending" ? "openAdminProfessionalReview(" + professional.id + ")" : "openAdminProfessionalEdit(" + professional.id + ")"}"
+                                        onclick="${verification === "pending"
+                            ? "openAdminProfessionalReview(" +
+                            professional.id +
+                            ")"
+                            : "openAdminProfessionalEdit(" +
+                            professional.id +
+                            ")"
+                        }"
                                     >
-                                        ${verification === "pending" ? "Review" : "Edit"}
+                                        ${verification === "pending"
+                            ? "Review"
+                            : "Edit"
+                        }
                                     </button>
                                 </td>
 
@@ -8650,22 +9361,405 @@ ADMIN PAYMENTS
             </tbody>
 
         </table>
-                `;
+    `;
+
+            renderAdminProfessionalsPagination(
+                total,
+                totalPages
+            );
+        }
+
+        function renderAdminProfessionalsPagination(
+            total,
+            totalPages
+        ) {
+
+            const existing =
+                document.getElementById(
+                    "adminProfessionalsPagination"
+                );
+
+            if (existing) {
+                existing.remove();
+            }
+
+            if (!total) {
+                return;
+            }
+
+            const container =
+                document.getElementById(
+                    "adminProfessionalsContainer"
+                );
+
+            if (!container) {
+                return;
+            }
+
+            const start =
+                (
+                    adminProfessionalsPage - 1
+                ) *
+                adminProfessionalsPageSize;
+
+            const end =
+                Math.min(
+                    start +
+                    adminProfessionalsPageSize,
+                    total
+                );
+
+            const wrapper =
+                document.createElement("div");
+
+            wrapper.id =
+                "adminProfessionalsPagination";
+
+            wrapper.className =
+                "admin-professionals-pagination";
+
+            const info =
+                document.createElement("div");
+
+            info.className =
+                "admin-professionals-pagination-info";
+
+            info.textContent =
+                `Showing ${start + 1}–${end} of ${total}`;
+
+            const buttons =
+                document.createElement("div");
+
+            buttons.className =
+                "admin-professionals-pagination-buttons";
+
+            const previous =
+                document.createElement("button");
+
+            previous.type = "button";
+            previous.className =
+                "admin-professionals-page-button";
+
+            previous.textContent =
+                "Previous";
+
+            previous.disabled =
+                adminProfessionalsPage <= 1;
+
+            previous.onclick = () => {
+
+                if (
+                    adminProfessionalsPage <= 1
+                ) {
+                    return;
+                }
+
+                adminProfessionalsPage--;
+
+                renderAdminProfessionals();
+            };
+
+            buttons.appendChild(previous);
+
+            for (
+                let page = 1;
+                page <= totalPages;
+                page++
+            ) {
+
+                const button =
+                    document.createElement("button");
+
+                button.type = "button";
+
+                button.className =
+                    "admin-professionals-page-button";
+
+                if (
+                    page ===
+                    adminProfessionalsPage
+                ) {
+                    button.classList.add(
+                        "active"
+                    );
+                }
+
+                button.textContent =
+                    String(page);
+
+                button.onclick = () => {
+
+                    adminProfessionalsPage =
+                        page;
+
+                    renderAdminProfessionals();
+                };
+
+                buttons.appendChild(button);
+            }
+
+            const next =
+                document.createElement("button");
+
+            next.type = "button";
+
+            next.className =
+                "admin-professionals-page-button";
+
+            next.textContent =
+                "Next";
+
+            next.disabled =
+                adminProfessionalsPage >= totalPages;
+
+            next.onclick = () => {
+
+                if (
+                    adminProfessionalsPage >=
+                    totalPages
+                ) {
+                    return;
+                }
+
+                adminProfessionalsPage++;
+
+                renderAdminProfessionals();
+            };
+
+            buttons.appendChild(next);
+
+            wrapper.appendChild(info);
+            wrapper.appendChild(buttons);
+
+            container.parentNode.appendChild(
+                wrapper
+            );
+        }
+
+        function renderAdminProfessionalsPagination(
+            total,
+            totalPages
+        ) {
+
+            const existing =
+                document.getElementById(
+                    "adminProfessionalsPagination"
+                );
+
+            if (existing) {
+                existing.remove();
+            }
+
+            if (!total) {
+                return;
+            }
+
+            const container =
+                document.getElementById(
+                    "adminProfessionalsContainer"
+                );
+
+            if (!container) {
+                return;
+            }
+
+            const start =
+                (
+                    adminProfessionalsPage - 1
+                ) *
+                adminProfessionalsPageSize;
+
+            const end =
+                Math.min(
+                    start +
+                    adminProfessionalsPageSize,
+                    total
+                );
+
+            const wrapper =
+                document.createElement("div");
+
+            wrapper.id =
+                "adminProfessionalsPagination";
+
+            wrapper.className =
+                "admin-professionals-pagination";
+
+            const info =
+                document.createElement("div");
+
+            info.className =
+                "admin-professionals-pagination-info";
+
+            info.textContent =
+                `Showing ${start + 1}–${end} of ${total}`;
+
+            const buttons =
+                document.createElement("div");
+
+            buttons.className =
+                "admin-professionals-pagination-buttons";
+
+            const previous =
+                document.createElement("button");
+
+            previous.type = "button";
+            previous.className =
+                "admin-professionals-page-button";
+
+            previous.textContent =
+                "Previous";
+
+            previous.disabled =
+                adminProfessionalsPage <= 1;
+
+            previous.onclick = () => {
+
+                if (
+                    adminProfessionalsPage <= 1
+                ) {
+                    return;
+                }
+
+                adminProfessionalsPage--;
+
+                renderAdminProfessionals();
+            };
+
+            buttons.appendChild(previous);
+
+            for (
+                let page = 1;
+                page <= totalPages;
+                page++
+            ) {
+
+                const button =
+                    document.createElement("button");
+
+                button.type = "button";
+
+                button.className =
+                    "admin-professionals-page-button";
+
+                if (
+                    page ===
+                    adminProfessionalsPage
+                ) {
+                    button.classList.add(
+                        "active"
+                    );
+                }
+
+                button.textContent =
+                    String(page);
+
+                button.onclick = () => {
+
+                    adminProfessionalsPage =
+                        page;
+
+                    renderAdminProfessionals();
+                };
+
+                buttons.appendChild(button);
+            }
+
+            const next =
+                document.createElement("button");
+
+            next.type = "button";
+
+            next.className =
+                "admin-professionals-page-button";
+
+            next.textContent =
+                "Next";
+
+            next.disabled =
+                adminProfessionalsPage >= totalPages;
+
+            next.onclick = () => {
+
+                if (
+                    adminProfessionalsPage >=
+                    totalPages
+                ) {
+                    return;
+                }
+
+                adminProfessionalsPage++;
+
+                renderAdminProfessionals();
+            };
+
+            buttons.appendChild(next);
+
+            wrapper.appendChild(info);
+            wrapper.appendChild(buttons);
+
+            container.parentNode.appendChild(
+                wrapper
+            );
+        }
+
+        function filterAdminProfessionals() {
+
+            adminProfessionalsPage = 1;
+
+            renderAdminProfessionals();
         }
 
 
-        function openAdminProfessionalCreate() {
+        function changeAdminProfessionalsPageSize() {
 
-            adminProfessionalEditingId = null;
+            const select =
+                document.getElementById(
+                    "adminProfessionalsPageSize"
+                );
+
+            adminProfessionalsPageSize =
+                Number(
+                    select?.value || 10
+                );
+
+            adminProfessionalsPage = 1;
+
+            renderAdminProfessionals();
+        }
+
+        function openAdminUserProfessionalEdit(userId) {
+
+            window.adminProfessionalEditFromUserId =
+                Number(userId);
+
+            const profile =
+                window.adminActiveUserProfessionalProfile;
+
+            if (
+                !profile ||
+                Number(profile.user_id) !== Number(userId)
+            ) {
+                alert(
+                    "Professional Profile data is not available."
+                );
+
+                return;
+            }
+
+            adminProfessionalEditingId =
+                profile.id;
 
             document.getElementById(
                 "adminProfessionalModalTitle"
-            ).textContent = "Add Professional";
+            ).textContent =
+                "Edit Professional Profile";
 
             document.getElementById(
                 "adminProfessionalModalSubtitle"
             ).textContent =
-                "Create a professional profile.";
+                `${profile.first_name || ""} ${profile.last_name || ""}`.trim()
+                || "Update professional profile.";
 
             document.getElementById(
                 "adminProfessionalModalStatus"
@@ -8673,73 +9767,91 @@ ADMIN PAYMENTS
 
             document.getElementById(
                 "adminProfessionalUserId"
-            ).value = "";
+            ).value =
+                profile.user_id || "";
 
             document.getElementById(
                 "adminProfessionalUserId"
-            ).disabled = false;
+            ).disabled = true;
 
             document.getElementById(
                 "adminProfessionalCompany"
-            ).value = "";
+            ).value =
+                profile.company_name || "";
 
             document.getElementById(
                 "adminProfessionalFirstName"
-            ).value = "";
+            ).value =
+                profile.first_name || "";
 
             document.getElementById(
                 "adminProfessionalLastName"
-            ).value = "";
+            ).value =
+                profile.last_name || "";
 
             document.getElementById(
                 "adminProfessionalEmail"
-            ).value = "";
+            ).value =
+                profile.professional_email || "";
 
             document.getElementById(
                 "adminProfessionalPhone"
-            ).value = "";
-
-            document.getElementById(
-                "adminProfessionalCountryCode"
-            ).value = "";
+            ).value =
+                profile.professional_phone || "";
 
             document.getElementById(
                 "adminProfessionalCountry"
-            ).value = "";
+            ).value =
+                profile.country || "";
 
             document.getElementById(
                 "adminProfessionalCity"
-            ).value = "";
+            ).value =
+                profile.city || "";
 
             document.getElementById(
                 "adminProfessionalPostalCode"
-            ).value = "";
+            ).value =
+                profile.postal_code || "";
 
             document.getElementById(
                 "adminProfessionalAvailability"
-            ).value = "unavailable";
+            ).value =
+                profile.availability_status ||
+                "unavailable";
 
             document.getElementById(
                 "adminProfessionalVerification"
-            ).value = "pending";
+            ).value =
+                profile.verification_status ||
+                "pending";
 
-            const reviewActions = document.getElementById("adminProfessionalReviewActions");
-
+            const reviewActions =
+                document.getElementById(
+                    "adminProfessionalReviewActions"
+                );
 
             if (reviewActions) {
-
                 reviewActions.style.display = "none";
-
             }
 
+            const professionalModal =
+                document.getElementById(
+                    "adminProfessionalModal"
+                );
 
-            document.getElementById("adminProfessionalModal").style.display = "flex";
+            if (professionalModal) {
+                professionalModal.style.zIndex = "1100";
+                professionalModal.style.display = "flex";
+            }
         }
 
 
         function openAdminProfessionalEdit(
             professionalId
         ) {
+
+            window.adminProfessionalEditFromUserId = null;
 
             const professional =
                 adminProfessionalEntries.find(
@@ -8804,11 +9916,6 @@ ADMIN PAYMENTS
                 professional.professional_phone || "";
 
             document.getElementById(
-                "adminProfessionalCountryCode"
-            ).value =
-                professional.country_code || "";
-
-            document.getElementById(
                 "adminProfessionalCountry"
             ).value =
                 professional.country || "";
@@ -8845,7 +9952,15 @@ ADMIN PAYMENTS
             }
 
 
-            document.getElementById("adminProfessionalModal").style.display = "flex";
+            const professionalModal =
+                document.getElementById(
+                    "adminProfessionalModal"
+                );
+
+            if (professionalModal) {
+                professionalModal.style.zIndex = "1100";
+                professionalModal.style.display = "flex";
+            }
         }
 
 
@@ -8916,11 +10031,6 @@ ADMIN PAYMENTS
                 professional.professional_phone || "";
 
             document.getElementById(
-                "adminProfessionalCountryCode"
-            ).value =
-                professional.country_code || "";
-
-            document.getElementById(
                 "adminProfessionalCountry"
             ).value =
                 professional.country || "";
@@ -8953,6 +10063,8 @@ ADMIN PAYMENTS
 
             document.getElementById("adminProfessionalModal").style.display = "flex";
         }
+
+
 
         async function reviewAdminProfessional(
             decision
@@ -9016,15 +10128,15 @@ ADMIN PAYMENTS
             try {
 
                 const response = await fetch(
-                    `${API} /admin/professionals / ${adminProfessionalEditingId} `,
+                    `${API}/admin/professionals/${adminProfessionalEditingId}/verification`,
                     {
                         method: "PATCH",
                         headers: {
-                            "Authorization": `Bearer ${token} `,
+                            "Authorization": `Bearer ${token}`,
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            verification_status: decision
+                            decision: decision
                         })
                     }
                 );
@@ -9121,12 +10233,6 @@ ADMIN PAYMENTS
                     "adminProfessionalPhone"
                 ).value.trim();
 
-            const countryCode =
-                document.getElementById(
-                    "adminProfessionalCountryCode"
-                ).value.trim()
-                    .toUpperCase();
-
             const country =
                 document.getElementById(
                     "adminProfessionalCountry"
@@ -9147,11 +10253,6 @@ ADMIN PAYMENTS
                     "adminProfessionalAvailability"
                 ).value;
 
-            const verificationStatus =
-                document.getElementById(
-                    "adminProfessionalVerification"
-                ).value;
-
             if (!userId) {
 
                 status.textContent =
@@ -9163,27 +10264,6 @@ ADMIN PAYMENTS
                 return;
             }
 
-            if (!countryCode || countryCode.length !== 2) {
-
-                status.textContent =
-                    "Please enter a valid two-letter country code.";
-
-                status.className =
-                    "admin-professionals-status error";
-
-                return;
-            }
-
-            if (!city) {
-
-                status.textContent =
-                    "City / Town is required.";
-
-                status.className =
-                    "admin-professionals-status error";
-
-                return;
-            }
 
             const payload = {
 
@@ -9199,23 +10279,17 @@ ADMIN PAYMENTS
                 professional_phone:
                     phone || null,
 
-                country_code:
-                    countryCode,
-
                 country:
                     country || null,
 
                 city:
-                    city,
+                    city || null,
 
                 postal_code:
                     postalCode || null,
 
                 availability_status:
                     availabilityStatus,
-
-                verification_status:
-                    verificationStatus
             };
 
             button.disabled = true;
@@ -9227,21 +10301,19 @@ ADMIN PAYMENTS
 
             try {
 
-                const isEdit =
-                    adminProfessionalEditingId !== null;
+                if (adminProfessionalEditingId === null) {
+                    throw new Error(
+                        "No Professional Profile selected for editing."
+                    );
+                }
 
                 const url =
-                    isEdit
-                        ? `${API} /admin/professionals / ${adminProfessionalEditingId} `
-                        : `${API} /admin/professionals`;
+                    `${API}/admin/professionals/${adminProfessionalEditingId}`;
 
                 const response = await fetch(
                     url,
                     {
-                        method:
-                            isEdit
-                                ? "PATCH"
-                                : "POST",
+                        method: "PATCH",
 
                         headers: {
                             ...authHeaders(),
@@ -9293,18 +10365,26 @@ ADMIN PAYMENTS
                 await response.json();
 
                 status.textContent =
-                    isEdit
-                        ? "Professional updated successfully."
-                        : "Professional created successfully.";
+                    "Professional updated successfully.";
 
                 status.className =
                     "admin-professionals-status success";
 
                 await loadAdminProfessionals();
 
-                setTimeout(() => {
-                    closeAdminProfessionalModal();
-                }, 500);
+                const refreshUserId =
+                    window.adminProfessionalEditFromUserId;
+
+                closeAdminProfessionalModal();
+
+                if (refreshUserId) {
+                    await openAdminUserActions(
+                        refreshUserId
+                    );
+                }
+
+                window.adminProfessionalEditFromUserId =
+                    null;
 
             } catch (error) {
 
@@ -9599,6 +10679,167 @@ ADMIN PAYMENTS
             }
         }
 
+        async function loadHomeProfessionalRequests() {
+
+            const container =
+                document.getElementById(
+                    "homeProfessionalRequestsContainer"
+                );
+
+            if (!container) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `${API}/professional-requests/mine`,
+                    {
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Professional requests request failed: ${response.status}`
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                const requests =
+                    Array.isArray(data.requests)
+                        ? data.requests
+                        : [];
+
+                if (!requests.length) {
+
+                    container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">👤</div>
+
+                    <div class="empty-title">
+                        No professional assessment requests
+                    </div>
+
+                    <div class="empty-copy">
+                        When you request an on-site EMF assessment,
+                        your request will appear here.
+                    </div>
+                </div>
+            `;
+
+                    return;
+                }
+
+                container.innerHTML = `
+            <div class="admin-pricing-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request</th>
+                            <th>Project</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${requests.map(request => `
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        Professional EMF Assessment
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    #${escapeHtml(request.project_id)}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                    [
+                        request.city,
+                        request.region,
+                        request.country
+                    ]
+                        .filter(Boolean)
+                        .join(", ")
+                    || "—"
+                )}
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ${formatHomeProfessionalRequestStatus(
+                    request.status
+                )}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                    request.created_at || "—"
+                )}
+                                </td>
+
+                            </tr>
+
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+            } catch (error) {
+
+                console.error(
+                    "Load Home professional requests error:",
+                    error
+                );
+
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">!</div>
+
+                <div class="empty-title">
+                    Unable to load requests
+                </div>
+
+                <div class="empty-copy">
+                    Please try again later.
+                </div>
+            </div>
+        `;
+            }
+        }
+
+        function formatHomeProfessionalRequestStatus(status) {
+
+            switch (status) {
+
+                case "submitted":
+                    return "Request Submitted";
+
+                case "available":
+                    return "Available to Professionals";
+
+                case "contact_unlocked":
+                    return "Professional Contact Unlocked";
+
+                default:
+                    return "Request Submitted";
+            }
+        }
+
         async function loadUser() {
             try {
                 const res = await fetch(`${API}/me`, {
@@ -9646,6 +10887,10 @@ ADMIN PAYMENTS
                 document.getElementById("userName").textContent = displayName;
                 const dashboardMode =
                     localStorage.getItem("workspaceMode") || "business";
+
+                if (dashboardMode === "home") {
+                    await loadHomeProfessionalRequests();
+                }
 
                 const workspaceLabel =
                     dashboardMode === "home"
@@ -11171,142 +12416,173 @@ ADMIN PAYMENTS
 
 
         async function loadAdminProfessionalRequests() {
-            const nav = document.getElementById("adminProfessionalRequestsNav");
-            const section = document.getElementById("admin-professional-requests");
-            const status = document.getElementById("adminProfessionalRequestsStatus");
-            const body = document.getElementById("adminProfessionalRequestsBody");
+            const nav =
+                document.getElementById(
+                    "adminProfessionalRequestsNav"
+                );
 
-            if (!nav || !section || !status || !body) return;
+            const section =
+                document.getElementById(
+                    "admin-professional-requests"
+                );
+
+            const status =
+                document.getElementById(
+                    "adminProfessionalRequestsStatus"
+                );
+
+            const body =
+                document.getElementById(
+                    "adminProfessionalRequestsBody"
+                );
+
+            if (!nav || !section || !status || !body) {
+                return;
+            }
 
             nav.style.display = "";
             section.style.display = "";
 
             try {
-                const res = await fetch(`${API}/admin/professional-requests`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
 
-                if (!res.ok) {
-                    throw new Error(`Professional requests request failed: ${res.status}`);
-                }
-
-                const data = await res.json();
-                const requests = Array.isArray(data.requests)
-                    ? data.requests
-                    : [];
-
-                if (!requests.length) {
-                    status.textContent = "No professional assessment requests.";
-                    body.innerHTML = `
-                        <tr>
-                            <td colspan="6">
-                                No requests found.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                status.textContent =
-                    `${requests.length} professional assessment request${requests.length === 1 ? "" : "s"}.`;
-
-                body.innerHTML = requests.map(request => `
-                    <tr>
-                        <td>#${request.id}</td>
-                        <td>User ${request.user_id}</td>
-                        <td>#${request.project_id}</td>
-                        <td>
-                            ${[
-                        request.city,
-                        request.region,
-                        request.country
-                    ].filter(Boolean).join(", ") || "?"}
-                        </td>
-                        <td>
-    <select
-        class="admin-professional-status"
-        data-request-id="${request.id}"
-        onchange="updateAdminProfessionalRequestStatus(this)"
-    >
-        ${[
-                        "open",
-                        "contacted",
-                        "scheduled",
-                        "completed",
-                        "closed"
-                    ].map(status => `
-            <option
-                value="${status}"
-                ${request.status === status ? "selected" : ""}
-            >
-                ${status}
-            </option>
-        `).join("")}
-    </select>
-</td>
-                        <td>${request.created_at || "?"}</td>
-                    </tr>
-                `).join("");
-
-            } catch (error) {
-                console.error("Load admin professional requests error:", error);
-                status.textContent = "Unable to load professional assessment requests.";
-                body.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            Unable to load requests.
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-
-        async function updateAdminProfessionalRequestStatus(select) {
-            const requestId = select.dataset.requestId;
-            const newStatus = select.value;
-
-            try {
                 const res = await fetch(
-                    `${API}/admin/professional-requests/${requestId}`,
+                    `${API}/admin/professional-requests`,
                     {
-                        method: "PATCH",
                         headers: {
-                            ...authHeaders(),
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            status: newStatus
-                        })
+                            "Authorization": `Bearer ${token}`
+                        }
                     }
                 );
 
                 if (!res.ok) {
                     throw new Error(
-                        `Status update failed: ${res.status}`
+                        `Professional requests request failed: ${res.status}`
                     );
                 }
 
-                const data = await res.json();
+                const data =
+                    await res.json();
 
-                console.log(
-                    "Professional assessment request status updated:",
-                    data
-                );
+                const requests =
+                    Array.isArray(data.requests)
+                        ? data.requests
+                        : [];
+
+                if (!requests.length) {
+
+                    status.textContent =
+                        "No professional assessment requests.";
+
+                    body.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        No requests found.
+                    </td>
+                </tr>
+            `;
+
+                    return;
+                }
+
+                status.textContent =
+                    `${requests.length} professional assessment request${requests.length === 1 ? "" : "s"
+                    }.`;
+
+                body.innerHTML =
+                    requests.map(request => `
+
+                <tr>
+
+                    <td>
+                        #${request.id}
+                    </td>
+
+                    <td>
+                        User ${request.user_id}
+                    </td>
+
+                    <td>
+                        #${request.project_id}
+                    </td>
+
+                    <td>
+                        ${[
+                            request.city,
+                            request.region,
+                            request.country
+                        ]
+                            .filter(Boolean)
+                            .join(", ")
+                        || "?"
+                        }
+                    </td>
+
+                    <td>
+
+                        <select
+    class="admin-professional-status"
+    data-request-id="${request.id}"
+    onchange="updateAdminProfessionalRequestStatus(this)"
+>
+    ${[
+                            "available",
+                            "contact_unlocked"
+                        ].map(status => `
+    <option
+        value="${status}"
+        ${request.status === status ? "selected" : ""}
+    >
+        ${status === "available"
+                                ? "Available"
+                                : "Contact Unlocked"}
+    </option>
+`).join("")}
+</select>
+
+                    </td>
+
+                    <td>
+                        ${request.created_at || "?"}
+                    </td>
+
+                </tr>
+
+            `).join("");
 
             } catch (error) {
+
                 console.error(
-                    "Update professional assessment request status error:",
+                    "Load admin professional requests error:",
                     error
                 );
 
-                alert(
-                    "Unable to update the professional assessment request status."
-                );
+                status.textContent =
+                    "Unable to load professional assessment requests.";
 
-                await loadAdminProfessionalRequests();
+                body.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Unable to load requests.
+                </td>
+            </tr>
+        `;
+            }
+        }
+
+        function formatProfessionalRequestStatus(status) {
+            switch (status) {
+
+                case "submitted":
+                    return "Request Submitted";
+
+                case "available":
+                    return "Available";
+
+                case "contact_unlocked":
+                    return "Contact Unlocked";
+
+                default:
+                    return "Request";
             }
         }
 
@@ -11820,8 +13096,22 @@ ADMIN PAYMENTS
                     profile.postal_code
                 ];
 
+                const requiredFieldsComplete =
+                    requiredFields.every(
+                        value => String(value || "").trim()
+                    );
+
+                const serviceAreas =
+                    Array.isArray(profile.service_areas)
+                        ? profile.service_areas
+                        : [];
+
+                const hasServiceArea =
+                    serviceAreas.length > 0;
+
                 const profileComplete =
-                    requiredFields.every(value => String(value || "").trim());
+                    requiredFieldsComplete &&
+                    hasServiceArea;
 
                 const completeProfileAction =
                     document.getElementById(
@@ -12560,9 +13850,6 @@ ADMIN PAYMENTS
         initDashboard().then(() => {
             initializeDashboardScrollSpy();
         });
-
-
-
 
 
         function openAdminProfessionalDemoSend(demoId) {

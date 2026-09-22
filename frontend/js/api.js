@@ -4383,6 +4383,106 @@ window.closeProjectMenu =
     closeProjectMenu;
 
 
+    async function refreshHomeReportEntitlement() {
+    if (window.AppMode?.current !== "home") {
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        return;
+    }
+
+    const projectId =
+        AppState?.project?.project_id ??
+        AppState?.project?.id ??
+        AppState?.homeProject?.project_id ??
+        AppState?.homeProject?.id ??
+        null;
+
+    if (!projectId) {
+        console.warn(
+            "HOME ENTITLEMENT: no active project"
+        );
+        return;
+    }
+
+    const API =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+            ? "http://127.0.0.1:8000"
+            : "https://emf-insight.onrender.com";
+
+    try {
+        const meRes = await fetch(
+            `${API}/me?project_id=${encodeURIComponent(projectId)}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        if (!meRes.ok) {
+            console.warn(
+                "HOME ENTITLEMENT: /me failed",
+                meRes.status
+            );
+            return;
+        }
+
+        const me = await meRes.json();
+
+        window.homeFullReportUnlocked =
+            me.home_full_report_unlocked === true;
+
+        window.isAdmin =
+            me.is_admin === true;
+
+        window.EMFProductContext.account.role =
+            me.role || null;
+
+        window.EMFProductContext.account.isAdmin =
+            me.is_admin === true;
+
+        window.EMFProductContext.entitlements.homeFullReport =
+            me.home_full_report_unlocked === true;
+
+        window.EMFProductContext.entitlements.professionalDemo =
+            me.professional_demo_active === true;
+
+        updateEMFProductContext();
+
+        console.log(
+            "HOME ENTITLEMENT REFRESHED:",
+            {
+                projectId,
+                unlocked:
+                    window.homeFullReportUnlocked,
+                admin:
+                    window.isAdmin
+            }
+        );
+
+        requestAnimationFrame(() => {
+            updateHomeProfessionalAssessment?.();
+            updateHomeOutputState?.(
+                window.homeFullReportUnlocked
+            );
+        });
+
+    } catch (err) {
+        console.error(
+            "HOME ENTITLEMENT REFRESH FAILED:",
+            err
+        );
+    }
+}
+
+
+
+
 // =====================================================
 // 🔥 LOAD PROFESSIONAL / BUSINESS PROJECT
 // =====================================================
@@ -4786,10 +4886,24 @@ async function loadProject(
             AppState.homeProject =
                 project;
 
+            // Home project is now canonical and active.
+            // Refresh the project-scoped Full Report entitlement.
+            await refreshHomeReportEntitlement();
+
         } else {
 
             AppState.businessProject =
                 project;
+        }
+
+        // ==================================================
+        // SYNC EMF PRODUCT CONTEXT
+        // ==================================================
+
+        if (
+            typeof window.updateEMFProductContext === "function"
+        ) {
+            window.updateEMFProductContext();
         }
 
 

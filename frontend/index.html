@@ -16976,9 +16976,40 @@
 
     #homeProfessionalAssessmentLocked {
       font-size: 12px;
-      line-height: 1.4;
-      color: #64748b;
-      margin-bottom: 9px;
+      line-height: 1.45;
+      color: #334155;
+      margin-bottom: 12px;
+    }
+
+    #homeProfessionalAssessmentLocked.request-submitted {
+      padding: 10px 11px;
+      border: 1px solid #b7e1c8;
+      border-radius: 10px;
+      background: #eefaf3;
+      color: #166534;
+      font-weight: 650;
+    }
+
+    #homeProfessionalAssessmentLocked.request-submitted .request-status-label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    #homeProfessionalAssessmentLocked.request-submitted .request-status-copy {
+      display: block;
+      font-weight: 600;
+    }
+
+    .home-request-status-link {
+      display: inline-block;
+      margin-top: 7px;
+      color: #166534;
+      font-weight: 750;
+      text-decoration: underline;
     }
 
     #homeProfessionalAssessment #homeBtnProfessionalAssessment {
@@ -17092,6 +17123,25 @@
       background: #f8fafc;
       color: #475569;
       font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .professional-assessment-availability.unavailable {
+      background: #fff8e6;
+      border: 1px solid #f1d48a;
+      color: #7a5200;
+    }
+
+    .professional-assessment-availability.unavailable strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #8a5a00;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .professional-assessment-availability.unavailable span {
+      display: block;
       line-height: 1.45;
     }
 
@@ -17542,6 +17592,77 @@
         margin-right: 20px;
       }
 
+      .professional-assessment-consent-section {
+        margin-top: 18px;
+        padding: 12px 13px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .professional-assessment-consent-title {
+        margin-bottom: 7px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: #475569;
+      }
+
+      .professional-assessment-consent {
+        margin-top: 0;
+      }
+
+      .professional-assessment-actions button.primary-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+
+      .professional-assessment-result-dialog {
+        width: min(460px, calc(100vw - 32px));
+        max-width: 460px;
+        padding: 30px 30px 26px;
+        text-align: center;
+      }
+
+      .professional-assessment-result-icon {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 16px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #eefaf3;
+        border: 1px solid #b7e1c8;
+
+        color: #15803d;
+        font-size: 27px;
+        font-weight: 800;
+      }
+
+      .professional-assessment-result-dialog .professional-assessment-title {
+        margin-bottom: 8px;
+      }
+
+      .professional-assessment-result-dialog .professional-assessment-subtitle {
+        max-width: 380px;
+        margin: 0 auto;
+        line-height: 1.55;
+      }
+
+      .professional-assessment-result-actions {
+        margin-top: 24px;
+      }
+
+      .professional-assessment-result-actions .primary-btn {
+        width: 100%;
+      }
 
     }
   </style>
@@ -18395,16 +18516,26 @@
             </div>
 
 
-            <label class="professional-assessment-consent">
-              <input type="checkbox" id="professionalAssessmentLocationConsent">
+            <div class="professional-assessment-consent-section">
 
-              <span>
-                I agree to share this location information for professional matching.
-                <button type="button" class="read-more-link" onclick="openProfessionalAssessmentTerms(event);">
-                  Read more...
-                </button>
-              </span>
-            </label>
+              <div class="professional-assessment-consent-title">
+                Location Sharing
+              </div>
+
+              <label class="professional-assessment-consent">
+                <input type="checkbox" id="professionalAssessmentLocationConsent"
+                  onchange="updateProfessionalAssessmentSubmitState();">
+
+                <span>
+                  I agree to share this location information for professional matching.
+
+                  <button type="button" class="read-more-link" onclick="openProfessionalAssessmentTerms(event);">
+                    Read more...
+                  </button>
+                </span>
+              </label>
+
+            </div>
 
             <div class="professional-assessment-actions">
 
@@ -18412,8 +18543,42 @@
                 Cancel
               </button>
 
-              <button type="button" class="primary-btn" onclick="createProfessionalRequest();">
+              <button type="button" id="professionalAssessmentLocationSubmit" class="primary-btn"
+                onclick="createProfessionalRequest();" disabled>
                 Submit Request
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================================
+     PROFESSIONAL REQUEST RESULT
+     ================================ -->
+        <div id="professionalAssessmentResultModal" class="professional-assessment-modal" style="display:none;"
+          aria-hidden="true">
+          <div class="professional-assessment-backdrop"></div>
+
+          <div class="professional-assessment-dialog professional-assessment-result-dialog" role="dialog"
+            aria-modal="true" aria-labelledby="professionalAssessmentResultTitle">
+
+            <div id="professionalAssessmentResultIcon" class="professional-assessment-result-icon">
+              ✓
+            </div>
+
+            <div id="professionalAssessmentResultTitle" class="professional-assessment-title">
+              Request Submitted
+            </div>
+
+            <div id="professionalAssessmentResultMessage" class="professional-assessment-subtitle">
+              Your professional assessment request has been submitted successfully.
+            </div>
+
+            <div class="professional-assessment-result-actions">
+
+              <button type="button" class="primary-btn" onclick="closeProfessionalAssessmentResultModal();">
+                OK
               </button>
 
             </div>
@@ -27511,8 +27676,13 @@
 
       } else {
 
-        availabilityEl.textContent =
-          "No EMF professionals are currently listed in this area. You can still submit your request. Your request will be recorded and help us understand demand in this location.";
+        availabilityEl.innerHTML = `
+        <strong>⚠ No professionals currently listed</strong>
+        <span>
+            There are currently no EMF professionals listed in this area.
+            You can still submit a request.
+        </span>
+    `;
 
         availabilityEl.className =
           "professional-assessment-availability unavailable";
@@ -27554,7 +27724,6 @@
     );
   }
 
-
   function openProfessionalAssessmentLocationModal() {
 
     const modal =
@@ -27570,69 +27739,122 @@
     }
 
     modal.style.display = "flex";
+
     modal.setAttribute(
       "aria-hidden",
       "false"
     );
 
-    const professionalAssessmentLocationCancel =
+    const consent =
       document.getElementById(
-        "professionalAssessmentLocationCancel"
+        "professionalAssessmentLocationConsent"
       );
 
-    if (professionalAssessmentLocationCancel) {
-      professionalAssessmentLocationCancel.onclick =
-        function () {
-          closeProfessionalAssessmentLocationModal();
-        };
+    if (consent) {
+      consent.checked = false;
     }
-    const professionalAssessmentLocationSubmit =
+
+    updateProfessionalAssessmentSubmitState();
+  }
+
+  function showProfessionalAssessmentResult(
+    type,
+    title,
+    message
+  ) {
+
+    const modal =
       document.getElementById(
-        "professionalAssessmentLocationSubmit"
+        "professionalAssessmentResultModal"
       );
 
-    if (professionalAssessmentLocationSubmit) {
-      professionalAssessmentLocationSubmit.onclick =
-        function () {
+    const icon =
+      document.getElementById(
+        "professionalAssessmentResultIcon"
+      );
 
-          const country =
-            document.getElementById(
-              "professionalAssessmentCountry"
-            )?.value.trim();
+    const titleEl =
+      document.getElementById(
+        "professionalAssessmentResultTitle"
+      );
 
-          const adminArea =
-            document.getElementById(
-              "professionalAssessmentAdminArea"
-            )?.value.trim();
+    const messageEl =
+      document.getElementById(
+        "professionalAssessmentResultMessage"
+      );
 
-          const city =
-            document.getElementById(
-              "professionalAssessmentCity"
-            )?.value.trim();
-
-          const postalCode =
-            document.getElementById(
-              "professionalAssessmentPostalCode"
-            )?.value.trim();
-
-          const consent =
-            document.getElementById(
-              "professionalAssessmentMatchingConsent"
-            )?.checked === true;
-
-          console.log(
-            "Professional Assessment Location:",
-            {
-              country,
-              adminArea,
-              city,
-              postalCode,
-              consent
-            }
-          );
-        };
+    if (!modal || !icon || !titleEl || !messageEl) {
+      return;
     }
 
+    if (type === "error") {
+
+      icon.textContent = "!";
+      icon.style.background = "#fff8e6";
+      icon.style.borderColor = "#f1d48a";
+      icon.style.color = "#8a5a00";
+
+    } else {
+
+      icon.textContent = "✓";
+      icon.style.background = "#eefaf3";
+      icon.style.borderColor = "#b7e1c8";
+      icon.style.color = "#15803d";
+    }
+
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+
+    modal.dataset.resultType = type;
+
+    modal.style.display = "flex";
+
+    modal.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+  }
+
+  function closeProfessionalAssessmentResultModal() {
+
+    const modal =
+      document.getElementById(
+        "professionalAssessmentResultModal"
+      );
+
+    if (!modal) {
+      return;
+    }
+
+    const resultType =
+      modal.dataset.resultType;
+
+    modal.style.display = "none";
+
+    modal.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+    // For an error, return to the location form.
+    if (resultType === "error") {
+
+      const locationModal =
+        document.getElementById(
+          "professionalAssessmentLocationModal"
+        );
+
+      if (locationModal) {
+        locationModal.style.display = "flex";
+
+        locationModal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+      }
+    }
+
+    delete modal.dataset.resultType;
   }
 
   function signOut() {
@@ -27670,55 +27892,138 @@
       return;
     }
 
-    const unlocked =
-      window.homeFullReportUnlocked === true;
+    const context =
+      window.EMFProductContext || {};
+
+    const professional =
+      context.account?.role === "professional";
+
+    const admin =
+      context.account?.isAdmin === true;
+
+    const homeWorkspace =
+      context.workspace?.current === "home";
+
+    const homeFullReport =
+      context.entitlements?.homeFullReport === true;
 
     const request =
       window.homeProfessionalRequest;
 
+    // ========================================================
+    // NOT HOME WORKSPACE
+    // ========================================================
 
-    // ==========================================
-    // HOME INDOOR SOURCES
-    // ==========================================
+    if (!homeWorkspace) {
+      button.style.display = "none";
+      lockedMessage.textContent = "";
+      return;
+    }
 
-    const floor =
-      typeof getCurrentFloor === "function"
-        ? getCurrentFloor()
-        : null;
-
-    const indoorSources =
-      Array.isArray(floor?.sources)
-        ? floor.sources.filter(
-          source =>
-            source &&
-            source.placementType !== "outdoor"
-        )
-        : [];
-
-    const hasIndoorSources =
-      indoorSources.length > 0;
-
-
-    // ==========================================
-    // 1. REQUEST ALREADY SUBMITTED
-    // ==========================================
+    // ========================================================
+    // REQUEST ALREADY SUBMITTED
+    // ========================================================
 
     if (request) {
 
-      lockedMessage.textContent =
-        "Your professional assessment request has been submitted. Status: Request submitted.";
+      lockedMessage.classList.add(
+        "request-submitted"
+      );
+
+      lockedMessage.innerHTML = `
+    <span class="request-status-label">
+      ✓ Request Submitted
+    </span>
+    <span class="request-status-copy">
+      Your professional assessment request has been submitted successfully.
+    </span>
+    <a
+      href="dashboard.html#home-professional-requests"
+      style="
+        display:inline-block;
+        margin-top:7px;
+        color:#166534;
+        font-weight:750;
+        text-decoration:underline;
+      "
+    >
+      View Request Status →
+    </a>
+  `;
 
       button.style.display = "none";
 
       return;
     }
 
+    // ========================================================
+    // PROFESSIONAL ACCOUNT
+    // ========================================================
+    //
+    // The account is already registered as a professional.
+    // Do not present "Unlock Professional" as if the user
+    // needs to become a professional.
+    //
+    // The Home workspace remains usable.
+    // The CTA points back to Business Survey.
+    // ========================================================
 
-    // ==========================================
-    // 2. FULL REPORT UNLOCKED
-    // ==========================================
+    if (professional || admin) {
 
-    if (unlocked) {
+      lockedMessage.textContent =
+        "Professional account detected. You are already registered as an EMF professional.";
+
+      button.style.display = "";
+
+      button.onclick = function () {
+
+        if (typeof window.setAppMode === "function") {
+          window.setAppMode("business");
+          return;
+        }
+
+        console.warn(
+          "setAppMode() is not available."
+        );
+      };
+
+      const title =
+        button.querySelector(
+          ".workflow-action-title"
+        );
+
+      const subtitle =
+        button.querySelector(
+          ".workflow-action-subtitle"
+        );
+
+      const icon =
+        button.querySelector(
+          ".workflow-action-icon"
+        );
+
+      if (title) {
+        title.textContent =
+          "Go to Business Survey";
+      }
+
+      if (subtitle) {
+        subtitle.textContent =
+          "Continue with Professional EMF Survey";
+      }
+
+      if (icon) {
+        icon.textContent = "💼";
+      }
+
+      return;
+    }
+
+    // ========================================================
+    // HOME FULL REPORT UNLOCKED
+    // ========================================================
+
+    if (homeFullReport) {
 
       lockedMessage.textContent =
         "Your Home assessment is ready for professional review.";
@@ -27734,41 +28039,39 @@
           ".workflow-action-title"
         );
 
-      if (title) {
-        title.textContent =
-          "Find a Professional";
-      }
-
       const subtitle =
         button.querySelector(
           ".workflow-action-subtitle"
         );
-
-      if (subtitle) {
-        subtitle.textContent =
-          "Request an on-site EMF assessment";
-      }
 
       const icon =
         button.querySelector(
           ".workflow-action-icon"
         );
 
+      if (title) {
+        title.textContent =
+          "Find a Professional";
+      }
+
+      if (subtitle) {
+        subtitle.textContent =
+          "Request an on-site EMF assessment";
+      }
+
       if (icon) {
-        icon.textContent =
-          "👤";
+        icon.textContent = "👤";
       }
 
       return;
     }
 
-
-    // ==========================================
-    // 3. DEFAULT — UNLOCK FULL REPORT
-    // ==========================================
+    // ========================================================
+    // HOME FULL REPORT LOCKED
+    // ========================================================
 
     lockedMessage.textContent =
-      "Unlock the complete EMF Insight report for €9 one-time.";
+      "Unlock the Full EMF Insight Report for this Home Project.";
 
     button.style.display = "";
 
@@ -27781,29 +28084,28 @@
         ".workflow-action-title"
       );
 
-    if (title) {
-      title.textContent =
-        "Unlock Full Report";
-    }
-
     const subtitle =
       button.querySelector(
         ".workflow-action-subtitle"
       );
-
-    if (subtitle) {
-      subtitle.textContent =
-        "Unlock your complete EMF Insight report";
-    }
 
     const icon =
       button.querySelector(
         ".workflow-action-icon"
       );
 
+    if (title) {
+      title.textContent =
+        "Unlock Full Report";
+    }
+
+    if (subtitle) {
+      subtitle.textContent =
+        "Get the complete report & recommendations";
+    }
+
     if (icon) {
-      icon.textContent =
-        "🔒";
+      icon.textContent = "🔒";
     }
   }
 
@@ -28140,6 +28442,27 @@
   }
   populateProfessionalAssessmentCountries();
 
+
+  function updateProfessionalAssessmentSubmitState() {
+
+    const consent =
+      document.getElementById(
+        "professionalAssessmentLocationConsent"
+      );
+
+    const submitButton =
+      document.querySelector(
+        "#professionalAssessmentLocationModal .professional-assessment-actions .primary-btn"
+      );
+
+    if (!submitButton) {
+      return;
+    }
+
+    submitButton.disabled =
+      consent?.checked !== true;
+  }
+
   async function createProfessionalRequest() {
 
     const token = localStorage.getItem("token");
@@ -28150,38 +28473,15 @@
     }
 
     // ==================================================
-    // HOME INDOOR SOURCES
+    // HOME FULL REPORT ENTITLEMENT
     //
-    // A professional assessment can be requested when
-    // the Home project contains at least one Indoor Source.
-    //
-    // Full Report unlock is also sufficient.
+    // Find a Professional is available only after the
+    // project-specific Full EMF Insight Report is unlocked.
     // ==================================================
 
-    const floor =
-      typeof getCurrentFloor === "function"
-        ? getCurrentFloor()
-        : null;
-
-    const indoorSources =
-      Array.isArray(floor?.sources)
-        ? floor.sources.filter(
-          source =>
-            source &&
-            source.placementType !== "outdoor"
-        )
-        : [];
-
-    const hasIndoorSources =
-      indoorSources.length > 0;
-
-    // Home Full Report OR Indoor Source is required
-    if (
-      window.homeFullReportUnlocked !== true &&
-      !hasIndoorSources
-    ) {
+    if (window.homeFullReportUnlocked !== true) {
       alert(
-        "Please add an Indoor Source or unlock your Full EMF Insight Report before requesting a professional assessment."
+        "Please unlock the Full EMF Insight Report before requesting a professional assessment."
       );
       return;
     }
@@ -28244,9 +28544,7 @@
 
     // Validate location-sharing consent
     if (!consent) {
-      alert(
-        "Please agree to share your location information for professional matching."
-      );
+      updateProfessionalAssessmentSubmitState();
       return;
     }
 
@@ -28294,20 +28592,42 @@
 
       if (!response.ok) {
 
-        alert(
+        showProfessionalAssessmentResult(
+          "error",
+          "Request Could Not Be Submitted",
           data.detail ||
-          "Unable to create professional assessment request."
+          "Unable to submit the professional assessment request. Please try again."
         );
 
         return;
       }
 
-      // Request successfully submitted
-      alert(
-        "Professional Assessment Requested.\n\n" +
-        "Your request has been submitted successfully.\n" +
-        "Status: Request submitted."
+      // -----------------------------------------
+      // REQUEST SUCCESS
+      // -----------------------------------------
+
+      window.homeProfessionalRequest =
+        data.request || data;
+
+      // Update Home sidebar.
+      updateHomeProfessionalAssessment();
+
+      // Close location form.
+      closeProfessionalAssessmentLocationModal();
+
+      // Show styled success dialog.
+      showProfessionalAssessmentResult(
+        "success",
+        "Request Submitted",
+        "Your professional assessment request has been submitted successfully."
       );
+
+      console.log(
+        "Professional request created:",
+        data
+      );
+
+      return;
 
       // Update Home sidebar
       const lockedMessage =
@@ -28320,13 +28640,32 @@
           "homeBtnProfessionalAssessment"
         );
 
-      if (lockedMessage) {
-        lockedMessage.textContent =
-          "Your professional assessment request has been submitted. Status: Request submitted.";
-      }
+      if (request) {
 
-      if (button) {
+        lockedMessage.classList.add(
+          "request-submitted"
+        );
+
+        lockedMessage.innerHTML = `
+        <span class="request-status-label">
+            ✓ Request Submitted
+        </span>
+
+        <span class="request-status-copy">
+            Your professional assessment request has been submitted successfully.
+        </span>
+
+        <a
+            href="dashboard.html#home-professional-requests"
+            class="home-request-status-link"
+        >
+            View Request Status →
+        </a>
+    `;
+
         button.style.display = "none";
+
+        return;
       }
 
       // Save current request in memory
@@ -28352,10 +28691,34 @@
         error
       );
 
-      alert(
-        "Unable to submit the professional assessment request."
+      showProfessionalAssessmentResult(
+        "error",
+        "Request Could Not Be Submitted",
+        "Unable to submit the professional assessment request. Please try again."
       );
+
+      return;
     }
+  }
+
+  function updateProfessionalAssessmentSubmitState() {
+
+    const consent =
+      document.getElementById(
+        "professionalAssessmentLocationConsent"
+      );
+
+    const submitButton =
+      document.getElementById(
+        "professionalAssessmentLocationSubmit"
+      );
+
+    if (!submitButton) {
+      return;
+    }
+
+    submitButton.disabled =
+      consent?.checked !== true;
   }
 
   window.onload = async () => {
@@ -29082,14 +29445,26 @@
           if (meRes.ok) {
             const me = await meRes.json();
 
+            console.log("HOME ENTITLEMENT STARTUP:", {
+              activeHomeProjectId,
+              meUrl,
+              home_full_report_unlocked:
+                me.home_full_report_unlocked,
+              is_admin:
+                me.is_admin
+            });
+
             window.homeFullReportUnlocked =
               me.home_full_report_unlocked === true;
 
             window.isAdmin =
               me.is_admin === true;
-            updateHomeProfessionalAssessment?.();
 
             await loadProfessionalAssessmentRequest();
+
+            requestAnimationFrame(() => {
+              updateHomeProfessionalAssessment?.();
+            });
           }
         }
       } catch (error) {
@@ -29579,8 +29954,8 @@
         </div>
 
         <div style="font-size:13px;color:#666;margin-bottom:10px;">
-          Add the areas where you are available to work on properties. Your primary professional location above is
-          already included, so only add additional areas here.
+          Complete your professional profile and submit it for verification to become eligible for Home Professional
+          requests. You can add additional Property Service Areas if you work outside your primary location.
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">

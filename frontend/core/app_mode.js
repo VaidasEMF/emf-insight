@@ -870,18 +870,15 @@ async function setAppMode(
         // ----------------------------------------------
 
         updateWorkspaceUI?.();
-
-        updateProjectHeader?.();
-
-        updateWorkflowUI?.();
-
         updateHomeWorkflow?.();
-
         updateHomeLocks?.();
-
         updateHomeEmptyPlanState?.();
-
+        updateHomeProfessionalAssessment?.();
+        updateProjectHeader?.();
+        updateWorkflowUI?.();
         updateCurrentExposure?.();
+
+        updateEMFProductContext?.();
 
 
         // ----------------------------------------------
@@ -1182,6 +1179,8 @@ async function setAppMode(
     updateProjectHeader?.();
     updateWorkflowUI?.();
     updateCurrentExposure?.();
+
+    updateEMFProductContext?.();
 
     // ==================================================
     // RENDER

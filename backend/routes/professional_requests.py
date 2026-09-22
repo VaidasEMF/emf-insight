@@ -115,20 +115,25 @@ def create_professional_request(
 
     existing_request = db.execute(
         text("""
-            SELECT
-                id,
-                user_id,
-                project_id,
-                country,
-                region,
-                city,
-                requested_service,
-                status,
-                created_at
+          SELECT
+            id,
+            user_id,
+            project_id,
+            country,
+            region,
+            city,
+            postal_code,
+            requested_service,
+            status,
+            created_at
             FROM professional_requests
             WHERE user_id = :user_id
-                AND project_id = :project_id
-                AND status IN ('submitted', 'available', 'contact_unlocked')
+            AND project_id = :project_id
+            AND status IN (
+                'submitted',
+                'available',
+                'contact_unlocked'
+            )
             ORDER BY created_at DESC
             LIMIT 1
         """),
@@ -159,21 +164,26 @@ def create_professional_request(
 
     result = db.execute(
         text("""
-            INSERT INTO professional_requests
-                (
-                   user_id, project_id, country, region, city, postal_code, requested_service, status
-                )
-            VALUES
-                (
-                    :user_id,
-                    :project_id,
-                    :country,
-                    :region,
-                    :city,
-                    :postal_code,
-                    :requested_service,
-                    'available'
-                )
+            INSERT INTO professional_requests (
+                user_id,
+                project_id,
+                country,
+                region,
+                city,
+                postal_code,
+                requested_service,
+                status
+            )
+            VALUES (
+                :user_id,
+                :project_id,
+                :country,
+                :region,
+                :city,
+                :postal_code,
+                :requested_service,
+                'available'
+            )
             RETURNING
                 id,
                 user_id,
@@ -195,23 +205,22 @@ def create_professional_request(
             "postal_code": postal_code,
             "requested_service": requested_service,
         },
-    )
-
-    request = result.mappings().one()
+    ).mappings().first()
 
     db.commit()
 
     return {
-        "id": request["id"],
-        "user_id": request["user_id"],
-        "project_id": request["project_id"],
-        "country": request["country"],
-        "region": request["region"],
-        "city": request["city"],
-        "postal_code": request["postal_code"],
-        "requested_service": request["requested_service"],
-        "status": request["status"],
-        "created_at": request["created_at"],
+        "id": result["id"],
+        "user_id": result["user_id"],
+        "project_id": result["project_id"],
+        "country": result["country"],
+        "region": result["region"],
+        "city": result["city"],
+        "postal_code": result["postal_code"],
+        "requested_service": result["requested_service"],
+        "status": result["status"],
+        "created_at": result["created_at"],
+        "already_exists": False,
     }
 
 # =====================
@@ -626,6 +635,50 @@ def unlock_professional_request_contact(
         "contact_points_remaining": int(balance_result),
     }
 
+@router.get("/professional-requests/mine")
+def get_my_professional_requests(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    requests = db.execute(
+        text("""
+            SELECT
+                id,
+                project_id,
+                country,
+                region,
+                city,
+                postal_code,
+                requested_service,
+                status,
+                created_at
+            FROM professional_requests
+            WHERE user_id = :user_id
+            ORDER BY created_at DESC
+        """),
+        {
+            "user_id": str(current_user.id),
+        },
+    ).mappings().all()
+
+    return {
+        "requests": [
+            {
+                "id": request["id"],
+                "project_id": request["project_id"],
+                "country": request["country"],
+                "region": request["region"],
+                "city": request["city"],
+                "postal_code": request["postal_code"],
+                "requested_service":
+                    request["requested_service"],
+                "status": request["status"],
+                "created_at": request["created_at"],
+            }
+            for request in requests
+        ]
+    }
+
 # =====================
 # GET CURRENT PROFESSIONAL REQUEST
 # =====================
@@ -745,11 +798,8 @@ def update_admin_professional_request(
     status = body.get("status")
 
     allowed_statuses = {
-        "open",
-        "contacted",
-        "scheduled",
-        "completed",
-        "closed",
+        "available",
+        "contact_unlocked",
     }
 
     if status not in allowed_statuses:
@@ -798,6 +848,7 @@ def update_admin_professional_request(
         "region": request["region"],
         "city": request["city"],
         "postal_code": request["postal_code"],
+        "requested_service": request["requested_service"],
         "status": request["status"],
         "created_at": request["created_at"],
     }
