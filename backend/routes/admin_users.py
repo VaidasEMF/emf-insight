@@ -80,6 +80,36 @@ def get_admin_user(
             detail="User not found",
         )
 
+        # -----------------------------------------------------
+    # PROFESSIONAL PROFILE
+    # -----------------------------------------------------
+
+    professional_profile = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                first_name,
+                last_name,
+                company_name,
+                professional_email,
+                professional_phone,
+                country_code,
+                country,
+                city,
+                postal_code,
+                availability_status,
+                verification_status,
+                created_at
+            FROM professional_profiles
+            WHERE CAST(user_id AS VARCHAR) = CAST(:user_id AS VARCHAR)
+            LIMIT 1
+        """),
+        {
+            "user_id": user_id,
+        },
+    ).mappings().first()
+
     # -----------------------------------------------------
     # HOME PROJECTS
     # -----------------------------------------------------
@@ -158,6 +188,12 @@ def get_admin_user(
                 else None
             ),
         },
+
+        "professional_profile": (
+            dict(professional_profile)
+            if professional_profile
+            else None
+        ),
 
         "home_summary": {
             "total_projects":

@@ -1919,7 +1919,7 @@ function validateProfessionalProfileForHome() {
         }
     });
 
-    const primaryCountry =
+        const primaryCountry =
         document.getElementById(
             "professionalProfileCountry"
         )?.value.trim() || "";

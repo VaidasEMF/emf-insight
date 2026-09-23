@@ -39,7 +39,7 @@ def init_db():
                         city VARCHAR(100),
                         postal_code VARCHAR(30),
                         requested_service VARCHAR(100),
-                        status VARCHAR(50) NOT NULL DEFAULT 'open',
+                        status VARCHAR(50) NOT NULL DEFAULT 'available',
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                     """

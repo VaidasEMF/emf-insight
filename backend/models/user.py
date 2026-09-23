@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import (
+    Boolean,
     DateTime,
     Integer,
     String,
@@ -98,19 +99,39 @@ class User(Base):
         default=""
     )
 
-    country: Mapped[str] = mapped_column(
+    company_website: Mapped[str] = mapped_column(
         String,
-        default="",
-    )
-
-    city: Mapped[str] = mapped_column(
-        String,
-        default="",
+        default=""
     )
 
     logo_path: Mapped[str] = mapped_column(
         String,
         default=""
+    )
+
+    branding_active: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False
+    )
+
+    branding_plan: Mapped[str] = mapped_column(
+        String,
+        default=""
+    )
+
+    branding_activated_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True
+    )
+
+    branding_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True
+    )
+
+    city: Mapped[str] = mapped_column(
+        String,
+        default="",
     )
 
     projects = relationship(

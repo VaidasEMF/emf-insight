@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -129,11 +131,43 @@ def me(
     # Do NOT fall back to the old `home_entitlements` table.
     # The entitlement is project-scoped.
 
+
+    print(
+        "BRANDING DEBUG logo_path:",
+        repr(current_user.logo_path)
+    )
     return {
         "id": current_user.id,
         "email": current_user.email,
         "country": getattr(current_user, "country", None),
         "city": getattr(current_user, "city", None),
+
+        # ---------------------------------------------------------
+        # PROFESSIONAL BRANDING
+        # ---------------------------------------------------------
+        "company_name": getattr(current_user, "company_name", None),
+        "company_email": getattr(current_user, "company_email", None),
+        "company_website": getattr(current_user, "company_website", None),
+
+        "logo_url": (
+            f"/{current_user.logo_path}"
+            if getattr(current_user, "logo_path", None)
+            else None
+        ),
+
+        "branding_active": current_user.branding_active,
+        "branding_plan": current_user.branding_plan,
+        "branding_activated_at": (
+            current_user.branding_activated_at.isoformat()
+            if current_user.branding_activated_at
+            else None
+        ),
+        "branding_expires_at": (
+            current_user.branding_expires_at.isoformat()
+            if current_user.branding_expires_at
+            else None
+        ),
+
         "credits": current_user.credits,
         "plan": current_user.plan,
         "role": current_user.role,
@@ -351,12 +385,16 @@ def update_profile(
         "",
     )
 
+    current_user.company_website = body.get(
+        "company_website",
+        "",
+    )
+
     db.commit()
 
     return {
         "status": "ok",
     }
-
 
 # =====================
 # UPLOAD LOGO
@@ -397,5 +435,47 @@ async def upload_logo(
 
     db.commit()
 
+    print(
+        "BRANDING UPLOAD DEBUG logo_path:",
+        repr(current_user.logo_path)
+    )
+
     return {"logo_url": f"/uploads/logos/{filename}"}
 
+
+@router.post("/me/branding/activate")
+def activate_branding(
+    body: dict,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    plan = body.get("plan")
+
+    if plan not in ("monthly", "annual"):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid branding plan."
+        )
+
+    now = datetime.utcnow()
+
+    if plan == "monthly":
+        expires_at = now + timedelta(days=30)
+    else:
+        expires_at = now + timedelta(days=365)
+
+    current_user.branding_active = True
+    current_user.branding_plan = plan
+    current_user.branding_activated_at = now
+    current_user.branding_expires_at = expires_at
+
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "status": "active",
+        "branding_active": True,
+        "branding_plan": plan,
+        "branding_activated_at": now.isoformat(),
+        "branding_expires_at": expires_at.isoformat(),
+    }

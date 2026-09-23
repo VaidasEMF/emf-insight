@@ -1049,6 +1049,22 @@
             align-items: start;
         }
 
+        .professional-my-contacts-page-size {
+            position: absolute !important;
+            top: -42px;
+            right: 0;
+            min-width: 95px !important;
+            font-size: 12px !important;
+        }
+
+        #home-requests {
+            grid-column: 1 / -1;
+        }
+
+        #my-contacts {
+            grid-column: 1 / -1;
+        }
+
         .professional-dashboard-grid>.section {
             margin-top: 0;
         }
@@ -2521,10 +2537,329 @@
             border-color: #bfd3f5;
             color: #1d4ed8;
         }
+
+
+
+        /* TABLE AREA */
+
+        .professional-my-contacts-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-top: 1px solid var(--line);
+        }
+
+        /* =========================================================
+   PROFESSIONAL — MY CONTACTS TABLE
+   ========================================================= */
+
+        .professional-contacts-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-top: 1px solid var(--line);
+        }
+
+        .professional-contacts-table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 13px;
+        }
+
+        .professional-contacts-table th {
+            padding: 13px 18px;
+            text-align: left;
+            background: #fafbfd;
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            white-space: nowrap;
+        }
+
+        .professional-contacts-table td {
+            padding: 15px 18px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+            color: var(--text);
+            line-height: 1.35;
+        }
+
+        .professional-contacts-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .professional-contacts-table tbody tr:hover {
+            background: #fafcff;
+        }
+
+
+        /* COLUMN WIDTHS */
+
+        .professional-contacts-table th:nth-child(1),
+        .professional-contacts-table td:nth-child(1) {
+            width: 9%;
+        }
+
+        .professional-contacts-table th:nth-child(2),
+        .professional-contacts-table td:nth-child(2) {
+            width: 9%;
+        }
+
+        .professional-contacts-table th:nth-child(3),
+        .professional-contacts-table td:nth-child(3) {
+            width: 19%;
+        }
+
+        .professional-contacts-table th:nth-child(4),
+        .professional-contacts-table td:nth-child(4) {
+            width: 22%;
+        }
+
+        .professional-contacts-table th:nth-child(5),
+        .professional-contacts-table td:nth-child(5) {
+            width: 17%;
+        }
+
+        .professional-contacts-table th:nth-child(6),
+        .professional-contacts-table td:nth-child(6) {
+            width: 11%;
+        }
+
+        .professional-contacts-table th:nth-child(7),
+        .professional-contacts-table td:nth-child(7) {
+            width: 13%;
+        }
+
+
+        /* REQUEST / PROJECT */
+
+        .professional-contacts-table td:nth-child(1),
+        .professional-contacts-table td:nth-child(2) {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+
+        /* LOCATION */
+
+        .professional-contacts-table td:nth-child(3) {
+            white-space: nowrap;
+        }
+
+
+        /* CONTACT */
+
+        .professional-contacts-table td:nth-child(4) {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        /* TIMING */
+
+        .professional-contacts-table td:nth-child(5) {
+            white-space: nowrap;
+        }
+
+
+        /* STATUS */
+
+        .professional-contacts-table td:nth-child(6) {
+            white-space: nowrap;
+        }
+
+        .professional-contacts-table td:nth-child(6) {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        /* ACCESS */
+
+        .professional-contacts-table td:nth-child(7) {
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 900px) {
+            .professional-contacts-table {
+                min-width: 980px;
+            }
+        }
+
+
+        #brandingActivationModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.45);
+        }
+
+        #brandingActivationModal.open {
+            display: flex;
+        }
+
+        #brandingActivationModal .modal-content {
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+            overflow: hidden;
+        }
+
+        #brandingActivationModal .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        #brandingActivationModal .modal-body {
+            padding: 22px;
+        }
+
+        #brandingActivationModal .modal-footer {
+            padding: 16px 22px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        #brandingActivationModal .modal-close {
+            border: 0;
+            background: transparent;
+            font-size: 24px;
+            line-height: 1;
+            color: #667085;
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- =========================
+     PROFESSIONAL BRANDING ACTIVATION MODAL
+     ========================= -->
+    <div id="brandingActivationModal" class="modal" aria-hidden="true">
+        <div class="modal-content" style="
+            max-width:460px;
+            width:calc(100% - 32px);
+        ">
+
+            <div class="modal-header">
+                <div>
+                    <h3 id="brandingActivationTitle" style="margin:0;">
+                        Professional Branding
+                    </h3>
+
+                    <p id="brandingActivationDescription" style="
+                        margin:6px 0 0;
+                        color:#667085;
+                        font-size:13px;
+                    ">
+                        Activate your company identity for professional
+                        client-facing reports.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" onclick="closeBrandingActivation()" aria-label="Close">
+                    ×
+                </button>
+            </div>
+
+
+            <div class="modal-body">
+
+                <div style="
+                    padding:16px;
+                    border:1px solid #e2e8f0;
+                    border-radius:12px;
+                    background:#f8fafc;
+                ">
+
+                    <div id="brandingActivationPlan" style="
+                        font-size:18px;
+                        font-weight:700;
+                        color:#1f2937;
+                    ">
+                        Monthly
+                    </div>
+
+                    <div id="brandingActivationPrice" style="
+                        margin-top:4px;
+                        font-size:14px;
+                        color:#667085;
+                    ">
+                        2 Points / month
+                    </div>
+
+                </div>
+
+
+                <div style="
+                    margin-top:18px;
+                    font-size:13px;
+                    color:#667085;
+                    line-height:1.6;
+                ">
+                    <strong style="color:#344054;">
+                        Includes
+                    </strong>
+
+                    <ul style="
+                        margin:8px 0 0 18px;
+                        padding:0;
+                    ">
+                        <li>Company name</li>
+                        <li>Company email</li>
+                        <li>Company website</li>
+                        <li>Company logo</li>
+                        <li>Branded professional reports</li>
+                    </ul>
+                </div>
+
+
+                <div id="brandingActivationMessage" style="
+                    margin-top:16px;
+                    font-size:13px;
+                    color:#a33b3b;
+                    display:none;
+                "></div>
+
+            </div>
+
+
+            <div class="modal-footer" style="
+                display:flex;
+                justify-content:flex-end;
+                gap:10px;
+            ">
+
+                <button type="button" class="btn-secondary" onclick="closeBrandingActivation()">
+                    Cancel
+                </button>
+
+                <button type="button" class="btn-primary" id="brandingActivationConfirm"
+                    onclick="confirmBrandingActivation()">
+                    Activate Branding
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
     <div class="app-shell">
 
         <aside class="sidebar">
@@ -2593,11 +2928,22 @@
                             Availability
                         </button>
 
+                        <div class="professional-dashboard-subnav-group-label">
+                            MARKETPLACE
+                        </div>
+
                         <button type="button" class="professional-dashboard-subnav-item"
-                            data-professional-section="home-projects"
-                            onclick="navigateProfessionalDashboardSection('home-projects');">
-                            Home Projects
+                            data-professional-section="home-requests"
+                            onclick="navigateProfessionalDashboardSection('home-requests');">
+                            Available Requests
                         </button>
+
+                        <button type="button" class="professional-dashboard-subnav-item"
+                            data-professional-section="my-contacts"
+                            onclick="navigateProfessionalDashboardSection('my-contacts'); updateProfessionalMyContacts();">
+                            My Contacts
+                        </button>
+
                     </div>
                     <a class="nav-link" href="#projects"><span class="nav-icon">📁</span><span>Projects</span></a>
                     <a class="nav-link" href="#reports"><span class="nav-icon">📊</span><span>Reports</span></a>
@@ -2751,15 +3097,25 @@
                                 </div>
                             </div>
 
-                            <div class="professional-status-action" id="professionalCompleteProfileAction">
-                                <button type="button" class="professional-complete-profile-button"
-                                    onclick="window.location.href='index.html?professional_profile=profile';">
-                                    <span>Complete Your Professional Profile</span>
-                                    <span class="professional-complete-profile-arrow">&#8594;</span>
-                                </button>
-                            </div>
+                            <div class="professional-status-row" id="professionalContactPointsRow">
+                                <div class="professional-status-icon account-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="8"></circle>
+                                        <path d="M12 8v4l2.5 2"></path>
+                                    </svg>
+                                </div>
 
-                        </div>
+                                <div class="professional-status-label">Contact Points</div>
+
+                                <div class="professional-status-content">
+                                    <div class="professional-status-pill" id="professionalContactPointsBalance">
+                                        Checking...
+                                    </div>
+                                    <div class="professional-status-note">
+                                        1 Contact Point is used to unlock professional contact details.
+                                    </div>
+                                </div>
+                            </div>
                     </section>
 
                     <!-- PROFESSIONAL DEMO -->
@@ -3011,13 +3367,13 @@
                         </div>
                     </section>
 
-                    <!-- =====================================================
-                         PROFESSIONAL HOME PROJECTS
-                         ===================================================== -->
-                    <section class="section" id="home-projects">
+                    <!-- ============================================
+     AVAILABLE HOME REQUESTS
+     ============================================ -->
+                    <section class="section" id="home-requests">
                         <div class="section-heading">
                             <div>
-                                <h2 class="section-title">Home Projects</h2>
+                                <h2 class="section-title">Available Home Requests</h2>
                                 <p class="section-description">
                                     Find Home Projects that match your professional service areas and availability.
                                 </p>
@@ -3037,12 +3393,188 @@
                         </div>
                     </section>
 
+                    <!-- ============================================================
+     MY CONTACTS
+     ============================================================ -->
+                    <section class="section" id="my-contacts">
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title">My Contacts</h2>
+                                <p class="section-description">
+                                    Home assessment requests where you have unlocked the client's contact.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <div>
+                                    <h3>Unlocked Contacts</h3>
+                                    <p>
+                                        Your active professional contacts and access periods.
+                                    </p>
+
+                                    <div class="professional-my-contacts-toolbar" style="
+        margin-top:16px;
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        align-items:center;
+        position:relative;
+    ">
+                                        <!-- SEARCH -->
+                                        <input type="search" id="professionalMyContactsSearch"
+                                            placeholder="Search contacts..." oninput="renderProfessionalMyContacts()"
+                                            style="
+            min-width:240px;
+            flex:1 1 240px;
+            padding:8px 10px;
+            border:1px solid #d6d6d6;
+            border-radius:7px;
+            font-size:12px;
+        ">
+
+                                        <!-- COUNTRY -->
+                                        <select id="professionalMyContactsCountryFilter" onchange="
+            professionalMyContactsCurrentPage = 1;
+            renderProfessionalMyContacts();
+        " style="
+            min-width:150px;
+            padding:8px 10px;
+            border:1px solid #d6d6d6;
+            border-radius:7px;
+            font-size:13px;
+            background:#fff;
+        ">
+                                            <option value="all">All countries</option>
+                                        </select>
+
+                                        <!-- CONTACT STATUS -->
+                                        <select id="professionalMyContactsStatusFilter" onchange="
+            professionalMyContactsCurrentPage = 1;
+            renderProfessionalMyContacts();
+        " style="
+            min-width:160px;
+            padding:8px 10px;
+            border:1px solid #d6d6d6;
+            border-radius:7px;
+            font-size:13px;
+            background:#fff;
+        ">
+                                            <option value="all">All contact status</option>
+                                            <option value="connected">Yes, we connected</option>
+                                            <option value="not_yet">Awaiting contact</option>
+                                            <option value="unknown">Prefer not to say</option>
+                                        </select>
+
+                                        <!-- CONTACT TIMING -->
+                                        <select id="professionalMyContactsPreferenceFilter" onchange="
+            professionalMyContactsCurrentPage = 1;
+            renderProfessionalMyContacts();
+        " style="
+            min-width:160px;
+            padding:8px 10px;
+            border:1px solid #d6d6d6;
+            border-radius:7px;
+            font-size:13px;
+            background:#fff;
+        ">
+                                            <option value="all">All contact timing</option>
+                                            <option value="as_soon_as_possible">
+                                                As soon as possible
+                                            </option>
+                                            <option value="within_3_days">
+                                                Within 3 days
+                                            </option>
+                                            <option value="within_7_days">
+                                                Within 7 days
+                                            </option>
+                                            <option value="no_preference">
+                                                No preference
+                                            </option>
+                                        </select>
+
+                                        <!-- ACCESS -->
+                                        <select id="professionalMyContactsAccessFilter" onchange="
+            professionalMyContactsCurrentPage = 1;
+            renderProfessionalMyContacts();
+        " style="
+            min-width:150px;
+            padding:8px 10px;
+            border:1px solid #d6d6d6;
+            border-radius:7px;
+            font-size:13px;
+            background:#fff;
+        ">
+                                            <option value="all">All active</option>
+                                            <option value="within_3_days">
+                                                Expires within 3 days
+                                            </option>
+                                            <option value="within_7_days">
+                                                Expires within 7 days
+                                            </option>
+                                            <option value="more_than_7_days">
+                                                More than 7 days
+                                            </option>
+                                        </select>
+
+                                        <!-- SORT -->
+                                        <select id="professionalMyContactsSort" onchange="
+            professionalMyContactsCurrentPage = 1;
+            renderProfessionalMyContacts();
+        " style="
+            min-width:155px;
+            padding:8px 10px;
+            border:1px solid #d6d6d6;
+            border-radius:7px;
+            font-size:13px;
+            background:#fff;
+        ">
+                                            <option value="newest">
+                                                Newest request
+                                            </option>
+                                            <option value="oldest">
+                                                Oldest request
+                                            </option>
+                                            <option value="recently_unlocked">
+                                                Recently unlocked
+                                            </option>
+                                            <option value="expires_soonest">
+                                                Access expires soonest
+                                            </option>
+                                        </select>
+
+                                        <!-- ROWS -->
+                                        <select id="professionalMyContactsPageSize"
+                                            class="professional-my-contacts-page-size" onchange="
+        professionalMyContactsCurrentPage = 1;
+        renderProfessionalMyContacts();
+    " " style=" min-width:95px; padding:8px 10px; border:1px solid #d6d6d6; border-radius:7px; font-size:13px;
+                                            background:#fff; ">
+                                            <option value=" 5">5 rows</option>
+                                            <option value="10" selected>10 rows</option>
+                                            <option value="20">20 rows</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="content-body" id="professionalMyContactsContainer">
+                                <div class="empty-state">
+                                    <div class="empty-icon">👤</div>
+                                    <div class="empty-title">Loading contacts</div>
+                                    <div class="empty-copy">Please wait.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                 </div>
 
                 <!-- =========================
                  WORKSPACES
                  ========================= -->
-                <section class="section" aria-labelledby="workspace-title">
+                <section class="section" id="workspace-section" aria-labelledby="workspace-title">
                     <div class="section-heading">
                         <div>
                             <h2 class="section-title" id="workspace-title">Your Workspaces</h2>
@@ -3314,193 +3846,696 @@
                 </section>
 
                 <!-- =========================
-                 BRANDING
-                 ========================= -->
+     PROFESSIONAL BRANDING
+     ========================= -->
                 <section class="section" id="branding" aria-labelledby="branding-title">
+
                     <div class="section-heading">
                         <div>
-                            <h2 class="section-title" id="branding-title">Company &amp; Branding</h2>
-                            <p class="section-description">Manage the company information and logo used in professional
-                                reporting.</p>
-                        </div>
-                    </div>
-
-                    <div class="content-card">
-                        <div class="content-body">
-                            <div class="form-grid">
-                                <div class="field">
-                                    <label for="company_name">Company name</label>
-                                    <input id="company_name" type="text" placeholder="Company name">
-                                </div>
-                                <div class="field">
-                                    <label for="company_email">Company email</label>
-                                    <input id="company_email" type="email" placeholder="Company email">
-                                </div>
-                            </div>
-
-                            <div class="branding-actions">
-                                <div>
-                                    <div class="logo-upload">
-                                        <input type="file" id="logo" accept="image/*">
-                                        <button class="btn-secondary" onclick="uploadLogo()">Upload logo</button>
-                                    </div>
-                                    <div class="save-message" id="brandingMessage"></div>
-                                </div>
-                                <button class="btn-primary" onclick="saveProfile()">Save company details</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-
-                <!-- =========================
-ADMIN PROFESSIONALS
-========================= -->
-
-                <section class="section" id="admin-professionals" aria-labelledby="admin-professionals-title"
-                    style="display:none;">
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title" id="admin-professionals-title">
-                                Professionals
+                            <h2 class="section-title" id="branding-title">
+                                Professional Branding
                             </h2>
 
                             <p class="section-description">
-                                Manage EMF professionals available for professional assessment matching.
+                                Present your professional identity across client-facing reports.
                             </p>
                         </div>
                     </div>
 
+
+                    <!-- BRANDING STATUS -->
                     <div class="content-card">
-                        <div class="content-body">
-
-                            <div class="admin-professionals-toolbar">
-
-                                <div class="admin-professionals-count" id="adminProfessionalsCount">
-                                    Loading professionals...
-                                </div>
-
-                            </div>
-
-                            <div class="admin-professionals-filters">
-
-                                <div class="admin-professional-filter-search">
-                                    <label for="adminProfessionalsSearch">
-                                        Search
-                                    </label>
-
-                                    <input type="search" id="adminProfessionalsSearch"
-                                        placeholder="Name, company, email, user ID..."
-                                        oninput="filterAdminProfessionals();">
-                                </div>
-
-                                <div class="admin-professional-filter-field">
-                                    <label for="adminProfessionalsAvailability">
-                                        Availability
-                                    </label>
-
-                                    <select id="adminProfessionalsAvailability" onchange="filterAdminProfessionals();">
-                                        <option value="">All availability</option>
-                                        <option value="available">Available</option>
-                                        <option value="unavailable">Unavailable</option>
-                                    </select>
-                                </div>
-
-                                <div class="admin-professional-filter-field">
-                                    <label for="adminProfessionalsVerification">
-                                        Verification
-                                    </label>
-
-                                    <select id="adminProfessionalsVerification" onchange="filterAdminProfessionals();">
-                                        <option value="">All verification</option>
-                                        <option value="verified">Verified</option>
-                                        <option value="not_requested">Not requested</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="rejected">Rejected</option>
-                                    </select>
-                                </div>
-
-                                <div class="admin-professional-filter-field">
-                                    <label for="adminProfessionalsCountry">
-                                        Country
-                                    </label>
-
-                                    <select id="adminProfessionalsCountry" onchange="filterAdminProfessionals();">
-                                        <option value="">All countries</option>
-                                    </select>
-                                </div>
-
-                            </div>
-
-                            <div class="admin-professionals-pagination-toolbar">
-
-                                <div class="admin-professionals-filter-count" id="adminProfessionalsFilterCount">
-                                    Showing all professionals
-                                </div>
-
-                                <div class="admin-professionals-page-size">
-
-                                    <label for="adminProfessionalsPageSize">
-                                        Per page
-                                    </label>
-
-                                    <select id="adminProfessionalsPageSize"
-                                        onchange="changeAdminProfessionalsPageSize();">
-                                        <option value="10" selected>10</option>
-                                        <option value="20">20</option>
-                                        <option value="50">50</option>
-                                    </select>
-
-                                </div>
-
-                            </div>
-
-                            <div class="admin-professionals-status" id="adminProfessionalsStatus"></div>
-
-                            <div class="admin-professionals-table" id="adminProfessionalsContainer">
-                                <div class="empty-state">
-                                    <div class="empty-icon">!</div>
-
-                                    <div class="empty-title">
-                                        Loading professionals
-                                    </div>
-
-                                    <div class="empty-copy">
-                                        Please wait.
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </section>
-
-                <!-- =========================
-                     PROFESSIONAL DEMO
-                ========================= -->
-
-                <section class="section" id="admin-professional-demos" aria-labelledby="admin-professional-demos-title"
-                    style="display:none;">
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title" id="admin-professional-demos-title">
-                                Professional Demo
-                            </h2>
-                            <p class="section-description">
-                                Manage Professional Demo access, trial periods and tester feedback.
-                            </p>
-                        </div>
-
-                        <button type="button" class="admin-professionals-add"
-                            onclick="openAdminProfessionalDemoCreate();">
-                            + Create Demo Link
-                        </button>
-                    </div>
-
-                    <div class="content-card" style="margin-bottom:14px;">
                         <div class="content-body">
 
                             <div style="
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:24px;
+                flex-wrap:wrap;
+            ">
+
+                                <div>
+                                    <div style="
+                        font-size:13px;
+                        font-weight:600;
+                        color:#667085;
+                        margin-bottom:6px;
+                    ">
+                                        Branding status
+                                    </div>
+
+                                    <div id="brandingStatus" style="
+                        font-size:22px;
+                        font-weight:700;
+                        color:#1f2937;
+                    ">
+                                        Not active
+                                    </div>
+
+                                    <div id="brandingPlanStatus" style="
+                        margin-top:5px;
+                        font-size:13px;
+                        color:#667085;
+                    ">
+                                        Activate Professional Branding to use your company identity
+                                        in client-facing reports.
+                                    </div>
+                                </div>
+
+
+                                <div style="
+    display:flex;
+    gap:10px;
+    align-items:stretch;
+    flex-wrap:wrap;
+">
+
+                                    <!-- MONTHLY -->
+                                    <div style="
+        padding:12px 14px;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        background:#f8fafc;
+        min-width:145px;
+    ">
+
+                                        <div style="
+            font-size:11px;
+            font-weight:600;
+            color:#667085;
+            margin-bottom:3px;
+        ">
+                                            Monthly
+                                        </div>
+
+                                        <div style="
+            font-size:16px;
+            font-weight:700;
+            color:#1f2937;
+        ">
+                                            2 Points
+                                        </div>
+
+                                        <div style="
+            font-size:11px;
+            color:#667085;
+            margin-top:2px;
+            margin-bottom:10px;
+        ">
+                                            per month
+                                        </div>
+
+                                        <button type="button" class="btn-secondary"
+                                            onclick="openBrandingActivation('monthly')" style="width:100%;">
+                                            Activate Monthly
+                                        </button>
+
+                                    </div>
+
+
+                                    <!-- ANNUAL -->
+                                    <div style="
+        padding:12px 14px;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        background:#f8fafc;
+        min-width:145px;
+    ">
+
+                                        <div style="
+            font-size:11px;
+            font-weight:600;
+            color:#667085;
+            margin-bottom:3px;
+        ">
+                                            Annual
+                                        </div>
+
+                                        <div style="
+            font-size:16px;
+            font-weight:700;
+            color:#1f2937;
+        ">
+                                            15 Points
+                                        </div>
+
+                                        <div style="
+            font-size:11px;
+            color:#667085;
+            margin-top:2px;
+            margin-bottom:10px;
+        ">
+                                            per year
+                                        </div>
+
+                                        <button type="button" class="btn-primary"
+                                            onclick="openBrandingActivation('annual')" style="width:100%;">
+                                            Activate Annual
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+            </div>
+
+
+            <!-- COMPANY IDENTITY -->
+            <div class="content-card" style="margin-top:18px;">
+
+                <div class="content-body">
+
+                    <div style="margin-bottom:20px;">
+                        <h3 style="
+                    margin:0 0 5px 0;
+                    font-size:17px;
+                    color:#1f2937;
+                ">
+                            Company identity
+                        </h3>
+
+                        <p style="
+                    margin:0;
+                    font-size:13px;
+                    color:#667085;
+                ">
+                            This information can be used in your professional client-facing reports.
+                        </p>
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <!-- COMPANY NAME -->
+                        <div class="field">
+                            <label for="company_name">
+                                Company name
+                            </label>
+
+                            <input id="company_name" type="text" placeholder="Company name">
+
+                            <div id="companyNameError" style="
+                margin-top:6px;
+                font-size:12px;
+                color:#a33b3b;
+                display:none;
+            "></div>
+                        </div>
+
+
+                        <!-- COMPANY EMAIL -->
+                        <div class="field">
+                            <label for="company_email">
+                                Company email
+                            </label>
+
+                            <input id="company_email" type="email" placeholder="Company email">
+
+                            <div id="companyEmailError" style="
+        margin-top:6px;
+        font-size:12px;
+        display:none;
+    "></div>
+                        </div>
+
+
+                        <!-- COMPANY WEBSITE -->
+                        <div class="field" style="grid-column:1 / -1;">
+                            <label for="company_website">
+                                Company website
+                            </label>
+
+                            <input type="url" id="company_website" name="company_website"
+                                placeholder="https://www.yourcompany.com" autocomplete="url" style="
+                width:100%;
+                box-sizing:border-box;
+                height:42px;
+                padding:0 14px;
+                border:1px solid #d9e2ec;
+                border-radius:10px;
+                background:#fff;
+                font-size:15px;
+                color:#344054;
+                outline:none;
+            ">
+
+                            <div id="companyWebsiteError" style="
+        margin-top:6px;
+        font-size:12px;
+        display:none;
+    "></div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOGO -->
+                    <div style="
+    margin-top:22px;
+    padding-top:22px;
+    border-top:1px solid #e5e7eb;
+">
+
+                        <div style="
+        margin-bottom:6px;
+        font-size:14px;
+        font-weight:600;
+        color:#1f2937;
+    ">
+                            Company logo
+                        </div>
+
+                        <div style="
+        font-size:13px;
+        color:#667085;
+        margin-bottom:16px;
+    ">
+                            Your logo can appear on professional client-facing reports
+                            when Branding is active.
+                        </div>
+
+                        <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:20px;
+        flex-wrap:wrap;
+    ">
+
+                            <div style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+            flex-wrap:wrap;
+        ">
+
+                                <input type="file" id="logo" accept="image/*" onchange="uploadLogo()">
+
+                                <div style="
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+">
+                                    <img id="logoPreview" src="" alt="Company logo preview" style="
+            display:none;
+            max-width:180px;
+            max-height:80px;
+            object-fit:contain;
+            border:1px solid #e2e8f0;
+            border-radius:8px;
+            padding:8px;
+            background:#fff;
+        ">
+                                </div>
+
+                                <button type="button" class="btn-secondary"
+                                    onclick="document.getElementById('logo').click()">
+                                    Upload logo
+                                </button>
+
+                            </div>
+
+                            <button type="button" class="btn-primary" onclick="saveProfile(event); return false;">
+                                Save company details
+                            </button>
+
+                        </div>
+
+                        <div class="save-message" id="brandingMessage" style="margin-top:10px;"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BRANDING VALUE -->
+            <div class="content-card" style="margin-top:18px;">
+
+                <div class="content-body">
+
+                    <div>
+                        <h3 style="
+                    margin:0 0 7px 0;
+                    font-size:17px;
+                    color:#1f2937;
+                ">
+                            What Professional Branding enables
+                        </h3>
+
+                        <p style="
+                    margin:0 0 14px 0;
+                    font-size:13px;
+                    line-height:1.6;
+                    color:#667085;
+                ">
+                            Your professional identity can be presented throughout
+                            client-facing reporting.
+                        </p>
+
+                        <div style="
+                    display:flex;
+                    flex-wrap:wrap;
+                    gap:8px;
+                ">
+
+                            <span style="
+                        padding:7px 11px;
+                        border-radius:8px;
+                        background:#f1f5f9;
+                        font-size:12px;
+                        color:#475467;
+                    ">
+                                Company name
+                            </span>
+
+                            <span style="
+                        padding:7px 11px;
+                        border-radius:8px;
+                        background:#f1f5f9;
+                        font-size:12px;
+                        color:#475467;
+                    ">
+                                Company email
+                            </span>
+
+                            <span style="
+                        padding:7px 11px;
+                        border-radius:8px;
+                        background:#f1f5f9;
+                        font-size:12px;
+                        color:#475467;
+                    ">
+                                Company logo
+                            </span>
+
+                            <span style="
+                        padding:7px 11px;
+                        border-radius:8px;
+                        background:#f1f5f9;
+                        font-size:12px;
+                        color:#475467;
+                    ">
+                                Branded professional reports
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            </section>
+
+            <!-- BRANDING ACTIVATION MODAL -->
+            <div id="brandingActivationModal" style="
+        display:none;
+        position:fixed;
+        inset:0;
+        z-index:9999;
+        background:rgba(15,23,42,0.45);
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+    ">
+
+                <div style="
+        width:min(460px, 100%);
+        background:#fff;
+        border-radius:16px;
+        box-shadow:0 20px 60px rgba(15,23,42,0.20);
+        padding:26px;
+    ">
+
+                    <div style="
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:20px;
+        ">
+
+                        <div>
+                            <h3 style="
+                    margin:0 0 7px 0;
+                    font-size:20px;
+                    color:#1f2937;
+                ">
+                                Activate Professional Branding
+                            </h3>
+
+                            <p style="
+                    margin:0;
+                    font-size:13px;
+                    line-height:1.5;
+                    color:#667085;
+                ">
+                                Use your professional company identity in
+                                client-facing reports.
+                            </p>
+                        </div>
+
+                        <button type="button" onclick="closeBrandingActivation()" style="
+                    border:0;
+                    background:none;
+                    font-size:22px;
+                    line-height:1;
+                    color:#667085;
+                    cursor:pointer;
+                " aria-label="Close">
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <div style="
+            margin-top:22px;
+            padding:16px;
+            border:1px solid #e2e8f0;
+            border-radius:12px;
+            background:#f8fafc;
+        ">
+
+                        <div style="
+                font-size:12px;
+                font-weight:600;
+                color:#667085;
+                margin-bottom:5px;
+            ">
+                            Selected plan
+                        </div>
+
+                        <div id="brandingActivationPlan" style="
+                    font-size:18px;
+                    font-weight:700;
+                    color:#1f2937;
+                ">
+                            Monthly Branding
+                        </div>
+
+                        <div id="brandingActivationCost" style="
+                    margin-top:5px;
+                    font-size:13px;
+                    color:#667085;
+                ">
+                            2 Points / month
+                        </div>
+
+                    </div>
+
+
+                    <p id="brandingActivationConfirmation" style="
+                margin:18px 0 0 0;
+                font-size:13px;
+                line-height:1.5;
+                color:#475467;
+            ">
+                        Activate this Branding plan for your professional account?
+                    </p>
+
+
+                    <div style="
+            display:flex;
+            justify-content:flex-end;
+            gap:10px;
+            margin-top:24px;
+        ">
+
+                        <button type="button" class="btn-secondary" onclick="closeBrandingActivation()">
+                            Cancel
+                        </button>
+
+                        <button type="button" class="btn-primary" id="confirmBrandingActivationButton"
+                            onclick="confirmBrandingActivation()">
+                            Confirm activation
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+ADMIN PROFESSIONALS
+========================= -->
+
+            <section class="section" id="admin-professionals" aria-labelledby="admin-professionals-title"
+                style="display:none;">
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title" id="admin-professionals-title">
+                            Professionals
+                        </h2>
+
+                        <p class="section-description">
+                            Manage EMF professionals available for professional assessment matching.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-body">
+
+                        <div class="admin-professionals-toolbar">
+
+                            <div class="admin-professionals-count" id="adminProfessionalsCount">
+                                Loading professionals...
+                            </div>
+
+                        </div>
+
+                        <div class="admin-professionals-filters">
+
+                            <div class="admin-professional-filter-search">
+                                <label for="adminProfessionalsSearch">
+                                    Search
+                                </label>
+
+                                <input type="search" id="adminProfessionalsSearch"
+                                    placeholder="Name, company, email, user ID..."
+                                    oninput="filterAdminProfessionals();">
+                            </div>
+
+                            <div class="admin-professional-filter-field">
+                                <label for="adminProfessionalsAvailability">
+                                    Availability
+                                </label>
+
+                                <select id="adminProfessionalsAvailability" onchange="filterAdminProfessionals();">
+                                    <option value="">All availability</option>
+                                    <option value="available">Available</option>
+                                    <option value="unavailable">Unavailable</option>
+                                </select>
+                            </div>
+
+                            <div class="admin-professional-filter-field">
+                                <label for="adminProfessionalsVerification">
+                                    Verification
+                                </label>
+
+                                <select id="adminProfessionalsVerification" onchange="filterAdminProfessionals();">
+                                    <option value="">All verification</option>
+                                    <option value="verified">Verified</option>
+                                    <option value="not_requested">Not requested</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+
+                            <div class="admin-professional-filter-field">
+                                <label for="adminProfessionalsCountry">
+                                    Country
+                                </label>
+
+                                <select id="adminProfessionalsCountry" onchange="filterAdminProfessionals();">
+                                    <option value="">All countries</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="admin-professionals-pagination-toolbar">
+
+                            <div class="admin-professionals-filter-count" id="adminProfessionalsFilterCount">
+                                Showing all professionals
+                            </div>
+
+                            <div class="admin-professionals-page-size">
+
+                                <label for="adminProfessionalsPageSize">
+                                    Per page
+                                </label>
+
+                                <select id="adminProfessionalsPageSize" onchange="changeAdminProfessionalsPageSize();">
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="admin-professionals-status" id="adminProfessionalsStatus"></div>
+
+                        <div class="admin-professionals-table" id="adminProfessionalsContainer">
+                            <div class="empty-state">
+                                <div class="empty-icon">!</div>
+
+                                <div class="empty-title">
+                                    Loading professionals
+                                </div>
+
+                                <div class="empty-copy">
+                                    Please wait.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================
+                     PROFESSIONAL DEMO
+                ========================= -->
+
+            <section class="section" id="admin-professional-demos" aria-labelledby="admin-professional-demos-title"
+                style="display:none;">
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title" id="admin-professional-demos-title">
+                            Professional Demo
+                        </h2>
+                        <p class="section-description">
+                            Manage Professional Demo access, trial periods and tester feedback.
+                        </p>
+                    </div>
+
+                    <button type="button" class="admin-professionals-add" onclick="openAdminProfessionalDemoCreate();">
+                        + Create Demo Link
+                    </button>
+                </div>
+
+                <div class="content-card" style="margin-bottom:14px;">
+                    <div class="content-body">
+
+                        <div style="
                 display:grid;
                 grid-template-columns:
                     minmax(220px, 1.5fr)
@@ -3511,515 +4546,515 @@ ADMIN PROFESSIONALS
                 align-items:end;
             ">
 
-                                <div class="admin-modal-field">
-                                    <label for="adminProfessionalDemoSearch">
-                                        Search
-                                    </label>
-                                    <input id="adminProfessionalDemoSearch" type="search" placeholder="Name or email..."
-                                        oninput="renderAdminProfessionalDemos();">
-                                </div>
+                            <div class="admin-modal-field">
+                                <label for="adminProfessionalDemoSearch">
+                                    Search
+                                </label>
+                                <input id="adminProfessionalDemoSearch" type="search" placeholder="Name or email..."
+                                    oninput="renderAdminProfessionalDemos();">
+                            </div>
 
-                                <div class="admin-modal-field">
-                                    <label for="adminProfessionalDemoStatusFilter">
-                                        Status
-                                    </label>
-                                    <select id="adminProfessionalDemoStatusFilter"
-                                        onchange="renderAdminProfessionalDemos();">
-                                        <option value="">All statuses</option>
-                                        <option value="available">Available</option>
-                                        <option value="active">Active</option>
-                                        <option value="expired">Expired</option>
-                                        <option value="revoked">Revoked</option>
-                                    </select>
-                                </div>
+                            <div class="admin-modal-field">
+                                <label for="adminProfessionalDemoStatusFilter">
+                                    Status
+                                </label>
+                                <select id="adminProfessionalDemoStatusFilter"
+                                    onchange="renderAdminProfessionalDemos();">
+                                    <option value="">All statuses</option>
+                                    <option value="available">Available</option>
+                                    <option value="active">Active</option>
+                                    <option value="expired">Expired</option>
+                                    <option value="revoked">Revoked</option>
+                                </select>
+                            </div>
 
-                                <div class="admin-modal-field">
-                                    <label for="adminProfessionalDemoFeedbackFilter">
-                                        Feedback
-                                    </label>
-                                    <select id="adminProfessionalDemoFeedbackFilter"
-                                        onchange="renderAdminProfessionalDemos();">
-                                        <option value="">All feedback</option>
-                                        <option value="submitted">Submitted</option>
-                                        <option value="requested">Requested</option>
-                                        <option value="not_requested">Not requested</option>
-                                    </select>
-                                </div>
+                            <div class="admin-modal-field">
+                                <label for="adminProfessionalDemoFeedbackFilter">
+                                    Feedback
+                                </label>
+                                <select id="adminProfessionalDemoFeedbackFilter"
+                                    onchange="renderAdminProfessionalDemos();">
+                                    <option value="">All feedback</option>
+                                    <option value="submitted">Submitted</option>
+                                    <option value="requested">Requested</option>
+                                    <option value="not_requested">Not requested</option>
+                                </select>
+                            </div>
 
-                                <div id="adminProfessionalDemoFilterCount" style="
+                            <div id="adminProfessionalDemoFilterCount" style="
                     padding:10px 0;
                     color:#64748b;
                     font-size:12px;
                     white-space:nowrap;
                 ">
-                                    Showing all
-                                </div>
-
+                                Showing all
                             </div>
 
                         </div>
-                    </div>
 
-                    <div class="content-card">
-                        <div class="content-body">
-                            <div id="adminProfessionalDemosContainer">
-                                Loading demos...
-                            </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-body">
+                        <div id="adminProfessionalDemosContainer">
+                            Loading demos...
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <!-- =========================
+            <!-- =========================
                 ADMIN USERS
                 ========================= -->
 
-                <section class="section" id="admin-users" style="display:none;">
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title">Users</h2>
-                            <p class="section-description">
-                                Registered users and account status.
-                            </p>
-                        </div>
+            <section class="section" id="admin-users" style="display:none;">
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title">Users</h2>
+                        <p class="section-description">
+                            Registered users and account status.
+                        </p>
                     </div>
+                </div>
 
-                    <div class="content-card">
-                        <div class="content-body">
-
-                            <div class="admin-table-toolbar">
-
-                                <div class="admin-users-filters">
-
-                                    <input type="text" id="adminUsersSearch" placeholder="Search users..."
-                                        oninput="filterAdminUsers();">
-
-                                    <select id="adminUsersCountryFilter" onchange="filterAdminUsers();">
-                                        <option value="">All countries</option>
-                                    </select>
-
-                                    <select id="adminUsersCityFilter" onchange="filterAdminUsers();">
-                                        <option value="">All cities</option>
-                                    </select>
-
-                                    <select id="adminUsersRoleFilter" onchange="filterAdminUsers();">
-                                        <option value="">All roles</option>
-                                        <option value="user">User</option>
-                                        <option value="professional">Professional</option>
-                                    </select>
-
-                                    <select id="adminUsersPlanFilter" onchange="filterAdminUsers();">
-                                        <option value="">All plans</option>
-                                        <option value="free">Free</option>
-                                        <option value="pro">Pro</option>
-                                    </select>
-
-                                    <select id="adminUsersAdminFilter" onchange="filterAdminUsers();">
-                                        <option value="">All accounts</option>
-                                        <option value="yes">Admins</option>
-                                        <option value="no">Non-admins</option>
-                                    </select>
-
-                                    <select id="adminUsersStatusFilter" onchange="filterAdminUsers();">
-                                        <option value="">All statuses</option>
-                                        <option value="active">Active</option>
-                                        <option value="suspended">Suspended</option>
-                                    </select>
-
-                                </div>
-
-                                <div class="admin-table-page-size">
-                                    <label for="adminUsersPageSize">
-                                        Per page
-                                    </label>
-
-                                    <select id="adminUsersPageSize" onchange="changeAdminUsersPageSize();">
-                                        <option value="10">10</option>
-                                        <option value="20" selected>20</option>
-                                        <option value="50">50</option>
-                                    </select>
-                                </div>
-
-                            </div>
-
-                            <div id="adminUsersStatus" class="admin-pricing-status">
-                                Loading users...
-                            </div>
-
-                            <div class="admin-pricing-table">
-
-                                <table>
-
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>User</th>
-                                            <th>Country</th>
-                                            <th>City</th>
-                                            <th>Plan</th>
-                                            <th>Role</th>
-                                            <th>Admin</th>
-                                            <th>Credits</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody id="adminUsersBody">
-                                        <tr>
-                                            <td colspan="10">
-                                                Loading...
-                                            </td>
-                                        </tr>
-                                    </tbody>
-
-                                </table>
-
-                            </div>
-
-                            <div id="adminUsersPagination" class="admin-table-pagination"></div>
-
-                        </div>
-                    </div>
-                </section>
-
-
-                <!-- =========================
-ADMIN PAYMENTS
-========================= -->
-
-                <section class="section" id="admin-payments" style="display:none;">
-
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title">Payments</h2>
-                            <p class="section-description">
-                                Home Full Report purchases and Business payments.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="content-card">
-                        <div class="content-body">
-
-                            <!-- =========================
-                 PAYMENT SUMMARY
-                 ========================= -->
-
-                            <div class="admin-payment-summary">
-
-                                <div class="admin-payment-kpi">
-                                    <div class="admin-payment-kpi-label">
-                                        Revenue
-                                    </div>
-
-                                    <div id="adminPaymentsRevenue" class="admin-payment-kpi-value">
-                                        —
-                                    </div>
-
-                                    <div id="adminPaymentsRevenueSecondary" class="admin-payment-kpi-secondary">
-                                        —
-                                    </div>
-                                </div>
-
-                                <div class="admin-payment-kpi">
-                                    <div class="admin-payment-kpi-label">
-                                        Paid Payments
-                                    </div>
-
-                                    <div id="adminPaymentsPaidCount" class="admin-payment-kpi-value">
-                                        —
-                                    </div>
-                                </div>
-
-                                <div class="admin-payment-kpi">
-                                    <div class="admin-payment-kpi-label">
-                                        Checkout Started
-                                    </div>
-
-                                    <div id="adminPaymentsCheckoutCount" class="admin-payment-kpi-value">
-                                        —
-                                    </div>
-                                </div>
-
-                                <div class="admin-payment-kpi">
-                                    <div class="admin-payment-kpi-label">
-                                        Incomplete
-                                    </div>
-
-                                    <div id="adminPaymentsIncompleteCount" class="admin-payment-kpi-value">
-                                        —
-                                    </div>
-                                </div>
-
-                            </div>
-
-
-                            <!-- =========================
-                 PAYMENT FILTERS
-                 ========================= -->
-
-                            <div class="admin-table-toolbar">
-
-                                <div class="admin-payment-filter-area">
-
-                                    <div class="admin-table-filters">
-
-                                        <input type="search" id="adminPaymentsSearch" placeholder="Search payments..."
-                                            oninput="filterAdminPayments();">
-
-                                        <select id="adminPaymentsProductFilter" onchange="filterAdminPayments();">
-                                            <option value="">All products</option>
-                                            <option value="home_full_report">
-                                                Full EMF Insight Report
-                                            </option>
-                                            <option value="single">
-                                                Business Single Report
-                                            </option>
-                                            <option value="pro">
-                                                Business Pro
-                                            </option>
-                                        </select>
-
-                                        <select id="adminPaymentsStatusFilter" onchange="
-        adminPaymentsActivityFilter = '';
-        filterAdminPayments();
-    ">
-                                            <option value="paid" selected>Paid</option>
-                                            <option value="">All statuses</option>
-                                            <option value="pending">Pending</option>
-                                            <option value="failed">Failed</option>
-                                            <option value="expired">Expired</option>
-                                        </select>
-
-                                        <select id="adminPaymentsCurrencyFilter" onchange="filterAdminPayments();">
-                                            <option value="">All currencies</option>
-                                            <option value="EUR">EUR</option>
-                                            <option value="USD">USD</option>
-                                        </select>
-
-                                        <select id="adminPaymentsSourceFilter" onchange="filterAdminPayments();">
-                                            <option value="">All sources</option>
-                                            <option value="home">Home</option>
-                                            <option value="business">Business</option>
-                                        </select>
-
-                                    </div>
-
-                                    <div class="admin-payment-date-filter">
-
-                                        <label for="adminPaymentsDateFrom">
-                                            From
-                                        </label>
-
-                                        <input type="date" id="adminPaymentsDateFrom" onchange="filterAdminPayments();">
-
-                                        <label for="adminPaymentsDateTo">
-                                            To
-                                        </label>
-
-                                        <input type="date" id="adminPaymentsDateTo" onchange="filterAdminPayments();">
-
-                                    </div>
-
-                                </div>
-
-                                <div class="admin-table-page-size">
-
-                                    <label for="adminPaymentsPageSize">
-                                        Per page
-                                    </label>
-
-                                    <select id="adminPaymentsPageSize" onchange="changeAdminPaymentsPageSize();">
-                                        <option value="10">10</option>
-                                        <option value="20" selected>20</option>
-                                        <option value="50">50</option>
-                                    </select>
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =========================
-                 PAYMENT ACTIVITY
-                 ========================= -->
-
-                            <div class="admin-payment-activity">
-
-                                <div class="admin-payment-activity-title">
-                                    Payment activity
-                                </div>
-
-                                <div id="adminPaymentsActivity" class="admin-payment-activity-segments">
-                                    —
-                                </div>
-
-                            </div>
-
-
-                            <div id="adminPaymentsStatus" class="admin-pricing-status">
-                                Loading payments...
-                            </div>
-
-
-                            <!-- =========================
-                 PAYMENT TABLE
-                 ========================= -->
-
-                            <div class="admin-pricing-table">
-
-                                <table>
-
-                                    <thead>
-
-                                        <tr>
-                                            <th>DATE</th>
-                                            <th>USER</th>
-                                            <th>SOURCE</th>
-                                            <th>PROJECT</th>
-                                            <th>PRODUCT</th>
-                                            <th>AMOUNT</th>
-                                            <th>CURRENCY</th>
-                                            <th>STATUS</th>
-                                        </tr>
-
-                                    </thead>
-
-                                    <tbody id="adminPaymentsBody">
-
-                                        <tr>
-                                            <td colspan="8">
-                                                Loading...
-                                            </td>
-                                        </tr>
-
-                                    </tbody>
-
-                                </table>
-
-                            </div>
-
-
-                            <div id="adminPaymentsPagination" class="admin-table-pagination"></div>
-
-                        </div>
-                    </div>
-
-                </section>
-
-                <section class="section" id="admin-pricing" aria-labelledby="admin-pricing-title" style="display:none;">
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title" id="admin-pricing-title">
-                                Pricing Management
-                            </h2>
-                            <p class="section-description">
-                                Manage the pricing configuration used by EMF Insight.
-                                Product identity fields remain read-only.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="content-card">
-                        <div class="content-card-header">
-                            <div>
-                                <h3>Product Pricing</h3>
-                                <p>
-                                    Changes are saved directly to the EMF Insight pricing database.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="content-body" id="adminPricingContainer">
-                            <div class="empty-state">
-                                <div class="empty-icon">...</div>
-                                <div class="empty-title">Loading pricing</div>
-                                <div class="empty-copy">Please wait.</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- =========================
-     PROFESSIONAL ASSESSMENT REQUESTS
-     ========================= -->
-                <section class="section" id="admin-professional-requests" style="display:none;">
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title">
-                                Professional Assessment Requests
-                            </h2>
-                            <div class="section-subtitle">
-                                Incoming requests from Home Wellness users seeking an on-site EMF assessment.
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="content-card">
                     <div class="content-body">
-                        <div id="adminProfessionalRequestsStatus" class="admin-pricing-status">
-                            Loading requests...
+
+                        <div class="admin-table-toolbar">
+
+                            <div class="admin-users-filters">
+
+                                <input type="text" id="adminUsersSearch" placeholder="Search users..."
+                                    oninput="filterAdminUsers();">
+
+                                <select id="adminUsersCountryFilter" onchange="filterAdminUsers();">
+                                    <option value="">All countries</option>
+                                </select>
+
+                                <select id="adminUsersCityFilter" onchange="filterAdminUsers();">
+                                    <option value="">All cities</option>
+                                </select>
+
+                                <select id="adminUsersRoleFilter" onchange="filterAdminUsers();">
+                                    <option value="">All roles</option>
+                                    <option value="user">User</option>
+                                    <option value="professional">Professional</option>
+                                </select>
+
+                                <select id="adminUsersPlanFilter" onchange="filterAdminUsers();">
+                                    <option value="">All plans</option>
+                                    <option value="free">Free</option>
+                                    <option value="pro">Pro</option>
+                                </select>
+
+                                <select id="adminUsersAdminFilter" onchange="filterAdminUsers();">
+                                    <option value="">All accounts</option>
+                                    <option value="yes">Admins</option>
+                                    <option value="no">Non-admins</option>
+                                </select>
+
+                                <select id="adminUsersStatusFilter" onchange="filterAdminUsers();">
+                                    <option value="">All statuses</option>
+                                    <option value="active">Active</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+
+                            </div>
+
+                            <div class="admin-table-page-size">
+                                <label for="adminUsersPageSize">
+                                    Per page
+                                </label>
+
+                                <select id="adminUsersPageSize" onchange="changeAdminUsersPageSize();">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div id="adminUsersStatus" class="admin-pricing-status">
+                            Loading users...
                         </div>
 
                         <div class="admin-pricing-table">
+
                             <table>
+
                                 <thead>
                                     <tr>
-                                        <th>Request</th>
+                                        <th>ID</th>
                                         <th>User</th>
-                                        <th>Project</th>
-                                        <th>Location</th>
+                                        <th>Country</th>
+                                        <th>City</th>
+                                        <th>Plan</th>
+                                        <th>Role</th>
+                                        <th>Admin</th>
+                                        <th>Credits</th>
                                         <th>Status</th>
-                                        <th>Created</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
 
-                                <tbody id="adminProfessionalRequestsBody">
+                                <tbody id="adminUsersBody">
                                     <tr>
-                                        <td colspan="6">
-                                            No requests loaded.
+                                        <td colspan="10">
+                                            Loading...
                                         </td>
                                     </tr>
                                 </tbody>
+
                             </table>
+
+                        </div>
+
+                        <div id="adminUsersPagination" class="admin-table-pagination"></div>
+
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- =========================
+ADMIN PAYMENTS
+========================= -->
+
+            <section class="section" id="admin-payments" style="display:none;">
+
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title">Payments</h2>
+                        <p class="section-description">
+                            Home Full Report purchases and Business payments.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-body">
+
+                        <!-- =========================
+                 PAYMENT SUMMARY
+                 ========================= -->
+
+                        <div class="admin-payment-summary">
+
+                            <div class="admin-payment-kpi">
+                                <div class="admin-payment-kpi-label">
+                                    Revenue
+                                </div>
+
+                                <div id="adminPaymentsRevenue" class="admin-payment-kpi-value">
+                                    —
+                                </div>
+
+                                <div id="adminPaymentsRevenueSecondary" class="admin-payment-kpi-secondary">
+                                    —
+                                </div>
+                            </div>
+
+                            <div class="admin-payment-kpi">
+                                <div class="admin-payment-kpi-label">
+                                    Paid Payments
+                                </div>
+
+                                <div id="adminPaymentsPaidCount" class="admin-payment-kpi-value">
+                                    —
+                                </div>
+                            </div>
+
+                            <div class="admin-payment-kpi">
+                                <div class="admin-payment-kpi-label">
+                                    Checkout Started
+                                </div>
+
+                                <div id="adminPaymentsCheckoutCount" class="admin-payment-kpi-value">
+                                    —
+                                </div>
+                            </div>
+
+                            <div class="admin-payment-kpi">
+                                <div class="admin-payment-kpi-label">
+                                    Incomplete
+                                </div>
+
+                                <div id="adminPaymentsIncompleteCount" class="admin-payment-kpi-value">
+                                    —
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                 PAYMENT FILTERS
+                 ========================= -->
+
+                        <div class="admin-table-toolbar">
+
+                            <div class="admin-payment-filter-area">
+
+                                <div class="admin-table-filters">
+
+                                    <input type="search" id="adminPaymentsSearch" placeholder="Search payments..."
+                                        oninput="filterAdminPayments();">
+
+                                    <select id="adminPaymentsProductFilter" onchange="filterAdminPayments();">
+                                        <option value="">All products</option>
+                                        <option value="home_full_report">
+                                            Full EMF Insight Report
+                                        </option>
+                                        <option value="single">
+                                            Business Single Report
+                                        </option>
+                                        <option value="pro">
+                                            Business Pro
+                                        </option>
+                                    </select>
+
+                                    <select id="adminPaymentsStatusFilter" onchange="
+        adminPaymentsActivityFilter = '';
+        filterAdminPayments();
+    ">
+                                        <option value="paid" selected>Paid</option>
+                                        <option value="">All statuses</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="failed">Failed</option>
+                                        <option value="expired">Expired</option>
+                                    </select>
+
+                                    <select id="adminPaymentsCurrencyFilter" onchange="filterAdminPayments();">
+                                        <option value="">All currencies</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+
+                                    <select id="adminPaymentsSourceFilter" onchange="filterAdminPayments();">
+                                        <option value="">All sources</option>
+                                        <option value="home">Home</option>
+                                        <option value="business">Business</option>
+                                    </select>
+
+                                </div>
+
+                                <div class="admin-payment-date-filter">
+
+                                    <label for="adminPaymentsDateFrom">
+                                        From
+                                    </label>
+
+                                    <input type="date" id="adminPaymentsDateFrom" onchange="filterAdminPayments();">
+
+                                    <label for="adminPaymentsDateTo">
+                                        To
+                                    </label>
+
+                                    <input type="date" id="adminPaymentsDateTo" onchange="filterAdminPayments();">
+
+                                </div>
+
+                            </div>
+
+                            <div class="admin-table-page-size">
+
+                                <label for="adminPaymentsPageSize">
+                                    Per page
+                                </label>
+
+                                <select id="adminPaymentsPageSize" onchange="changeAdminPaymentsPageSize();">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="50">50</option>
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                 PAYMENT ACTIVITY
+                 ========================= -->
+
+                        <div class="admin-payment-activity">
+
+                            <div class="admin-payment-activity-title">
+                                Payment activity
+                            </div>
+
+                            <div id="adminPaymentsActivity" class="admin-payment-activity-segments">
+                                —
+                            </div>
+
+                        </div>
+
+
+                        <div id="adminPaymentsStatus" class="admin-pricing-status">
+                            Loading payments...
+                        </div>
+
+
+                        <!-- =========================
+                 PAYMENT TABLE
+                 ========================= -->
+
+                        <div class="admin-pricing-table">
+
+                            <table>
+
+                                <thead>
+
+                                    <tr>
+                                        <th>DATE</th>
+                                        <th>USER</th>
+                                        <th>SOURCE</th>
+                                        <th>PROJECT</th>
+                                        <th>PRODUCT</th>
+                                        <th>AMOUNT</th>
+                                        <th>CURRENCY</th>
+                                        <th>STATUS</th>
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="adminPaymentsBody">
+
+                                    <tr>
+                                        <td colspan="8">
+                                            Loading...
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                        <div id="adminPaymentsPagination" class="admin-table-pagination"></div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="section" id="admin-pricing" aria-labelledby="admin-pricing-title" style="display:none;">
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title" id="admin-pricing-title">
+                            Pricing Management
+                        </h2>
+                        <p class="section-description">
+                            Manage the pricing configuration used by EMF Insight.
+                            Product identity fields remain read-only.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-card-header">
+                        <div>
+                            <h3>Product Pricing</h3>
+                            <p>
+                                Changes are saved directly to the EMF Insight pricing database.
+                            </p>
                         </div>
                     </div>
-                </section>
 
-                <!-- =========================
+                    <div class="content-body" id="adminPricingContainer">
+                        <div class="empty-state">
+                            <div class="empty-icon">...</div>
+                            <div class="empty-title">Loading pricing</div>
+                            <div class="empty-copy">Please wait.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================
+     PROFESSIONAL ASSESSMENT REQUESTS
+     ========================= -->
+            <section class="section" id="admin-professional-requests" style="display:none;">
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title">
+                            Professional Assessment Requests
+                        </h2>
+                        <div class="section-subtitle">
+                            Incoming requests from Home Wellness users seeking an on-site EMF assessment.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-body">
+                    <div id="adminProfessionalRequestsStatus" class="admin-pricing-status">
+                        Loading requests...
+                    </div>
+
+                    <div class="admin-pricing-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Request</th>
+                                    <th>User</th>
+                                    <th>Project</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="adminProfessionalRequestsBody">
+                                <tr>
+                                    <td colspan="6">
+                                        No requests loaded.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================
                  SETTINGS / HELP
                  ========================= -->
-                <section class="section" id="settings" aria-labelledby="settings-title">
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title" id="settings-title">Settings</h2>
-                            <p class="section-description">Account settings will be expanded here as authentication and
-                                billing mature.</p>
-                        </div>
+            <section class="section" id="settings" aria-labelledby="settings-title">
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title" id="settings-title">Settings</h2>
+                        <p class="section-description">Account settings will be expanded here as authentication and
+                            billing mature.</p>
                     </div>
-                    <div class="placeholder">
-                        Core account settings are intentionally kept unchanged in this first Dashboard redesign. This
-                        keeps the current authentication flow stable while the new Account Center structure is
-                        introduced.
-                    </div>
-                </section>
+                </div>
+                <div class="placeholder">
+                    Core account settings are intentionally kept unchanged in this first Dashboard redesign. This
+                    keeps the current authentication flow stable while the new Account Center structure is
+                    introduced.
+                </div>
+            </section>
 
-                <section class="section" id="help" aria-labelledby="help-title">
-                    <div class="section-heading">
-                        <div>
-                            <h2 class="section-title" id="help-title">Help &amp; Support</h2>
-                            <p class="section-description">Support tools will be added here without changing the active
-                                survey workflow.</p>
-                        </div>
+            <section class="section" id="help" aria-labelledby="help-title">
+                <div class="section-heading">
+                    <div>
+                        <h2 class="section-title" id="help-title">Help &amp; Support</h2>
+                        <p class="section-description">Support tools will be added here without changing the active
+                            survey workflow.</p>
                     </div>
-                    <div class="placeholder">
-                        Need help with a project, report or account? Support and documentation can be added here in a
-                        later step.
-                    </div>
-                </section>
+                </div>
+                <div class="placeholder">
+                    Need help with a project, report or account? Support and documentation can be added here in a
+                    later step.
+                </div>
+            </section>
 
-                <div class="footer-note">┬⌐ 2026 EMF Insight ┬╖ Account Dashboard</div>
-            </div>
-        </main>
+            <div class="footer-note">┬⌐ 2026 EMF Insight ┬╖ Account Dashboard</div>
+    </div>
+    </main>
     </div>
 
 
@@ -4640,6 +5675,16 @@ ADMIN PAYMENTS
                 workspaceTitle
                     ? workspaceTitle.closest(".section")
                     : null;
+
+            const isProfessional =
+                String(
+                    window.currentUser?.role || ""
+                ).toLowerCase() === "professional";
+
+            if (workspaceSection) {
+                workspaceSection.style.display =
+                    isProfessional ? "none" : "";
+            }
 
             if (workspaceSection) {
 
@@ -10755,14 +11800,20 @@ ADMIN PAYMENTS
                             <tr>
 
                                 <td>
-                                    <strong>
-                                        Professional EMF Assessment
-                                    </strong>
-                                </td>
+    <strong>
+        Request #${escapeHtml(request.id)}
+    </strong>
+</td>
 
-                                <td>
-                                    #${escapeHtml(request.project_id)}
-                                </td>
+<td>
+    <a
+        href="#projects"
+        class="home-professional-request-project-link"
+        onclick="openProject('${escapeHtml(request.project_id)}', 'home'); return false;"
+    >
+        Project #${escapeHtml(request.project_id)}
+    </a>
+</td>
 
                                 <td>
                                     ${escapeHtml(
@@ -10778,17 +11829,187 @@ ADMIN PAYMENTS
                                 </td>
 
                                 <td>
-                                    <strong>
-                                        ${formatHomeProfessionalRequestStatus(
+    <strong>
+        ${formatHomeProfessionalRequestStatus(
                     request.status
                 )}
-                                    </strong>
-                                </td>
+    </strong>
+
+    ${request.has_active_unlock && request.contact_expires_at
+                        ? `
+                <div
+                    style="
+                        margin-top:6px;
+                        font-size:12px;
+                        opacity:0.72;
+                    "
+                >
+                    Access until:
+                    ${new Date(
+                            request.contact_expires_at
+                        ).toLocaleString(
+                            undefined,
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            }
+                        )}
+                </div>
+            `
+                        : ""
+                    }
+${request.has_active_unlock
+                        ? `
+            <div
+                style="
+                    margin-top:12px;
+                    padding-top:10px;
+                    border-top:1px solid rgba(0,0,0,0.08);
+                "
+            >
+                <div
+                    style="
+                        font-size:12px;
+                        font-weight:600;
+                        margin-bottom:7px;
+                    "
+                >
+                    Would you like earlier contact?
+                </div>
+
+                <select
+    class="home-contact-preference"
+    data-request-id="${escapeHtml(request.id)}"
+    onchange="
+        updateHomeContactFeedback(
+            ${request.id},
+            'contact_preference',
+            this.value
+        )
+    "
+    style="
+        font-size:12px;
+        padding:6px 8px;
+        border-radius:6px;
+        border:1px solid #d6d6d6;
+        background:#fff;
+    "
+>
+    <option
+        value=""
+        ${!request.contact_preference
+                            ? "selected"
+                            : ""
+                        }
+    >
+        No preference
+    </option>
+
+    <option
+        value="as_soon_as_possible"
+        ${request.contact_preference === "as_soon_as_possible"
+                            ? "selected"
+                            : ""
+                        }
+    >
+        As soon as possible
+    </option>
+
+    <option
+        value="within_3_days"
+        ${request.contact_preference === "within_3_days"
+                            ? "selected"
+                            : ""
+                        }
+    >
+        Within 3 days
+    </option>
+
+    <option
+        value="within_7_days"
+        ${request.contact_preference === "within_7_days"
+                            ? "selected"
+                            : ""
+                        }
+    >
+        Within 7 days
+    </option>
+</select>
+
+<div
+    style="
+        margin-top:12px;
+        font-size:12px;
+        font-weight:600;
+    "
+>
+    Has the professional contacted you?
+</div>
+
+<select
+    class="home-contact-status"
+    data-request-id="${escapeHtml(request.id)}"
+    onchange="
+        updateHomeContactFeedback(
+            ${request.id},
+            'contact_status',
+            this.value
+        )
+    "
+    style="
+        margin-top:7px;
+        font-size:12px;
+        padding:6px 8px;
+        border-radius:6px;
+        border:1px solid #d6d6d6;
+        background:#fff;
+    "
+>
+    <option
+        value="unknown"
+        ${!request.contact_status ||
+                            request.contact_status === "unknown"
+                            ? "selected"
+                            : ""
+                        }
+    >
+        Prefer not to say
+    </option>
+
+    <option
+        value="connected"
+        ${request.contact_status === "connected"
+                            ? "selected"
+                            : ""
+                        }
+    >
+        Yes, we connected
+    </option>
+
+    <option
+        value="not_yet"
+        ${request.contact_status === "not_yet"
+                            ? "selected"
+                            : ""
+                        }
+    >
+        Awaiting contact
+    </option>
+</select>
+            </div>
+        `
+                        : ""
+                    }
+
+</td>
 
                                 <td>
                                     ${escapeHtml(
-                    request.created_at || "—"
-                )}
+                        request.created_at || "—"
+                    )}
                                 </td>
 
                             </tr>
@@ -10825,7 +12046,6 @@ ADMIN PAYMENTS
         function formatHomeProfessionalRequestStatus(status) {
 
             switch (status) {
-
                 case "submitted":
                     return "Request Submitted";
 
@@ -10837,6 +12057,55 @@ ADMIN PAYMENTS
 
                 default:
                     return "Request Submitted";
+            }
+        }
+
+
+        async function updateHomeContactFeedback(
+            requestId,
+            field,
+            value
+        ) {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-requests/${requestId}/contact-feedback`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            [field]: value
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Unable to update contact information."
+                    );
+                }
+
+                console.log(
+                    "Home contact feedback updated:",
+                    data
+                );
+
+            } catch (error) {
+                console.error(
+                    "Home contact feedback error:",
+                    error
+                );
             }
         }
 
@@ -10855,10 +12124,104 @@ ADMIN PAYMENTS
 
                 const data = await res.json();
                 window.currentUser = data;
+
+                const brandingStatus =
+                    document.getElementById("brandingStatus");
+
+                const brandingPlanStatus =
+                    document.getElementById("brandingPlanStatus");
+
+                if (brandingStatus) {
+
+                    if (data.branding_active === true) {
+
+                        brandingStatus.textContent =
+                            "Active";
+
+                        brandingStatus.style.color =
+                            "var(--success)";
+
+                        if (brandingPlanStatus) {
+                            brandingPlanStatus.textContent =
+                                data.branding_plan === "annual"
+                                    ? "Annual branding is active."
+                                    : "Monthly branding is active.";
+                        }
+
+                    } else {
+
+                        brandingStatus.textContent =
+                            "Not active";
+
+                        brandingStatus.style.color =
+                            "#1f2937";
+
+                        if (brandingPlanStatus) {
+                            brandingPlanStatus.textContent =
+                                "Activate Professional Branding to use your company identity in client-facing reports.";
+                        }
+                    }
+                }
+
+                console.log("BRANDING DEBUG:", {
+                    logo_url: data.logo_url,
+                    logoPreview: document.getElementById("logoPreview")
+                });
+
+                // ================================
+                // LOAD COMPANY IDENTITY
+                // ================================
+
+                const companyNameInput =
+                    document.getElementById("company_name");
+
+                const companyEmailInput =
+                    document.getElementById("company_email");
+
+                const companyWebsiteInput =
+                    document.getElementById("company_website");
+
+                if (companyNameInput) {
+                    companyNameInput.value =
+                        data.company_name || "";
+                }
+
+                if (companyEmailInput) {
+                    companyEmailInput.value =
+                        data.company_email || "";
+                }
+
+                if (companyWebsiteInput) {
+                    companyWebsiteInput.value =
+                        data.company_website || "";
+                }
+
+                const logoPreview =
+                    document.getElementById("logoPreview");
+
+                if (logoPreview && data.logo_url) {
+                    logoPreview.src = `${API}${data.logo_url}`;
+                    logoPreview.style.display = "block";
+                }
+
+                const uploadButton =
+                    document.querySelector(
+                        'button[onclick="uploadLogo()"]'
+                    );
+
+                if (uploadButton && data.logo_url) {
+                    uploadButton.textContent = "Replace logo";
+                }
+
                 window.currentUserRole =
                     String(data.role || "").toLowerCase();
 
                 await loadProfessionalDashboardStatus();
+
+                if (typeof updateProfessionalMyContacts === "function") {
+                    await updateProfessionalMyContacts();
+                }
+
                 initializeProfessionalDashboardSubnav();
 
                 const email = data.email || "Account";
@@ -10980,6 +12343,11 @@ ADMIN PAYMENTS
                     document.getElementById("company_email").value = data.company_email || "";
                 }
 
+                if (data.company_website !== undefined) {
+                    document.getElementById("company_website").value =
+                        data.company_website || "";
+                }
+
                 if (data.is_admin === true) {
                     loadAdminUsers();
                     loadAdminPayments();
@@ -10994,6 +12362,183 @@ ADMIN PAYMENTS
                 return null;
             }
         }
+
+        async function confirmBrandingActivation() {
+
+            const plan =
+                window.selectedBrandingPlan || "monthly";
+
+            const button =
+                document.getElementById(
+                    "brandingActivationConfirm"
+                );
+
+            const message =
+                document.getElementById(
+                    "brandingActivationMessage"
+                );
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Activating...";
+            }
+
+            if (message) {
+                message.textContent = "";
+                message.style.display = "none";
+            }
+
+            try {
+
+                const res = await fetch(
+                    `${API}/me/branding/activate`,
+                    {
+                        method: "POST",
+                        headers: {
+                            ...authHeaders(),
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            plan: plan
+                        })
+                    }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Branding activation failed."
+                    );
+                }
+
+                const brandingStatus =
+                    document.getElementById(
+                        "brandingStatus"
+                    );
+
+                const brandingPlanStatus =
+                    document.getElementById(
+                        "brandingPlanStatus"
+                    );
+
+                if (brandingStatus) {
+                    brandingStatus.textContent =
+                        "Active";
+
+                    brandingStatus.style.color =
+                        "var(--success)";
+                }
+
+                if (brandingPlanStatus) {
+                    brandingPlanStatus.textContent =
+                        plan === "annual"
+                            ? "Annual branding is active."
+                            : "Monthly branding is active.";
+                }
+
+                closeBrandingActivation();
+
+                // Refresh user state from backend
+                await loadUser();
+
+            } catch (error) {
+
+                console.error(
+                    "Branding activation error:",
+                    error
+                );
+
+                if (message) {
+                    message.textContent =
+                        error.message ||
+                        "Unable to activate branding.";
+
+                    message.style.color =
+                        "#a33b3b";
+
+                    message.style.display =
+                        "block";
+                }
+
+            } finally {
+
+                if (button) {
+                    button.disabled = false;
+                    button.textContent =
+                        "Activate Branding";
+                }
+            }
+        }
+
+        function openBrandingActivation(plan) {
+
+            const modal =
+                document.getElementById("brandingActivationModal");
+
+            const planEl =
+                document.getElementById("brandingActivationPlan");
+
+            const priceEl =
+                document.getElementById("brandingActivationPrice");
+
+            const message =
+                document.getElementById("brandingActivationMessage");
+
+            if (!modal) {
+                return;
+            }
+
+            if (message) {
+                message.textContent = "";
+                message.style.display = "none";
+            }
+
+            if (plan === "annual") {
+
+                if (planEl) {
+                    planEl.textContent = "Annual";
+                }
+
+                if (priceEl) {
+                    priceEl.textContent = "15 Points / year";
+                }
+
+            } else {
+
+                if (planEl) {
+                    planEl.textContent = "Monthly";
+                }
+
+                if (priceEl) {
+                    priceEl.textContent = "2 Points / month";
+                }
+            }
+
+            window.selectedBrandingPlan =
+                plan === "annual"
+                    ? "annual"
+                    : "monthly";
+
+            modal.classList.add("open");
+            modal.setAttribute("aria-hidden", "false");
+        }
+
+
+        function closeBrandingActivation() {
+
+            const modal =
+                document.getElementById("brandingActivationModal");
+
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.remove("open");
+            modal.setAttribute("aria-hidden", "true");
+        }
+
 
         function openAdminHomeProject(projectId) {
 
@@ -12517,29 +14062,16 @@ ADMIN PAYMENTS
                         }
                     </td>
 
-                    <td>
-
-                        <select
-    class="admin-professional-status"
-    data-request-id="${request.id}"
-    onchange="updateAdminProfessionalRequestStatus(this)"
->
-    ${[
-                            "available",
-                            "contact_unlocked"
-                        ].map(status => `
-    <option
-        value="${status}"
-        ${request.status === status ? "selected" : ""}
-    >
-        ${status === "available"
-                                ? "Available"
-                                : "Contact Unlocked"}
-    </option>
-`).join("")}
-</select>
-
-                    </td>
+                   <td>
+    <span class="admin-professional-request-status ${request.status === "contact_unlocked"
+                            ? "contact-unlocked"
+                            : "available"
+                        }">
+        ${request.status === "contact_unlocked"
+                            ? "Contact Unlocked"
+                            : "Available"}
+    </span>
+</td>
 
                     <td>
                         ${request.created_at || "?"}
@@ -12620,6 +14152,63 @@ ADMIN PAYMENTS
             });
         }
 
+        async function unlockProfessionalContact(requestId) {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("Please sign in again.");
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-requests/${requestId}/unlock-contact`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail || "Unable to unlock contact."
+                    );
+                }
+
+                const contact = data.contact || {};
+
+                alert(
+                    `Contact unlocked.\n\n` +
+                    `Name: ${contact.first_name || ""} ${contact.last_name || ""}\n` +
+                    `Email: ${contact.email || ""}\n\n` +
+                    `Contact Points remaining: ${Number(data.contact_points_remaining || 0)}`
+                );
+
+                if (typeof updateProfessionalHomeProjectsAccess === "function") {
+                    await updateProfessionalHomeProjectsAccess();
+                }
+
+                if (typeof loadProfessionalDashboardStatus === "function") {
+                    await loadProfessionalDashboardStatus();
+                }
+
+            } catch (error) {
+                console.error(
+                    "Unlock professional contact error:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to unlock professional contact."
+                );
+            }
+        }
+
         async function updateProfessionalHomeProjectsAccess() {
             const role =
                 String(
@@ -12635,26 +14224,6 @@ ADMIN PAYMENTS
             );
 
             if (!container) return;
-
-            const credits = Number(window.businessReportCredits || 0);
-
-            if (credits < 1) {
-                container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">🔒</div>
-                <div class="empty-title">Home Projects locked</div>
-                <div class="empty-copy">
-                    You need at least 1 Report Credit to find Home Projects.
-                </div>
-                <a
-                    class="btn-secondary professional-home-projects-billing-button"
-                    href="#billing">
-                    Get Report Credits
-                </a>
-            </div>
-        `;
-                return;
-            }
 
             container.innerHTML = `
         <div class="empty-state">
@@ -12719,7 +14288,15 @@ ADMIN PAYMENTS
                     ? data.requests
                     : [];
 
-                if (!requests.length) {
+                const availableRequests = requests.filter(
+                    request => !request.unlocked_by_me
+                );
+
+                const myContactRequests = requests.filter(
+                    request => request.unlocked_by_me
+                );
+
+                if (!availableRequests.length) {
                     container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">⌂</div>
@@ -12734,29 +14311,136 @@ ADMIN PAYMENTS
 
                 container.innerHTML = `
             <div class="professional-home-projects-list">
-                ${requests.map((request) => `
+                ${availableRequests.map((request) => `
                     <div class="workspace-card professional-home-project-card">
-                        <div class="content-body">
-                            <div class="section-title">
-                                Home Project #${request.project_id}
-                            </div>
+    <div class="content-body">
+        <div class="section-title">
+            Home Project #${request.project_id}
+        </div>
 
-                            <div class="section-description">
-                                ${request.city || ""}
-                                ${request.region ? ` · ${request.region}` : ""}
-                                ${request.country ? ` · ${request.country}` : ""}
-                            </div>
+        <div class="section-description">
+            ${request.city || ""}
+            ${request.region ? ` · ${request.region}` : ""}
+            ${request.country ? ` · ${request.country}` : ""}
+        </div>
 
-                            <div class="section-description">
-                                Requested service:
-                                ${request.requested_service || "Professional EMF Assessment"}
-                            </div>
+        <div class="section-description">
+            Requested service:
+            ${request.requested_service || "Professional EMF Assessment"}
+        </div>
 
-                            <div class="section-description">
-                                Request #${request.request_id}
-                            </div>
-                        </div>
-                    </div>
+        <div class="section-description">
+            Request #${request.request_id}
+        </div>
+
+        <div style="margin-top:16px;">
+            ${request.unlocked_by_me
+                        ? `
+            <div class="professional-contact-unlocked">
+                <div style="font-weight:600; margin-bottom:14px;">
+                    Contact Unlocked
+                </div>
+
+                <div style="font-size:13px; font-weight:600; margin-bottom:6px;">
+                    Contact details
+                </div>
+
+                ${request.contact_preference
+                            ? `
+            <div style="font-size:13px; font-weight:600; margin-bottom:6px;">
+                Preferred contact timing
+            </div>
+
+            <div style="font-size:14px; margin-bottom:14px;">
+                ${request.contact_preference === "as_soon_as_possible"
+                                ? "As soon as possible"
+                                : request.contact_preference === "within_3_days"
+                                    ? "Within 3 days"
+                                    : request.contact_preference === "within_7_days"
+                                        ? "Within 7 days"
+                                        : "No preference"
+                            }
+            </div>
+        `
+                            : ""
+                        }
+
+                        ${request.contact_status
+                            ? `
+            <div style="font-size:13px; font-weight:600; margin-bottom:6px;">
+                Contact status
+            </div>
+
+            <div style="font-size:14px; margin-bottom:14px;">
+                ${request.contact_status === "connected"
+                                ? "Yes, we connected"
+                                : request.contact_status === "not_yet"
+                                    ? "Awaiting contact"
+                                    : "Prefer not to say"
+                            }
+            </div>
+
+            <div style="font-size:11px; opacity:0.6; margin-top:-8px; margin-bottom:14px;">
+                User-reported
+            </div>
+        `
+                            : ""
+                        }
+
+                <div style="font-size:13px; font-weight:600; margin-bottom:6px;">
+                    Access until
+                </div>
+
+                <div style="font-size:14px;">
+    ${request.contact_expires_at
+                            ? new Date(request.contact_expires_at).toLocaleString(
+                                undefined,
+                                {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                }
+                            )
+                            : ""
+                        }
+</div>
+
+${request.contact_expires_at
+                            ? `
+            <div
+                class="professional-contact-countdown"
+                style="margin-top:6px; font-size:13px; opacity:0.75;"
+            >
+                ${Math.max(
+                                0,
+                                Math.ceil(
+                                    (
+                                        new Date(request.contact_expires_at).getTime()
+                                        - Date.now()
+                                    ) / 86400000
+                                )
+                            )} days remaining
+            </div>
+        `
+                            : ""
+                        }
+            </div>
+        `
+                        : `
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="unlockProfessionalContact(${request.request_id})"
+            >
+                Unlock Contact · 1 Contact Point
+            </button>
+        `
+                    }
+        </div>
+    </div>
+</div>
                 `).join("")}
             </div>
         `;
@@ -12772,6 +14456,600 @@ ADMIN PAYMENTS
                 <div class="empty-title">Unable to load Home Projects</div>
                 <div class="empty-copy">
                     Please try again later.
+                </div>
+            </div>
+        `;
+            }
+        }
+
+
+
+        function populateProfessionalMyContactsCountries() {
+            const select = document.getElementById(
+                "professionalMyContactsCountryFilter"
+            );
+
+            if (!select) return;
+
+            const currentValue = select.value || "all";
+
+            const countries = [
+                ...new Set(
+                    professionalMyContactsData
+                        .map(request => request.country)
+                        .filter(Boolean)
+                )
+            ].sort((a, b) => a.localeCompare(b));
+
+            select.innerHTML = `
+        <option value="all">All countries</option>
+        ${countries.map(country => `
+            <option value="${escapeHtml(country)}">
+                ${escapeHtml(country)}
+            </option>
+        `).join("")}
+    `;
+
+            if (
+                currentValue === "all" ||
+                countries.includes(currentValue)
+            ) {
+                select.value = currentValue;
+            }
+        }
+
+
+        function renderProfessionalMyContacts() {
+            const container = document.getElementById(
+                "professionalMyContactsContainer"
+            );
+
+            if (!container) return;
+
+            const search =
+                document.getElementById("professionalMyContactsSearch")
+                    ?.value
+                    .trim()
+                    .toLowerCase() || "";
+
+            const country =
+                document.getElementById("professionalMyContactsCountryFilter")
+                    ?.value || "all";
+
+            const status =
+                document.getElementById("professionalMyContactsStatusFilter")
+                    ?.value || "all";
+
+            const preference =
+                document.getElementById("professionalMyContactsPreferenceFilter")
+                    ?.value || "all";
+
+            const access =
+                document.getElementById("professionalMyContactsAccessFilter")
+                    ?.value || "all";
+
+            const sort =
+                document.getElementById("professionalMyContactsSort")
+                    ?.value || "newest";
+
+            const pageSize = Number(
+                document.getElementById("professionalMyContactsPageSize")
+                    ?.value || 10
+            );
+
+            const now = Date.now();
+
+            let filtered = [...professionalMyContactsData];
+
+            // SEARCH
+            if (search) {
+                filtered = filtered.filter(request => {
+                    const searchable = [
+                        request.request_id,
+                        request.project_id,
+                        request.city,
+                        request.region,
+                        request.country,
+                        request.contact?.email,
+                        request.contact_preference,
+                        request.contact_status
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                        .toLowerCase();
+
+                    return searchable.includes(search);
+                });
+            }
+
+            // COUNTRY
+            if (country !== "all") {
+                filtered = filtered.filter(
+                    request => request.country === country
+                );
+            }
+
+            // CONTACT STATUS
+            if (status !== "all") {
+                filtered = filtered.filter(
+                    request =>
+                        (request.contact_status || "unknown") === status
+                );
+            }
+
+            // CONTACT TIMING
+            if (preference !== "all") {
+                filtered = filtered.filter(
+                    request =>
+                        (request.contact_preference || "no_preference") ===
+                        preference
+                );
+            }
+
+            // ACCESS EXPIRY
+            if (access !== "all") {
+                filtered = filtered.filter(request => {
+                    if (!request.contact_expires_at) return false;
+
+                    const daysRemaining =
+                        (
+                            new Date(request.contact_expires_at).getTime() -
+                            now
+                        ) / 86400000;
+
+                    if (access === "within_3_days") {
+                        return daysRemaining <= 3;
+                    }
+
+                    if (access === "within_7_days") {
+                        return daysRemaining <= 7;
+                    }
+
+                    if (access === "more_than_7_days") {
+                        return daysRemaining > 7;
+                    }
+
+                    return true;
+                });
+            }
+
+            // SORT
+            filtered.sort((a, b) => {
+                const createdA =
+                    new Date(a.created_at || 0).getTime();
+
+                const createdB =
+                    new Date(b.created_at || 0).getTime();
+
+                if (sort === "oldest") {
+                    return createdA - createdB;
+                }
+
+                if (sort === "recently_unlocked") {
+                    const unlockedA =
+                        new Date(a.contact_unlocked_at || a.created_at || 0)
+                            .getTime();
+
+                    const unlockedB =
+                        new Date(b.contact_unlocked_at || b.created_at || 0)
+                            .getTime();
+
+                    return unlockedB - unlockedA;
+                }
+
+                if (sort === "expires_soonest") {
+                    const expiryA =
+                        new Date(a.contact_expires_at || "9999-12-31")
+                            .getTime();
+
+                    const expiryB =
+                        new Date(b.contact_expires_at || "9999-12-31")
+                            .getTime();
+
+                    return expiryA - expiryB;
+                }
+
+                // newest
+                return createdB - createdA;
+            });
+
+            const total = filtered.length;
+
+            const totalPages = Math.max(
+                1,
+                Math.ceil(total / pageSize)
+            );
+
+            professionalMyContactsCurrentPage = Math.min(
+                professionalMyContactsCurrentPage,
+                totalPages
+            );
+
+            const start =
+                (professionalMyContactsCurrentPage - 1) *
+                pageSize;
+
+            const pageItems = filtered.slice(
+                start,
+                start + pageSize
+            );
+
+            if (!pageItems.length) {
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">👤</div>
+                <div class="empty-title">
+                    No matching contacts
+                </div>
+                <div class="empty-copy">
+                    No contacts match the current filters.
+                </div>
+            </div>
+        `;
+                return;
+            }
+
+            container.innerHTML = `
+        <div class="professional-contacts-table-wrap">
+            <table class="professional-contacts-table">
+                <thead>
+                    <tr>
+                        <th>Request</th>
+                        <th>Project</th>
+                        <th>Location</th>
+                        <th>Contact</th>
+                        <th>Timing</th>
+                        <th>Status</th>
+                        <th>Access until</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${pageItems.map(request => `
+                        <tr>
+                            <td>
+                                <strong>
+                                    #${escapeHtml(request.request_id)}
+                                </strong>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    #${escapeHtml(request.project_id)}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHtml(request.city || "")}
+                                ${request.region
+                    ? ` · ${escapeHtml(request.region)}`
+                    : ""
+                }
+                                ${request.country
+                    ? ` · ${escapeHtml(request.country)}`
+                    : ""
+                }
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                    request.contact?.email || "—"
+                )}
+                            </td>
+
+                            <td>
+                                ${request.contact_preference ===
+                    "as_soon_as_possible"
+                    ? "As soon as possible"
+                    : request.contact_preference ===
+                        "within_3_days"
+                        ? "Within 3 days"
+                        : request.contact_preference ===
+                            "within_7_days"
+                            ? "Within 7 days"
+                            : "No preference"
+                }
+                            </td>
+
+                            <td>
+                                ${request.contact_status ===
+                    "connected"
+                    ? "Connected"
+                    : request.contact_status ===
+                        "not_yet"
+                        ? "Awaiting contact"
+                        : "Prefer not to say"
+                }
+                            </td>
+
+                            <td>
+    ${request.contact_expires_at
+                    ? `
+                <div>
+                    ${new Date(
+                        request.contact_expires_at
+                    ).toLocaleDateString(
+                        undefined,
+                        {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric"
+                        }
+                    )}
+                </div>
+
+                <div
+                    class="professional-contact-countdown"
+                    style="
+                        margin-top:4px;
+                        font-size:11px;
+                        opacity:0.65;
+                    "
+                >
+                    ${Math.max(
+                        0,
+                        Math.ceil(
+                            (
+                                new Date(
+                                    request.contact_expires_at
+                                ).getTime() -
+                                Date.now()
+                            ) / 86400000
+                        )
+                    )
+                    } days remaining
+                </div>
+            `
+                    : "—"
+                }
+</td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+
+        ${totalPages > 1
+                    ? `
+                    <div class="professional-contacts-pagination">
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                            ${professionalMyContactsCurrentPage <= 1
+                        ? "disabled"
+                        : ""}
+                            onclick="
+                                professionalMyContactsCurrentPage--;
+                                renderProfessionalMyContacts();
+                            "
+                        >
+                            Previous
+                        </button>
+
+                        <span>
+                            Page
+                            ${professionalMyContactsCurrentPage}
+                            of
+                            ${totalPages}
+                        </span>
+
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                            ${professionalMyContactsCurrentPage >= totalPages
+                        ? "disabled"
+                        : ""}
+                            onclick="
+                                professionalMyContactsCurrentPage++;
+                                renderProfessionalMyContacts();
+                            "
+                        >
+                            Next
+                        </button>
+                    </div>
+                `
+                    : ""
+                }
+    `;
+        }
+
+        let professionalMyContactsData = [];
+        let professionalMyContactsCurrentPage = 1;
+
+        async function updateProfessionalMyContacts() {
+            const role = String(
+                window.currentUser?.role || ""
+            ).toLowerCase();
+
+            if (role !== "professional") {
+                return;
+            }
+
+            const container = document.getElementById(
+                "professionalMyContactsContainer"
+            );
+
+            if (!container) {
+                return;
+            }
+
+            container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">⌛</div>
+            <div class="empty-title">Loading contacts</div>
+            <div class="empty-copy">
+                Loading your active professional contacts.
+            </div>
+        </div>
+    `;
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-requests/available`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Unable to load professional contacts."
+                    );
+                }
+
+                const requests = Array.isArray(data.requests)
+                    ? data.requests
+                    : [];
+
+                const myContacts = requests.filter(
+                    request => request.unlocked_by_me
+                );
+
+                professionalMyContactsData = myContacts;
+                professionalMyContactsCurrentPage = 1;
+
+                populateProfessionalMyContactsCountries();
+                renderProfessionalMyContacts();
+
+                return;
+
+                if (!myContacts.length) {
+                    container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">👤</div>
+                    <div class="empty-title">No active contacts</div>
+                    <div class="empty-copy">
+                        You have not unlocked any professional contacts yet.
+                    </div>
+                </div>
+            `;
+
+                    return;
+                }
+
+                container.innerHTML = `
+            <div class="professional-contacts-table-wrap">
+                <table class="professional-contacts-table">
+                    <thead>
+                        <tr>
+                            <th>Request</th>
+                            <th>Project</th>
+                            <th>Location</th>
+                            <th>Contact</th>
+                            <th>Timing</th>
+                            <th>Status</th>
+                            <th>Access until</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${myContacts.map(request => `
+                            <tr>
+                                <td>
+                                    <strong>
+                                        #${escapeHtml(request.request_id)}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        #${escapeHtml(request.project_id)}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(request.city || "")}
+                                    ${request.region
+                        ? ` · ${escapeHtml(request.region)}`
+                        : ""
+                    }
+                                    ${request.country
+                        ? ` · ${escapeHtml(request.country)}`
+                        : ""
+                    }
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                        request.contact?.email || "—"
+                    )}
+                                </td>
+
+                                <td>
+                                    ${request.contact_preference ===
+                        "as_soon_as_possible"
+                        ? "As soon as possible"
+                        : request.contact_preference ===
+                            "within_3_days"
+                            ? "Within 3 days"
+                            : request.contact_preference ===
+                                "within_7_days"
+                                ? "Within 7 days"
+                                : "No preference"
+                    }
+                                </td>
+
+                                <td>
+                                    ${request.contact_status ===
+                        "connected"
+                        ? "Yes, we connected"
+                        : request.contact_status ===
+                            "not_yet"
+                            ? "Awaiting contact"
+                            : "Prefer not to say"
+                    }
+                                </td>
+
+                                <td>
+                                    ${request.contact_expires_at
+                        ? new Date(
+                            request.contact_expires_at
+                        ).toLocaleDateString(
+                            undefined,
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        )
+                        : "—"
+                    }
+                                </td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+            } catch (error) {
+                console.error(
+                    "Professional My Contacts error:",
+                    error
+                );
+
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠</div>
+                <div class="empty-title">
+                    Unable to load contacts
+                </div>
+                <div class="empty-copy">
+                    ${escapeHtml(
+                    error.message ||
+                    "Please try again."
+                )}
                 </div>
             </div>
         `;
@@ -13028,6 +15306,7 @@ ADMIN PAYMENTS
             }
         }
 
+
         async function loadProfessionalDashboardStatus() {
             const section = document.getElementById("professionalStatusSection");
             const quickActions = document.getElementById("professionalQuickActionsSection");
@@ -13046,6 +15325,37 @@ ADMIN PAYMENTS
                 }
 
                 const profile = await res.json();
+
+                const contactPointsEl =
+                    document.getElementById("professionalContactPointsBalance");
+
+                if (contactPointsEl) {
+                    try {
+                        const contactPointsRes = await fetch(
+                            `${API}/professional-requests/contact-points`,
+                            {
+                                headers: authHeaders()
+                            }
+                        );
+
+                        if (contactPointsRes.ok) {
+                            const contactPointsData =
+                                await contactPointsRes.json();
+
+                            contactPointsEl.textContent =
+                                `${Number(contactPointsData.contact_points || 0)} available`;
+                        } else {
+                            contactPointsEl.textContent = "Unavailable";
+                        }
+                    } catch (error) {
+                        console.error(
+                            "Load professional contact points error:",
+                            error
+                        );
+                        contactPointsEl.textContent = "Unavailable";
+                    }
+                }
+
                 const primaryLocationEl =
                     document.getElementById(
                         "professionalDashboardPrimaryLocation"
@@ -13235,6 +15545,7 @@ ADMIN PAYMENTS
                 section.style.display = "none";
             }
         }
+
 
         async function loadProjects() {
             const container = document.getElementById("projectsContainer");
@@ -13516,39 +15827,318 @@ ADMIN PAYMENTS
                 return [];
             }
         }
+        async function saveProfile(event) {
 
-        async function saveProfile() {
-            const message = document.getElementById("brandingMessage");
-            const company_name = document.getElementById("company_name").value.trim();
-            const company_email = document.getElementById("company_email").value.trim();
+            if (event) {
+                event.preventDefault();
+            }
 
-            message.textContent = "Saving...";
-            message.style.color = "var(--muted)";
+            const message =
+                document.getElementById("brandingMessage");
 
-            try {
-                const res = await fetch(`${API}/me/profile`, {
-                    method: "POST",
-                    headers: authHeaders(),
-                    body: JSON.stringify({company_name, company_email})
-                });
+            const companyNameInput =
+                document.getElementById("company_name");
 
-                if (!res.ok) {
-                    throw new Error(`Profile save failed: ${res.status}`);
+            const companyEmailInput =
+                document.getElementById("company_email");
+
+            const companyWebsiteInput =
+                document.getElementById("company_website");
+
+            const company_name =
+                companyNameInput.value.trim();
+
+            const company_email =
+                companyEmailInput.value.trim();
+
+            const company_website =
+                companyWebsiteInput.value.trim();
+
+            // ---------------------------------------------------------
+            // COMPANY NAME — REQUIRED
+            // ---------------------------------------------------------
+
+            if (!company_name) {
+
+                const error =
+                    document.getElementById("companyNameError");
+
+                error.textContent =
+                    "Please enter your company name.";
+
+                error.style.color = "#a33b3b";
+                error.style.display = "block";
+
+                companyNameInput.focus();
+
+                return false;
+            }
+
+            // ---------------------------------------------------------
+            // COMPANY EMAIL — OPTIONAL
+            // Validate ONLY when entered
+            // ---------------------------------------------------------
+
+            if (company_email) {
+
+                const emailValid =
+                    validateCompanyEmail(true);
+
+                if (!emailValid) {
+                    return false;
                 }
 
-                message.textContent = "Company details saved.";
-                message.style.color = "var(--success)";
+            } else {
+
+                const error =
+                    document.getElementById("companyEmailError");
+
+                error.textContent = "";
+                error.style.display = "none";
+            }
+
+            // ---------------------------------------------------------
+            // COMPANY WEBSITE — OPTIONAL
+            // Validate ONLY when entered
+            // ---------------------------------------------------------
+
+            if (company_website) {
+
+                const websiteValid =
+                    validateCompanyWebsite(true);
+
+                if (!websiteValid) {
+                    return false;
+                }
+
+            } else {
+
+                const error =
+                    document.getElementById("companyWebsiteError");
+
+                error.textContent = "";
+                error.style.display = "none";
+            }
+
+            // ---------------------------------------------------------
+            // NORMALIZE WEBSITE
+            // ---------------------------------------------------------
+
+            let normalizedWebsite =
+                company_website;
+
+            if (
+                normalizedWebsite &&
+                !/^https?:\/\//i.test(normalizedWebsite)
+            ) {
+                normalizedWebsite =
+                    "https://" + normalizedWebsite;
+            }
+
+            // ---------------------------------------------------------
+            // SAVE
+            // ---------------------------------------------------------
+
+            message.textContent =
+                "Saving...";
+
+            message.style.color =
+                "var(--muted)";
+
+            try {
+
+                const res = await fetch(
+                    `${API}/me/profile`,
+                    {
+                        method: "POST",
+                        headers: authHeaders(),
+                        body: JSON.stringify({
+                            company_name,
+                            company_email,
+                            company_website:
+                                normalizedWebsite
+                        })
+                    }
+                );
+
+                if (!res.ok) {
+                    throw new Error(
+                        `Profile save failed: ${res.status}`
+                    );
+                }
+
+                message.textContent =
+                    "Company details saved.";
+
+                message.style.color =
+                    "var(--success)";
+
+                return true;
+
             } catch (error) {
-                console.error("Save profile error:", error);
-                message.textContent = "Unable to save company details.";
-                message.style.color = "#a33b3b";
+
+                console.error(
+                    "Save profile error:",
+                    error
+                );
+
+                message.textContent =
+                    "Unable to save company details.";
+
+                message.style.color =
+                    "#a33b3b";
+
+                return false;
+            }
+        }
+        function validateCompanyEmail(showMessage = true) {
+            const input = document.getElementById("company_email");
+            const message = document.getElementById("companyEmailError");
+
+            const value = input.value.trim();
+
+            const emailPattern =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!value) {
+                message.style.display = "none";
+                return false;
+            }
+
+            if (!emailPattern.test(value)) {
+                if (showMessage) {
+                    message.textContent =
+                        "Please enter a valid email address.";
+                    message.style.color = "#a33b3b";
+                    message.style.display = "block";
+                }
+
+                return false;
+            }
+
+            message.textContent = "✓ Valid email address";
+            message.style.color = "#16803c";
+            message.style.display = "block";
+
+            return true;
+        }
+
+
+        function validateCompanyWebsite(showMessage = true) {
+            const input = document.getElementById("company_website");
+            const message = document.getElementById("companyWebsiteError");
+
+            let value = input.value.trim();
+
+            if (!value) {
+                message.style.display = "none";
+                return false;
+            }
+
+            // Allow:
+            // www.example.com
+            // example.com
+            // https://example.com
+            // http://example.com
+
+            if (!/^https?:\/\//i.test(value)) {
+                value = "https://" + value;
+            }
+
+            try {
+                const url = new URL(value);
+
+                if (!url.hostname || !url.hostname.includes(".")) {
+                    throw new Error("Invalid hostname");
+                }
+
+                if (!["http:", "https:"].includes(url.protocol)) {
+                    throw new Error("Invalid protocol");
+                }
+
+                if (showMessage) {
+                    message.textContent = "✓ Valid website";
+                    message.style.color = "#16803c";
+                    message.style.display = "block";
+                }
+
+                return true;
+
+            } catch (error) {
+
+                if (showMessage) {
+                    message.textContent =
+                        "Please enter a valid website URL, e.g. www.example.com";
+                    message.style.color = "#a33b3b";
+                    message.style.display = "block";
+                }
+
+                return false;
             }
         }
 
-        async function uploadLogo() {
+        document
+            .getElementById("company_email")
+            ?.addEventListener("input", () => {
+                validateCompanyEmail(true);
+            });
+
+        document
+            .getElementById("company_website")
+            ?.addEventListener("input", () => {
+                validateCompanyWebsite(true);
+            });
+
+
+        function previewLogo() {
+
             const input = document.getElementById("logo");
-            const message = document.getElementById("brandingMessage");
+            const preview = document.getElementById("logoPreview");
+
+            if (!input || !preview) {
+                console.error("Logo preview elements not found");
+                return;
+            }
+
             const file = input.files[0];
+
+            if (!file) {
+                preview.src = "";
+                preview.style.display = "none";
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+                preview.src = "";
+                preview.style.display = "none";
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                preview.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadLogo() {
+
+            const input = document.getElementById("logo");
+            const preview = document.getElementById("logoPreview");
+
+            if (!preview) {
+                console.error("logoPreview element not found");
+                return;
+            }
+
+            const message =
+                document.getElementById("brandingMessage");
+
+            const file = input.files[0];
+
 
             if (!file) {
                 message.textContent = "Please choose a logo file first.";
@@ -13556,8 +16146,26 @@ ADMIN PAYMENTS
                 return;
             }
 
+            // Basic file validation
+            if (!file.type.startsWith("image/")) {
+                message.textContent = "Please choose an image file.";
+                message.style.color = "#a33b3b";
+                return;
+            }
+
+            // Show local preview immediately
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                preview.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+
             const form = new FormData();
             form.append("file", file);
+
             message.textContent = "Uploading...";
             message.style.color = "var(--muted)";
 
@@ -13576,13 +16184,28 @@ ADMIN PAYMENTS
 
                 message.textContent = "Logo uploaded.";
                 message.style.color = "var(--success)";
+
+                const uploadButton =
+                    document.querySelector(
+                        'button[onclick="uploadLogo()"]'
+                    );
+
+                if (uploadButton) {
+                    uploadButton.textContent = "Replace logo";
+                }
+
                 input.value = "";
+
             } catch (error) {
                 console.error("Upload logo error:", error);
+
                 message.textContent = "Unable to upload logo.";
                 message.style.color = "#a33b3b";
             }
         }
+
+
+
 
         // Kept for compatibility with the existing billing/report workflow.
         // Pricing is intentionally not rendered here; it will come from the future pricing configuration.
@@ -13756,15 +16379,6 @@ ADMIN PAYMENTS
             }
 
             if (!section) return;
-
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    section.scrollIntoView({
-                        behavior: "auto",
-                        block: "start"
-                    });
-                });
-            });
         }
 
         window.addEventListener("hashchange", activateDashboardSection);

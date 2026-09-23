@@ -303,6 +303,7 @@ def update_professional(
     }
 
     allowed_verification = {
+        "not_requested",
         "pending",
         "verified",
         "rejected",
@@ -319,14 +320,10 @@ def update_professional(
             detail="Invalid availability status",
         )
 
-    if (
-        data.verification_status is not None
-        and data.verification_status
-        not in allowed_verification
-    ):
+    if data.verification_status is not None:
         raise HTTPException(
             status_code=400,
-            detail="Invalid verification status",
+            detail="Verification status can only be changed through the Review workflow.",
         )
 
     fields = []
@@ -346,7 +343,6 @@ def update_professional(
         "city": data.city,
         "postal_code": data.postal_code,
         "availability_status": data.availability_status,
-        "verification_status": data.verification_status,
     }
 
     for field, value in values.items():
@@ -392,6 +388,96 @@ def update_professional(
         ),
         params,
     ).mappings().first()
+
+    db.commit()
+
+    return dict(result)
+
+
+# =====================
+# REVIEW PROFESSIONAL VERIFICATION
+# =====================
+
+class ProfessionalVerificationReview(BaseModel):
+    decision: str
+
+
+@router.patch("/professionals/{professional_id}/verification")
+def review_professional_verification(
+    professional_id: int,
+    data: ProfessionalVerificationReview,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    if data.decision not in {"verified", "rejected"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid verification decision",
+        )
+
+    profile = db.execute(
+        text("""
+            SELECT
+                id,
+                verification_status
+            FROM professional_profiles
+            WHERE id = :id
+        """),
+        {
+            "id": professional_id,
+        },
+    ).mappings().first()
+
+    if not profile:
+        raise HTTPException(
+            status_code=404,
+            detail="Professional not found",
+        )
+
+    current_status = profile["verification_status"]
+
+    if current_status != "pending":
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Only pending verification requests can be reviewed. "
+                f"Current status: {current_status}"
+            ),
+        )
+
+    result = db.execute(
+        text("""
+            UPDATE professional_profiles
+            SET verification_status = :decision
+            WHERE id = :id
+              AND verification_status = 'pending'
+            RETURNING
+                id,
+                user_id,
+                first_name,
+                last_name,
+                company_name,
+                professional_email,
+                professional_phone,
+                country_code,
+                country,
+                city,
+                postal_code,
+                availability_status,
+                verification_status,
+                created_at
+        """),
+        {
+            "id": professional_id,
+            "decision": data.decision,
+        },
+    ).mappings().first()
+
+    if not result:
+        raise HTTPException(
+            status_code=409,
+            detail="Verification request is no longer pending.",
+        )
 
     db.commit()
 

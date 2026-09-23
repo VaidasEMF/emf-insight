@@ -265,8 +265,8 @@ def _ensure_professional_requests_table(db):
             country VARCHAR(100),
             region VARCHAR(100),
             city VARCHAR(100),
-            postal_code VARCHAR(30),
-            status VARCHAR(50) NOT NULL DEFAULT 'open',
+            status VARCHAR(50) NOT NULL DEFAULT 'available',
+            
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """))
@@ -306,8 +306,52 @@ def _ensure_professional_contact_points_tables(db):
             request_id INTEGER NOT NULL,
             professional_user_id VARCHAR(255) NOT NULL,
             unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(request_id, professional_user_id)
+            expires_at TIMESTAMP NOT NULL,
+            duration_days INTEGER NOT NULL DEFAULT 14
         )
+    """))
+
+    db.execute(text("""
+        ALTER TABLE professional_request_contacts
+        ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP
+    """))
+
+    db.execute(
+        text("""
+            CREATE TABLE IF NOT EXISTS professional_request_contact_feedback (
+                request_id INTEGER PRIMARY KEY,
+                contact_preference VARCHAR(50),
+                contact_status VARCHAR(50) DEFAULT 'unknown',
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+    )
+
+    db.commit()
+
+    db.execute(text("""
+        ALTER TABLE professional_request_contacts
+        ADD COLUMN IF NOT EXISTS duration_days INTEGER DEFAULT 14
+    """))
+
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS platform_settings (
+            setting_key VARCHAR(100) PRIMARY KEY,
+            setting_value VARCHAR(255) NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+    db.execute(text("""
+        INSERT INTO platform_settings (
+            setting_key,
+            setting_value
+        )
+        VALUES (
+            'professional_contact_unlock_days',
+            '14'
+        )
+        ON CONFLICT (setting_key) DO NOTHING
     """))
 
 def _claim_stripe_event(db, event_id):

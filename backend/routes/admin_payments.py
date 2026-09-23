@@ -145,19 +145,6 @@ def get_admin_payments(
 
             session = stripe_object_dict(session_obj)
 
-            print(
-                "ADMIN STRIPE SESSION:",
-                session.get("id"),
-                "livemode=",
-                session.get("livemode"),
-                "dashboard_url=",
-                stripe_dashboard_url(
-                    "checkout_session",
-                    session.get("id"),
-                    bool(session.get("livemode")),
-                ),
-            )
-
             metadata = (
                 session.get("metadata")
                 or {}

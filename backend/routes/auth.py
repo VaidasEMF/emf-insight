@@ -298,6 +298,15 @@ def login(
         .first()
     )
 
+    print(
+        "LOGIN DEBUG:",
+        "email=", form_data.username,
+        "user_found=", bool(user),
+        "user_id=", getattr(user, "id", None),
+        "role=", getattr(user, "role", None),
+        "hash_exists=", bool(getattr(user, "hashed_password", None)),
+    )
+
     if not user:
 
         raise HTTPException(
