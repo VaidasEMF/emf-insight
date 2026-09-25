@@ -1775,10 +1775,15 @@ function updateWorkspaceUI() {
         .forEach(
             el => {
 
+                if (
+                    el.id === "propertyHealthDashboardView"
+                ) {
+                    el.style.display = "none";
+                    return;
+                }
+
                 el.style.display =
-                    mode === "home"
-                        ? ""
-                        : "none";
+                    "block";
             }
         );
 
@@ -2485,7 +2490,6 @@ function updateAppGuideText() {
 // =====================
 // 🔥 UPDATE WELLNESS
 // =====================
-
 function updateWellnessCard() {
 
     const card =
@@ -2497,123 +2501,1219 @@ function updateWellnessCard() {
         return;
     }
 
-    const rooms =
-        window.roomTool?.rooms || [];
+    // =====================================================
+    // PROPERTY
+    // =====================================================
 
-    if (rooms.length === 0) {
+    const propertyValue =
+        card.querySelector(
+            ".property-record-item:nth-child(1) .property-record-value"
+        );
 
-        card.style.display =
-            "none";
+    const propertyName =
+        window.AppState?.homeProject?.name ||
+        window.AppState?.project?.name ||
+        window.homeProjectDisplayName ||
+        "My Property";
 
-        return;
+    if (propertyValue) {
+        propertyValue.textContent =
+            propertyName;
     }
+
+
+    // =====================================================
+    // ENVIRONMENT
+    // =====================================================
+
+    const environmentValue =
+        card.querySelector(
+            ".property-record-item:nth-child(2) .property-record-value"
+        );
+
+    const indoorSources =
+        window.AppState?.homeProject?.indoorSources ||
+        window.AppState?.project?.indoorSources ||
+        window.indoorSources ||
+        [];
+
+    const outdoorSources =
+        window.AppState?.homeProject?.outdoorSources ||
+        window.AppState?.project?.outdoorSources ||
+        window.outdoorSources ||
+        [];
+
+    const indoorCount =
+        Array.isArray(indoorSources)
+            ? indoorSources.length
+            : 0;
+
+    const outdoorCount =
+        Array.isArray(outdoorSources)
+            ? outdoorSources.length
+            : 0;
+
+    const sourceCount =
+        indoorCount +
+        outdoorCount;
+
+
+
+
+    // =====================================================
+    // LIFESTYLE
+    // =====================================================
+
+    const lifestyleValue =
+        card.querySelector(
+            ".property-record-item:nth-child(3) .property-record-value"
+        );
+
+    const lifestyleAreas =
+        window.AppState?.homeProject?.lifestyleAreas ||
+        window.AppState?.project?.lifestyleAreas ||
+        window.lifestyleAreas ||
+        [];
+
+    const lifestyleCount =
+        Array.isArray(lifestyleAreas)
+            ? lifestyleAreas.length
+            : 0;
+
+    if (lifestyleValue) {
+
+        if (lifestyleCount === 0) {
+
+            lifestyleValue.textContent =
+                "Living areas not yet added";
+
+        } else if (lifestyleCount === 1) {
+
+            lifestyleValue.textContent =
+                "1 living area added";
+
+        } else {
+
+            lifestyleValue.textContent =
+                lifestyleCount +
+                " living areas added";
+        }
+    }
+
+
+    // =====================================================
+    // ASSESSMENT
+    // =====================================================
+
+    const assessmentValue =
+        card.querySelector(
+            ".property-record-item:nth-child(4) .property-record-value"
+        );
+
+    if (assessmentValue) {
+
+        assessmentValue.textContent =
+            "Initial Home Assessment";
+    }
+
+
+    // =====================================================
+    // STATUS
+    // =====================================================
+
+    const statusValue =
+        card.querySelector(
+            ".property-record-status-value"
+        );
+
+    if (statusValue) {
+
+        let status =
+            "Initial record created";
+
+        if (
+            sourceCount > 0 ||
+            lifestyleCount > 0
+        ) {
+
+            status =
+                "Property profile in progress";
+        }
+
+        statusValue.textContent =
+            status;
+    }
+
+
+    // =====================================================
+    // CARD VISIBILITY
+    // =====================================================
 
     card.style.display =
         "block";
+}
 
-    const totalRisk =
+// ============================================================
+// PROPERTY HEALTH RECORD
+// ============================================================
 
-        calculateHouseExposure();
+function openPropertyHealthRecord() {
 
-    // =====================
-    // 🔥 SCORE
-    // =====================
-
-    let score =
-
-        Math.max(
-            5,
-            100 - totalRisk * 4
-        );
-
-    score =
-        Math.round(score);
-
-    const hudRisk =
+    const modal =
         document.getElementById(
-            "hudRisk"
+            "propertyHealthRecordModal"
         );
 
-    if (hudRisk) {
+    if (!modal) {
+        console.warn(
+            "[PHR] propertyHealthRecordModal not found"
+        );
+        return;
+    }
 
-        let riskLabel = "SAFE";
+    const property =
+        window.AppState?.property ||
+        window.AppState?.homeProject ||
+        window.AppState?.project ||
+        {};
 
-        if (totalRisk > 8) {
+    const rawPropertyName =
+        property.name ||
+        window.homeProjectDisplayName ||
+        "My Property";
 
-            label =
-                "MODERATE";
+    const propertyName =
+        typeof rawPropertyName === "string"
+            ? rawPropertyName
+            : rawPropertyName?.textContent?.trim() ||
+            "My Property";
+
+    const propertyTitle =
+        document.getElementById(
+            "propertyHealthRecordModalTitle"
+        );
+
+    if (propertyTitle) {
+        propertyTitle.textContent =
+            propertyName;
+    }
+
+        // --------------------------------------------------------
+    // PROPERTY DETAILS
+    // --------------------------------------------------------
+
+    const propertyTypeElement =
+        document.getElementById(
+            "propertyHealthRecordPropertyType"
+        );
+
+    if (propertyTypeElement) {
+
+        const propertyTypeLabels = {
+            apartment: "Apartment",
+            house: "House",
+            office: "Office",
+            other: "Other"
+        };
+
+        const propertyType =
+            propertyTypeLabels[
+                String(
+                    property.propertyType || ""
+                ).toLowerCase()
+            ] ||
+            property.propertyType ||
+            "Property";
+
+        propertyTypeElement.textContent =
+            propertyType;
+            }
+
+
+    const addressElement =
+        document.getElementById(
+            "propertyHealthRecordAddress"
+        );
+
+    if (addressElement) {
+
+        const addressParts = [
+            property.address,
+            property.unit
+        ].filter(Boolean);
+
+        addressElement.textContent =
+            addressParts.length
+                ? addressParts.join(", ")
+                : "Address not yet added";
+            }
+
+
+        const cityElement =
+        document.getElementById(
+            "propertyHealthRecordCity"
+        );
+
+    if (cityElement) {
+
+        const locationParts = [
+            property.city,
+            property.postalCode,
+            property.state || property.region
+        ].filter(Boolean);
+
+        cityElement.textContent =
+            locationParts.length
+                ? locationParts.join(", ")
+                : "Location not yet added";
+    }
+
+
+    const countryElement =
+        document.getElementById(
+            "propertyHealthRecordCountry"
+        );
+
+    if (countryElement) {
+
+        countryElement.textContent =
+            property.country ||
+            "Country not yet added";
+    }
+
+
+    const propertyIdElement =
+        document.getElementById(
+            "propertyHealthRecordId"
+        );
+
+    if (propertyIdElement) {
+
+        propertyIdElement.textContent =
+            property.id ||
+            "—";
+    }
+
+
+    const assessmentStatusElement =
+        document.getElementById(
+            "propertyHealthRecordAssessmentStatus"
+        );
+
+    if (assessmentStatusElement) {
+
+        assessmentStatusElement.textContent =
+            "In progress";
+    }
+
+    // --------------------------------------------------------
+    // ENVIRONMENT
+    // --------------------------------------------------------
+    const homeProject =
+        window.AppState?.homeProject ||
+        window.AppState?.project ||
+        {};
+
+    const floors =
+        Array.isArray(homeProject?.floors)
+            ? homeProject.floors
+            : [];
+
+    // Indoor Sources are stored in floor.sources
+    const indoorCount =
+        floors.reduce(
+            (total, floor) =>
+                total +
+                (
+                    Array.isArray(floor?.sources)
+                        ? floor.sources.length
+                        : 0
+                ),
+            0
+        );
+
+    // Outdoor Sources are stored at Property / Project level
+    const outdoorSources =
+        Array.isArray(homeProject?.outdoorSources)
+            ? homeProject.outdoorSources
+            : [];
+
+    const outdoorCount =
+        outdoorSources.length;
+
+    const sourceCount =
+        indoorCount +
+        outdoorCount;
+
+    const floorCount =
+        floors.length;
+
+    const environmentElement =
+        document.getElementById(
+            "propertyHealthRecordEnvironment"
+        );
+
+    if (environmentElement) {
+
+        const indoorElement =
+            document.getElementById(
+                "propertyHealthRecordIndoorSources"
+            );
+
+        const outdoorElement =
+            document.getElementById(
+                "propertyHealthRecordOutdoorSources"
+            );
+
+        const totalElement =
+            document.getElementById(
+                "propertyHealthRecordTotalSources"
+            );
+
+        const floorsElement =
+            document.getElementById(
+                "propertyHealthRecordFloors"
+            );
+
+        if (indoorElement) {
+            indoorElement.textContent =
+                indoorCount;
         }
 
-        if (totalRisk > 16) {
-
-            label =
-                "HIGH";
+        if (outdoorElement) {
+            outdoorElement.textContent =
+                outdoorCount;
         }
 
-        if (totalRisk > 26) {
-
-            label =
-                "VERY HIGH";
+        if (totalElement) {
+            totalElement.textContent =
+                sourceCount;
         }
 
-        hudRisk.innerText =
+        if (floorsElement) {
+            floorsElement.textContent =
+                floorCount;
+        }
+    }
 
-            "Risk: " +
-            label +
-            " (" +
-            totalRisk +
-            ")";
+    // --------------------------------------------------------
+    // LIFESTYLE
+    // --------------------------------------------------------
+
+    const lifestyleAreas =
+        Array.isArray(homeProject?.floors)
+            ? homeProject.floors.flatMap(
+                floor =>
+                    Array.isArray(floor?.zones)
+                        ? floor.zones
+                        : []
+            )
+            : [];
+
+    const lifestyleCount =
+        Array.isArray(lifestyleAreas)
+            ? lifestyleAreas.length
+            : 0;
+
+    const lifestyleElement =
+        document.getElementById(
+            "propertyHealthRecordLifestyle"
+        );
+
+    if (lifestyleElement) {
+
+        if (lifestyleCount === 0) {
+            lifestyleElement.textContent =
+                "Living areas not yet added";
+        } else if (lifestyleCount === 1) {
+            lifestyleElement.textContent =
+                "1 living area added";
+        } else {
+            lifestyleElement.textContent =
+                `${lifestyleCount} living areas added`;
+        }
+    }
+
+    // --------------------------------------------------------
+    // ASSESSMENT
+    // --------------------------------------------------------
+
+    const assessmentElement =
+        document.getElementById(
+            "propertyHealthRecordAssessment"
+        );
+
+    if (assessmentElement) {
+        assessmentElement.textContent =
+            "Initial Home Assessment";
+    }
+
+    // --------------------------------------------------------
+    // STATUS
+    // --------------------------------------------------------
+
+    const statusElement =
+        document.getElementById(
+            "propertyHealthRecordModalStatus"
+        );
+
+    if (statusElement) {
 
         if (
-            hudRisk.innerText
-                .trim()
-                .length === 0
+            sourceCount > 0 ||
+            lifestyleCount > 0
+        ) {
+            statusElement.textContent =
+                "Property profile in progress";
+        } else {
+            statusElement.textContent =
+                "Initial record created";
+        }
+    }
+
+        // --------------------------------------------------------
+    // RECORD HISTORY
+    // --------------------------------------------------------
+
+    const historyElement =
+        document.getElementById(
+            "propertyHealthRecordHistoryItems"
+        );
+
+    if (historyElement) {
+
+        const assessment =
+            window.AppState?.propertyAssessment ||
+            {};
+
+        const historyItems = [];
+
+        // ----------------------------------------------------
+        // PROPERTY RECORD CREATED
+        // ----------------------------------------------------
+
+        const propertyCreatedAt =
+            window.AppState?.property?.createdAt ||
+            window.AppState?.homeProject?.createdAt ||
+            window.AppState?.project?.createdAt ||
+            assessment?.createdAt ||
+            null;
+
+        let propertyCreatedDateText = "Date not available";
+
+        if (propertyCreatedAt) {
+
+            const createdDate =
+                new Date(propertyCreatedAt);
+
+            if (!Number.isNaN(createdDate.getTime())) {
+
+                propertyCreatedDateText =
+                    createdDate.toLocaleDateString(
+                        "en-GB",
+                        {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric"
+                        }
+                    );
+            }
+        }
+
+
+        historyItems.push(`
+            <div class="property-health-record-history-item">
+
+                <div class="property-health-record-history-dot"></div>
+
+                <div>
+
+                    <div class="property-health-record-history-title">
+                        Initial record created
+                    </div>
+
+                    <div class="property-health-record-history-date">
+                        ${propertyCreatedDateText}
+                    </div>
+
+                    <div class="property-health-record-history-subtitle">
+                        Your Property Health Record has started.
+                    </div>
+
+                </div>
+
+            </div>
+        `);
+
+        // ----------------------------------------------------
+        // CURRENT HOME ASSESSMENT
+        // ----------------------------------------------------
+
+        if (assessment.id) {
+
+            historyItems.push(`
+                <div class="property-health-record-history-item">
+
+                    <div class="property-health-record-history-dot"></div>
+
+                    <div>
+                        <div class="property-health-record-history-title">
+                            Initial Home Assessment
+                        </div>
+
+                        <div class="property-health-record-history-subtitle">
+                            Current Home Assessment · In progress
+                        </div>
+                    </div>
+
+                </div>
+            `);
+        }
+
+                // ----------------------------------------------------
+        // FULL EMF INSIGHT REPORT
+        // ----------------------------------------------------
+
+        const fullReportUnlocked =
+            window.AppState?.entitlements?.homeFullReport === true;
+
+        if (fullReportUnlocked) {
+
+            historyItems.push(`
+                <div class="property-health-record-history-item">
+
+                    <div class="property-health-record-history-dot"></div>
+
+                    <div>
+                        <div class="property-health-record-history-title">
+                            Full EMF Insight Report
+                        </div>
+
+                        <div class="property-health-record-history-subtitle">
+                            Detailed Home Assessment added to your Property Health Record.
+                        </div>
+                    </div>
+
+                </div>
+            `);
+        }
+
+        // ----------------------------------------------------
+        // PROFESSIONAL ASSESSMENT
+        // -------------------------------
+
+        const professionalAssessments =
+            window.AppState?.professionalAssessments ||
+            [];
+
+        const professionalAssessment =
+            professionalAssessments.find(
+                assessment =>
+                    assessment &&
+                    assessment.id &&
+                    (
+                        assessment.propertyId ===
+                        property.id
+                    )
+            ) ||
+            professionalAssessments.find(
+                assessment =>
+                    assessment &&
+                    assessment.id
+            ) ||
+            null;
+
+        if (
+            professionalAssessment?.id
         ) {
 
-            hudRisk.style.display =
-                "none";
+            historyItems.push(`
+                <div class="property-health-record-history-item">
+
+                    <div class="property-health-record-history-dot"></div>
+
+                    <div>
+                        <div class="property-health-record-history-title">
+                            Professional Assessment
+                        </div>
+
+                        <div class="property-health-record-history-subtitle">
+                            Professional assessment associated with this Property Health Record.
+                        </div>
+                    </div>
+
+                </div>
+            `);
         }
-        else {
 
-            hudRisk.style.display =
-                "block";
-        }
+        historyElement.innerHTML =
+            historyItems.join("");
     }
 
-    document.getElementById(
-        "wellnessScore"
-    ).innerHTML =
+    // --------------------------------------------------------
+    // OPEN
+    // --------------------------------------------------------
 
-        score + "/100";
+    modal.classList.add("active");
 
-    // =====================
-    // 🔥 SUMMARY
-    // =====================
-
-    let summary =
-
-        "Your home currently shows low wellness concern.";
-
-    if (score < 80) {
-
-        summary =
-
-            "Some rooms may benefit from wellness optimization.";
-    }
-
-    if (score < 60) {
-
-        summary =
-
-            "Elevated wellness hotspots detected in key areas.";
-    }
-
-    document.getElementById(
-        "wellnessSummary"
-    ).innerHTML =
-
-        summary;
+    document.body.classList.add(
+        "property-health-record-open"
+    );
 }
+
+
+function closePropertyHealthRecord() {
+
+    const modal =
+        document.getElementById(
+            "propertyHealthRecordModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.style.display = "none";
+    modal.classList.remove("active");
+
+    document.body.classList.remove(
+        "property-health-record-open"
+    );
+}
+
+// ============================================================
+// PROPERTY HEALTH DASHBOARD
+// ============================================================
+
+function populatePropertyHealthDashboard() {
+
+    const property =
+        window.AppState?.property ||
+        {};
+
+    const homeProject =
+        window.AppState?.homeProject ||
+        window.AppState?.project ||
+        {};
+
+    const assessment =
+        window.AppState?.propertyAssessment ||
+        {};
+
+    // --------------------------------------------------------
+    // PROPERTY
+    // --------------------------------------------------------
+
+    const propertyTypeElement =
+        document.getElementById(
+            "dashboardPropertyType"
+        );
+
+    if (propertyTypeElement) {
+        propertyTypeElement.textContent =
+            property.propertyType ||
+            "Property";
+    }
+
+    const locationElement =
+        document.getElementById(
+            "dashboardPropertyLocation"
+        );
+
+    if (locationElement) {
+
+        const locationParts = [
+            property.city,
+            property.country
+        ].filter(Boolean);
+
+        locationElement.textContent =
+            locationParts.length
+                ? locationParts.join(", ")
+                : "Location not yet added";
+    }
+
+    const floors =
+        Array.isArray(homeProject?.floors)
+            ? homeProject.floors
+            : [];
+
+    const floorsElement =
+        document.getElementById(
+            "dashboardPropertyFloors"
+        );
+
+    if (floorsElement) {
+        floorsElement.textContent =
+            floors.length;
+    }
+
+    const propertyIdElement =
+        document.getElementById(
+            "dashboardPropertyId"
+        );
+
+    if (propertyIdElement) {
+        propertyIdElement.textContent =
+            property.id ||
+            "—";
+    }
+
+
+    // --------------------------------------------------------
+    // ENVIRONMENT
+    // --------------------------------------------------------
+
+    const indoorCount =
+        floors.reduce(
+            (total, floor) =>
+                total +
+                (
+                    Array.isArray(floor?.sources)
+                        ? floor.sources.length
+                        : 0
+                ),
+            0
+        );
+
+    const outdoorSources =
+        Array.isArray(homeProject?.outdoorSources)
+            ? homeProject.outdoorSources
+            : [];
+
+    const outdoorCount =
+        outdoorSources.length;
+
+    const totalSourceCount =
+        indoorCount +
+        outdoorCount;
+
+       
+
+    const indoorElement =
+        document.getElementById(
+            "dashboardIndoorSources"
+        );
+
+    if (indoorElement) {
+        indoorElement.textContent =
+            indoorCount;
+    }
+
+    const outdoorElement =
+        document.getElementById(
+            "dashboardOutdoorSources"
+        );
+
+    if (outdoorElement) {
+        outdoorElement.textContent =
+            outdoorCount;
+    }
+
+    const totalElement =
+        document.getElementById(
+            "dashboardTotalSources"
+        );
+
+    if (totalElement) {
+        totalElement.textContent =
+            totalSourceCount;
+    }
+
+
+    // --------------------------------------------------------
+    // LIFESTYLE
+    // --------------------------------------------------------
+
+    const lifestyleAreas =
+        floors.flatMap(
+            floor =>
+                Array.isArray(floor?.zones)
+                    ? floor.zones
+                    : []
+        );
+
+    const lifestyleCount =
+        lifestyleAreas.length;
+
+    const lifestyleElements = [
+        document.getElementById(
+            "propertyHealthDashboardLifestyle"
+        ),
+        document.getElementById(
+            "dashboardLifestyle"
+        )
+    ].filter(Boolean);
+
+    lifestyleElements.forEach(
+        lifestyleElement => {
+
+            if (lifestyleCount === 0) {
+
+                lifestyleElement.textContent =
+                    "Living areas not yet added";
+
+            } else if (lifestyleCount === 1) {
+
+                lifestyleElement.textContent =
+                    "1 living area added";
+
+            } else {
+
+                lifestyleElement.textContent =
+                    `${lifestyleCount} living areas added`;
+            }
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // CURRENT ASSESSMENT
+    // --------------------------------------------------------
+
+    const assessmentElement =
+        document.getElementById(
+            "propertyHealthDashboardAssessment"
+        );
+
+    if (assessmentElement) {
+
+        assessmentElement.textContent =
+            "Initial Home Assessment";
+    }
+
+    const assessmentStatusElement =
+        document.getElementById(
+            "propertyHealthDashboardAssessmentStatus"
+        );
+
+    if (assessmentStatusElement) {
+
+        assessmentStatusElement.textContent =
+            "In progress";
+    }
+
+
+    // --------------------------------------------------------
+    // RECORD HISTORY — CREATED DATE
+    // --------------------------------------------------------
+
+    const propertyCreatedAt =
+        property.createdAt ||
+        null;
+
+    let propertyCreatedDateText =
+        "Date not available";
+
+    if (propertyCreatedAt) {
+
+        const createdDate =
+            new Date(
+                propertyCreatedAt
+            );
+
+        if (
+            !Number.isNaN(
+                createdDate.getTime()
+            )
+        ) {
+
+            propertyCreatedDateText =
+                createdDate.toLocaleDateString(
+                    "en-GB",
+                    {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                    }
+                );
+        }
+    }
+
+    const createdDateElement =
+        document.getElementById(
+            "propertyHealthDashboardCreatedDate"
+        );
+
+    if (createdDateElement) {
+
+        createdDateElement.textContent =
+            propertyCreatedDateText;
+    }
+}
+
+function openPropertyHealthDashboard() {
+
+    const view =
+        document.getElementById(
+            "propertyHealthDashboardView"
+        );
+
+    if (!view) {
+        console.warn(
+            "Property Health Dashboard view not found."
+        );
+        return;
+    }
+
+    /*
+     * ----------------------------------------------------
+     * CLOSE PROPERTY HEALTH RECORD POPUP
+     * ----------------------------------------------------
+     */
+
+    if (
+        typeof closePropertyHealthRecord ===
+        "function"
+    ) {
+        closePropertyHealthRecord();
+    }
+
+
+    /*
+     * ----------------------------------------------------
+     * POPULATE DASHBOARD
+     * ----------------------------------------------------
+     */
+
+    if (
+        typeof populatePropertyHealthDashboard ===
+        "function"
+    ) {
+        populatePropertyHealthDashboard();
+    }
+
+
+    /*
+     * ----------------------------------------------------
+     * ELEMENTS WE TEMPORARILY HIDE
+     * ----------------------------------------------------
+     */
+
+    const elementsToHide = [
+        document.getElementById(
+            "homeWorkflowBar"
+        ),
+
+        document.getElementById(
+            "homeCurrentFloorCard"
+        ),
+
+        document.getElementById(
+            "homeEmptyPlanState"
+        ),
+
+        document.querySelector(
+            ".canvas-area"
+        )
+    ];
+
+
+    /*
+     * ----------------------------------------------------
+     * SAVE CURRENT DISPLAY STATE
+     * ----------------------------------------------------
+     */
+
+    elementsToHide.forEach(
+        element => {
+
+            if (!element) {
+                return;
+            }
+
+            element.dataset.dashboardPreviousDisplay =
+                element.style.display;
+
+        }
+    );
+
+
+    /*
+     * ----------------------------------------------------
+     * HIDE NORMAL HOME CONTENT
+     * ----------------------------------------------------
+     */
+
+    elementsToHide.forEach(
+        element => {
+
+            if (!element) {
+                return;
+            }
+
+            element.style.display =
+                "none";
+
+        }
+    );
+
+
+    /*
+     * ----------------------------------------------------
+     * SHOW PROPERTY HEALTH DASHBOARD
+     * ----------------------------------------------------
+     */
+
+    view.style.display =
+        "block";
+
+
+    /*
+     * ----------------------------------------------------
+     * UPDATE DASHBOARD TITLE
+     * ----------------------------------------------------
+     */
+
+    const property =
+        window.AppState?.property ||
+        {};
+
+    const title =
+        document.getElementById(
+            "propertyHealthDashboardViewTitle"
+        );
+
+    if (title) {
+        title.textContent =
+            property.name ||
+            "My Property";
+    }
+
+
+    const subtitle =
+        document.getElementById(
+            "propertyHealthDashboardViewSubtitle"
+        );
+
+    if (subtitle) {
+        subtitle.textContent =
+            "Your property's current environmental profile";
+    }
+
+
+    /*
+     * ----------------------------------------------------
+     * SCROLL TO DASHBOARD
+     * ----------------------------------------------------
+     */
+
+    view.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+
+function closePropertyHealthDashboard() {
+
+    const view =
+        document.getElementById(
+            "propertyHealthDashboardView"
+        );
+
+    if (view) {
+        view.style.display =
+            "none";
+    }
+
+
+    /*
+     * ----------------------------------------------------
+     * RESTORE EXACT PREVIOUS HOME STATE
+     * ----------------------------------------------------
+     */
+
+    const elementsToRestore = [
+        document.getElementById(
+            "homeWorkflowBar"
+        ),
+
+        document.getElementById(
+            "homeCurrentFloorCard"
+        ),
+
+        document.getElementById(
+            "homeEmptyPlanState"
+        ),
+
+        document.querySelector(
+            ".canvas-area"
+        )
+    ];
+
+    elementsToRestore.forEach(
+        element => {
+
+            if (!element) {
+                return;
+            }
+
+            /*
+            * HOME EMPTY PLAN STATE
+            *
+            * Never restore this blindly.
+            * If the current Home project already has
+            * a floor plan / rendered canvas, the empty
+            * floor-plan prompt must remain hidden.
+            */
+
+            if (
+                element.id ===
+                "homeEmptyPlanState"
+            ) {
+
+                element.style.display =
+                    "none";
+
+                delete element.dataset
+                    .dashboardPreviousDisplay;
+
+                return;
+            }
+
+
+            /*
+            * Restore all other Home elements
+            * to their previous state.
+            */
+
+            if (
+                element.dataset
+                    .dashboardPreviousDisplay
+                !== undefined
+            ) {
+
+                element.style.display =
+                    element.dataset
+                        .dashboardPreviousDisplay;
+
+                delete element.dataset
+                    .dashboardPreviousDisplay;
+
+            }
+
+        }
+    );
+}
+
+
+// ============================================================
+// EXPORTS
+// ============================================================
+
+window.openPropertyHealthDashboard =
+    openPropertyHealthDashboard;
+
+window.closePropertyHealthDashboard =
+    closePropertyHealthDashboard;
+
+
+window.openPropertyHealthRecord =
+    openPropertyHealthRecord;
+
+window.closePropertyHealthRecord =
+    closePropertyHealthRecord;
 
 // =====================
 // 🔥 PREMIUM MODAL

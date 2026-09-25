@@ -3396,15 +3396,14 @@
     #homeFloorTabsBar {
 
       display: block;
-
       position: absolute;
-
-      top: 100px;
+      top: 112px;
       right: 0;
-
       width: 320px;
       min-width: 320px;
       max-width: 320px;
+      box-sizing: border-box;
+      z-index: 2;
 
       box-sizing: border-box;
 
@@ -16372,6 +16371,183 @@
       box-shadow: none;
     }
 
+    /* =========================================================
+   HOME PROFILE / PROPERTY SETUP POPUP
+   ========================================================= */
+
+    .home-profile-popup-section {
+      margin-top: 20px;
+      padding: 16px 18px;
+
+      background: #f8fbff;
+      border: 1px solid #dbe5f2;
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
+
+    .home-profile-popup-section:first-child {
+      margin-top: 0;
+    }
+
+    .home-profile-popup-section-title {
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: #315b91;
+      margin-bottom: 5px;
+    }
+
+    .home-profile-popup-section-subtitle {
+      font-size: 12px;
+      line-height: 1.45;
+      color: #64748b;
+      margin-bottom: 14px;
+    }
+
+    .home-profile-popup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 14px;
+    }
+
+    .home-profile-popup-field {
+      min-width: 0;
+      margin-bottom: 12px;
+    }
+
+    .home-profile-popup-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .home-profile-popup-field label {
+      display: block;
+
+      font-size: 11px;
+      line-height: 1.3;
+      font-weight: 700;
+
+      color: #334155;
+
+      margin-bottom: 5px;
+    }
+
+    .home-profile-popup-field input,
+    .home-profile-popup-field select {
+      width: 100%;
+      min-height: 38px;
+
+      padding: 8px 10px;
+
+      box-sizing: border-box;
+
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+
+      background: #ffffff;
+
+      font-size: 13px;
+      line-height: 1.3;
+
+      color: #1e293b;
+
+      outline: none;
+    }
+
+    .home-profile-popup-field input:focus,
+    .home-profile-popup-field select:focus {
+      border-color: #7aa2d6;
+
+      box-shadow:
+        0 0 0 3px rgba(49, 91, 145, 0.08);
+    }
+
+    .home-profile-popup-field input::placeholder {
+      color: #94a3b8;
+    }
+
+    .home-profile-optional {
+      margin-left: 5px;
+
+      font-size: 9px;
+      font-weight: 500;
+
+      color: #94a3b8;
+    }
+
+    .home-profile-popup-section .project-name-hint {
+      margin-top: 5px;
+
+      font-size: 10px;
+      line-height: 1.35;
+
+      color: #7a8da6;
+    }
+
+    .home-profile-popup-section .project-name-input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+
+    /* Make address field span the full popup width */
+
+    .home-profile-popup-field #homePropertyAddressInput {
+      width: 100%;
+    }
+
+
+    /* Popup sizing */
+
+    .project-name-popup-card {
+      width: min(720px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+
+      overflow: hidden;
+
+      border-radius: 16px;
+    }
+
+    .project-name-popup-card>.project-popup-header {
+      flex-shrink: 0;
+    }
+
+    .project-name-popup-card>.project-name-popup-content {
+      overflow-y: auto;
+      max-height: calc(100vh - 230px);
+    }
+
+    .project-name-popup-card>.project-name-popup-actions {
+      flex-shrink: 0;
+    }
+
+    .project-name-popup-card .project-popup-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+
+      background: #ffffff;
+    }
+
+
+    /* Responsive */
+
+    @media (max-width: 650px) {
+
+      .home-profile-popup-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .home-profile-popup-section {
+        padding: 14px;
+      }
+
+      .project-name-popup-card {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+      }
+    }
+
 
     /* =====================================================
    RENAME PROJECT POPUP
@@ -17664,6 +17840,2319 @@
         width: 100%;
       }
 
+
+      /* =========================================================
+   PROPERTY HEALTH RECORD
+   ========================================================= */
+
+      .property-record-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .property-record-item {
+        padding: 12px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .property-record-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        opacity: 0.55;
+        margin-bottom: 5px;
+      }
+
+      .property-record-value {
+        font-size: 13px;
+        line-height: 1.35;
+        font-weight: 500;
+      }
+
+      .property-record-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.10);
+      }
+
+      .property-record-status-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        opacity: 0.55;
+      }
+
+      .property-record-status-value {
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      @media (max-width: 700px) {
+        .property-record-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .property-record-status {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 4px;
+        }
+      }
+
+      .property-health-record-divider {
+        margin-left: 22px;
+      }
+
+      .property-health-record-control {
+        margin-left: 2px;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      .property-health-record-header-label {
+        font-weight: 600;
+        color: #475569;
+      }
+
+      .property-health-record-status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #22a060;
+        flex: 0 0 auto;
+      }
+
+      .property-health-record-control strong {
+        font-size: 11px;
+        font-weight: 500;
+        color: #64748b;
+      }
+
+      .property-health-record-chevron {
+        margin-left: 2px;
+        font-size: 11px;
+        color: #64748b;
+      }
+
+    }
+
+    /* =========================================================
+   PROPERTY HEALTH RECORD
+   ========================================================= */
+
+    .wellnessCard.home-only {
+      background: linear-gradient(135deg,
+          #f8fbff 0%,
+          #eef5ff 100%);
+
+      border: 1px solid #cbdcf5;
+      border-radius: 14px;
+
+      padding: 18px 20px;
+
+      box-shadow:
+        0 2px 8px rgba(30, 64, 175, 0.06);
+
+      box-sizing: border-box;
+    }
+
+
+    /* RECORD TITLE */
+
+    .wellnessCard.home-only #wellnessTitle {
+      font-size: 11px;
+      line-height: 1.2;
+
+      font-weight: 800;
+      letter-spacing: 0.8px;
+
+      color: #315b91;
+
+      margin-bottom: 7px;
+    }
+
+
+    /* RECORD MAIN STATUS */
+
+    .wellnessCard.home-only #wellnessScore {
+      font-size: 18px;
+      line-height: 1.3;
+
+      font-weight: 700;
+
+      color: #172033;
+
+      margin-bottom: 6px;
+    }
+
+
+    /* RECORD DESCRIPTION */
+
+    .wellnessCard.home-only #wellnessSummary {
+      font-size: 12px;
+      line-height: 1.5;
+
+      color: #64748b;
+
+      max-width: 620px;
+
+      margin-bottom: 16px;
+    }
+
+
+    /* RECORD DATA GRID */
+
+    .property-record-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 10px;
+
+      margin-top: 4px;
+    }
+
+
+    /* DATA ITEM */
+
+    .property-record-item {
+      background: rgba(255, 255, 255, 0.72);
+
+      border: 1px solid #dbe5f2;
+      border-radius: 9px;
+
+      padding: 10px 12px;
+
+      min-width: 0;
+    }
+
+
+    /* DATA LABEL */
+
+    .property-record-label {
+      font-size: 9px;
+      line-height: 1.2;
+
+      font-weight: 800;
+      letter-spacing: 0.7px;
+
+      color: #7a8da6;
+
+      margin-bottom: 4px;
+    }
+
+
+    /* DATA VALUE */
+
+    .property-record-value {
+      font-size: 12px;
+      line-height: 1.35;
+
+      font-weight: 600;
+
+      color: #26364d;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+
+    /* RECORD STATUS */
+
+    .property-record-status {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 10px;
+
+      margin-top: 12px;
+      padding-top: 11px;
+
+      border-top: 1px solid #dbe5f2;
+    }
+
+
+    /* STATUS LABEL */
+
+    .property-record-status-label {
+      font-size: 9px;
+      line-height: 1.2;
+
+      font-weight: 800;
+      letter-spacing: 0.7px;
+
+      color: #7a8da6;
+    }
+
+
+    /* STATUS VALUE */
+
+    .property-record-status-value {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      font-size: 11px;
+      font-weight: 700;
+
+      color: #34704a;
+    }
+
+
+    /* STATUS DOT */
+
+    .property-record-status-value::before {
+      content: "";
+
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: #4caf70;
+
+      box-shadow:
+        0 0 0 3px rgba(76, 175, 112, 0.12);
+    }
+
+    .property-record-open-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      background: #ffffff;
+      border: 1px solid #cbdcf5;
+      border-radius: 9px;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+
+    /* MOBILE / NARROW SIDEBAR */
+
+    @media (max-width: 700px) {
+
+      .property-record-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .property-record-status {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    /* =========================================================
+   PROPERTY HEALTH RECORD MODAL
+   ========================================================= */
+
+    #propertyHealthRecordModal {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 24px;
+      box-sizing: border-box;
+
+      background: rgba(15, 23, 42, 0.42);
+      backdrop-filter: blur(3px);
+    }
+
+    #propertyHealthRecordModal.active {
+      display: flex !important;
+    }
+
+
+
+    .property-health-record-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+
+      padding: 24px 26px 20px;
+
+      border-bottom: 1px solid #e5ebf3;
+    }
+
+    .property-health-record-modal-eyebrow {
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.9px;
+      color: #315b91;
+
+      margin-bottom: 7px;
+    }
+
+    .property-health-record-modal-header h3 {
+      margin: 0;
+
+      font-size: 22px;
+      line-height: 1.3;
+      font-weight: 700;
+      color: #172033;
+    }
+
+    .property-health-record-modal-status {
+      margin-top: 6px;
+
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 600;
+      color: #34704a;
+    }
+
+    .property-health-record-modal-close {
+      flex: 0 0 auto;
+
+      width: 34px;
+      height: 34px;
+
+      border: 1px solid #dbe5f2;
+      border-radius: 8px;
+
+      background: #ffffff;
+
+      font-size: 22px;
+      line-height: 1;
+
+      color: #64748b;
+
+      cursor: pointer;
+    }
+
+    .property-health-record-modal-close:hover {
+      background: #f8fafc;
+      color: #172033;
+    }
+
+    .property-health-record-modal-body {
+      padding: 22px 26px 8px;
+    }
+
+    .property-health-record-section {
+      padding: 15px 16px;
+
+      background: #f8fbff;
+      border: 1px solid #e1eaf5;
+      border-radius: 10px;
+
+      margin-bottom: 10px;
+    }
+
+    .property-health-record-section-title {
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+
+      color: #7a8da6;
+
+      margin-bottom: 6px;
+    }
+
+    .property-health-record-section-value {
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 600;
+
+      color: #26364d;
+    }
+
+
+    /* =========================================================
+   PROPERTY HEALTH RECORD — CLEAN DESIGN
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-modal {
+      width: min(780px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+
+      display: flex;
+      flex-direction: column;
+
+      background: #ffffff;
+
+      border: 1px solid #d9e4f2;
+      border-radius: 18px;
+
+      box-shadow:
+        0 24px 70px rgba(25, 55, 90, 0.18),
+        0 8px 24px rgba(25, 55, 90, 0.08);
+
+      overflow: hidden;
+    }
+
+
+    /* =========================================================
+   HEADER
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-modal-header {
+      flex: 0 0 auto;
+
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      gap: 24px;
+
+      padding: 28px 32px 24px;
+
+      background: #ffffff;
+
+      border-bottom: 1px solid #e3ebf5;
+    }
+
+    #propertyHealthRecordModal .property-health-record-modal-eyebrow {
+      margin: 0 0 8px;
+
+      font-size: 14px;
+      line-height: 1.2;
+
+      font-weight: 800;
+      letter-spacing: 1.5px;
+
+      color: #315f96;
+    }
+
+    #propertyHealthRecordModal .property-health-record-modal-header h3 {
+      margin: 0;
+
+      font-size: 28px;
+      line-height: 1.2;
+
+      font-weight: 700;
+
+      color: #172033;
+    }
+
+    #propertyHealthRecordModal .property-health-record-modal-close {
+      flex: 0 0 auto;
+
+      width: 42px;
+      height: 42px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 0;
+
+      border: 1px solid #d5e1ef;
+      border-radius: 10px;
+
+      background: #ffffff;
+
+      color: #60748d;
+
+      font-size: 24px;
+      line-height: 1;
+
+      cursor: pointer;
+
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+    }
+
+    #propertyHealthRecordModal .property-health-record-modal-close:hover {
+      background: #f3f8fd;
+      border-color: #bcd0e6;
+      color: #245a9b;
+    }
+
+
+    /* =========================================================
+   SCROLLABLE BODY
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-modal-body {
+      flex: 1 1 auto;
+
+      min-height: 0;
+
+      padding: 24px 32px 16px;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      scrollbar-width: thin;
+      scrollbar-color: #b8c9dc transparent;
+    }
+
+    #propertyHealthRecordModal .property-health-record-modal-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #propertyHealthRecordModal .property-health-record-modal-body::-webkit-scrollbar-thumb {
+      background: #b8c9dc;
+      border-radius: 8px;
+    }
+
+
+    /* =========================================================
+   SECTION CARDS
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-section {
+      margin: 0 0 12px;
+      padding: 17px 20px;
+
+      background: #f8fbff;
+
+      border: 1px solid #dce8f5;
+      border-radius: 12px;
+
+      box-sizing: border-box;
+    }
+
+    #propertyHealthRecordModal .property-health-record-section-title {
+      margin: 0 0 9px;
+
+      font-size: 10px;
+      line-height: 1.2;
+
+      font-weight: 800;
+      letter-spacing: 1px;
+
+      color: #7187a2;
+    }
+
+
+    /* =========================================================
+   PROPERTY + LOCATION
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-property-grid {
+      display: grid;
+
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+      column-gap: 42px;
+
+      width: 100%;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-column {
+      min-width: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-type {
+      margin: 0 0 8px;
+
+      font-size: 20px;
+      line-height: 1.3;
+
+      font-weight: 600;
+
+      color: #172033;
+    }
+
+    #propertyHealthRecordModal .property-health-record-id-label,
+    #propertyHealthRecordModal .property-health-record-location-title {
+      margin: 0 0 4px;
+
+      font-size: 10px;
+      line-height: 1.2;
+
+      font-weight: 800;
+      letter-spacing: 0.9px;
+
+      color: #7a8da6;
+    }
+
+    #propertyHealthRecordModal .property-health-record-id {
+      font-size: 16px;
+      line-height: 1.35;
+
+      font-weight: 700;
+
+      color: #315f96;
+
+      word-break: break-word;
+    }
+
+    #propertyHealthRecordModal .property-health-record-address {
+      margin: 0 0 2px;
+
+      font-size: 16px;
+      line-height: 1.35;
+
+      font-weight: 500;
+
+      color: #26364d;
+    }
+
+
+    /* =========================================================
+   ENVIRONMENT + LIFESTYLE
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-two-column {
+      display: grid;
+
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+      gap: 12px;
+
+      width: 100%;
+    }
+
+    #propertyHealthRecordModal .property-health-record-two-column .property-health-record-section {
+      margin-bottom: 0;
+    }
+
+
+    /* Environment */
+
+    #propertyHealthRecordModal .property-health-record-environment-grid {
+      display: grid;
+
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+      column-gap: 20px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric {
+      display: flex;
+
+      align-items: baseline;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      padding: 6px 0;
+
+      border-bottom: 1px solid #e2ebf5;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric:last-child {
+      border-bottom: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric-label {
+      font-size: 13px;
+      line-height: 1.35;
+
+      font-weight: 600;
+
+      color: #52657d;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric-value {
+      flex: 0 0 auto;
+
+      font-size: 15px;
+      line-height: 1.35;
+
+      font-weight: 800;
+
+      color: #245a9b;
+    }
+
+
+    /* Lifestyle */
+
+    #propertyHealthRecordModal #propertyHealthRecordLifestyle {
+      font-size: 16px;
+      line-height: 1.4;
+
+      font-weight: 700;
+
+      color: #5c4bb3;
+    }
+
+
+    /* =========================================================
+   CURRENT ASSESSMENT
+   ========================================================= */
+
+    #propertyHealthRecordModal #propertyHealthRecordAssessment {
+      font-size: 18px;
+      line-height: 1.35;
+
+      font-weight: 700;
+
+      color: #26364d;
+    }
+
+    #propertyHealthRecordModal #propertyHealthRecordAssessmentStatus {
+      margin-top: 4px;
+
+      font-size: 14px;
+      line-height: 1.35;
+
+      font-weight: 700;
+
+      color: #2473c5;
+    }
+
+
+    /* =========================================================
+   RECORD HISTORY
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-history {
+      margin: 18px 2px 14px;
+
+      padding: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history .property-health-record-section-title {
+      margin-bottom: 10px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-item {
+      display: flex;
+
+      align-items: flex-start;
+
+      gap: 14px;
+
+      padding: 8px 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-dot {
+      flex: 0 0 auto;
+
+      width: 10px;
+      height: 10px;
+
+      margin-top: 5px;
+
+      border-radius: 50%;
+
+      background: #48b47a;
+
+      box-shadow: 0 0 0 5px #e8f7ef;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-title {
+      font-size: 15px;
+      line-height: 1.35;
+
+      font-weight: 800;
+
+      color: #172033;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-date {
+      margin-top: 3px;
+
+      font-size: 12px;
+      line-height: 1.3;
+
+      font-weight: 600;
+
+      color: #7a8da6;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-subtitle {
+      margin-top: 3px;
+
+      font-size: 13px;
+      line-height: 1.4;
+
+      color: #60748d;
+    }
+
+
+    /* =========================================================
+   DASHBOARD CTA
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-dashboard-link {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 24px;
+
+      margin: 16px 0 4px;
+      padding: 18px 20px;
+
+      background: linear-gradient(135deg,
+          #f5f9ff 0%,
+          #edf6ff 100%);
+
+      border: 1px solid #cfe0f3;
+      border-radius: 12px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-text {
+      min-width: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-title {
+      margin: 0 0 4px;
+
+      font-size: 16px;
+      line-height: 1.3;
+
+      font-weight: 800;
+
+      color: #1b2c45;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-subtitle {
+      max-width: 450px;
+
+      font-size: 13px;
+      line-height: 1.45;
+
+      color: #60748d;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-btn {
+      flex: 0 0 auto;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 5px;
+
+      padding: 11px 18px;
+
+      border: 0;
+      border-radius: 9px;
+
+      background: #286bb5;
+
+      color: #ffffff;
+
+      font-size: 13px;
+      line-height: 1.2;
+
+      font-weight: 800;
+
+      white-space: nowrap;
+
+      cursor: pointer;
+
+      transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-btn:hover {
+      background: #205b9e;
+
+      transform: translateY(-1px);
+    }
+
+
+    /* =========================================================
+   FOOTER
+   ========================================================= */
+
+    #propertyHealthRecordModal .modal-actions {
+      flex: 0 0 auto;
+
+      display: flex;
+      justify-content: flex-end;
+
+      padding: 14px 32px 18px;
+
+      background: #ffffff;
+
+      border-top: 1px solid #e3ebf5;
+    }
+
+
+    /* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+    @media (max-width: 620px) {
+
+      #propertyHealthRecordModal .property-health-record-modal {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+
+        border-radius: 14px;
+      }
+
+      #propertyHealthRecordModal .property-health-record-modal-header {
+        padding: 22px 20px 18px;
+      }
+
+      #propertyHealthRecordModal .property-health-record-modal-eyebrow {
+        font-size: 12px;
+      }
+
+      #propertyHealthRecordModal .property-health-record-modal-header h3 {
+        font-size: 23px;
+      }
+
+      #propertyHealthRecordModal .property-health-record-modal-body {
+        padding: 18px 20px 12px;
+      }
+
+      #propertyHealthRecordModal .property-health-record-property-grid,
+      #propertyHealthRecordModal .property-health-record-two-column {
+        grid-template-columns: 1fr;
+      }
+
+      #propertyHealthRecordModal .property-health-record-environment-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #propertyHealthRecordModal .property-health-record-dashboard-link {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      #propertyHealthRecordModal .property-health-record-dashboard-btn {
+        width: 100%;
+      }
+
+      #propertyHealthRecordModal .modal-actions {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+
+
+    /* =========================================================
+   PHR — PROPERTY / LOCATION ALIGNMENT
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-property-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 42px;
+      align-items: start;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-column {
+      min-width: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-column .property-health-record-section-title {
+      margin: 0 0 9px;
+    }
+
+
+    /* =========================================================
+   PHR — TYPOGRAPHY CONSISTENCY
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-property-type {
+      font-size: 20px;
+      line-height: 1.3;
+      font-weight: 600;
+    }
+
+    #propertyHealthRecordModal .property-health-record-address {
+      font-size: 17px;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    #propertyHealthRecordModal .property-health-record-id-label {
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.9px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-id {
+      font-size: 17px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+
+    /* =========================================================
+   PHR — SPACE BEFORE CURRENT ASSESSMENT
+   ========================================================= */
+
+    #propertyHealthRecordModal .property-health-record-two-column {
+      margin-bottom: 12px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-two-column .property-health-record-section {
+      margin-bottom: 0;
+    }
+
+
+    .property-health-record-property-detail {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      margin: -2px 0 10px;
+    }
+
+    .property-health-record-property-detail-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #7187a2;
+    }
+
+    .property-health-record-property-detail-value {
+      font-size: 15px;
+      font-weight: 800;
+      color: #315f96;
+    }
+
+    /* ==========================================
+   PHR — FINAL STRUCTURE
+   ========================================== */
+
+    #propertyHealthRecordModal .property-health-record-modal-body {
+      padding: 24px 26px 18px;
+      box-sizing: border-box;
+    }
+
+
+    /* ------------------------------------------
+   ICON + SECTION HEADING
+   ------------------------------------------ */
+
+    #propertyHealthRecordModal .phr-heading-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    #propertyHealthRecordModal .phr-icon {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 50%;
+
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    #propertyHealthRecordModal .phr-icon-property {
+      background: #e8f1ff;
+      color: #2474d9;
+    }
+
+    #propertyHealthRecordModal .phr-icon-location {
+      background: #fff0e7;
+      color: #f07832;
+    }
+
+    #propertyHealthRecordModal .phr-icon-environment {
+      background: #e7f7ed;
+      color: #36a968;
+    }
+
+    #propertyHealthRecordModal .phr-icon-lifestyle {
+      background: #f0e9ff;
+      color: #7650d8;
+    }
+
+    #propertyHealthRecordModal .phr-icon-assessment {
+      background: #e7f0ff;
+      color: #2474d9;
+    }
+
+    #propertyHealthRecordModal .phr-icon-dashboard {
+      background: #e8f1ff;
+      color: #2474d9;
+    }
+
+
+    /* ------------------------------------------
+   PROPERTY + LOCATION
+   ------------------------------------------ */
+
+    #propertyHealthRecordModal .property-health-record-property-card {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 14px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 42px;
+
+      width: 100%;
+      box-sizing: border-box;
+
+      align-items: start;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-column {
+      min-width: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-type {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 700;
+      color: #1c2d45;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-detail {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 7px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-detail-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #7187a2;
+    }
+
+    #propertyHealthRecordModal .property-health-record-property-detail-value {
+      font-size: 14px;
+      font-weight: 800;
+      color: #315f96;
+    }
+
+    #propertyHealthRecordModal .property-health-record-id-label {
+      margin-bottom: 2px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      color: #7a8da6;
+    }
+
+    #propertyHealthRecordModal .property-health-record-id {
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: #315f96;
+      word-break: break-word;
+    }
+
+    #propertyHealthRecordModal .property-health-record-address {
+      margin: 0 0 2px;
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 500;
+      color: #26364d;
+    }
+
+
+    /* ------------------------------------------
+   ENVIRONMENT + LIFESTYLE
+   ------------------------------------------ */
+
+    #propertyHealthRecordModal .property-health-record-two-column {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-section {
+      box-sizing: border-box;
+      padding: 17px 18px;
+
+      background: #f8fbff;
+      border: 1px solid #dce8f5;
+      border-radius: 12px;
+
+      min-width: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-section-title {
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #6f86a4;
+      margin-bottom: 10px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-environment-grid {
+      display: block;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 7px 0;
+
+      border-bottom: 1px solid #dce6f1;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric:last-child {
+      border-bottom: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #526783;
+    }
+
+    #propertyHealthRecordModal .property-health-record-metric-value {
+      font-size: 16px;
+      font-weight: 800;
+      color: #315f96;
+    }
+
+    #propertyHealthRecordModal .property-health-record-section-value {
+      font-size: 17px;
+      line-height: 1.4;
+      font-weight: 700;
+      color: #5b49bd;
+    }
+
+
+    /* ------------------------------------------
+   CURRENT ASSESSMENT
+   ------------------------------------------ */
+
+    #propertyHealthRecordModal .property-health-record-current-assessment {
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    #propertyHealthRecordModal #propertyHealthRecordAssessment {
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: #26364d;
+    }
+
+
+
+
+    /* ------------------------------------------
+   RECORD HISTORY
+   ------------------------------------------ */
+
+    #propertyHealthRecordModal .property-health-record-history {
+      margin: 0 0 24px;
+      padding: 0 2px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-dot {
+      width: 12px;
+      height: 12px;
+      flex: 0 0 12px;
+
+      margin-top: 6px;
+
+      border-radius: 50%;
+      background: #4db879;
+
+      box-shadow: 0 0 0 6px #e7f6ed;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #172033;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-date {
+      margin-top: 3px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #7187a2;
+    }
+
+    #propertyHealthRecordModal .property-health-record-history-subtitle {
+      margin-top: 3px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #7187a2;
+    }
+
+
+    /* ------------------------------------------
+   DASHBOARD CTA
+   ------------------------------------------ */
+
+    #propertyHealthRecordModal .property-health-record-dashboard-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      width: 100%;
+      box-sizing: border-box;
+
+      padding: 17px 18px;
+
+      background: #eef6ff;
+      border: 1px solid #cfe2f7;
+      border-radius: 12px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-title {
+      font-size: 17px;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #203552;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-subtitle {
+      margin-top: 4px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #5f7592;
+    }
+
+    #propertyHealthRecordModal .property-health-record-dashboard-btn {
+      flex: 0 0 auto;
+
+      min-height: 44px;
+      padding: 0 18px;
+
+      border: 0;
+      border-radius: 9px;
+
+      background: #2874c6;
+      color: #fff;
+
+      font-size: 14px;
+      font-weight: 800;
+
+      cursor: pointer;
+    }
+
+
+    /* ------------------------------------------
+   MOBILE
+   ------------------------------------------ */
+
+    @media (max-width: 700px) {
+
+      #propertyHealthRecordModal .property-health-record-property-grid,
+      #propertyHealthRecordModal .property-health-record-two-column {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      #propertyHealthRecordModal .property-health-record-dashboard-link {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      #propertyHealthRecordModal .property-health-record-dashboard-btn {
+        width: 100%;
+      }
+
+
+    }
+
+    /* ==========================================
+   PHR — CURRENT ASSESSMENT
+   ========================================== */
+
+    #propertyHealthRecordModal .property-health-record-current-assessment {
+      position: relative;
+    }
+
+    #propertyHealthRecordModal .property-health-record-assessment-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 32px;
+      gap: 16px;
+    }
+
+    #propertyHealthRecordModal .property-health-record-assessment-header .phr-heading-row {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      flex: 1 1 auto;
+    }
+
+    #propertyHealthRecordModal .property-health-record-assessment-status {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 6px 14px;
+      margin: 0;
+      border-radius: 999px;
+      background: #eaf3ff;
+      color: #1769c2;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+
+    /* ==========================================================
+   PROPERTY HEALTH DASHBOARD
+   ========================================================== */
+
+    #propertyHealthDashboardModal .property-health-dashboard-modal {
+      width: min(1100px, calc(100vw - 48px));
+      max-width: none;
+      max-height: calc(100vh - 32px);
+
+      display: flex;
+      flex-direction: column;
+
+      background: #ffffff;
+      border: 1px solid #d9e4f2;
+      border-radius: 18px;
+
+      box-shadow:
+        0 24px 70px rgba(25, 55, 90, .18),
+        0 8px 24px rgba(25, 55, 90, .08);
+
+      overflow: hidden;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+
+      padding: 24px 28px 20px;
+
+      border-bottom: 1px solid #e4ebf3;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-eyebrow {
+      margin-bottom: 6px;
+
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: .08em;
+
+      color: #1769c2;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-header h3 {
+      margin: 0;
+
+      font-size: 26px;
+      line-height: 1.2;
+      font-weight: 800;
+
+      color: #26364d;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-subtitle {
+      margin-top: 6px;
+
+      font-size: 14px;
+      line-height: 1.4;
+
+      color: #718096;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-close {
+      flex: 0 0 auto;
+
+      width: 36px;
+      height: 36px;
+
+      border: 0;
+      border-radius: 50%;
+
+      background: #f3f6fa;
+      color: #52657d;
+
+      font-size: 24px;
+      line-height: 1;
+
+      cursor: pointer;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-close:hover {
+      background: #eaf0f7;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-body {
+      flex: 1 1 auto;
+
+      overflow-y: auto;
+
+      padding: 24px 28px 28px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-card {
+      padding: 20px;
+
+      background: #ffffff;
+
+      border: 1px solid #e1e9f2;
+      border-radius: 14px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-card-header {
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      margin-bottom: 16px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-card-title {
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: .06em;
+
+      color: #52657d;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-card-description {
+      margin-top: 5px;
+
+      font-size: 14px;
+      line-height: 1.4;
+
+      color: #718096;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-overview-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+      gap: 20px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-label {
+      margin-bottom: 5px;
+
+      font-size: 12px;
+      font-weight: 600;
+
+      color: #8997a8;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-value {
+      font-size: 16px;
+      line-height: 1.45;
+      font-weight: 600;
+
+      color: #475569;
+    }
+
+    #propertyHealthDashboardModal #propertyHealthDashboardLifestyle {
+      font-size: 16px;
+      line-height: 1.45;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 10px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-id {
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 600;
+
+      color: #718096;
+
+      word-break: break-all;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-two-column {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 16px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-metrics {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+      gap: 12px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-metric {
+      display: flex;
+      flex-direction: column;
+
+      gap: 5px;
+
+      padding: 12px;
+
+      background: #f7f9fc;
+
+      border-radius: 10px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-metric span {
+      font-size: 12px;
+      line-height: 1.3;
+
+      color: #718096;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-metric strong {
+      font-size: 21px;
+      line-height: 1;
+
+      color: #26364d;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-status {
+      margin-left: auto;
+
+      flex: 0 0 auto;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 30px;
+      padding: 6px 13px;
+
+      border-radius: 999px;
+
+      background: #eaf3ff;
+      color: #1769c2;
+
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 700;
+
+      white-space: nowrap;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-primary-btn {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      margin-top: 8px;
+      padding: 13px 16px;
+
+      border: 1px solid #cfe0f3;
+      border-radius: 10px;
+
+      background: #f5f9fe;
+      color: #1769c2;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-primary-btn:hover {
+      background: #edf5fd;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-next-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 12px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-next-item {
+      display: flex;
+      flex-direction: column;
+
+      align-items: flex-start;
+      gap: 5px;
+
+      padding: 15px;
+
+      text-align: left;
+
+      border: 1px solid #e1e9f2;
+      border-radius: 10px;
+
+      background: #ffffff;
+
+      cursor: pointer;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-next-item:hover {
+      background: #f8fafc;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-next-item strong {
+      font-size: 14px;
+      color: #26364d;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-next-item span {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #718096;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-next-item.is-disabled {
+      cursor: default;
+      opacity: .55;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-next-item.is-disabled:hover {
+      background: #ffffff;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-history {
+      display: flex;
+      flex-direction: column;
+
+      gap: 14px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-history-item {
+      display: flex;
+
+      gap: 12px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-history-dot {
+      flex: 0 0 auto;
+
+      width: 10px;
+      height: 10px;
+
+      margin-top: 5px;
+
+      border-radius: 50%;
+
+      background: #2474d9;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-history-title {
+      font-size: 14px;
+      font-weight: 700;
+
+      color: #26364d;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-history-date {
+      margin-top: 3px;
+
+      font-size: 12px;
+      font-weight: 600;
+
+      color: #2474d9;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-history-subtitle {
+      margin-top: 3px;
+
+      font-size: 13px;
+      line-height: 1.4;
+
+      color: #718096;
+    }
+
+
+    /* ==========================================================
+   PROPERTY HEALTH DASHBOARD — MOBILE
+   ========================================================== */
+
+    @media (max-width: 700px) {
+
+      #propertyHealthDashboardModal .property-health-dashboard-header {
+        padding: 20px;
+      }
+
+      #propertyHealthDashboardModal .property-health-dashboard-body {
+        padding: 18px 20px 24px;
+      }
+
+      #propertyHealthDashboardModal .property-health-dashboard-overview-grid,
+      #propertyHealthDashboardModal .property-health-dashboard-two-column,
+      #propertyHealthDashboardModal .property-health-dashboard-next-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #propertyHealthDashboardModal .property-health-dashboard-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+    }
+
+
+    /* ==========================================================
+   PROPERTY HEALTH DASHBOARD — FULLSCREEN OVERLAY
+   ========================================================== */
+
+    #propertyHealthDashboardModal {
+      position: fixed !important;
+      inset: 0 !important;
+
+      width: 100vw !important;
+      height: 100vh !important;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 16px;
+      box-sizing: border-box;
+
+      background: rgba(25, 55, 90, 0.42);
+
+      z-index: 99999 !important;
+
+      overflow: auto;
+    }
+
+    body.property-health-dashboard-open {
+      overflow: hidden;
+    }
+
+    /* ==========================================================
+   PROPERTY HEALTH DASHBOARD — HOME WELLNESS VIEW
+   ========================================================== */
+
+    .property-health-dashboard-view {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 24px 28px 40px;
+      background: #f7faff;
+    }
+
+    .property-health-dashboard-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .property-health-dashboard-eyebrow {
+      margin-bottom: 6px;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #2474d9;
+    }
+
+    .property-health-dashboard-header h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #26364d;
+    }
+
+    .property-health-dashboard-subtitle {
+      margin-top: 7px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #64748b;
+    }
+
+    .property-health-dashboard-back-btn {
+      flex: 0 0 auto;
+      border: 1px solid #d9e4f2;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #26364d;
+      padding: 10px 15px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .property-health-dashboard-back-btn:hover {
+      background: #f8fbff;
+    }
+
+
+    /* SECTIONS */
+
+    .property-health-dashboard-section {
+      margin-bottom: 18px;
+      padding: 20px;
+      background: #ffffff;
+      border: 1px solid #e1eaf5;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(25, 55, 90, .04);
+    }
+
+    .property-health-dashboard-section-title {
+      margin-bottom: 14px;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #64748b;
+    }
+
+
+    /* PROPERTY OVERVIEW */
+
+    .property-health-dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .property-health-dashboard-card {
+      min-width: 0;
+      padding: 15px;
+      background: #f8fbff;
+      border: 1px solid #e4edf7;
+      border-radius: 10px;
+    }
+
+    .property-health-dashboard-card span,
+    .property-health-dashboard-metrics span {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .property-health-dashboard-card strong {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #26364d;
+    }
+
+
+    /* ENVIRONMENT / LIFESTYLE */
+
+    .property-health-dashboard-two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .property-health-dashboard-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .property-health-dashboard-metrics>div {
+      padding: 14px;
+      background: #f8fbff;
+      border: 1px solid #e4edf7;
+      border-radius: 10px;
+    }
+
+    .property-health-dashboard-metrics strong {
+      font-size: 22px;
+      line-height: 1;
+      color: #26364d;
+    }
+
+    .property-health-dashboard-value {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #475569;
+    }
+
+
+    /* CURRENT ASSESSMENT */
+
+    .property-health-dashboard-assessment {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .property-health-dashboard-assessment strong {
+      font-size: 16px;
+      line-height: 1.35;
+      color: #26364d;
+    }
+
+    .property-health-dashboard-assessment-subtitle {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .property-health-dashboard-status {
+      flex: 0 0 auto;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: #eef6ff;
+      color: #2474d9;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+
+    /* PROPERTY INSIGHTS */
+
+    .property-health-dashboard-insights {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .property-health-dashboard-primary-btn {
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 10px;
+      background: #2474d9;
+      color: #ffffff;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+
+    /* NEXT ACTIONS */
+
+    .property-health-dashboard-next-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .property-health-dashboard-next-card {
+      min-height: 92px;
+      padding: 15px;
+      text-align: left;
+      border: 1px solid #e1eaf5;
+      border-radius: 10px;
+      background: #f8fbff;
+      color: #26364d;
+    }
+
+    button.property-health-dashboard-next-card {
+      cursor: pointer;
+    }
+
+    .property-health-dashboard-next-card strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .property-health-dashboard-next-card span {
+      display: block;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #64748b;
+    }
+
+    .property-health-dashboard-next-card.is-locked {
+      opacity: .62;
+    }
+
+
+    /* HISTORY */
+
+    .property-health-dashboard-history-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .property-health-dashboard-history-dot {
+      width: 9px;
+      height: 9px;
+      margin-top: 5px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #2474d9;
+    }
+
+    .property-health-dashboard-history-item strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 14px;
+      color: #26364d;
+    }
+
+    .property-health-dashboard-history-item>div:last-child>div {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .property-health-dashboard-history-item span {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #64748b;
+    }
+
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+
+      .property-health-dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .property-health-dashboard-next-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+    }
+
+    @media (max-width: 700px) {
+
+      .property-health-dashboard-view {
+        padding: 18px 16px 32px;
+      }
+
+      .property-health-dashboard-header {
+        flex-direction: column;
+      }
+
+      .property-health-dashboard-grid,
+      .property-health-dashboard-two-column,
+      .property-health-dashboard-next-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .property-health-dashboard-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .property-health-dashboard-insights,
+      .property-health-dashboard-assessment {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+
+    /* ==========================================================
+   PROPERTY HEALTH DASHBOARD — SCROLL
+   ========================================================== */
+
+    .property-health-dashboard-view {
+      max-height: calc(100vh - 130px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      scrollbar-width: thin;
+    }
+
+    .property-health-dashboard-view::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .property-health-dashboard-view::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .property-health-dashboard-view::-webkit-scrollbar-thumb {
+      background: #cbd8e8;
+      border-radius: 8px;
+    }
+
+    #propertyHealthDashboardModal .property-health-dashboard-lifestyle-metric {
+
+      width: 211px !important;
+      height: 96px !important;
+
+      margin-top: 14px;
+
+      padding: 16px 18px !important;
+
+      background: #f4f8fd;
+
+      border: 1px solid #dce8f5;
+
+      border-radius: 12px;
+
+      box-sizing: border-box;
+    }
+
+
+    #propertyHealthDashboardModal .property-health-dashboard-lifestyle-metric .property-health-dashboard-label {
+
+      font-size: 14px !important;
+      line-height: 1.35 !important;
+      font-weight: 500 !important;
+
+      color: #52657d !important;
+
+      margin: 0 0 6px 0 !important;
+    }
+
+
+    #propertyHealthDashboardModal .property-health-dashboard-lifestyle-metric .property-health-dashboard-value {
+
+      margin: 0 !important;
+
+      font-size: 30px !important;
+      line-height: 1 !important;
+      font-weight: 800 !important;
+
+      color: #26364d !important;
     }
   </style>
 </head>
@@ -17929,23 +20418,68 @@
           <div id="wellnessCard" class="wellnessCard home-only">
 
             <div id="wellnessTitle">
-
-              Home Wellness
-
+              YOUR PROPERTY HEALTH RECORD
             </div>
 
             <div id="wellnessScore">
-
-              82/100
-
+              Your Property Health Record has started
             </div>
 
             <div id="wellnessSummary">
+              Your property's environmental profile is being built as you explore
+              your home, sources and daily living areas.
+            </div>
 
-              Your home currently shows
-              low wellness concern.
+            <div class="property-record-grid">
+
+              <div class="property-record-item">
+                <div class="property-record-label">
+                  PROPERTY
+                </div>
+                <div class="property-record-value">
+                  My Property
+                </div>
+              </div>
+
+              <div class="property-record-item">
+                <div class="property-record-label">
+                  ENVIRONMENT
+                </div>
+                <div class="property-record-value">
+                  Environment profile in progress
+                </div>
+              </div>
+
+              <div class="property-record-item">
+                <div class="property-record-label">
+                  LIFESTYLE
+                </div>
+                <div class="property-record-value">
+                  Living areas not yet added
+                </div>
+              </div>
+
+              <div class="property-record-item">
+                <div class="property-record-label">
+                  ASSESSMENT
+                </div>
+                <div class="property-record-value">
+                  Initial Home Assessment
+                </div>
+              </div>
 
             </div>
+
+            <div class="property-record-status">
+              <span class="property-record-status-label">
+                STATUS
+              </span>
+              <span class="property-record-status-value">
+                Initial record created
+              </span>
+            </div>
+
+
 
           </div>
 
@@ -17964,26 +20498,22 @@
           </div>
 
 
-          <!-- NEW PROJECT -->
+          <!-- NEW PROPERTY -->
 
           <button class="workflow-action-btn" onclick="createProject()">
-
             <div class="workflow-action-icon">
               ➕
             </div>
 
             <div>
-
               <div class="workflow-action-title">
-                New Project
+                New Property
               </div>
 
               <div class="workflow-action-subtitle">
-                Start a new assessment
+                Start building your property's environmental profile
               </div>
-
             </div>
-
           </button>
 
 
@@ -18066,7 +20596,7 @@
             <div>
 
               <div class="workflow-action-title">
-                Upload Floor Plan
+                Add Floor Plan
               </div>
 
               <div class="workflow-action-subtitle">
@@ -18158,7 +20688,7 @@
 
               <div>
                 <div class="workflow-action-title">
-                  Upload Floor Plan
+                  Add Floor Plan
                 </div>
 
                 <div class="workflow-action-subtitle">
@@ -18209,15 +20739,10 @@
             <div class="sidebar-section">
 
               <div class="sidebar-title">
-
-                2. Add Lifestyle Areas
-
+                WHERE DO YOU SPEND YOUR TIME?
               </div>
-
               <div class="sidebar-subtitle">
-
-                Spaces where you spend the most time.
-
+                Add the places that matter most to your daily life.
               </div>
 
             </div>
@@ -18240,7 +20765,7 @@
 
                 <button class="secondary-btn" onclick="startObjectPlacement('sofa')">
 
-                  🛋 Relax
+                  🛋 Rest
 
                 </button>
 
@@ -18263,15 +20788,10 @@
 
 
               <div class="sidebar-title">
-
-                3. Add EMF Sources
-
+                DISCOVER YOUR ENVIRONMENT
               </div>
-
               <div class="sidebar-subtitle">
-
-                Devices and nearby infrastructure affecting exposure.
-
+                Add the sources you know about or want to explore.
               </div>
 
               <div id="sourceStatus" class="workflow-status">
@@ -18296,9 +20816,7 @@
               </div>
 
               <div id="indoorSourcesHint" class="workflow-hint">
-
-                Add your first Lifestyle Area
-
+                Add an indoor source you know about or want to explore.
               </div>
 
               <div class="source-grid">
@@ -18355,8 +20873,7 @@
 
               <div class="sidebar-subtitle">
 
-                Nearby infrastructure
-                around your home.
+                Nearby infrastructure and outdoor sources around your home.
 
               </div>
 
@@ -18433,11 +20950,12 @@
           </div>
 
           <div class="sidebar-subtitle">
-            Need an on-site EMF assessment? Your Home Wellness project can continue with a qualified EMF professional.
+            Need a deeper assessment? Connect with an EMF professional for on-site measurement and professional
+            analysis.
           </div>
 
           <div id="homeProfessionalAssessmentLocked" class="workflow-hint">
-            Unlock the complete EMF Insight report for €9 one-time.
+            Add the complete assessment to your Property Health Record with the Full EMF Insight Report.
           </div>
 
           <button id="homeBtnProfessionalAssessment" class="workflow-action-btn" type="button">
@@ -18447,11 +20965,11 @@
 
             <div>
               <div class="workflow-action-title">
-                Unlock Full Report
+                Get a Professional Assessment
               </div>
 
               <div class="workflow-action-subtitle">
-                Get the complete report & recommendations
+                Connect with an EMF professional for on-site measurement and professional analysis
               </div>
             </div>
           </button>
@@ -19034,7 +21552,7 @@
               <div class="workflow-action-title">
 
                 <span>
-                  View Results
+                  Property Insights
                 </span>
 
                 <span class="output-lock">
@@ -19144,23 +21662,67 @@
         <div id="wellnessCard" class="wellnessCard home-only">
 
           <div id="wellnessTitle">
-
-            Home Wellness
-
+            YOUR PROPERTY HEALTH RECORD
           </div>
 
           <div id="wellnessScore">
-
-            82/100
-
+            Your Property Health Record has started
           </div>
 
           <div id="wellnessSummary">
+            Your property's environmental profile is being built as you explore
+            your home, sources and daily living areas.
+          </div>
 
-            Your home currently shows
-            low wellness concern.
+          <div class="property-record-grid">
+
+            <div class="property-record-item">
+              <div class="property-record-label">
+                PROPERTY
+              </div>
+              <div class="property-record-value">
+                My Property
+              </div>
+            </div>
+
+            <div class="property-record-item">
+              <div class="property-record-label">
+                ENVIRONMENT
+              </div>
+              <div class="property-record-value">
+                Environment profile in progress
+              </div>
+            </div>
+
+            <div class="property-record-item">
+              <div class="property-record-label">
+                LIFESTYLE
+              </div>
+              <div class="property-record-value">
+                Living areas not yet added
+              </div>
+            </div>
+
+            <div class="property-record-item">
+              <div class="property-record-label">
+                ASSESSMENT
+              </div>
+              <div class="property-record-value">
+                Initial Home Assessment
+              </div>
+            </div>
 
           </div>
+
+          <div class="property-record-status">
+            <span class="property-record-status-label">
+              STATUS
+            </span>
+            <span class="property-record-status-value">
+              Initial record created
+            </span>
+          </div>
+
 
         </div>
 
@@ -19185,7 +21747,7 @@
             <div class="project-title">
 
               <span class="project-workspace-name">
-                🏠 My Home Project
+                🏠 My Property
               </span>
 
               <div class="project-display-name-wrap">
@@ -19295,11 +21857,11 @@
                       </span>
 
                       <span class="workspace-menu-title">
-                        Home Wellness
+                        My Property
                       </span>
 
                       <span class="workspace-menu-subtitle">
-                        Personal Home Assessment
+                        Property Health Record
                       </span>
 
                     </span>
@@ -19492,40 +22054,608 @@
 
             </div>
 
-            <div id="deleteAccountModal" class="modal-overlay" style="display:none;">
-              <div class="modal-content">
+            <!-- ================================================== -->
+            <!-- PROPERTY HEALTH RECORD MODAL -->
+            <!-- ================================================== -->
 
-                <h3>Delete Account</h3>
+            <div id="propertyHealthRecordModal" class="modal-overlay" style="display:none;">
 
-                <p>
-                  Are you sure you want to permanently delete your account?
-                </p>
+              <div class="modal-content property-health-record-modal">
 
-                <p>
-                  This will delete your account and associated data.
-                  This action cannot be undone.
-                </p>
+                <div class="property-health-record-modal-header">
 
-                <div class="modal-actions">
+                  <div>
+                    <div class="property-health-record-modal-eyebrow">
+                      PROPERTY HEALTH RECORD
+                    </div>
 
-                  <button type="button" onclick="closeDeleteAccountModal()">
-                    Cancel
-                  </button>
+                    <h3 id="propertyHealthRecordModalTitle">
+                      My Property
+                    </h3>
+                  </div>
 
-                  <button type="button" class="workspace-menu-item-danger" onclick="confirmDeleteAccount()">
-                    Delete my account
+                  <button type="button" class="property-health-record-modal-close" onclick="closePropertyHealthRecord()"
+                    aria-label="Close">
+                    ×
                   </button>
 
                 </div>
 
+
+                <div class="property-health-record-modal-body">
+
+                  <!-- ==========================================
+       PROPERTY + LOCATION
+       ========================================== -->
+
+                  <div class="property-health-record-section property-health-record-property-card">
+
+                    <div class="property-health-record-property-grid">
+
+                      <!-- PROPERTY -->
+                      <div class="property-health-record-property-column">
+
+                        <div class="phr-heading-row">
+                          <div class="phr-icon phr-icon-property">⌂</div>
+
+                          <div class="property-health-record-section-title">
+                            PROPERTY
+                          </div>
+                        </div>
+
+                        <div id="propertyHealthRecordPropertyType" class="property-health-record-property-type">
+                          Property
+                        </div>
+
+                        <div class="property-health-record-property-detail">
+                          <span class="property-health-record-property-detail-label">
+                            Floors
+                          </span>
+
+                          <span id="propertyHealthRecordFloors" class="property-health-record-property-detail-value">
+                            1
+                          </span>
+                        </div>
+
+                        <div class="property-health-record-id-label">
+                          Property ID
+                        </div>
+
+                        <div id="propertyHealthRecordId" class="property-health-record-id">
+                          —
+                        </div>
+
+                      </div>
+
+
+                      <!-- LOCATION -->
+                      <div class="property-health-record-property-column">
+
+                        <div class="phr-heading-row">
+                          <div class="phr-icon phr-icon-location">⌖</div>
+
+                          <div class="property-health-record-section-title">
+                            LOCATION
+                          </div>
+                        </div>
+
+                        <div id="propertyHealthRecordAddress" class="property-health-record-address">
+                          Address not yet added
+                        </div>
+
+                        <div id="propertyHealthRecordCity" class="property-health-record-address">
+                          Location not yet added
+                        </div>
+
+                        <div id="propertyHealthRecordCountry" class="property-health-record-address">
+                          Country not yet added
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- ==========================================
+       ENVIRONMENT + LIFESTYLE
+       ========================================== -->
+
+                  <div class="property-health-record-two-column">
+
+
+                    <!-- ENVIRONMENT -->
+                    <div class="property-health-record-section">
+
+                      <div class="phr-heading-row">
+                        <div class="phr-icon phr-icon-environment">◌</div>
+
+                        <div class="property-health-record-section-title">
+                          ENVIRONMENT
+                        </div>
+                      </div>
+
+                      <div id="propertyHealthRecordEnvironment" class="property-health-record-environment-grid">
+
+                        <div class="property-health-record-metric">
+                          <span class="property-health-record-metric-label">
+                            Indoor Sources
+                          </span>
+
+                          <span id="propertyHealthRecordIndoorSources" class="property-health-record-metric-value">
+                            0
+                          </span>
+                        </div>
+
+                        <div class="property-health-record-metric">
+                          <span class="property-health-record-metric-label">
+                            Outdoor Sources
+                          </span>
+
+                          <span id="propertyHealthRecordOutdoorSources" class="property-health-record-metric-value">
+                            0
+                          </span>
+                        </div>
+
+                        <div class="property-health-record-metric">
+                          <span class="property-health-record-metric-label">
+                            Total Sources
+                          </span>
+
+                          <span id="propertyHealthRecordTotalSources" class="property-health-record-metric-value">
+                            0
+                          </span>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+
+                    <!-- LIFESTYLE -->
+                    <div class="property-health-record-section">
+
+                      <div class="phr-heading-row">
+                        <div class="phr-icon phr-icon-lifestyle">♧</div>
+
+                        <div class="property-health-record-section-title">
+                          LIFESTYLE
+                        </div>
+                      </div>
+
+                      <div id="propertyHealthRecordLifestyle" class="property-health-record-section-value">
+                        Living areas not yet added
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- ==========================================
+       CURRENT ASSESSMENT
+       ========================================== -->
+
+                  <!-- CURRENT ASSESSMENT -->
+
+                  <div class="property-health-record-section property-health-record-current-assessment">
+
+                    <div class="property-health-record-assessment-header">
+
+                      <div class="phr-heading-row">
+
+                        <div class="phr-icon phr-icon-assessment">
+                          ▣
+                        </div>
+
+                        <div class="property-health-record-section-title">
+                          CURRENT ASSESSMENT
+                        </div>
+
+                      </div>
+
+                      <div id="propertyHealthRecordAssessmentStatus" class="property-health-record-assessment-status">
+                        In progress
+                      </div>
+
+                    </div>
+
+                    <div id="propertyHealthRecordAssessment" class="property-health-record-section-value">
+                      Initial Home Assessment
+                    </div>
+
+                  </div>
+
+
+                  <!-- ==========================================
+       RECORD HISTORY
+       ========================================== -->
+
+                  <div class="property-health-record-history">
+
+                    <div class="property-health-record-section-title">
+                      RECORD HISTORY
+                    </div>
+
+                    <div id="propertyHealthRecordHistoryItems">
+
+                      <div class="property-health-record-history-item">
+
+                        <div class="property-health-record-history-dot"></div>
+
+                        <div>
+
+                          <div class="property-health-record-history-title">
+                            Initial record created
+                          </div>
+
+                          <div id="propertyHealthRecordCreatedDate" class="property-health-record-history-date">
+                            —
+                          </div>
+
+                          <div class="property-health-record-history-subtitle">
+                            Your Property Health Record has started.
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- ==========================================
+       PROPERTY HEALTH DASHBOARD
+       ========================================== -->
+
+                  <div class="property-health-record-dashboard-link">
+
+                    <div class="phr-icon phr-icon-dashboard">
+                      ▥
+                    </div>
+
+                    <div class="property-health-record-dashboard-text">
+
+                      <div class="property-health-record-dashboard-title">
+                        Your Property Health Record
+                      </div>
+
+                      <div class="property-health-record-dashboard-subtitle">
+                        View your property's environmental profile, living areas and current assessment in the Property
+                        Health Dashboard.
+                      </div>
+
+                    </div>
+
+                    <button type="button" class="property-health-record-dashboard-btn"
+                      onclick="openPropertyHealthDashboard()">
+                      View Property Health Dashboard
+                      <span aria-hidden="true">→</span>
+
+                    </button>
+
+                  </div>
+
+                </div>
+
               </div>
+
             </div>
 
           </div>
 
+          <!-- ==========================================================
+     PROPERTY HEALTH DASHBOARD
+     ========================================================== -->
+
+          <div id="propertyHealthDashboardModal" class="modal-overlay" style="display:none;">
+
+            <div class="modal-content property-health-dashboard-modal">
+
+              <!-- HEADER -->
+              <div class="property-health-dashboard-header">
+
+                <div>
+                  <div class="property-health-dashboard-eyebrow">
+                    PROPERTY HEALTH DASHBOARD
+                  </div>
+
+                  <h3 id="propertyHealthDashboardTitle">
+                    My Property
+                  </h3>
+
+                  <div class="property-health-dashboard-subtitle">
+                    Your property's current environmental profile
+                  </div>
+                </div>
+
+                <button type="button" class="property-health-dashboard-close" onclick="closePropertyHealthDashboard()"
+                  aria-label="Close">
+                  ×
+                </button>
+
+              </div>
 
 
+              <!-- BODY -->
+              <div class="property-health-dashboard-body">
 
+                <!-- PROPERTY OVERVIEW -->
+                <div class="property-health-dashboard-card">
+
+                  <div class="property-health-dashboard-card-header">
+                    <div class="phr-icon phr-icon-property">
+                      ⌂
+                    </div>
+
+                    <div class="property-health-dashboard-card-title">
+                      PROPERTY OVERVIEW
+                    </div>
+                  </div>
+
+                  <div class="property-health-dashboard-overview-grid">
+
+                    <div>
+                      <div class="property-health-dashboard-label">
+                        Property Type
+                      </div>
+
+                      <div id="propertyHealthDashboardPropertyType" class="property-health-dashboard-value">
+                        —
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="property-health-dashboard-label">
+                        Location
+                      </div>
+
+                      <div id="propertyHealthDashboardLocation" class="property-health-dashboard-value">
+                        —
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="property-health-dashboard-label">
+                        Floors
+                      </div>
+
+                      <div id="propertyHealthDashboardFloors" class="property-health-dashboard-value">
+                        0
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="property-health-dashboard-label">
+                        Property ID
+                      </div>
+
+                      <div id="propertyHealthDashboardId" class="property-health-dashboard-id">
+                        —
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <!-- ENVIRONMENT + LIFESTYLE -->
+                <div class="property-health-dashboard-two-column">
+
+                  <!-- ENVIRONMENT -->
+                  <div class="property-health-dashboard-card">
+
+                    <div class="property-health-dashboard-card-header">
+
+                      <div class="phr-icon phr-icon-environment">
+                        ◌
+                      </div>
+
+                      <div class="property-health-dashboard-card-title">
+                        ENVIRONMENT
+                      </div>
+
+                    </div>
+
+                    <div class="property-health-dashboard-metrics">
+
+                      <div class="property-health-dashboard-metric">
+                        <span>Indoor Sources</span>
+                        <strong id="propertyHealthDashboardIndoorSources">
+                          0
+                        </strong>
+                      </div>
+
+                      <div class="property-health-dashboard-metric">
+                        <span>Outdoor Sources</span>
+                        <strong id="propertyHealthDashboardOutdoorSources">
+                          0
+                        </strong>
+                      </div>
+
+                      <div class="property-health-dashboard-metric">
+                        <span>Total Sources</span>
+                        <strong id="propertyHealthDashboardTotalSources">
+                          0
+                        </strong>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- LIFESTYLE -->
+                  <div class="property-health-dashboard-card">
+
+                    <div class="property-health-dashboard-card-header">
+
+                      <div class="phr-icon phr-icon-lifestyle">
+                        ♧
+                      </div>
+
+                      <div class="property-health-dashboard-card-title">
+                        LIFESTYLE
+                      </div>
+
+                    </div>
+
+                    <div class="property-health-dashboard-metric">
+
+                      <span>
+                        Living Areas
+                      </span>
+
+                      <strong id="propertyHealthDashboardLifestyle">
+                        Living areas not yet added
+                      </strong>
+
+                    </div>
+
+                  </div>
+                </div>
+
+
+                <!-- CURRENT ASSESSMENT -->
+                <div class="property-health-dashboard-card">
+
+                  <div class="property-health-dashboard-card-header">
+
+                    <div class="phr-icon phr-icon-assessment">
+                      ▣
+                    </div>
+
+                    <div class="property-health-dashboard-card-title">
+                      CURRENT ASSESSMENT
+                    </div>
+
+                    <div id="propertyHealthDashboardAssessmentStatus" class="property-health-dashboard-status">
+                      In progress
+                    </div>
+
+                  </div>
+
+                  <div id="propertyHealthDashboardAssessment" class="property-health-dashboard-value">
+                    Initial Home Assessment
+                  </div>
+
+                </div>
+
+
+                <!-- PROPERTY INSIGHTS -->
+                <div class="property-health-dashboard-card property-health-dashboard-insights">
+
+                  <div class="property-health-dashboard-card-header">
+
+                    <div class="phr-icon phr-icon-dashboard">
+                      ◈
+                    </div>
+
+                    <div>
+                      <div class="property-health-dashboard-card-title">
+                        PROPERTY INSIGHTS
+                      </div>
+
+                      <div class="property-health-dashboard-card-description">
+                        What we currently understand about this property.
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <button type="button" class="property-health-dashboard-primary-btn" onclick="openResultsDashboard()">
+                    View Property Insights
+                    <span aria-hidden="true">→</span>
+                  </button>
+
+                </div>
+
+
+                <!-- WHAT CAN YOU DO NEXT? -->
+                <div class="property-health-dashboard-card">
+
+                  <div class="property-health-dashboard-card-title">
+                    WHAT CAN YOU DO NEXT?
+                  </div>
+
+                  <div class="property-health-dashboard-next-grid">
+
+                    <button type="button" class="property-health-dashboard-next-item" onclick="openResultsDashboard()">
+                      <strong>Understand More</strong>
+                      <span>Explore your current property insights.</span>
+                    </button>
+
+                    <button type="button" class="property-health-dashboard-next-item"
+                      onclick="openHomeProfessionalAssessment?.()">
+                      <strong>Get Professional Assessment</strong>
+                      <span>Connect with an EMF professional.</span>
+                    </button>
+
+                    <button type="button" class="property-health-dashboard-next-item is-disabled" disabled>
+                      <strong>Improve Your Environment</strong>
+                      <span>Coming soon</span>
+                    </button>
+
+                    <button type="button" class="property-health-dashboard-next-item is-disabled" disabled>
+                      <strong>Track Changes</strong>
+                      <span>Property Health History</span>
+                    </button>
+
+                  </div>
+
+                </div>
+
+
+                <!-- PROPERTY HEALTH HISTORY -->
+                <div class="property-health-dashboard-card">
+
+                  <div class="property-health-dashboard-card-header">
+
+                    <div class="phr-icon phr-icon-dashboard">
+                      ◷
+                    </div>
+
+                    <div class="property-health-dashboard-card-title">
+                      PROPERTY HEALTH HISTORY
+                    </div>
+
+                  </div>
+
+                  <div id="propertyHealthDashboardHistory" class="property-health-dashboard-history">
+
+                    <div class="property-health-dashboard-history-item">
+
+                      <div class="property-health-dashboard-history-dot"></div>
+
+                      <div>
+                        <div class="property-health-dashboard-history-title">
+                          Initial record created
+                        </div>
+
+                        <div id="propertyHealthDashboardCreatedDate" class="property-health-dashboard-history-date">
+                          —
+                        </div>
+
+                        <div class="property-health-dashboard-history-subtitle">
+                          Your Property Health Record has started.
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
 
           <!-- ================================================== -->
           <!-- PROJECT META -->
@@ -19550,6 +22680,7 @@
           </div>
 
         </div>
+
 
 
         <!-- ================================================== -->
@@ -19898,11 +23029,11 @@
                 </div>
 
                 <div class="project-start-title">
-                  Start your assessment
+                  My Property
                 </div>
 
                 <div class="project-start-subtitle">
-                  Create a new project or open an existing project to continue.
+                  Start building your property's environmental profile or open an existing property.
                 </div>
 
                 <div class="project-start-actions">
@@ -19916,11 +23047,11 @@
 
                     <span>
                       <strong>
-                        New Project
+                        New Property
                       </strong>
 
                       <small>
-                        Start a new assessment
+                        Start building your property's environmental profile
                       </small>
                     </span>
 
@@ -19936,11 +23067,11 @@
 
                     <span>
                       <strong>
-                        Open Project
+                        Open Property
                       </strong>
 
                       <small>
-                        Continue an existing assessment
+                        Continue exploring your property
                       </small>
                     </span>
 
@@ -19958,6 +23089,248 @@
             <!-- ================================================== -->
 
             <div id="homeCurrentFloorCard" class="home-only"></div>
+
+            <!-- ================================================== -->
+            <!-- PROPERTY HEALTH DASHBOARD -->
+            <!-- ================================================== -->
+
+            <div id="propertyHealthDashboardView" class="home-only property-health-dashboard-view"
+              style="display:none;">
+
+              <div class="property-health-dashboard-header">
+
+                <div>
+                  <div class="property-health-dashboard-eyebrow">
+                    PROPERTY HEALTH DASHBOARD
+                  </div>
+
+                  <h2 id="propertyHealthDashboardViewTitle">
+                    My Property
+                  </h2>
+
+                  <div id="propertyHealthDashboardViewSubtitle" class="property-health-dashboard-subtitle">
+                    Your property's current environmental profile
+                  </div>
+                </div>
+
+                <button type="button" class="property-health-dashboard-back-btn"
+                  onclick="closePropertyHealthDashboard()">
+                  ← Back to Property
+                </button>
+
+              </div>
+
+
+              <!-- PROPERTY OVERVIEW -->
+
+              <section class="property-health-dashboard-section">
+
+                <div class="property-health-dashboard-section-title">
+                  PROPERTY OVERVIEW
+                </div>
+
+                <div class="property-health-dashboard-grid">
+
+                  <div class="property-health-dashboard-card">
+                    <span>Property Type</span>
+                    <strong id="dashboardPropertyType">—</strong>
+                  </div>
+
+                  <div class="property-health-dashboard-card">
+                    <span>Location</span>
+                    <strong id="dashboardPropertyLocation">—</strong>
+                  </div>
+
+                  <div class="property-health-dashboard-card">
+                    <span>Floors</span>
+                    <strong id="dashboardPropertyFloors">—</strong>
+                  </div>
+
+                  <div class="property-health-dashboard-card">
+                    <span>Property ID</span>
+                    <strong id="dashboardPropertyId">—</strong>
+                  </div>
+
+                </div>
+
+              </section>
+
+
+              <!-- ENVIRONMENT + LIFESTYLE -->
+
+              <div class="property-health-dashboard-two-column">
+
+                <section class="property-health-dashboard-section">
+
+                  <div class="property-health-dashboard-section-title">
+                    ENVIRONMENT
+                  </div>
+
+                  <div class="property-health-dashboard-metrics">
+
+                    <div>
+                      <span>Indoor Sources</span>
+                      <strong id="dashboardIndoorSources">0</strong>
+                    </div>
+
+                    <div>
+                      <span>Outdoor Sources</span>
+                      <strong id="dashboardOutdoorSources">0</strong>
+                    </div>
+
+                    <div>
+                      <span>Total Sources</span>
+                      <strong id="dashboardTotalSources">0</strong>
+                    </div>
+
+                  </div>
+
+                </section>
+
+                <section class="property-health-dashboard-section">
+
+                  <div class="property-health-dashboard-section-title">
+                    LIFESTYLE
+                  </div>
+
+                  <div class="property-health-dashboard-metrics">
+
+                    <div class="property-health-dashboard-metric">
+
+                      <span>
+                        Living Areas
+                      </span>
+
+                      <strong id="dashboardLifestyle">
+                        Living areas not yet added
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                </section>
+
+              </div>
+
+
+              <!-- CURRENT ASSESSMENT -->
+
+              <section class="property-health-dashboard-section">
+
+                <div class="property-health-dashboard-section-title">
+                  CURRENT ASSESSMENT
+                </div>
+
+                <div class="property-health-dashboard-assessment">
+
+                  <div>
+                    <strong id="dashboardAssessmentName">
+                      Initial Home Assessment
+                    </strong>
+
+                    <div class="property-health-dashboard-assessment-subtitle">
+                      Current property assessment
+                    </div>
+                  </div>
+
+                  <div id="dashboardAssessmentStatus" class="property-health-dashboard-status">
+                    In progress
+                  </div>
+
+                </div>
+
+              </section>
+
+
+              <!-- PROPERTY INSIGHTS -->
+
+              <section class="property-health-dashboard-section property-health-dashboard-insights">
+
+                <div>
+
+                  <div class="property-health-dashboard-section-title">
+                    PROPERTY INSIGHTS
+                  </div>
+
+                  <div class="property-health-dashboard-value">
+                    Understand what we currently know about this property.
+                  </div>
+
+                </div>
+
+                <button type="button" class="property-health-dashboard-primary-btn" onclick="openResultsDashboard()">
+                  View Property Insights →
+                </button>
+
+              </section>
+
+
+              <!-- WHAT CAN YOU DO NEXT? -->
+
+              <section class="property-health-dashboard-section">
+
+                <div class="property-health-dashboard-section-title">
+                  WHAT CAN YOU DO NEXT?
+                </div>
+
+                <div class="property-health-dashboard-next-grid">
+
+                  <button type="button" class="property-health-dashboard-next-card" onclick="openResultsDashboard()">
+                    <strong>Understand More</strong>
+                    <span>Explore your current property insights</span>
+                  </button>
+
+                  <button type="button" class="property-health-dashboard-next-card"
+                    onclick="openHomeProfessionalAssessment?.()">
+                    <strong>Get Professional Assessment</strong>
+                    <span>Connect with an EMF professional</span>
+                  </button>
+
+                  <div class="property-health-dashboard-next-card is-locked">
+                    <strong>Improve Your Environment</strong>
+                    <span>Coming soon</span>
+                  </div>
+
+                  <div class="property-health-dashboard-next-card is-locked">
+                    <strong>Track Changes</strong>
+                    <span>Property Health History will grow over time</span>
+                  </div>
+
+                </div>
+
+              </section>
+
+
+              <!-- PROPERTY HEALTH HISTORY -->
+
+              <section class="property-health-dashboard-section">
+
+                <div class="property-health-dashboard-section-title">
+                  PROPERTY HEALTH HISTORY
+                </div>
+
+                <div class="property-health-dashboard-history-item">
+
+                  <div class="property-health-dashboard-history-dot"></div>
+
+                  <div>
+                    <strong>Initial record created</strong>
+
+                    <div id="dashboardPropertyCreatedDate">
+                      —
+                    </div>
+
+                    <span>
+                      Your Property Health Record has started.
+                    </span>
+                  </div>
+
+                </div>
+
+              </section>
+
+            </div>
 
             <!-- ===================== -->
             <!-- 🔥 HOME WORKFLOW -->
@@ -20039,15 +23412,13 @@
               <!-- INSIGHTS -->
 
               <div class="workflow-item" data-step="insights" id="insightsBlock">
-
                 <div class="workflow-dot">
                   5
                 </div>
 
                 <div class="workflow-label">
-                  Insights
+                  Property Insights
                 </div>
-
               </div>
 
             </div>
@@ -20071,7 +23442,7 @@
                   </div>
 
                   <div class="home-empty-plan-subtitle">
-                    Upload a floor plan or take a photo to begin your Home Assessment.
+                    Start building your property's environmental profile.
                   </div>
 
                   <div class="home-empty-plan-actions">
@@ -20247,201 +23618,7 @@
                     Hover a point…
                   </div>
 
-                  <!-- 🔥 LEGEND HUD -->
-                  <!--
-              <div id="legendHud">
 
-                <div class="legendTitle">
-
-                  Point Status
-
-                </div>
-
-                <div class="legendItem">
-
-                  ⚪ Not measured
-
-                </div>
-
-                <div class="legendItem">
-
-                  <span class="legendDot partialDot">
-                  </span>
-
-                  Partial measurement
-
-                </div>
-
-                <div class="legendSubtitle">
-
-                  Exposure Risk
-
-                </div>
-
-                <div class="legendItem">
-
-                  🟢 Safe
-
-                </div>
-
-                <div class="legendItem">
-
-                  <span class="legendWarningDot">
-                    ●
-                  </span>
-
-                  Elevated
-
-                </div>
-
-                <div class="legendItem">
-
-                  🔴 High exposure
-
-                </div>
-
-              </div>
-               -->
-                  <!--
-                </div>
-
-                <div id="liveAnalysisPanel" class="home-only">
-
-                  <div id="analysisHeader">
-
-                    <div id="analysisTitle">
-                      Current Exposure
-                    </div>
-
-                    <div id="analysisMode">
-                      Home Assessment
-                    </div>
-                  </div>
-
-                  <div id="analysisState">
-                    LOW
-                  </div>
-
-                  <div id="improvementScore">
-
-                  </div>
-
-                  <div id="analysisBar">
-
-                    <div id="analysisBarFill"></div>
-                  </div>
-
-                  <div id="analysisHint">
-
-                    Move nearby wireless devices
-                    farther from lifestyle areas.
-
-                  </div>
-
-                  <div id="analysisObjects">
-
-                  </div>
-
-                  <div id="currentExposureSummary">
-
-                  </div>
-
-                  <div id="availableInsights">
-
-                  </div>
-
-                  <div id="topriskfound">
-
-                  </div>
-
-                  <div id="wholeHomeInsights">
-
-                  </div>
-
-                  <div id="analysisActions">
-
-                    <button class="analysis-action-btn" onclick="openRankingPopup()">
-
-                      🏆 Ranking
-
-                    </button>
-
-                    <button class="analysis-action-btn" onclick="openRecommendationsPopup()">
-
-                      💡 Recommendations
-
-                    </button>
-
-                    <button class="analysis-action-btn" onclick="openReportPopup()">
-
-                      📄 Report
-
-                    </button>
-
-                  </div>
-
-                  <div id="topSourceRanking">
-
-                  </div>
-                  -->
-                  <!--
-
-              <div id="lockedInsightsPreview">
-
-              </div>
-              
-                  <div id="potentialImprovement">
-
-                  </div>
-
-                  <button id="unlockReportBtn" class="primary-btn unlock-report-btn">
-
-                    <div>
-
-                      🔓 Unlock Full Report
-
-                    </div>
-
-                    <div>
-
-                      €9 One-Time
-
-                    </div>
-
-                    <div class="unlock-subtitle">
-
-                      Instant Access
-
-                    </div>
-
-                  </button>
-
-
-
-                  <div id="recommendedImprovements">
-
-                  </div>
-
-
-                  <div id="reportPreviewSections">
-
-                    <div class="unlock-includes">
-
-                      <strong>Unlock includes:</strong>
-
-                      <div class="unlock-features">
-
-                        Recommendations • Heatmap • PDF
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                </div>
-                -->
 
                   <!-- POPUPS -->
 
@@ -20778,15 +23955,13 @@
                       <div class="project-popup-header">
 
                         <div>
-
                           <div id="createProjectNameTitle" class="project-popup-title">
-                            Create New Project
+                            Set Up Your Home Profile
                           </div>
 
                           <div class="project-popup-subtitle">
-                            Give your project a name
+                            Tell us a little about you and the property you want to understand.
                           </div>
-
                         </div>
 
                         <button type="button" class="project-popup-close" onclick="closeCreateProjectNamePopup()">
@@ -20798,18 +23973,183 @@
 
                       <div class="project-name-popup-content">
 
-                        <label for="newProjectNameInput" class="project-name-label">
-                          Project name
-                        </label>
+                        <!-- HOME PROFILE -->
 
-                        <input id="newProjectNameInput" class="project-name-input" type="text" maxlength="120"
-                          autocomplete="off" placeholder="e.g. Family Home">
+                        <div class="home-profile-popup-section">
 
-                        <div class="project-name-hint">
-                          Choose a name you will recognize later.
+                          <div class="home-profile-popup-section-title">
+                            YOU
+                          </div>
+
+                          <div class="home-profile-popup-section-subtitle">
+                            Your personal details for your Home Wellness profile.
+                          </div>
+
+
+                          <div class="home-profile-popup-grid">
+
+                            <div class="home-profile-popup-field">
+                              <label for="homeProfileFirstName">
+                                First name
+                              </label>
+
+                              <input id="homeProfileFirstName" type="text" maxlength="80" autocomplete="given-name"
+                                placeholder="First name">
+                            </div>
+
+
+                            <div class="home-profile-popup-field">
+                              <label for="homeProfileLastName">
+                                Last name
+                              </label>
+
+                              <input id="homeProfileLastName" type="text" maxlength="80" autocomplete="family-name"
+                                placeholder="Last name">
+                            </div>
+
+
+                            <div class="home-profile-popup-field">
+                              <label for="homeProfileEmail">
+                                Email
+                              </label>
+
+                              <input id="homeProfileEmail" type="email" maxlength="160" autocomplete="email"
+                                placeholder="Email address">
+                            </div>
+
+
+                            <div class="home-profile-popup-field">
+                              <label for="homeProfilePhone">
+                                Phone
+                                <span class="home-profile-optional">
+                                  Optional
+                                </span>
+                              </label>
+
+                              <input id="homeProfilePhone" type="tel" maxlength="40" autocomplete="tel"
+                                placeholder="Phone number">
+                            </div>
+
+                          </div>
+
                         </div>
 
 
+                        <!-- PROPERTY -->
+
+                        <div class="home-profile-popup-section">
+
+                          <div class="home-profile-popup-section-title">
+                            YOUR PROPERTY
+                          </div>
+
+                          <div class="home-profile-popup-section-subtitle">
+                            Tell us about the property you want to assess.
+                          </div>
+
+
+                          <div class="home-profile-popup-field">
+
+                            <label for="newProjectNameInput">
+                              Property name
+                            </label>
+
+                            <input id="newProjectNameInput" class="project-name-input" type="text" maxlength="120"
+                              autocomplete="off" placeholder="e.g. Family Home">
+
+                            <div class="project-name-hint">
+                              Choose a name you will recognize later.
+                            </div>
+
+                          </div>
+
+
+                          <div class="home-profile-popup-grid">
+
+                            <div class="home-profile-popup-field">
+                              <label for="homePropertyTypeInput">
+                                Property type
+                              </label>
+
+                              <select id="homePropertyTypeInput">
+                                <option value="">
+                                  Select property type
+                                </option>
+                                <option value="apartment">
+                                  Apartment
+                                </option>
+                                <option value="house">
+                                  House
+                                </option>
+                                <option value="office">
+                                  Office
+                                </option>
+                                <option value="other">
+                                  Other
+                                </option>
+                              </select>
+                            </div>
+
+
+                            <div class="home-profile-popup-field">
+                              <label for="homePropertyCountryInput">
+                                Country
+                              </label>
+
+                              <input id="homePropertyCountryInput" type="text" maxlength="100"
+                                autocomplete="country-name" placeholder="Country">
+                            </div>
+
+
+                            <div class="home-profile-popup-field">
+                              <label for="homePropertyCityInput">
+                                City / Town
+                              </label>
+
+                              <input id="homePropertyCityInput" type="text" maxlength="100"
+                                autocomplete="address-level2" placeholder="City or town">
+                            </div>
+
+
+                            <div class="home-profile-popup-field">
+                              <label for="homePropertyPostalInput">
+                                Postal / Postcode
+                              </label>
+
+                              <input id="homePropertyPostalInput" type="text" maxlength="30" autocomplete="postal-code"
+                                placeholder="Postal code">
+                            </div>
+
+                          </div>
+
+
+                          <div class="home-profile-popup-field">
+
+                            <label for="homePropertyAddressInput">
+                              Street address
+                            </label>
+
+                            <input id="homePropertyAddressInput" type="text" maxlength="200"
+                              autocomplete="street-address" placeholder="Street address">
+
+                          </div>
+
+
+                          <div class="home-profile-popup-field">
+
+                            <label for="homePropertyUnitInput">
+                              Apartment / Unit
+                              <span class="home-profile-optional">
+                                Optional
+                              </span>
+                            </label>
+
+                            <input id="homePropertyUnitInput" type="text" maxlength="50" autocomplete="address-line2"
+                              placeholder="Apartment, unit, suite...">
+
+                          </div>
+
+                        </div>
 
                       </div>
 
@@ -20821,7 +24161,7 @@
                         </button>
 
                         <button id="createProjectNameConfirmButton" type="button" class="project-name-create-btn">
-                          Create Project
+                          Create My Property
                         </button>
 
                       </div>
@@ -23408,6 +26748,7 @@
       <script src="core/app_mode.js"></script>
 
       <script src="core/app_state.js"></script>
+      <script src="core/id_factory.js"></script>
 
       <script src="core/viewport.js"></script>
 
@@ -23752,7 +27093,6 @@
     AppState.ui.mode ||
     "home";
 
-  // =====================
   // 🔥 TOGGLE MODE UI
   // =====================
 
@@ -23764,7 +27104,7 @@
 
       el.style.display =
 
-        AppMode.current ===
+        window.AppMode?.current ===
           "business"
 
           ? "block"
@@ -26141,7 +29481,7 @@
       if (!projectId) {
 
         alert(
-          "Please open a Home Project before purchasing the Full EMF Insight Report."
+          "Please open a Property before purchasing the Full EMF Insight Report."
         );
 
         return;
@@ -26293,6 +29633,11 @@
 
       const user =
         await response.json();
+
+      console.log(
+        "CURRENT USER ACCOUNT:",
+        user
+      );
 
       const email =
         user.email ||
@@ -27455,7 +30800,7 @@
       ) {
 
         alert(
-          "Unlock the Full EMF Insight Report for this Home Project before generating the PDF."
+          "Unlock the Full EMF Insight Report for this Property before generating the PDF."
         );
 
         return;
@@ -28070,7 +31415,7 @@
     // ========================================================
 
     lockedMessage.textContent =
-      "Unlock the Full EMF Insight Report for this Home Project.";
+      "Unlock the Full EMF Insight Report for this Property before generating the PDF."
 
     button.style.display = "";
 

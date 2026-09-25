@@ -72,6 +72,18 @@ async function createProject(options = {}) {
         return;
     }
 
+    // ==================================================
+    // 🔥 HOME PROPERTY PROFILE
+    // ==================================================
+
+    const propertyProfile =
+        projectType === "home"
+            ? (
+                options.propertyProfile ||
+                {}
+            )
+            : {};
+
 
 
     // ==================================================
@@ -87,6 +99,92 @@ async function createProject(options = {}) {
         createProjectModel(
             projectType
         );
+
+        // ==================================================
+        // 🔥 CANONICAL PROPERTY PROFILE
+        // ==================================================
+        //
+        // The Property is the persistent parent object.
+        // createProjectModel() creates the assessment workspace.
+        // The profile data belongs to AppState.property.
+        //
+        // ==================================================
+
+        if (
+            projectType === "home" &&
+            window.AppState?.property
+        ) {
+
+            // NEW HOME PROPERTY = NEW CANONICAL PROPERTY
+            AppState.property.id =
+                window.PhiIdFactory
+                    ?.createPropertyId?.();
+
+            AppState.property.propertyHealthRecordId =
+                window.PhiIdFactory
+                    ?.createPropertyHealthRecordId?.();
+
+            AppState.property.createdAt =
+                 new Date().toISOString();
+            
+            AppState.property.name =
+                projectName;
+
+            AppState.property.propertyType =
+                propertyProfile.propertyType ||
+                "";
+
+            AppState.property.country =
+                propertyProfile.country ||
+                "";
+
+            AppState.property.city =
+                propertyProfile.city ||
+                "";
+
+            AppState.property.postalCode =
+                propertyProfile.postalCode ||
+                "";
+
+            AppState.property.address =
+                propertyProfile.address ||
+                "";
+
+            AppState.property.unit =
+                propertyProfile.unit ||
+                "";
+
+            // --------------------------------------------------
+            // PROPERTY → PROJECT LINK
+            // --------------------------------------------------
+
+            newProject.propertyId =
+                AppState.property.id;
+
+            newProject.propertyHealthRecordId =
+                AppState.property.propertyHealthRecordId;
+
+            newProject.propertyCreatedAt =
+                AppState.property.createdAt;
+
+            newProject.propertyType =
+                AppState.property.propertyType;
+
+            newProject.country =
+                AppState.property.country;
+
+            newProject.city =
+                AppState.property.city;
+
+            newProject.postalCode =
+                AppState.property.postalCode;
+
+            newProject.address =
+                AppState.property.address;
+
+            newProject.unit =
+                AppState.property.unit;
+        }
 
     // ==================================================
     // PROJECT NAME
@@ -2169,6 +2267,73 @@ async function openExistingProject(
             window.project =
                 project;
 
+            // ==================================================
+            // 🔥 RESTORE CANONICAL PROPERTY FROM HOME PROJECT
+            // ==================================================
+
+            if (
+                projectType ===
+                "home" &&
+                window.AppState?.property
+            ) {
+
+                AppState.property.id =
+                    project.propertyId ||
+                    AppState.property.id ||
+                    null;
+
+                AppState.property.propertyHealthRecordId =
+                    project.propertyHealthRecordId ||
+                    AppState.property.propertyHealthRecordId ||
+                    null;
+
+                AppState.property.createdAt =
+                    project.propertyCreatedAt ||
+                    AppState.property.createdAt ||
+                    null;
+
+                AppState.property.name =
+                    project.name ||
+                    "";
+
+                AppState.property.propertyType =
+                    project.propertyType ||
+                    "";
+
+                AppState.property.country =
+                    project.country ||
+                    "";
+
+                AppState.property.state =
+                    project.state ||
+                    "";
+
+                AppState.property.region =
+                    project.region ||
+                    "";
+
+                AppState.property.city =
+                    project.city ||
+                    "";
+
+                AppState.property.postalCode =
+                    project.postalCode ||
+                    "";
+
+                AppState.property.address =
+                    project.address ||
+                    "";
+
+                AppState.property.unit =
+                    project.unit ||
+                    "";
+
+                console.log(
+                    "🔥 CANONICAL PROPERTY RESTORED:",
+                    AppState.property
+                );
+            }
+
 
             currentProjectId =
                 null;
@@ -3001,7 +3166,7 @@ function openCreateProjectNamePopup(projectType) {
 
     title.textContent =
         isHome
-            ? "Create New Home Project"
+            ? "Set Up Your Property Profile"
             : "Create New Business Project";
 
    
@@ -3030,12 +3195,65 @@ function openCreateProjectNamePopup(projectType) {
                 return;
             }
 
+
+            // ==================================================
+            // 🔥 HOME PROPERTY PROFILE
+            // ==================================================
+
+            const propertyProfile =
+                projectType === "home"
+                    ? {
+
+                        propertyType:
+                            document.getElementById(
+                                "homePropertyTypeInput"
+                            )?.value?.trim() || "",
+
+                        country:
+                            document.getElementById(
+                                "homePropertyCountryInput"
+                            )?.value?.trim() || "",
+
+                        city:
+                            document.getElementById(
+                                "homePropertyCityInput"
+                            )?.value?.trim() || "",
+
+                        postalCode:
+                            document.getElementById(
+                                "homePropertyPostalInput"
+                            )?.value?.trim() || "",
+
+                        address:
+                            document.getElementById(
+                                "homePropertyAddressInput"
+                            )?.value?.trim() || "",
+
+                        unit:
+                            document.getElementById(
+                                "homePropertyUnitInput"
+                            )?.value?.trim() || ""
+
+                    }
+                    : null;
+
+
+            // ==================================================
+            // CREATE PROJECT
+            // ==================================================
+
             closeCreateProjectNamePopup();
 
             createProject({
-                type: projectType,
+                type:
+                    projectType,
+
                 name,
-                confirmed: true
+
+                confirmed:
+                    true,
+
+                propertyProfile
             });
         };
 
@@ -4885,6 +5103,77 @@ async function loadProject(
 
             AppState.homeProject =
                 project;
+
+                        // ==================================================
+            // RESTORE CANONICAL PROPERTY FROM HOME PROJECT
+            // ==================================================
+
+            if (
+                window.AppState?.property
+            ) {
+
+                AppState.property.id =
+                    project.propertyId ||
+                    AppState.property.id ||
+                    null;
+
+                AppState.property.propertyHealthRecordId =
+                    project.propertyHealthRecordId ||
+                    AppState.property.propertyHealthRecordId ||
+                    null;
+
+                AppState.property.createdAt =
+                    project.propertyCreatedAt ||
+                    AppState.property.createdAt ||
+                    null;    
+
+                AppState.property.name =
+                    project.name ||
+                    "";
+
+                if (!AppState.property.createdAt) {
+                    AppState.property.createdAt =
+                        new Date().toISOString();
+                }
+                    
+
+                AppState.property.propertyType =
+                    project.propertyType ||
+                    "";
+
+                AppState.property.country =
+                    project.country ||
+                    "";
+
+                AppState.property.state =
+                    project.state ||
+                    "";
+
+                AppState.property.region =
+                    project.region ||
+                    "";
+
+                AppState.property.city =
+                    project.city ||
+                    "";
+
+                AppState.property.postalCode =
+                    project.postalCode ||
+                    "";
+
+                AppState.property.address =
+                    project.address ||
+                    "";
+
+                AppState.property.unit =
+                    project.unit ||
+                    "";
+
+                console.log(
+                    "🔥 CANONICAL PROPERTY RESTORED:",
+                    AppState.property
+                );
+            }    
 
             // Home project is now canonical and active.
             // Refresh the project-scoped Full Report entitlement.

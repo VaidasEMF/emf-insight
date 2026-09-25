@@ -654,6 +654,39 @@ function updateProjectHeader() {
                 ✎
             </button>
 
+               </span>
+
+
+        <!-- PROPERTY HEALTH RECORD -->
+
+        <span class="project-header-divider property-health-record-divider"></span>
+
+        <span
+            class="project-header-control property-health-record-control"
+            id="propertyHealthRecordHeader"
+            title="View Property Health Record"
+        >
+
+            <span class="property-health-record-header-label">
+                Property Health Record
+            </span>
+
+            <span
+                class="property-health-record-status-dot"
+                aria-hidden="true"
+            ></span>
+
+            <strong id="propertyHealthRecordHeaderStatus">
+                Initial record created
+            </strong>
+
+            <span
+                class="property-health-record-chevron"
+                aria-hidden="true"
+            >
+                ▾
+            </span>
+
         </span>
 
     `;
@@ -699,6 +732,28 @@ function updateProjectHeader() {
             () => {
 
                 startScaleTool?.();
+            };
+    }
+    
+    // ==================================================
+    // PROPERTY HEALTH RECORD
+    // ==================================================
+
+    const propertyHealthRecordHeader =
+        controls.querySelector(
+            "#propertyHealthRecordHeader"
+        );
+
+    if (
+        propertyHealthRecordHeader
+    ) {
+        propertyHealthRecordHeader.onclick =
+            () => {
+                console.log(
+                    "[PHR] HEADER CLICK"
+                );
+
+                window.openPropertyHealthRecord?.();
             };
     }
 }

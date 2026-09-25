@@ -43,8 +43,27 @@ function createPhiId(
 
 function createPropertyId() {
 
-    return createPhiId(
-        "property"
+    if (
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID === "function"
+    ) {
+
+        return (
+            "PHI-PRP-" +
+            crypto
+                .randomUUID()
+                .replace(/-/g, "")
+                .slice(0, 8)
+                .toUpperCase()
+        );
+    }
+
+    return (
+        "PHI-PRP-" +
+        Math.random()
+            .toString(16)
+            .slice(2, 10)
+            .toUpperCase()
     );
 }
 

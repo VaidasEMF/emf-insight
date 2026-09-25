@@ -1,0 +1,241 @@
+--- main(2).py
++++ main(2).patched.py
+@@ -211,9 +211,25 @@
+     """))
+ 
+ def _ensure_home_entitlements_table(db):
++    # Legacy user-level entitlement table.
++    # Kept intact for backward compatibility during the project-level migration.
+     db.execute(text("""
+         CREATE TABLE IF NOT EXISTS home_entitlements (
+             user_id VARCHAR(255) PRIMARY KEY,
++            full_report_unlocked BOOLEAN NOT NULL DEFAULT FALSE,
++            stripe_session_id VARCHAR(255),
++            unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
++        )
++    """))
++
++
++def _ensure_home_project_entitlements_table(db):
++    # Canonical Home Premium Report entitlement:
++    # one entitlement belongs to one Home Project.
++    db.execute(text("""
++        CREATE TABLE IF NOT EXISTS home_project_entitlements (
++            project_id VARCHAR(255) PRIMARY KEY,
++            user_id VARCHAR(255) NOT NULL,
+             full_report_unlocked BOOLEAN NOT NULL DEFAULT FALSE,
+             stripe_session_id VARCHAR(255),
+             unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+@@ -261,6 +277,7 @@
+ ):
+     plan = body.get("plan")
+     currency = str(body.get("currency") or "EUR").upper()
++    project_id = body.get("project_id")
+ 
+     if plan not in STRIPE_ALLOWED_PLANS:
+         raise HTTPException(400, "Invalid or unavailable plan")
+@@ -275,6 +292,34 @@
+             503,
+             "Stripe price is not configured for this currency",
+         )
++
++    # Home Full Report is project-scoped.
++    # The authenticated user must own the Home Project being purchased.
++    if plan == "home_full_report":
++        if not project_id:
++            raise HTTPException(
++                400,
++                "Home project ID is required for the Full EMF Insight Report",
++            )
++
++        project = db.execute(
++            text("""
++                SELECT id
++                FROM projects
++                WHERE id = :project_id
++                  AND user_id = :user_id
++            """),
++            {
++                "project_id": str(project_id),
++                "user_id": str(current_user.id),
++            },
++        ).first()
++
++        if not project:
++            raise HTTPException(
++                404,
++                "Home project not found",
++            )
+ 
+     # Business Pro is the only recurring V1 product.
+     # Business Single and Home Full Report are one-time payments.
+@@ -296,6 +341,11 @@
+                 "user_id": str(current_user.id),
+                 "plan": plan,
+                 "currency": currency,
++                **(
++                    {"project_id": str(project_id)}
++                    if plan == "home_full_report"
++                    else {}
++                ),
+             },
+             subscription_data={
+                 "metadata": {
+@@ -339,6 +389,7 @@
+         # same delivery, the second delivery is ignored safely.
+         _ensure_stripe_events_table(db)
+         _ensure_home_entitlements_table(db)
++        _ensure_home_project_entitlements_table(db)
+         if not _claim_stripe_event(db, event_id):
+             db.rollback()
+             print("Stripe webhook already processed:", event_id)
+@@ -377,19 +428,64 @@
+                 user.credits = 5
+ 
+             elif plan == "home_full_report":
+-                # Home Full Report is deliberately separate from Business credits.
++                # Home Full Report is deliberately separate from Business credits
++                # and is scoped to the purchased Home Project.
++                project_id = metadata.get("project_id")
++
++                if not project_id:
++                    print(
++                        "Stripe Home Full Report webhook missing project_id:",
++                        session.get("id"),
++                    )
++                    db.commit()
++                    return {"status": "ok"}
++
++                project = db.execute(
++                    text("""
++                        SELECT id
++                        FROM projects
++                        WHERE id = :project_id
++                          AND user_id = :user_id
++                    """),
++                    {
++                        "project_id": str(project_id),
++                        "user_id": str(user.id),
++                    },
++                ).first()
++
++                if not project:
++                    print(
++                        "Stripe Home Full Report project not found or not owned:",
++                        project_id,
++                        user.id,
++                    )
++                    db.commit()
++                    return {"status": "ok"}
++
+                 db.execute(
+                     text("""
+-                        INSERT INTO home_entitlements
+-                            (user_id, full_report_unlocked, stripe_session_id)
++                        INSERT INTO home_project_entitlements
++                            (
++                                project_id,
++                                user_id,
++                                full_report_unlocked,
++                                stripe_session_id
++                            )
+                         VALUES
+-                            (:user_id, TRUE, :stripe_session_id)
+-                        ON CONFLICT (user_id) DO UPDATE SET
++                            (
++                                :project_id,
++                                :user_id,
++                                TRUE,
++                                :stripe_session_id
++                            )
++                        ON CONFLICT (project_id) DO UPDATE SET
++                            user_id = EXCLUDED.user_id,
+                             full_report_unlocked = TRUE,
+                             stripe_session_id = EXCLUDED.stripe_session_id,
+                             unlocked_at = CURRENT_TIMESTAMP
+                     """),
+                     {
++                        "project_id": str(project_id),
+                         "user_id": str(user.id),
+                         "stripe_session_id": session.get("id"),
+                     },
+
+--- index(3).html
++++ index(3).patched.html
+@@ -25827,9 +25827,31 @@
+       "token",
+     );
+ 
+-
+-
+-    const me = await meRes.json();
++    const body = {
++      plan: plan,
++    };
++
++    // Home Full Report is scoped to the currently active Home Project.
++    if (plan === "home_full_report") {
++      const homeProject =
++        window.AppState?.homeProject ||
++        window.AppState?.project ||
++        null;
++
++      const projectId =
++        homeProject?.project_id ??
++        homeProject?.id ??
++        null;
++
++      if (!projectId) {
++        alert(
++          "Please open a Home Project before purchasing the Full EMF Insight Report."
++        );
++        return;
++      }
++
++      body.project_id = String(projectId);
++    }
+ 
+     const res = await fetch(
+       "http://127.0.0.1:8000/create-checkout-session",
+@@ -25838,22 +25860,35 @@
+ 
+         headers: {
+           "Content-Type": "application/json",
++          ...(token
++            ? {
++                "Authorization": `Bearer ${token}`
++              }
++            : {}),
+         },
+ 
+-        body: JSON.stringify({
+-          user_id: me.id,
+-          plan: plan,
+-        }),
++        body: JSON.stringify(body),
+       }
+     );
+ 
+     const data = await res.json();
+ 
+-
++    if (!res.ok) {
++      console.error(
++        "Stripe checkout creation failed:",
++        data
++      );
++
++      alert(
++        data?.detail ||
++        "Unable to start checkout."
++      );
++
++      return;
++    }
+ 
+     window.location.href = data.url;
+   }
+-
+ 
+   function setActiveMode(
+     newMode

@@ -22,35 +22,18 @@ const AppState = {
         // =================================================
 
         propertyHealthRecordId: null,
-
         name: "",
-
-country: "",
-
-state: "",
-
-region: "",
-
-city: "",
-
-address: "",
-
-propertyType: "",
-
+        country: "",
+        state: "",
+        region: "",
+        city: "",
+        address: "",
+        propertyType: "",
         floors: [],
-
         currentFloorIndex: 0,
+        createdAt: null,
+
     },
-
-
-    // =====================================================
-    // PROPERTY ASSESSMENT
-    //
-    // Home / Property Assessment
-    //
-    // Context-based assessment.
-    // No rooms / grids / physical measurements required.
-    // =====================================================
 
     // =====================================================
     // PROPERTY ASSESSMENT
