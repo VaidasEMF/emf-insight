@@ -19901,7 +19901,7 @@
     }
 
     .property-health-dashboard-metrics strong {
-      font-size: 22px;
+      font-size: 16px;
       line-height: 1;
       color: #26364d;
     }
@@ -20114,19 +20114,18 @@
     }
 
     #propertyHealthDashboardModal .property-health-dashboard-lifestyle-metric {
-
-      width: 211px !important;
-      height: 96px !important;
+      width: 100% !important;
+      height: auto !important;
 
       margin-top: 14px;
 
-      padding: 16px 18px !important;
+      padding: 12px !important;
 
       background: #f4f8fd;
 
       border: 1px solid #dce8f5;
 
-      border-radius: 12px;
+      border-radius: 10px;
 
       box-sizing: border-box;
     }
@@ -20153,6 +20152,21 @@
       font-weight: 800 !important;
 
       color: #26364d !important;
+    }
+
+    .property-health-dashboard-metric:has(#dashboardLifestyle) {
+      width: 100%;
+      height: 66px;
+      box-sizing: border-box;
+      padding: 14px 18px;
+      justify-content: center;
+    }
+
+    .property-health-dashboard-metric:has(#dashboardLifestyle) #dashboardLifestyle {
+      white-space: nowrap;
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 600;
     }
   </style>
 </head>

@@ -3430,16 +3430,22 @@ function populatePropertyHealthDashboard() {
         }
     }
 
-    const createdDateElement =
+    const createdDateElements = [
         document.getElementById(
             "propertyHealthDashboardCreatedDate"
-        );
+        ),
+        document.getElementById(
+            "dashboardPropertyCreatedDate"
+        )
+    ].filter(Boolean);
 
-    if (createdDateElement) {
+    createdDateElements.forEach(
+        createdDateElement => {
 
-        createdDateElement.textContent =
-            propertyCreatedDateText;
-    }
+            createdDateElement.textContent =
+                propertyCreatedDateText;
+        }
+    );
 }
 
 function openPropertyHealthDashboard() {
