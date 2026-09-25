@@ -1769,9 +1769,7 @@ function updateWorkspaceUI() {
     // ==================================================
 
     document
-        .querySelectorAll(
-            ".home-only"
-        )
+        .querySelectorAll(".home-only")
         .forEach(
             el => {
 
@@ -1783,7 +1781,9 @@ function updateWorkspaceUI() {
                 }
 
                 el.style.display =
-                    "block";
+                    mode === "home"
+                        ? "block"
+                        : "none";
             }
         );
 

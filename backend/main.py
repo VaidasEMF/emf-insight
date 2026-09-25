@@ -245,22 +245,34 @@ def _ensure_home_project_entitlements_table(db):
     """))
 def _ensure_user_admin_fields(db):
 
-    result = db.execute(text("""
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_schema = 'public'
-          AND table_name = 'users'
-        ORDER BY ordinal_position
-    """))
-
-    print(
-        "RENDER USERS COLUMNS:",
-        [row[0] for row in result]
-    )
-
     db.execute(text("""
         ALTER TABLE users
         ADD COLUMN IF NOT EXISTS account_status VARCHAR DEFAULT 'active'
+    """))
+
+    db.execute(text("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS company_website VARCHAR DEFAULT ''
+    """))
+
+    db.execute(text("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS branding_active BOOLEAN DEFAULT FALSE
+    """))
+
+    db.execute(text("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS branding_plan VARCHAR DEFAULT ''
+    """))
+
+    db.execute(text("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS branding_activated_at TIMESTAMP NULL
+    """))
+
+    db.execute(text("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS branding_expires_at TIMESTAMP NULL
     """))
 
     db.execute(text("""
