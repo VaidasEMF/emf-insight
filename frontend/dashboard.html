@@ -514,6 +514,232 @@
             color: var(--muted);
         }
 
+        /* =========================
+   HELP & SUPPORT
+   ========================= */
+
+        .help-search-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px 26px;
+            margin-bottom: 18px;
+        }
+
+        .help-search-title {
+            font-size: 20px;
+            font-weight: 750;
+            letter-spacing: -0.02em;
+            color: var(--accent-dark);
+        }
+
+        .help-search-subtitle {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .help-search-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 17px;
+            max-width: 680px;
+        }
+
+        .help-search-input {
+            flex: 1;
+            min-width: 0;
+            height: 42px;
+            padding: 0 13px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #fff;
+            color: #1f2937;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .help-search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+        .help-search-btn {
+            height: 42px;
+            padding: 0 18px;
+            border: 1px solid var(--accent);
+            border-radius: 9px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 750;
+            opacity: 0.55;
+        }
+
+        .help-category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .help-category-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            min-height: 145px;
+            padding: 20px;
+            box-sizing: border-box;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .help-category-icon {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+            font-size: 19px;
+        }
+
+        .help-category-content {
+            min-width: 0;
+        }
+
+        .help-category-content h3 {
+            margin: 1px 0 6px;
+            font-size: 15px;
+            letter-spacing: -0.015em;
+        }
+
+        .help-category-content p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .help-category-link {
+            margin-top: 13px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--accent-dark);
+            font-size: 11px;
+            font-weight: 750;
+            text-align: left;
+        }
+
+        .help-category-link:disabled {
+            cursor: default;
+            opacity: 0.55;
+        }
+
+        .help-contact-card {
+            background: var(--surface-soft);
+        }
+
+        .help-coming-soon {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+            padding: 13px 16px;
+            border: 1px dashed var(--line);
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .help-coming-soon strong {
+            color: #4e596b;
+            font-weight: 750;
+        }
+
+
+        /* =========================
+   HELP ARTICLES
+   ========================= */
+
+        .help-article-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .help-article-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .help-article-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+        }
+
+        .help-article-number {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .help-article-card h3 {
+            margin: 1px 0 6px;
+            font-size: 15px;
+            letter-spacing: -0.015em;
+        }
+
+        .help-article-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 760px) {
+
+            .help-category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .help-search-row {
+                flex-direction: column;
+                max-width: none;
+            }
+
+            .help-search-btn {
+                width: 100%;
+            }
+
+            .help-coming-soon {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+
         .empty-icon {
             width: 42px;
             height: 42px;
@@ -2742,6 +2968,115 @@
             line-height: 1;
             color: #667085;
             cursor: pointer;
+        }
+
+        /* =========================
+   HELP ARTICLE DETAIL
+   ========================= */
+
+        .help-article-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .help-article-detail-intro,
+        .help-detail-section {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px 24px;
+        }
+
+        .help-article-detail-intro p,
+        .help-detail-section p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .help-detail-section h3 {
+            margin: 0 0 8px;
+            font-size: 15px;
+            letter-spacing: -0.015em;
+        }
+
+        .help-detail-section p+p {
+            margin-top: 8px;
+        }
+
+        .help-detail-note {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding: 14px 16px;
+            border: 1px dashed var(--line);
+            border-radius: 10px;
+            background: var(--surface-soft);
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .help-detail-note strong {
+            color: var(--accent-dark);
+        }
+
+        .help-article-list-items {
+            margin: 8px 0 0;
+            padding-left: 20px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+
+        .help-search-results {
+            margin-top: 14px;
+            max-width: 680px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .help-search-result {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #fff;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .help-search-result:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
+
+        .help-search-result-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-dark);
+        }
+
+        .help-search-result-category {
+            flex: 0 0 auto;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .help-search-no-results {
+            padding: 14px 16px;
+            border: 1px dashed var(--line);
+            border-radius: 9px;
+            color: var(--muted);
+            font-size: 11px;
         }
     </style>
 </head>
@@ -5039,17 +5374,3201 @@ ADMIN PAYMENTS
             </section>
 
             <section class="section" id="help" aria-labelledby="help-title">
+
                 <div class="section-heading">
                     <div>
-                        <h2 class="section-title" id="help-title">Help &amp; Support</h2>
-                        <p class="section-description">Support tools will be added here without changing the active
-                            survey workflow.</p>
+                        <h2 class="section-title" id="help-title">
+                            Help &amp; Support
+                        </h2>
+
+                        <p class="section-description">
+                            Find answers, learn how EMF Insight works, or get help with your account and assessments.
+                        </p>
                     </div>
                 </div>
-                <div class="placeholder">
-                    Need help with a project, report or account? Support and documentation can be added here in a
-                    later step.
+                <div id="helpHub">
+
+                    <!-- HELP SEARCH -->
+                    <div class="help-search-card">
+
+                        <div class="help-search-title">
+                            How can we help?
+                        </div>
+
+                        <div class="help-search-subtitle">
+                            Search EMF Insight help and documentation.
+                        </div>
+
+                        <div class="">
+                            <input type="search" id="helpSearchInput" class="help-search-input"
+                                placeholder="Search help..." autocomplete="off">
+
+                            <button type="button" class="help-search-btn" onclick="searchHelpCenter()">
+                                Search
+                            </button>
+                        </div>
+
+                        <div id="helpSearchResults" class="help-search-results" style="display:none;">
+                        </div>
+
+                    </div>
+
+
+                    <!-- HELP CATEGORIES -->
+                    <div class="help-category-grid">
+
+
+                        <!-- GETTING STARTED -->
+                        <div class="help-category-card">
+
+                            <div class="help-category-icon">
+                                🚀
+                            </div>
+
+                            <div class="help-category-content">
+
+                                <h3>
+                                    Getting Started
+                                </h3>
+
+                                <p>
+                                    Learn the basics of EMF Insight and get your first property assessment started.
+                                </p>
+
+                                <button type="button" class="help-category-link" onclick="openHelpGettingStarted()">
+                                    Explore Getting Started →
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- HOME WELLNESS -->
+                        <div class="help-category-card">
+
+                            <div class="help-category-icon">
+                                🏠
+                            </div>
+
+                            <div class="help-category-content">
+
+                                <h3>
+                                    Home Wellness
+                                </h3>
+
+                                <p>
+                                    Learn how to create a property, measure EMF exposure and understand Property
+                                    Insights.
+                                </p>
+
+                                <button type="button" class="help-category-link" onclick="openHelpHomeWellness()">
+                                    Home Wellness Help →
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- BUSINESS SURVEY -->
+                        <div class="help-category-card">
+
+                            <div class="help-category-icon">
+                                📊
+                            </div>
+
+                            <div class="help-category-content">
+
+                                <h3>
+                                    Business Survey
+                                </h3>
+
+                                <p>
+                                    Learn about projects, floors, rooms, zones, measurements, heatmaps and reports.
+                                </p>
+
+                                <button type="button" class="help-category-link" onclick="openHelpBusinessSurvey()">
+                                    Business Survey Help →
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACCOUNT & BILLING -->
+                        <div class="help-category-card">
+
+                            <div class="help-category-icon">
+                                👤
+                            </div>
+
+                            <div class="help-category-content">
+
+                                <h3>
+                                    Account &amp; Billing
+                                </h3>
+
+                                <p>
+                                    Manage your profile, security, properties, plans, billing and account settings.
+                                </p>
+
+                                <button type="button" class="help-category-link" onclick="openHelpAccountBilling()">
+                                    Account &amp; Billing Help →
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- TROUBLESHOOTING -->
+                        <div class="help-category-card">
+
+                            <div class="help-category-icon">
+                                🛠
+                            </div>
+
+                            <div class="help-category-content">
+
+                                <h3>
+                                    Troubleshooting
+                                </h3>
+
+                                <p>
+                                    Find help with measurements, projects, reports and other common issues.
+                                </p>
+
+                                <button type="button" class="help-category-link" onclick="openHelpTroubleshooting()">
+                                    Troubleshooting Help →
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CONTACT SUPPORT -->
+                        <div class="help-category-card help-contact-card">
+
+                            <div class="help-category-icon">
+                                💬
+                            </div>
+
+                            <div class="help-category-content">
+
+                                <h3>
+                                    Still need help?
+                                </h3>
+
+                                <p>
+                                    Can't find what you're looking for? Contact the EMF Insight support team.
+                                </p>
+
+                                <button type="button" class="help-category-link" onclick="openHelpContactSupport()">
+                                    Contact Support →
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HELP FOOTNOTE -->
+                    <div class="help-coming-soon">
+
+                        <strong>
+                            EMF Insight Help Center
+                        </strong>
+
+                        <span>
+                            More guides, answers and troubleshooting articles will be added here as the platform grows.
+                        </span>
+
+                    </div>
+
                 </div>
+
+                <!-- HELP GETTING STARTED VIEW -->
+                <div id="helpGettingStarted" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Getting Started
+                            </h3>
+
+                            <p class="section-description">
+                                Learn the essentials and get started with EMF Insight.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpGettingStarted()">
+                            ← Back to Help
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-list">
+
+                        <div class="help-article-card" onclick="openHelpAccountArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">01</div>
+
+                            <div>
+                                <h3>Your EMF Insight account</h3>
+
+                                <p>
+                                    Learn about your profile, security and the basic account settings.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="help-article-card" onclick="openHelpCreatePropertyArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">02</div>
+
+                            <div>
+                                <h3>Create your first Home Property</h3>
+
+                                <p>
+                                    Learn how to create a property and begin your Home Wellness assessment.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="help-article-card" onclick="openHelpPropertyInsightsArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">03</div>
+
+                            <div>
+                                <h3>Understanding Property Insights</h3>
+
+                                <p>
+                                    Learn how assessment results and property insights are presented.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="help-article-card" onclick="openHelpWorkspaceArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">04</div>
+
+                            <div>
+                                <h3>Home Wellness vs Business Survey</h3>
+
+                                <p>
+                                    Understand the difference between the two EMF Insight workspaces.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP ACCOUNT ARTICLE -->
+                <div id="helpAccountArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Your EMF Insight account
+                            </h3>
+
+                            <p class="section-description">
+                                Manage your personal information, security and Home Wellness account.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpAccountArticle()">
+                            ← Back to Getting Started
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Your EMF Insight account is the starting point for managing
+                                your personal information, account security and Home Wellness
+                                properties.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Profile</h3>
+
+                            <p>
+                                Your Profile contains your personal account information,
+                                including your name, email address and phone number.
+                            </p>
+
+                            <p>
+                                Use Profile to review or update your personal information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Security</h3>
+
+                            <p>
+                                Security is where you manage your account password and
+                                other account protection features.
+                            </p>
+
+                            <p>
+                                You can change your password from the Security section.
+                                Two-factor authentication will be added as the platform
+                                security features expand.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>My Property</h3>
+
+                            <p>
+                                My Property gives you access to the Home Wellness properties
+                                associated with your account.
+                            </p>
+
+                            <p>
+                                From there you can open an existing property or create a new
+                                Home Wellness property.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Billing &amp; Plan</h3>
+
+                            <p>
+                                Billing &amp; Plan contains information about Home Wellness
+                                and Business Survey commercial options, pricing and available
+                                credits.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Help &amp; Support</h3>
+
+                            <p>
+                                Help &amp; Support is the central place for EMF Insight
+                                documentation, guides and troubleshooting information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                Your Account Center is available from the account menu
+                                throughout the EMF Insight application.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP CREATE PROPERTY ARTICLE -->
+                <div id="helpCreatePropertyArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Create your first Home Property
+                            </h3>
+
+                            <p class="section-description">
+                                Set up your property profile and begin your Home Wellness journey.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpCreatePropertyArticle()">
+                            ← Back to Getting Started
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Creating a Home Property is the first step in building
+                                your property's environmental profile in EMF Insight.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>1. Property name</h3>
+
+                            <p>
+                                Enter a name that will help you identify the property,
+                                for example <strong>Family Home</strong>.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>2. Property information</h3>
+
+                            <p>
+                                Complete the main information about the property:
+                            </p>
+
+                            <ul class="help-article-list-items">
+                                <li>Property type</li>
+                                <li>Country</li>
+                                <li>City / Town</li>
+                                <li>Postal / Postcode</li>
+                                <li>Street address</li>
+                                <li>Apartment / Unit</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>3. Your account information</h3>
+
+                            <p>
+                                Your Home Property setup also uses your account profile
+                                information so that the property is associated with your account.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>4. Create My Property</h3>
+
+                            <p>
+                                When the required information is complete, select
+                                <strong>Create My Property</strong>.
+                            </p>
+
+                            <p>
+                                EMF Insight validates the information before creating the
+                                Home Property.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>5. What happens next?</h3>
+
+                            <p>
+                                After the property is created, it becomes part of your
+                                Home Wellness account and can be accessed from
+                                <strong>My Property</strong>.
+                            </p>
+
+                            <p>
+                                Your property can then be used as the foundation for
+                                your Home Wellness assessment and Property Health Record.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                You can return to My Property later to open an existing
+                                property or create another Home Property.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP PROPERTY INSIGHTS ARTICLE -->
+                <div id="helpPropertyInsightsArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Understanding Property Insights
+                            </h3>
+
+                            <p class="section-description">
+                                Understand how EMF Insight presents your property's assessment results.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpPropertyInsightsArticle()">
+                            ← Back to Getting Started
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Property Insights brings together the information collected
+                                during your Home Wellness assessment and presents it in a
+                                way that helps you understand your property's environmental profile.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Property assessment</h3>
+
+                            <p>
+                                Your property assessment is built from the information,
+                                measurements and environmental data collected for the property.
+                            </p>
+
+                            <p>
+                                The assessment becomes part of the property's ongoing
+                                Property Health Record.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Exposure results</h3>
+
+                            <p>
+                                Property Insights presents the available exposure information
+                                collected during the assessment, including the relevant
+                                measurement results and their location within the property.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Heatmaps and measurement coverage</h3>
+
+                            <p>
+                                Where measurements have been collected, visual results such
+                                as heatmaps help show how exposure varies across rooms and
+                                assessed areas.
+                            </p>
+
+                            <p>
+                                Measurement coverage also provides context for understanding
+                                how much of the property has actually been assessed.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Sources and recommendations</h3>
+
+                            <p>
+                                Property Insights can also present identified EMF sources
+                                and recommendations related to the assessment.
+                            </p>
+
+                            <p>
+                                Recommendations are intended to help you understand possible
+                                next steps based on the assessment information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Full EMF Insight Report</h3>
+
+                            <p>
+                                When available, the complete EMF Insight Report provides
+                                a more detailed presentation of the property's assessment
+                                and findings.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                Property Insights reflect the information and measurements
+                                available for the property at the time of the assessment.
+                                Measurement coverage is therefore important context when
+                                interpreting results.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP WORKSPACE ARTICLE -->
+                <div id="helpWorkspaceArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Home Wellness vs Business Survey
+                            </h3>
+
+                            <p class="section-description">
+                                Understand the purpose of each EMF Insight workspace.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpWorkspaceArticle()">
+                            ← Back to Getting Started
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                EMF Insight provides two separate workspaces designed
+                                for different assessment contexts: Home Wellness and
+                                Business Survey.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Home Wellness</h3>
+
+                            <p>
+                                Home Wellness is designed for individual property owners
+                                who want to understand the environmental profile of their
+                                home and its living areas.
+                            </p>
+
+                            <p>
+                                A Home Property forms the foundation of the Home Wellness
+                                workflow and is connected to its Property Health Record.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Business Survey</h3>
+
+                            <p>
+                                Business Survey is designed for professional assessment
+                                workflows involving projects, floors, rooms, zones,
+                                measurements, heatmaps and reporting.
+                            </p>
+
+                            <p>
+                                It provides a structured workspace for carrying out and
+                                documenting professional property assessments.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Choose the appropriate workspace</h3>
+
+                            <p>
+                                Use Home Wellness when you are working with your own
+                                property as a Home user.
+                            </p>
+
+                            <p>
+                                Use Business Survey when carrying out professional
+                                assessment work and managing Business Survey projects.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                Your workspace determines which workflows, projects and
+                                account features are available to you.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP HOME WELLNESS VIEW -->
+                <div id="helpHomeWellness" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Home Wellness
+                            </h3>
+
+                            <p class="section-description">
+                                Learn how to work with your Home Wellness property and assessment.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpHomeWellness()">
+                            ← Back to Help
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-list">
+
+                        <div class="help-article-card" onclick="openHelpHomePropertyArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">01</div>
+
+                            <div>
+                                <h3>Creating a Home Property</h3>
+
+                                <p>
+                                    Learn how to create and set up your Home Wellness property.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpPHRArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">02</div>
+
+                            <div>
+                                <h3>Your Property Health Record</h3>
+
+                                <p>
+                                    Understand how your property record keeps your assessment history connected to the
+                                    property.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="help-article-card" onclick="openHelpHomeInsightsArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">03</div>
+
+                            <div>
+                                <h3>Property Insights</h3>
+
+                                <p>
+                                    Learn how to review the results and information generated for your property.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpFullReportArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">04</div>
+
+                            <div>
+                                <h3>Full EMF Insight Report</h3>
+
+                                <p>
+                                    Learn about the complete report available for your property assessment.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpProfessionalAssessmentArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">05</div>
+
+                            <div>
+                                <h3>Professional Assessment</h3>
+
+                                <p>
+                                    Learn how to request professional help with your property assessment.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP HOME PROPERTY ARTICLE -->
+                <div id="helpHomePropertyArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Creating a Home Property
+                            </h3>
+
+                            <p class="section-description">
+                                Set up your property before beginning your Home Wellness assessment.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpHomePropertyArticle()">
+                            ← Back to Home Wellness
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                A Home Property is the foundation of your Home Wellness
+                                experience. It connects your property information with
+                                its Property Health Record and future assessments.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Start a new property</h3>
+
+                            <p>
+                                From the Home Wellness workspace, choose
+                                <strong>New Property</strong> to begin the property setup.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Enter your property information</h3>
+
+                            <p>
+                                Provide the main information used to identify and describe
+                                your property:
+                            </p>
+
+                            <ul class="help-article-list-items">
+                                <li>Property name</li>
+                                <li>Property type</li>
+                                <li>Country</li>
+                                <li>City / Town</li>
+                                <li>Postal / Postcode</li>
+                                <li>Street address</li>
+                                <li>Apartment / Unit</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Complete your personal information</h3>
+
+                            <p>
+                                Your Home Wellness property is associated with your
+                                account profile. Make sure your first name, last name
+                                and email address are correct.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Create My Property</h3>
+
+                            <p>
+                                Once the required information has been completed,
+                                select <strong>Create My Property</strong>.
+                            </p>
+
+                            <p>
+                                EMF Insight validates the information and creates the
+                                property when the required details are valid.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>After your property is created</h3>
+
+                            <p>
+                                Your new property becomes available through
+                                <strong>My Property</strong> and is connected to its
+                                Property Health Record.
+                            </p>
+
+                            <p>
+                                You can then continue with the Home Wellness workflow
+                                and build the property's assessment over time.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                You can create more than one Home Property and return
+                                to your existing properties from My Property.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP PHR ARTICLE -->
+                <div id="helpPHRArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Your Property Health Record
+                            </h3>
+
+                            <p class="section-description">
+                                Understand the ongoing health record associated with your property.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpPHRArticle()">
+                            ← Back to Home Wellness
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Your Property Health Record is the ongoing record associated
+                                with your property. It provides the foundation for keeping
+                                information about the property's assessments connected over time.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>One property, an ongoing record</h3>
+
+                            <p>
+                                A Home Property is not just a single assessment. Its Property
+                                Health Record provides a continuing place for the property's
+                                assessment information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Assessments over time</h3>
+
+                            <p>
+                                As assessments are performed, they can be associated with the
+                                same property record. This allows the property's assessment
+                                history to develop over time.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Property information and assessments</h3>
+
+                            <p>
+                                The property profile provides the identity and context of the
+                                property, while assessments provide information collected
+                                during individual assessment activities.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Why this matters</h3>
+
+                            <p>
+                                Keeping assessment information connected to the property makes
+                                it possible to understand the property's environmental profile
+                                as an ongoing record rather than as isolated assessments.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Remember</strong>
+
+                            <span>
+                                Your Property Health Record belongs to the property and can
+                                continue to develop as new assessments are added.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP HOME INSIGHTS ARTICLE -->
+                <div id="helpHomeInsightsArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Property Insights
+                            </h3>
+
+                            <p class="section-description">
+                                Understand the information and results available for your property.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpHomeInsightsArticle()">
+                            ← Back to Home Wellness
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Property Insights brings together the information available
+                                from your property assessment so you can understand what has
+                                been measured, where it was measured and what the assessment
+                                indicates.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Property overview</h3>
+
+                            <p>
+                                The Property Insights view provides an overview of the
+                                property's current assessment information and status.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Measurements and coverage</h3>
+
+                            <p>
+                                Assessment results can include measurement information and
+                                measurement coverage for the assessed areas of the property.
+                            </p>
+
+                            <p>
+                                Coverage is important context because results reflect the
+                                areas that have actually been assessed.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Exposure information</h3>
+
+                            <p>
+                                Where measurement data is available, Property Insights can
+                                present the relevant exposure information collected during
+                                the assessment.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Sources and recommendations</h3>
+
+                            <p>
+                                The assessment may also identify relevant EMF sources and
+                                provide recommendations associated with the available
+                                assessment information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Assessment context</h3>
+
+                            <p>
+                                Property Insights should be understood in the context of
+                                the assessment that produced the available data, including
+                                its measurement coverage and the areas assessed.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                Property Insights are based on the information available
+                                from the property's assessment. They should be considered
+                                together with the assessment context and measurement coverage.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP FULL EMF INSIGHT REPORT ARTICLE -->
+                <div id="helpFullReportArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Full EMF Insight Report
+                            </h3>
+
+                            <p class="section-description">
+                                Understand the complete report available for your property assessment.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpFullReportArticle()">
+                            ← Back to Home Wellness
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                The Full EMF Insight Report provides a more complete,
+                                structured presentation of the information generated
+                                during your property assessment.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>When is the report available?</h3>
+
+                            <p>
+                                The Full EMF Insight Report becomes available when the
+                                required assessment information is present for the property
+                                and the report has been unlocked.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>What does the report bring together?</h3>
+
+                            <p>
+                                The report brings together the available assessment
+                                information into a single document, making it easier to
+                                review and retain the results of the property assessment.
+                            </p>
+
+                            <ul class="help-article-list-items">
+                                <li>Property and assessment context</li>
+                                <li>Assessment results</li>
+                                <li>Measurement and coverage information</li>
+                                <li>Relevant EMF sources</li>
+                                <li>Recommendations</li>
+                                <li>Supporting visual information</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Unlocking the report</h3>
+
+                            <p>
+                                The Full EMF Insight Report is a separate one-time purchase
+                                associated with the property assessment.
+                            </p>
+
+                            <p>
+                                Once unlocked, the complete report can be generated for
+                                the property.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Report vs Property Insights</h3>
+
+                            <p>
+                                Property Insights provides the interactive assessment
+                                information within EMF Insight. The Full EMF Insight Report
+                                brings the available assessment information together into
+                                a complete document.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                The report reflects the assessment information available
+                                for the property at the time it is generated.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP PROFESSIONAL ASSESSMENT ARTICLE -->
+                <div id="helpProfessionalAssessmentArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Professional Assessment
+                            </h3>
+
+                            <p class="section-description">
+                                Learn how to request professional help with your property assessment.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpProfessionalAssessmentArticle()">
+                            ← Back to Home Wellness
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                If you would like professional assistance with your property
+                                assessment, EMF Insight allows Home Wellness users to submit
+                                a professional assessment request.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Request a professional assessment</h3>
+
+                            <p>
+                                A professional assessment request allows you to indicate
+                                that you would like help from a qualified professional with
+                                your property and EMF assessment.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>What happens after you submit a request?</h3>
+
+                            <p>
+                                Your request can become available to professionals who are
+                                eligible to respond to Home Wellness assessment requests.
+                            </p>
+
+                            <p>
+                                Availability and response depend on the professionals
+                                participating in the EMF Insight professional network.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Your property information</h3>
+
+                            <p>
+                                The professional assessment request is associated with
+                                your property and its available assessment information.
+                                This provides context for the professional reviewing
+                                the request.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Professional contact</h3>
+
+                            <p>
+                                When a professional takes an interest in an available
+                                request, the EMF Insight professional workflow controls
+                                how contact information becomes available.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                Submitting a request does not itself guarantee that a
+                                professional will accept or complete an assessment.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP BUSINESS SURVEY VIEW -->
+                <div id="helpBusinessSurvey" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Business Survey
+                            </h3>
+
+                            <p class="section-description">
+                                Learn how to create, measure and complete a professional property survey.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpBusinessSurvey()">
+                            ← Back to Help
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-list">
+
+                        <div class="help-article-card" onclick="openHelpBusinessProjectArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">01</div>
+
+                            <div>
+                                <h3>Creating a Business Project</h3>
+
+                                <p>
+                                    Learn how to start and organize a professional Business Survey project.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpSessionsFloorsRoomsArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">02</div>
+
+                            <div>
+                                <h3>Sessions, Floors &amp; Rooms</h3>
+
+                                <p>
+                                    Understand how your survey is organized across sessions, floors and rooms.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpZonesMeasurementsArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">03</div>
+
+                            <div>
+                                <h3>Zones &amp; Measurements</h3>
+
+                                <p>
+                                    Learn how zones, measurement points and measurement profiles work.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpHeatmapsResultsArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">04</div>
+
+                            <div>
+                                <h3>Heatmaps &amp; Results</h3>
+
+                                <p>
+                                    Understand how measurement data is visualized and reviewed.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpBusinessReportsArticle()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">05</div>
+
+                            <div>
+                                <h3>Business Survey Reports</h3>
+
+                                <p>
+                                    Understand the reports generated from your business assessment.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP BUSINESS PROJECT ARTICLE -->
+                <div id="helpBusinessProjectArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Creating a Business Project
+                            </h3>
+
+                            <p class="section-description">
+                                Understand how a Business Survey project is organized.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpBusinessProjectArticle()">
+                            ← Back to Business Survey
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                A Business Project provides the workspace for carrying out
+                                and documenting a professional property survey.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Workspace</h3>
+
+                            <p>
+                                Business Survey is a separate workspace designed for
+                                professional assessment workflows.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Project</h3>
+
+                            <p>
+                                A project represents the property or survey engagement
+                                you are working on.
+                            </p>
+
+                            <p>
+                                Project information provides the foundation for organizing
+                                the survey and its associated data.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Session</h3>
+
+                            <p>
+                                A project can contain survey sessions. A session represents
+                                a particular assessment activity within the project.
+                            </p>
+
+                            <p>
+                                Sessions allow survey work to be organized over time rather
+                                than treating every assessment as one continuous activity.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Current Floor</h3>
+
+                            <p>
+                                Within a survey session, work is performed on the current
+                                floor of the property.
+                            </p>
+
+                            <p>
+                                Floors provide the spatial structure for rooms, zones and
+                                measurements.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Survey workflow</h3>
+
+                            <p>
+                                The Business Survey workflow guides you through the main
+                                stages of preparing and measuring the property.
+                            </p>
+
+                            <ul class="help-article-list-items">
+                                <li>Plan</li>
+                                <li>Scale</li>
+                                <li>Rooms</li>
+                                <li>Zones</li>
+                                <li>Measure</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                Keep your project structure organized from the beginning.
+                                It makes later measurements, results and reporting easier
+                                to manage.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP SESSIONS FLOORS ROOMS ARTICLE -->
+                <div id="helpSessionsFloorsRoomsArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Sessions, Floors &amp; Rooms
+                            </h3>
+
+                            <p class="section-description">
+                                Understand how the physical structure of a property is organized within a Business
+                                Survey.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpSessionsFloorsRoomsArticle()">
+                            ← Back to Business Survey
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Business Survey organizes assessment work around the
+                                physical structure of the property. Sessions, floors
+                                and rooms provide the structure in which survey data
+                                is collected and reviewed.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Sessions</h3>
+
+                            <p>
+                                A session represents a particular survey activity within
+                                a Business Project.
+                            </p>
+
+                            <p>
+                                Sessions allow assessment work to be separated into
+                                distinct survey activities over time.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Floors</h3>
+
+                            <p>
+                                A property can contain multiple floors. The current floor
+                                determines the part of the property you are working on
+                                during the survey.
+                            </p>
+
+                            <p>
+                                Each floor can contain its own rooms, zones and measurement
+                                information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Rooms</h3>
+
+                            <p>
+                                Rooms define the individual spaces within a floor.
+                                They provide the spatial context for measurements,
+                                sources and assessment results.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Why the structure matters</h3>
+
+                            <p>
+                                Keeping sessions, floors and rooms organized makes it
+                                possible to understand where measurements were collected
+                                and how results relate to the property.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                Complete the floor and room structure before collecting
+                                measurements so that your survey data remains spatially organized.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP ZONES & MEASUREMENTS ARTICLE -->
+                <div id="helpZonesMeasurementsArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Zones &amp; Measurements
+                            </h3>
+
+                            <p class="section-description">
+                                Understand how survey areas and measurement data are organized.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpZonesMeasurementsArticle()">
+                            ← Back to Business Survey
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Zones and measurements provide the structure for collecting
+                                and organizing environmental data during a Business Survey.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Zones</h3>
+
+                            <p>
+                                Zones define specific areas within the property that can
+                                be assessed separately from the overall room structure.
+                            </p>
+
+                            <p>
+                                A zone can be used to organize measurements around a
+                                particular area or assessment context.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Measurement Profile</h3>
+
+                            <p>
+                                The Measurement Profile determines which measurement
+                                modalities are collected for the survey.
+                            </p>
+
+                            <ul class="help-article-list-items">
+                                <li>RF</li>
+                                <li>Electric</li>
+                                <li>Magnetic</li>
+                            </ul>
+
+                            <p>
+                                The selected profile affects which measurements are
+                                collected and contributes to assessment completion
+                                and confidence.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Measurement points</h3>
+
+                            <p>
+                                Measurement points represent locations where measurements
+                                are collected within the room or zone.
+                            </p>
+
+                            <p>
+                                Multiple measurement points can be used to build a more
+                                complete picture of the assessed area.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Coverage</h3>
+
+                            <p>
+                                Measurement coverage indicates how much of the relevant
+                                area has been measured.
+                            </p>
+
+                            <p>
+                                Coverage provides important context when reviewing survey
+                                results and determining whether an area has been sufficiently
+                                assessed.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                Measurement Profile determines what is collected. It does
+                                not itself determine the property's risk level.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP HEATMAPS & RESULTS ARTICLE -->
+                <div id="helpHeatmapsResultsArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Heatmaps &amp; Results
+                            </h3>
+
+                            <p class="section-description">
+                                Understand how measurement data is visualized and reviewed.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpHeatmapsResultsArticle()">
+                            ← Back to Business Survey
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Heatmaps provide a visual representation of measurement
+                                data across the assessed areas of a property.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>From measurements to a heatmap</h3>
+
+                            <p>
+                                Measurements collected at points within rooms and zones
+                                provide the underlying data used to generate the visual
+                                representation.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Spatial context</h3>
+
+                            <p>
+                                Because measurements are associated with locations within
+                                the property, the results can be reviewed in relation to
+                                rooms, zones and floors.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Measurement coverage</h3>
+
+                            <p>
+                                Coverage provides context for interpreting a heatmap.
+                                Areas without measurement data should not be interpreted
+                                as equivalent to areas that have been measured.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Reviewing results</h3>
+
+                            <p>
+                                Heatmaps can be reviewed together with the underlying
+                                measurements, sources and other assessment information
+                                available for the survey.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Different floors</h3>
+
+                            <p>
+                                Where a property contains multiple floors, each floor can
+                                have its own spatial assessment information and visual
+                                results.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                A heatmap visualizes available measurement data. It does
+                                not replace the underlying measurements or their assessment
+                                context.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP BUSINESS SURVEY REPORTS ARTICLE -->
+                <div id="helpBusinessReportsArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Business Survey Reports
+                            </h3>
+
+                            <p class="section-description">
+                                Understand how survey information is brought together in reports.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpBusinessReportsArticle()">
+                            ← Back to Business Survey
+                        </button>
+                    </div>
+
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Business Survey reports bring together the information
+                                collected during an assessment so that the results can
+                                be reviewed as a structured assessment.
+                            </p>
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>What a report brings together</h3>
+
+                            <p>
+                                Report content can include information from the property
+                                structure, rooms, zones, measurements, sources, heatmaps
+                                and assessment results.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Assessment context</h3>
+
+                            <p>
+                                Results should be interpreted together with the context
+                                of the survey, including the areas assessed and the
+                                measurement coverage available for those areas.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Before generating a report</h3>
+
+                            <ul class="help-article-list-items">
+                                <li>Check the property and floor structure.</li>
+                                <li>Review rooms and zones.</li>
+                                <li>Check available measurements.</li>
+                                <li>Review measurement coverage.</li>
+                                <li>Review sources and results.</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="help-detail-section">
+
+                            <h3>Report and underlying survey data</h3>
+
+                            <p>
+                                A report is a presentation of the assessment information.
+                                The underlying survey data remains the basis for the
+                                results and should be retained as part of the assessment
+                                record.
+                            </p>
+
+                        </div>
+
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                Review the survey results before generating the final
+                                report so that missing measurements or incomplete areas
+                                can be identified first.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP ACCOUNT & BILLING -->
+                <div id="helpAccountBilling" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Account &amp; Billing
+                            </h3>
+
+                            <p class="section-description">
+                                Manage your account, property information, security and plan.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpAccountBilling()">
+                            ← Back to Help &amp; Support
+                        </button>
+                    </div>
+
+                    <div class="help-article-list">
+
+                        <div class="help-article-card" onclick="openHelpProfileArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">01</div>
+
+                            <div>
+                                <h3>Profile</h3>
+                                <p>
+                                    Manage your personal account information and identity.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpSecurityArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">02</div>
+
+                            <div>
+                                <h3>Security</h3>
+                                <p>
+                                    Manage your password and account security settings.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpMyPropertyArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">03</div>
+
+                            <div>
+                                <h3>My Property</h3>
+                                <p>
+                                    Access and manage your Home Wellness properties.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpBillingArticle()" role="button" tabindex="0">
+                            <div class="help-article-number">04</div>
+
+                            <div>
+                                <h3>Billing &amp; Plan</h3>
+                                <p>
+                                    Review available plans, pricing and billing information.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP PROFILE ARTICLE -->
+                <div id="helpProfileArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Profile
+                            </h3>
+
+                            <p class="section-description">
+                                Manage your personal account information.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpProfileArticle()">
+                            ← Back to Account &amp; Billing
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Your Profile contains the personal information associated
+                                with your EMF Insight account.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Personal information</h3>
+
+                            <p>
+                                Your profile includes:
+                            </p>
+
+                            <ul class="help-article-list-items">
+                                <li>First name</li>
+                                <li>Last name</li>
+                                <li>Email address</li>
+                                <li>Phone number</li>
+                            </ul>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Updating your profile</h3>
+
+                            <p>
+                                Open your account menu and select
+                                <strong>Profile</strong>.
+                            </p>
+
+                            <p>
+                                Update the required information and select
+                                <strong>Save changes</strong>.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Account identity</h3>
+
+                            <p>
+                                Your profile information is associated with your EMF Insight
+                                user account and is separate from the property information
+                                stored for your Home Wellness properties.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                Changing your profile information does not change the
+                                property details stored in My Property.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP SECURITY ARTICLE -->
+                <div id="helpSecurityArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Security
+                            </h3>
+
+                            <p class="section-description">
+                                Manage your password and account security.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpSecurityArticle()">
+                            ← Back to Account &amp; Billing
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Security settings help protect access to your EMF Insight
+                                account.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Change your password</h3>
+
+                            <p>
+                                Open your account menu and select
+                                <strong>Security</strong>.
+                            </p>
+
+                            <p>
+                                Enter your current password, your new password and confirm
+                                the new password, then select
+                                <strong>Change password</strong>.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Password requirements</h3>
+
+                            <p>
+                                A new password must contain at least 8 characters and must
+                                be different from your current password.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Two-factor authentication</h3>
+
+                            <p>
+                                Two-factor authentication is planned as an additional
+                                security option.
+                            </p>
+
+                            <p>
+                                This feature is currently marked as
+                                <strong>Coming soon</strong>.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Security tip</strong>
+
+                            <span>
+                                Never share your password with another person. Use a
+                                unique password for your EMF Insight account.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP MY PROPERTY ARTICLE -->
+                <div id="helpMyPropertyArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                My Property
+                            </h3>
+
+                            <p class="section-description">
+                                Access and manage your Home Wellness properties.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpMyPropertyArticle()">
+                            ← Back to Account &amp; Billing
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                My Property provides access to the Home Wellness properties
+                                associated with your account.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Recent properties</h3>
+
+                            <p>
+                                Your most recent Home Wellness properties are displayed in
+                                the My Property area.
+                            </p>
+
+                            <p>
+                                Select <strong>Open</strong> to return to a property and
+                                continue working with it.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>View all properties</h3>
+
+                            <p>
+                                When your account contains more than the number of
+                                properties shown initially, select
+                                <strong>View all properties</strong> to display the
+                                complete property list.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Add a property</h3>
+
+                            <p>
+                                Select <strong>+ Add Property</strong> to create another
+                                Home Wellness property.
+                            </p>
+
+                            <p>
+                                During property creation you provide the property profile
+                                and your personal account information before creating
+                                the property.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Property information</h3>
+
+                            <p>
+                                A Home Wellness property can contain information such as
+                                property name, property type, country, city or town,
+                                postal code, address and unit.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Property Health Record</h3>
+
+                            <p>
+                                Each property is associated with its Property Health Record,
+                                which provides continuity for assessment information
+                                associated with that property.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                My Property manages access to your properties. Your personal
+                                account information is managed separately under Profile.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP BILLING ARTICLE -->
+                <div id="helpBillingArticle" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Billing &amp; Plan
+                            </h3>
+
+                            <p class="section-description">
+                                Review plans, pricing and billing information.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpBillingArticle()">
+                            ← Back to Account &amp; Billing
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Billing &amp; Plan provides information about the plans
+                                and pricing available for EMF Insight.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Home Wellness</h3>
+
+                            <p>
+                                The Home Wellness billing area contains the plans and
+                                services available for Home users.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Business Survey</h3>
+
+                            <p>
+                                Business Survey plans and pricing are presented separately
+                                from Home Wellness so that professional survey workflows
+                                can have their own pricing structure.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Pricing</h3>
+
+                            <p>
+                                Pricing displayed in the platform can change over time.
+                                Always use the current Billing &amp; Plan page for the
+                                latest pricing information.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Currency</h3>
+
+                            <p>
+                                The Billing &amp; Plan area provides a currency selector
+                                for displaying available pricing.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                The current Billing &amp; Plan page is the source of truth
+                                for available plans and current pricing.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP TROUBLESHOOTING -->
+                <div id="helpTroubleshooting" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Troubleshooting
+                            </h3>
+
+                            <p class="section-description">
+                                Find help with common account, property and platform issues.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpTroubleshooting()">
+                            ← Back to Help &amp; Support
+                        </button>
+                    </div>
+
+                    <div class="help-article-list">
+
+                        <div class="help-article-card" onclick="openHelpLoginTroubleshooting()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">01</div>
+
+                            <div>
+                                <h3>Login &amp; Account</h3>
+                                <p>
+                                    What to check when you cannot access or update your account.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpPropertyTroubleshooting()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">02</div>
+
+                            <div>
+                                <h3>Property &amp; Project Issues</h3>
+                                <p>
+                                    Troubleshoot problems with properties and projects.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpMeasurementTroubleshooting()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">03</div>
+
+                            <div>
+                                <h3>Measurements &amp; Results</h3>
+                                <p>
+                                    Check common issues affecting measurements and results.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpReportTroubleshooting()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">04</div>
+
+                            <div>
+                                <h3>Reports</h3>
+                                <p>
+                                    Troubleshoot report generation and report access.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="help-article-card" onclick="openHelpTechnicalTroubleshooting()" role="button"
+                            tabindex="0">
+                            <div class="help-article-number">05</div>
+
+                            <div>
+                                <h3>Technical Issues</h3>
+                                <p>
+                                    Basic steps for unexpected platform behaviour.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP LOGIN & ACCOUNT TROUBLESHOOTING -->
+                <div id="helpLoginTroubleshooting" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Login &amp; Account
+                            </h3>
+
+                            <p class="section-description">
+                                Common checks when you have problems accessing or updating your account.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpLoginTroubleshooting()">
+                            ← Back to Troubleshooting
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                If something is not working correctly with your account,
+                                check the following before contacting support.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Cannot sign in</h3>
+
+                            <p>
+                                Check that you are using the email address associated with
+                                your EMF Insight account and that your password is entered
+                                correctly.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Password problems</h3>
+
+                            <p>
+                                If you are already signed in, open
+                                <strong>Account → Security</strong> to change your password.
+                            </p>
+
+                            <p>
+                                A new password must contain at least 8 characters and must
+                                be different from the current password.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Profile changes are not visible</h3>
+
+                            <p>
+                                Open <strong>Account → Profile</strong> and check that the
+                                information was saved successfully.
+                            </p>
+
+                            <p>
+                                Reopen Profile to verify that the saved information is
+                                loaded from your account.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Still having a problem?</h3>
+
+                            <p>
+                                If the issue continues, note what you were trying to do,
+                                what happened, and any error message displayed by the
+                                platform before contacting support.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                When reporting an account problem, include the exact step
+                                where the problem occurred. This makes the issue easier to
+                                investigate.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP PROPERTY & PROJECT TROUBLESHOOTING -->
+                <div id="helpPropertyTroubleshooting" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Property &amp; Project Issues
+                            </h3>
+
+                            <p class="section-description">
+                                Common checks when working with Home properties and projects.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpPropertyTroubleshooting()">
+                            ← Back to Troubleshooting
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                If a property or project does not behave as expected,
+                                check the property list and the project you are trying
+                                to open.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Property is not visible in My Property</h3>
+
+                            <p>
+                                Open <strong>Account → My Property</strong> and check the
+                                recent property list.
+                            </p>
+
+                            <p>
+                                If you have several properties, select
+                                <strong>View all properties</strong> to display the
+                                complete list.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Cannot open a property</h3>
+
+                            <p>
+                                Select <strong>Open</strong> for the property you want
+                                to continue working with.
+                            </p>
+
+                            <p>
+                                The selected property should open in the Home Wellness
+                                workspace.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Creating a new property</h3>
+
+                            <p>
+                                Use <strong>+ Add Property</strong> from My Property,
+                                or start the Home property creation workflow.
+                            </p>
+
+                            <p>
+                                Required property and personal information must be
+                                completed before the property can be created.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Property information looks incorrect</h3>
+
+                            <p>
+                                Check the property profile information entered during
+                                property creation, including the property name, type,
+                                country and city or town.
+                            </p>
+
+                            <p>
+                                If the problem concerns your personal account information,
+                                check <strong>Account → Profile</strong> separately.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                When reporting a property issue, include the property name
+                                and the action you were performing when the problem occurred.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP MEASUREMENTS & RESULTS TROUBLESHOOTING -->
+                <div id="helpMeasurementTroubleshooting" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Measurements &amp; Results
+                            </h3>
+
+                            <p class="section-description">
+                                Common checks when measurements or assessment results do not appear as expected.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpMeasurementTroubleshooting()">
+                            ← Back to Troubleshooting
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Measurement results depend on the areas and points that
+                                have been measured. When reviewing results, first check
+                                the underlying survey structure and measurement coverage.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Measurements are missing</h3>
+
+                            <p>
+                                Check that measurement points have actually been collected
+                                for the room or zone you are reviewing.
+                            </p>
+
+                            <p>
+                                Also check that you are viewing the correct floor, room or
+                                zone.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Coverage is incomplete</h3>
+
+                            <p>
+                                Incomplete coverage means that only part of the relevant
+                                area has measurement data.
+                            </p>
+
+                            <p>
+                                Review the measurement points and complete the relevant
+                                areas before treating the results as a complete assessment.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Heatmap does not show the expected result</h3>
+
+                            <p>
+                                Check that the relevant area contains measurement data and
+                                that you are viewing the correct floor or room.
+                            </p>
+
+                            <p>
+                                Remember that a heatmap represents available measurement
+                                data and should be interpreted together with coverage.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Results look different between areas</h3>
+
+                            <p>
+                                Different rooms or zones can contain different measurement
+                                coverage and measurement data.
+                            </p>
+
+                            <p>
+                                Review the underlying measurements and spatial context
+                                before comparing results.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Important</strong>
+
+                            <span>
+                                Do not interpret an unmeasured area as equivalent to an
+                                area that contains confirmed measurement data.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP REPORT TROUBLESHOOTING -->
+                <div id="helpReportTroubleshooting" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Reports
+                            </h3>
+
+                            <p class="section-description">
+                                Common checks when a report does not generate or does not contain the expected
+                                information.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpReportTroubleshooting()">
+                            ← Back to Troubleshooting
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                Reports are generated from the assessment information
+                                available for the property or business survey.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Report does not generate</h3>
+
+                            <p>
+                                Check that the assessment contains the required survey
+                                information and that the relevant property, floor and
+                                measurement data are available.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Report is missing information</h3>
+
+                            <p>
+                                Review the underlying assessment and check that the relevant
+                                rooms, zones, measurements and other assessment information
+                                have been completed.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Heatmap or measurement information is missing</h3>
+
+                            <p>
+                                Check the underlying measurement coverage and confirm that
+                                the relevant areas contain measurement data.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Before contacting support</h3>
+
+                            <ul class="help-article-list-items">
+                                <li>Check the property or project you are working with.</li>
+                                <li>Check the relevant floor and room.</li>
+                                <li>Check measurement coverage.</li>
+                                <li>Check whether the underlying results are available.</li>
+                            </ul>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                When reporting a report-generation problem, include the
+                                property or project, the report type and the step at which
+                                the problem occurred.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP TECHNICAL TROUBLESHOOTING -->
+                <div id="helpTechnicalTroubleshooting" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Technical Issues
+                            </h3>
+
+                            <p class="section-description">
+                                Basic checks for unexpected platform behaviour.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpTechnicalTroubleshooting()">
+                            ← Back to Troubleshooting
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                If the platform behaves unexpectedly, a few basic checks
+                                can help determine whether the problem is temporary or
+                                specific to the current session.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Refresh the page</h3>
+
+                            <p>
+                                Refresh the current page and check whether the problem
+                                remains.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Check the current workspace</h3>
+
+                            <p>
+                                Confirm that you are working in the correct workspace,
+                                such as Home Wellness or Business Survey.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Check the current property or project</h3>
+
+                            <p>
+                                Confirm that the correct property or project is open
+                                before continuing the workflow.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Unexpected behaviour continues</h3>
+
+                            <p>
+                                If the problem remains after refreshing and checking the
+                                current workspace and project, record the exact action
+                                that caused the problem and any message displayed.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Tip</strong>
+
+                            <span>
+                                A screenshot together with the exact action that caused
+                                the problem can make technical troubleshooting much faster.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HELP CONTACT SUPPORT -->
+                <div id="helpContactSupport" style="display:none;">
+
+                    <div class="section-heading">
+                        <div>
+                            <h3 class="section-title">
+                                Contact Support
+                            </h3>
+
+                            <p class="section-description">
+                                Tell us what you need help with.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="closeHelpContactSupport()">
+                            ← Back to Help &amp; Support
+                        </button>
+                    </div>
+
+                    <div class="help-article-detail">
+
+                        <div class="help-article-detail-intro">
+                            <p>
+                                If you cannot find an answer in the Help Center,
+                                prepare a short description of the problem so that
+                                the issue can be investigated efficiently.
+                            </p>
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>Before contacting support</h3>
+
+                            <ul class="help-article-list-items">
+                                <li>Check the relevant Help Center article.</li>
+                                <li>Note which workspace you were using.</li>
+                                <li>Note the property or project involved.</li>
+                                <li>Describe the exact step where the problem occurred.</li>
+                                <li>Include any error message you saw.</li>
+                            </ul>
+
+                        </div>
+
+                        <div class="help-detail-section">
+
+                            <h3>What to include in a support request</h3>
+
+                            <p>
+                                A useful support request should explain what you were
+                                trying to do, what you expected to happen and what
+                                happened instead.
+                            </p>
+
+                            <p>
+                                A screenshot can also be useful when the problem is
+                                visual or related to the platform interface.
+                            </p>
+
+                        </div>
+
+                        <div class="help-detail-note">
+
+                            <strong>Support</strong>
+
+                            <span>
+                                The support request submission workflow will be connected
+                                here as the EMF Insight support system is implemented.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </section>
 
             <div class="footer-note">┬⌐ 2026 EMF Insight ┬╖ Account Dashboard</div>
@@ -16381,8 +19900,1312 @@ ${request.contact_expires_at
             if (!section) return;
         }
 
+        function openHelpGettingStarted() {
+            const helpHub = document.getElementById("helpHub");
+            const helpGettingStarted = document.getElementById("helpGettingStarted");
+
+            if (!helpHub || !helpGettingStarted) {
+                console.warn("Help Getting Started view not found.");
+                return;
+            }
+
+            helpHub.style.display = "none";
+            helpGettingStarted.style.display = "block";
+        }
+
+        function closeHelpGettingStarted() {
+            const helpHub = document.getElementById("helpHub");
+            const helpGettingStarted = document.getElementById("helpGettingStarted");
+
+            if (!helpHub || !helpGettingStarted) {
+                return;
+            }
+
+            helpGettingStarted.style.display = "none";
+            helpHub.style.display = "block";
+        }
+
+        function openHelpAccountArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const accountArticle =
+                document.getElementById("helpAccountArticle");
+
+            if (!gettingStarted || !accountArticle) {
+                console.warn("Help account article view not found.");
+                return;
+            }
+
+            gettingStarted.style.display = "none";
+            accountArticle.style.display = "block";
+        }
+
+        function closeHelpAccountArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const accountArticle =
+                document.getElementById("helpAccountArticle");
+
+            if (!gettingStarted || !accountArticle) {
+                return;
+            }
+
+            accountArticle.style.display = "none";
+            gettingStarted.style.display = "block";
+        }
+
+        function openHelpCreatePropertyArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const createPropertyArticle =
+                document.getElementById("helpCreatePropertyArticle");
+
+            if (!gettingStarted || !createPropertyArticle) {
+                console.warn("Help create property article view not found.");
+                return;
+            }
+
+            gettingStarted.style.display = "none";
+            createPropertyArticle.style.display = "block";
+        }
+
+        function closeHelpCreatePropertyArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const createPropertyArticle =
+                document.getElementById("helpCreatePropertyArticle");
+
+            if (!gettingStarted || !createPropertyArticle) {
+                return;
+            }
+
+            createPropertyArticle.style.display = "none";
+            gettingStarted.style.display = "block";
+        }
+
+        function openHelpPropertyInsightsArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const propertyInsightsArticle =
+                document.getElementById("helpPropertyInsightsArticle");
+
+            if (!gettingStarted || !propertyInsightsArticle) {
+                console.warn("Help property insights article view not found.");
+                return;
+            }
+
+            gettingStarted.style.display = "none";
+            propertyInsightsArticle.style.display = "block";
+        }
+
+        window.openHelpPropertyInsightsArticle =
+            openHelpPropertyInsightsArticle;
+
+
+        function closeHelpPropertyInsightsArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const propertyInsightsArticle =
+                document.getElementById("helpPropertyInsightsArticle");
+
+            if (!gettingStarted || !propertyInsightsArticle) {
+                return;
+            }
+
+            propertyInsightsArticle.style.display = "none";
+            gettingStarted.style.display = "block";
+        }
+
+        function openHelpWorkspaceArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const workspaceArticle =
+                document.getElementById("helpWorkspaceArticle");
+
+            if (!gettingStarted || !workspaceArticle) {
+                console.warn("Help workspace article view not found.");
+                return;
+            }
+
+            gettingStarted.style.display = "none";
+            workspaceArticle.style.display = "block";
+        }
+
+        window.openHelpWorkspaceArticle =
+            openHelpWorkspaceArticle;
+
+
+        function closeHelpWorkspaceArticle() {
+            const gettingStarted =
+                document.getElementById("helpGettingStarted");
+
+            const workspaceArticle =
+                document.getElementById("helpWorkspaceArticle");
+
+            if (!gettingStarted || !workspaceArticle) {
+                return;
+            }
+
+            workspaceArticle.style.display = "none";
+            gettingStarted.style.display = "block";
+        }
+
+        function openHelpHomeWellness() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            if (!helpHub || !homeWellness) {
+                console.warn("Help Home Wellness view not found.");
+                return;
+            }
+
+            helpHub.style.display = "none";
+            homeWellness.style.display = "block";
+        }
+
+        window.openHelpHomeWellness = openHelpHomeWellness;
+
+
+        function closeHelpHomeWellness() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            if (!helpHub || !homeWellness) {
+                return;
+            }
+
+            homeWellness.style.display = "none";
+            helpHub.style.display = "block";
+        }
+
+        function openHelpHomePropertyArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpHomePropertyArticle");
+
+            if (!homeWellness || !article) {
+                console.warn("Help Home Property article view not found.");
+                return;
+            }
+
+            homeWellness.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpHomePropertyArticle =
+            openHelpHomePropertyArticle;
+
+
+        function closeHelpHomePropertyArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpHomePropertyArticle");
+
+            if (!homeWellness || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            homeWellness.style.display = "block";
+        }
+
+        function openHelpPHRArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpPHRArticle");
+
+            if (!homeWellness || !article) {
+                console.warn("Help PHR article view not found.");
+                return;
+            }
+
+            homeWellness.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpPHRArticle = openHelpPHRArticle;
+
+
+        function closeHelpPHRArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpPHRArticle");
+
+            if (!homeWellness || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            homeWellness.style.display = "block";
+        }
+
+        function openHelpHomeInsightsArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpHomeInsightsArticle");
+
+            if (!homeWellness || !article) {
+                console.warn("Help Home Insights article view not found.");
+                return;
+            }
+
+            homeWellness.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpHomeInsightsArticle =
+            openHelpHomeInsightsArticle;
+
+
+        function closeHelpHomeInsightsArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpHomeInsightsArticle");
+
+            if (!homeWellness || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            homeWellness.style.display = "block";
+        }
+
+        function openHelpFullReportArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpFullReportArticle");
+
+            if (!homeWellness || !article) {
+                console.warn("Help Full Report article view not found.");
+                return;
+            }
+
+            homeWellness.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpFullReportArticle =
+            openHelpFullReportArticle;
+
+
+        function closeHelpFullReportArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpFullReportArticle");
+
+            if (!homeWellness || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            homeWellness.style.display = "block";
+        }
+
+        function openHelpProfessionalAssessmentArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpProfessionalAssessmentArticle");
+
+            if (!homeWellness || !article) {
+                console.warn("Help Professional Assessment article view not found.");
+                return;
+            }
+
+            homeWellness.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpProfessionalAssessmentArticle =
+            openHelpProfessionalAssessmentArticle;
+
+
+        function closeHelpProfessionalAssessmentArticle() {
+            const homeWellness =
+                document.getElementById("helpHomeWellness");
+
+            const article =
+                document.getElementById("helpProfessionalAssessmentArticle");
+
+            if (!homeWellness || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            homeWellness.style.display = "block";
+        }
+
+        function openHelpBusinessSurvey() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            if (!helpHub || !businessSurvey) {
+                console.warn("Help Business Survey view not found.");
+                return;
+            }
+
+            helpHub.style.display = "none";
+            businessSurvey.style.display = "block";
+        }
+
+        window.openHelpBusinessSurvey = openHelpBusinessSurvey;
+
+
+        function closeHelpBusinessSurvey() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            if (!helpHub || !businessSurvey) {
+                return;
+            }
+
+            businessSurvey.style.display = "none";
+            helpHub.style.display = "block";
+        }
+
+        function openHelpBusinessProjectArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpBusinessProjectArticle");
+
+            if (!businessSurvey || !article) {
+                console.warn("Help Business Project article view not found.");
+                return;
+            }
+
+            businessSurvey.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpBusinessProjectArticle =
+            openHelpBusinessProjectArticle;
+
+
+        function closeHelpBusinessProjectArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpBusinessProjectArticle");
+
+            if (!businessSurvey || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            businessSurvey.style.display = "block";
+        }
+
+        function openHelpSessionsFloorsRoomsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpSessionsFloorsRoomsArticle");
+
+            if (!businessSurvey || !article) {
+                console.warn("Help Sessions Floors Rooms article view not found.");
+                return;
+            }
+
+            businessSurvey.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpSessionsFloorsRoomsArticle =
+            openHelpSessionsFloorsRoomsArticle;
+
+
+        function closeHelpSessionsFloorsRoomsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpSessionsFloorsRoomsArticle");
+
+            if (!businessSurvey || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            businessSurvey.style.display = "block";
+        }
+
+        function openHelpZonesMeasurementsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpZonesMeasurementsArticle");
+
+            if (!businessSurvey || !article) {
+                console.warn("Help Zones Measurements article view not found.");
+                return;
+            }
+
+            businessSurvey.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpZonesMeasurementsArticle =
+            openHelpZonesMeasurementsArticle;
+
+
+        function closeHelpZonesMeasurementsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpZonesMeasurementsArticle");
+
+            if (!businessSurvey || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            businessSurvey.style.display = "block";
+        }
+
+        function openHelpHeatmapsResultsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpHeatmapsResultsArticle");
+
+            if (!businessSurvey || !article) {
+                console.warn("Help Heatmaps Results article view not found.");
+                return;
+            }
+
+            businessSurvey.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpHeatmapsResultsArticle =
+            openHelpHeatmapsResultsArticle;
+
+
+        function closeHelpHeatmapsResultsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpHeatmapsResultsArticle");
+
+            if (!businessSurvey || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            businessSurvey.style.display = "block";
+        }
+
+        function openHelpBusinessReportsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpBusinessReportsArticle");
+
+            if (!businessSurvey || !article) {
+                console.warn("Help Business Reports article view not found.");
+                return;
+            }
+
+            businessSurvey.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpBusinessReportsArticle =
+            openHelpBusinessReportsArticle;
+
+
+        function closeHelpBusinessReportsArticle() {
+            const businessSurvey =
+                document.getElementById("helpBusinessSurvey");
+
+            const article =
+                document.getElementById("helpBusinessReportsArticle");
+
+            if (!businessSurvey || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            businessSurvey.style.display = "block";
+        }
+
+        function openHelpAccountBilling() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            if (!helpHub || !accountBilling) {
+                console.warn("Help Account Billing view not found.");
+                return;
+            }
+
+            helpHub.style.display = "none";
+            accountBilling.style.display = "block";
+        }
+
+        window.openHelpAccountBilling =
+            openHelpAccountBilling;
+
+
+        function closeHelpAccountBilling() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            if (!helpHub || !accountBilling) {
+                return;
+            }
+
+            accountBilling.style.display = "none";
+            helpHub.style.display = "block";
+        }
+
+        function openHelpProfileArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpProfileArticle");
+
+            if (!accountBilling || !article) {
+                console.warn("Help Profile article view not found.");
+                return;
+            }
+
+            accountBilling.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpProfileArticle =
+            openHelpProfileArticle;
+
+
+        function closeHelpProfileArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpProfileArticle");
+
+            if (!accountBilling || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            accountBilling.style.display = "block";
+        }
+
+        function openHelpSecurityArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpSecurityArticle");
+
+            if (!accountBilling || !article) {
+                console.warn("Help Security article view not found.");
+                return;
+            }
+
+            accountBilling.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpSecurityArticle =
+            openHelpSecurityArticle;
+
+
+        function closeHelpSecurityArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpSecurityArticle");
+
+            if (!accountBilling || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            accountBilling.style.display = "block";
+        }
+
+        function openHelpMyPropertyArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpMyPropertyArticle");
+
+            if (!accountBilling || !article) {
+                console.warn("Help My Property article view not found.");
+                return;
+            }
+
+            accountBilling.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpMyPropertyArticle =
+            openHelpMyPropertyArticle;
+
+
+        function closeHelpMyPropertyArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpMyPropertyArticle");
+
+            if (!accountBilling || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            accountBilling.style.display = "block";
+        }
+
+        function openHelpBillingArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpBillingArticle");
+
+            if (!accountBilling || !article) {
+                console.warn("Help Billing article view not found.");
+                return;
+            }
+
+            accountBilling.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpBillingArticle =
+            openHelpBillingArticle;
+
+
+        function closeHelpBillingArticle() {
+            const accountBilling =
+                document.getElementById("helpAccountBilling");
+
+            const article =
+                document.getElementById("helpBillingArticle");
+
+            if (!accountBilling || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            accountBilling.style.display = "block";
+        }
+
+        function openHelpTroubleshooting() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            if (!helpHub || !troubleshooting) {
+                console.warn("Help Troubleshooting view not found.");
+                return;
+            }
+
+            helpHub.style.display = "none";
+            troubleshooting.style.display = "block";
+        }
+
+        window.openHelpTroubleshooting =
+            openHelpTroubleshooting;
+
+
+        function closeHelpTroubleshooting() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            if (!helpHub || !troubleshooting) {
+                return;
+            }
+
+            troubleshooting.style.display = "none";
+            helpHub.style.display = "block";
+        }
+
+        function openHelpLoginTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpLoginTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                console.warn("Help Login Troubleshooting article view not found.");
+                return;
+            }
+
+            troubleshooting.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpLoginTroubleshooting =
+            openHelpLoginTroubleshooting;
+
+
+        function closeHelpLoginTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpLoginTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            troubleshooting.style.display = "block";
+        }
+
+        function openHelpPropertyTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpPropertyTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                console.warn("Help Property Troubleshooting article view not found.");
+                return;
+            }
+
+            troubleshooting.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpPropertyTroubleshooting =
+            openHelpPropertyTroubleshooting;
+
+
+        function closeHelpPropertyTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpPropertyTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            troubleshooting.style.display = "block";
+        }
+
+        function openHelpMeasurementTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpMeasurementTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                console.warn("Help Measurement Troubleshooting article view not found.");
+                return;
+            }
+
+            troubleshooting.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpMeasurementTroubleshooting =
+            openHelpMeasurementTroubleshooting;
+
+
+        function closeHelpMeasurementTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpMeasurementTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            troubleshooting.style.display = "block";
+        }
+
+        function openHelpReportTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpReportTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                console.warn("Help Report Troubleshooting article view not found.");
+                return;
+            }
+
+            troubleshooting.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpReportTroubleshooting =
+            openHelpReportTroubleshooting;
+
+
+        function closeHelpReportTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpReportTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            troubleshooting.style.display = "block";
+        }
+
+        function openHelpTechnicalTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpTechnicalTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                console.warn("Help Technical Troubleshooting article view not found.");
+                return;
+            }
+
+            troubleshooting.style.display = "none";
+            article.style.display = "block";
+        }
+
+        window.openHelpTechnicalTroubleshooting =
+            openHelpTechnicalTroubleshooting;
+
+
+        function closeHelpTechnicalTroubleshooting() {
+            const troubleshooting =
+                document.getElementById("helpTroubleshooting");
+
+            const article =
+                document.getElementById("helpTechnicalTroubleshooting");
+
+            if (!troubleshooting || !article) {
+                return;
+            }
+
+            article.style.display = "none";
+            troubleshooting.style.display = "block";
+        }
+
+        function openHelpContactSupport() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const contactSupport =
+                document.getElementById("helpContactSupport");
+
+            if (!helpHub || !contactSupport) {
+                console.warn("Help Contact Support view not found.");
+                return;
+            }
+
+            helpHub.style.display = "none";
+            contactSupport.style.display = "block";
+        }
+
+        window.openHelpContactSupport =
+            openHelpContactSupport;
+
+
+        function closeHelpContactSupport() {
+            const helpHub =
+                document.getElementById("helpHub");
+
+            const contactSupport =
+                document.getElementById("helpContactSupport");
+
+            if (!helpHub || !contactSupport) {
+                return;
+            }
+
+            contactSupport.style.display = "none";
+            helpHub.style.display = "block";
+        }
+
+        window.closeHelpContactSupport =
+            closeHelpContactSupport;
+
+        window.closeHelpTechnicalTroubleshooting =
+            closeHelpTechnicalTroubleshooting;
+
+        window.closeHelpReportTroubleshooting =
+            closeHelpReportTroubleshooting;
+
+        window.closeHelpMeasurementTroubleshooting =
+            closeHelpMeasurementTroubleshooting;
+
+        window.closeHelpPropertyTroubleshooting =
+            closeHelpPropertyTroubleshooting;
+
+        window.closeHelpLoginTroubleshooting =
+            closeHelpLoginTroubleshooting;
+
+        window.closeHelpTroubleshooting =
+            closeHelpTroubleshooting;
+
+        window.closeHelpBillingArticle =
+            closeHelpBillingArticle;
+
+        window.closeHelpMyPropertyArticle =
+            closeHelpMyPropertyArticle;
+
+        window.closeHelpSecurityArticle =
+            closeHelpSecurityArticle;
+
+        window.closeHelpProfileArticle =
+            closeHelpProfileArticle;
+
+        window.closeHelpAccountBilling =
+            closeHelpAccountBilling;
+
+        window.closeHelpBusinessReportsArticle =
+            closeHelpBusinessReportsArticle;
+
+        window.closeHelpHeatmapsResultsArticle =
+            closeHelpHeatmapsResultsArticle;
+
+        window.closeHelpZonesMeasurementsArticle =
+            closeHelpZonesMeasurementsArticle;
+
+        window.closeHelpSessionsFloorsRoomsArticle =
+            closeHelpSessionsFloorsRoomsArticle;
+
+        window.closeHelpBusinessProjectArticle =
+            closeHelpBusinessProjectArticle;
+
+        window.closeHelpBusinessSurvey = closeHelpBusinessSurvey;
+
+        window.closeHelpProfessionalAssessmentArticle =
+            closeHelpProfessionalAssessmentArticle;
+
+        window.closeHelpFullReportArticle =
+            closeHelpFullReportArticle;
+
+        window.closeHelpHomeInsightsArticle =
+            closeHelpHomeInsightsArticle;
+
+        window.closeHelpPHRArticle = closeHelpPHRArticle;
+
+        window.closeHelpHomePropertyArticle =
+            closeHelpHomePropertyArticle;
+
+        window.closeHelpHomeWellness = closeHelpHomeWellness;
+
+        window.closeHelpWorkspaceArticle =
+            closeHelpWorkspaceArticle;
+
+        window.closeHelpPropertyInsightsArticle =
+            closeHelpPropertyInsightsArticle;
+
+        window.closeHelpCreatePropertyArticle =
+            closeHelpCreatePropertyArticle;
+
+        window.openHelpCreatePropertyArticle =
+            openHelpCreatePropertyArticle;
+
+        window.closeHelpAccountArticle = closeHelpAccountArticle;
+
+        window.openHelpAccountArticle = openHelpAccountArticle;
+
+        window.closeHelpGettingStarted = closeHelpGettingStarted;
+
+        window.openHelpGettingStarted = openHelpGettingStarted;
+
         window.addEventListener("hashchange", activateDashboardSection);
 
+
+        const HELP_SEARCH_INDEX = [
+            {
+                title: "Your EMF Insight account",
+                category: "Getting Started",
+                keywords: "account profile security login email password",
+                action: "openHelpAccountArticle"
+            },
+            {
+                title: "Create your first Home Property",
+                category: "Getting Started",
+                keywords: "home property create property property name country city",
+                action: "openHelpCreateHomePropertyArticle"
+            },
+            {
+                title: "Understanding Property Insights",
+                category: "Getting Started",
+                keywords: "property insights results heatmap measurements sources recommendations",
+                action: "openHelpPropertyInsightsArticle"
+            },
+            {
+                title: "Home Wellness vs Business Survey",
+                category: "Getting Started",
+                keywords: "home wellness business survey workspace",
+                action: "openHelpHomeVsBusinessArticle"
+            },
+            {
+                title: "Creating a Home Property",
+                category: "Home Wellness",
+                keywords: "home property create property",
+                action: "openHelpHomePropertyArticle"
+            },
+            {
+                title: "Your Property Health Record",
+                category: "Home Wellness",
+                keywords: "property health record phr assessment history",
+                action: "openHelpPropertyHealthRecordArticle"
+            },
+            {
+                title: "Property Insights",
+                category: "Home Wellness",
+                keywords: "insights exposure measurements coverage sources recommendations",
+                action: "openHelpHomePropertyInsightsArticle"
+            },
+            {
+                title: "Full EMF Insight Report",
+                category: "Home Wellness",
+                keywords: "full report premium report purchase report",
+                action: "openHelpFullReportArticle"
+            },
+            {
+                title: "Professional Assessment",
+                category: "Home Wellness",
+                keywords: "professional assessment request specialist",
+                action: "openHelpProfessionalAssessmentArticle"
+            },
+            {
+                title: "Creating a Business Project",
+                category: "Business Survey",
+                keywords: "business project workspace session floor room",
+                action: "openHelpBusinessProjectArticle"
+            },
+            {
+                title: "Sessions, Floors & Rooms",
+                category: "Business Survey",
+                keywords: "sessions floors rooms property structure",
+                action: "openHelpSessionsFloorsRoomsArticle"
+            },
+            {
+                title: "Zones & Measurements",
+                category: "Business Survey",
+                keywords: "zones measurement profile rf electric magnetic measurement points coverage",
+                action: "openHelpZonesMeasurementsArticle"
+            },
+            {
+                title: "Heatmaps & Results",
+                category: "Business Survey",
+                keywords: "heatmap results measurements coverage",
+                action: "openHelpHeatmapsResultsArticle"
+            },
+            {
+                title: "Business Survey Reports",
+                category: "Business Survey",
+                keywords: "business report assessment report measurements heatmap",
+                action: "openHelpBusinessReportsArticle"
+            },
+            {
+                title: "Profile",
+                category: "Account & Billing",
+                keywords: "profile first name last name email phone personal information",
+                action: "openHelpProfileArticle"
+            },
+            {
+                title: "Security",
+                category: "Account & Billing",
+                keywords: "security password two factor authentication 2fa",
+                action: "openHelpSecurityArticle"
+            },
+            {
+                title: "My Property",
+                category: "Account & Billing",
+                keywords: "my property recent properties add property view all",
+                action: "openHelpMyPropertyArticle"
+            },
+            {
+                title: "Billing & Plan",
+                category: "Account & Billing",
+                keywords: "billing plan pricing currency home business",
+                action: "openHelpBillingArticle"
+            },
+            {
+                title: "Login & Account",
+                category: "Troubleshooting",
+                keywords: "login sign in password account profile",
+                action: "openHelpLoginTroubleshooting"
+            },
+            {
+                title: "Property & Project Issues",
+                category: "Troubleshooting",
+                keywords: "property project missing open add property",
+                action: "openHelpPropertyTroubleshooting"
+            },
+            {
+                title: "Measurements & Results",
+                category: "Troubleshooting",
+                keywords: "measurement results heatmap coverage missing",
+                action: "openHelpMeasurementTroubleshooting"
+            },
+            {
+                title: "Reports",
+                category: "Troubleshooting",
+                keywords: "report generate missing information heatmap",
+                action: "openHelpReportTroubleshooting"
+            },
+            {
+                title: "Technical Issues",
+                category: "Troubleshooting",
+                keywords: "technical refresh workspace project unexpected problem",
+                action: "openHelpTechnicalTroubleshooting"
+            }
+        ];
+
+        function searchHelpCenter() {
+            const input =
+                document.getElementById("helpSearchInput");
+
+            const results =
+                document.getElementById("helpSearchResults");
+
+            if (!input || !results) {
+                return;
+            }
+
+            const query =
+                input.value.trim().toLowerCase();
+
+            if (!query) {
+                results.style.display = "none";
+                results.innerHTML = "";
+                return;
+            }
+
+            const matches =
+                HELP_SEARCH_INDEX.filter(item => {
+                    const searchable =
+                        `${item.title} ${item.category} ${item.keywords}`
+                            .toLowerCase();
+
+                    return searchable.includes(query);
+                });
+
+            if (!matches.length) {
+                results.style.display = "block";
+                results.innerHTML = `
+            <div class="help-search-no-results">
+                No help articles found for
+                <strong>${input.value.trim()}</strong>.
+            </div>
+        `;
+                return;
+            }
+
+            results.style.display = "block";
+
+            results.innerHTML = matches
+                .map(item => `
+            <button
+                type="button"
+                class="help-search-result"
+                onclick="${item.action}()">
+
+                <span class="help-search-result-title">
+                    ${item.title}
+                </span>
+
+                <span class="help-search-result-category">
+                    ${item.category}
+                </span>
+
+            </button>
+        `)
+                .join("");
+        }
+
+        window.searchHelpCenter = searchHelpCenter;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const input =
+                document.getElementById("helpSearchInput");
+
+            if (!input) {
+                return;
+            }
+
+            input.addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchHelpCenter();
+                }
+            });
+        });
 
         function initializeDashboardScrollSpy() {
             const links = Array.from(
@@ -16439,14 +21262,7 @@ ${request.contact_expires_at
         async function initDashboard() {
             if (!token) return;
 
-            // Account Dashboard always opens on Overview.
-            if (window.location.hash) {
-                history.replaceState(
-                    null,
-                    "",
-                    window.location.pathname + window.location.search
-                );
-            }
+
 
             await loadUser();
             applyDashboardWorkspaceMode();

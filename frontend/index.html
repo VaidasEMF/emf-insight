@@ -22629,7 +22629,7 @@
                     SUPPORT
                   </div>
 
-                  <div class="user-menu-item" id="userHelpItem" onclick="window.location.href='dashboard.html#help'">
+                  <div class="user-menu-item" id="userHelpItem" onclick="openDashboardHelp()">
 
                     <span class="user-menu-icon">❓</span>
 
@@ -30229,6 +30229,12 @@
 
     requestRender();
   }
+
+  function openDashboardHelp() {
+    window.location.href = "dashboard.html#help";
+  }
+
+  window.openDashboardHelp = openDashboardHelp;
 
 
   function closeRoomModal() {
