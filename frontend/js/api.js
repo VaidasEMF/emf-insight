@@ -224,6 +224,12 @@ async function createProject(options = {}) {
     // DEBUG BEFORE SERVER CREATE
     // ==================================================
 
+    console.log("🔥 CREATE PROJECT FUNCTION REACHED", {
+        projectType,
+        projectName,
+        propertyProfile
+    });
+
     console.error(
         "🔥🔥🔥 PROJECT MODEL BEFORE SERVER CREATE",
         {
@@ -231,11 +237,37 @@ async function createProject(options = {}) {
 
             projectName,
 
+            propertyId:
+                newProject.propertyId,
+
+            propertyHealthRecordId:
+                newProject.propertyHealthRecordId,
+
+            propertyCreatedAt:
+                newProject.propertyCreatedAt,
+
+            propertyType:
+                newProject.propertyType,
+
+            country:
+                newProject.country,
+
+            city:
+                newProject.city,
+
+            postalCode:
+                newProject.postalCode,
+
+            address:
+                newProject.address,
+
+            unit:
+                newProject.unit,
+
             floors:
                 newProject
                     .floors
-                    ?.length ||
-                0,
+                    ?.length || 0,
 
             firstFloor:
                 newProject
@@ -257,6 +289,23 @@ async function createProject(options = {}) {
                                 .assessmentContext
                     }
                     : null
+        }
+    );
+
+    
+
+    console.log(
+        "🔥 NEW PROJECT PROPERTY DATA",
+        {
+            propertyId: newProject.propertyId,
+            propertyHealthRecordId: newProject.propertyHealthRecordId,
+            propertyCreatedAt: newProject.propertyCreatedAt,
+            propertyType: newProject.propertyType,
+            country: newProject.country,
+            city: newProject.city,
+            postalCode: newProject.postalCode,
+            address: newProject.address,
+            unit: newProject.unit
         }
     );
 
@@ -293,6 +342,39 @@ async function createProject(options = {}) {
         // ==================================================
         // SERVER CREATE
         // ==================================================
+
+        console.error(
+            "🔥 PROJECT POST PROPERTY DATA",
+            {
+                propertyId:
+                    newProject.propertyId,
+
+                propertyHealthRecordId:
+                    newProject.propertyHealthRecordId,
+
+                propertyCreatedAt:
+                    newProject.propertyCreatedAt,
+
+                propertyType:
+                    newProject.propertyType,
+
+                country:
+                    newProject.country,
+
+                city:
+                    newProject.city,
+
+                postalCode:
+                    newProject.postalCode,
+
+                address:
+                    newProject.address,
+
+                unit:
+                    newProject.unit
+            }
+        );
+
 
         res =
             await fetch(
@@ -3131,13 +3213,510 @@ function closeRenameProjectPopup() {
     }
 }
 
+// ==========================================
+// HOME PROPERTY PROFILE VALIDATION
+// ==========================================
+
+function getHomePropertyFieldError(field) {
+
+    if (!field) {
+        return "";
+    }
+
+    const value =
+        field.value.trim();
+
+    const id =
+        field.id;
+
+    const namePattern =
+        /^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,49}$/u;
+
+    const propertyNamePattern =
+        /^[\p{L}\p{M}0-9][\p{L}\p{M}0-9 .,'&()/_-]{1,99}$/u;
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    const phonePattern =
+        /^\+?[0-9][0-9 ()-]{6,24}$/;
+
+    // REQUIRED: FIRST / LAST NAME
+    if (
+        id === "homeProfileFirstName" ||
+        id === "homeProfileLastName"
+    ) {
+
+        if (!value) {
+            return "This field is required.";
+        }
+
+        if (!namePattern.test(value)) {
+            return "Please enter a valid name.";
+        }
+
+        return "";
+    }
+
+    // REQUIRED: EMAIL
+    if (id === "homeProfileEmail") {
+
+        if (!value) {
+            return "Email is required.";
+        }
+
+        if (!emailPattern.test(value)) {
+            return "Please enter a valid email address.";
+        }
+
+        return "";
+    }
+
+    // OPTIONAL: PHONE
+    if (id === "homeProfilePhone") {
+
+        if (!value) {
+            return "";
+        }
+
+        if (!phonePattern.test(value)) {
+            return "Please enter a valid phone number.";
+        }
+
+        return "";
+    }
+
+    // REQUIRED: PROPERTY NAME
+    if (id === "newProjectNameInput") {
+
+        if (!value) {
+            return "Property name is required.";
+        }
+
+        if (!propertyNamePattern.test(value)) {
+            return "Please enter a valid property name.";
+        }
+
+        return "";
+    }
+
+    // REQUIRED: PROPERTY TYPE
+    if (id === "homePropertyTypeInput") {
+
+        if (!value) {
+            return "Property type is required.";
+        }
+
+        return "";
+    }
+
+    // REQUIRED: COUNTRY
+    if (id === "homePropertyCountryInput") {
+
+        if (!value) {
+            return "Country is required.";
+        }
+
+        if (!namePattern.test(value)) {
+            return "Please enter a valid country.";
+        }
+
+        return "";
+    }
+
+    // REQUIRED: CITY / TOWN
+    if (id === "homePropertyCityInput") {
+
+        if (!value) {
+            return "City / Town is required.";
+        }
+
+        if (!namePattern.test(value)) {
+            return "Please enter a valid city or town.";
+        }
+
+        return "";
+    }
+
+    // OPTIONAL: POSTAL CODE
+    if (id === "homePropertyPostalInput") {
+
+        if (!value) {
+            return "";
+        }
+
+        if (
+            !/^[A-Za-z0-9][A-Za-z0-9 .-]{1,19}$/.test(
+                value
+            )
+        ) {
+            return "Please enter a valid postal code.";
+        }
+
+        return "";
+    }
+
+    // OPTIONAL: STREET ADDRESS
+    if (id === "homePropertyAddressInput") {
+
+        if (!value) {
+            return "";
+        }
+
+        if (value.length < 2) {
+            return "Please enter a valid street address.";
+        }
+
+        return "";
+    }
+
+    // OPTIONAL: UNIT
+    if (id === "homePropertyUnitInput") {
+
+        if (!value) {
+            return "";
+        }
+
+        if (value.length > 50) {
+            return "Unit information is too long.";
+        }
+
+        return "";
+    }
+
+    return "";
+}
+
+function setHomePropertyFieldValidation(
+    field,
+    showState = true
+) {
+
+    if (!field) {
+        return true;
+    }
+
+    const error =
+        getHomePropertyFieldError(field);
+
+    field.classList.remove(
+        "home-profile-field-valid",
+        "home-profile-field-invalid"
+    );
+
+    if (!showState) {
+        return !error;
+    }
+
+    if (error) {
+        field.classList.add(
+            "home-profile-field-invalid"
+        );
+        field.setAttribute(
+            "aria-invalid",
+            "true"
+        );
+        return false;
+    }
+
+    if (field.value.trim()) {
+        field.classList.add(
+            "home-profile-field-valid"
+        );
+        field.setAttribute(
+            "aria-invalid",
+            "false"
+        );
+    }
+
+    return true;
+}
+
+function validateHomePropertyProfile(
+    showErrors = true
+) {
+
+    const fieldIds = [
+        "homeProfileFirstName",
+        "homeProfileLastName",
+        "homeProfileEmail",
+        "homeProfilePhone",
+
+        "newProjectNameInput",
+        "homePropertyTypeInput",
+        "homePropertyCountryInput",
+        "homePropertyCityInput",
+        "homePropertyPostalInput",
+        "homePropertyAddressInput",
+        "homePropertyUnitInput"
+    ];
+
+    let valid = true;
+
+    fieldIds.forEach(
+        id => {
+
+            const field =
+                document.getElementById(id);
+
+            if (!field) {
+                return;
+            }
+
+            const fieldValid =
+                setHomePropertyFieldValidation(
+                    field,
+                    showErrors
+                );
+
+            if (!fieldValid) {
+                valid = false;
+            }
+        }
+    );
+
+    return valid;
+}
+
+function setHomeFieldError(
+    field,
+    message
+) {
+    if (!field) {
+        return;
+    }
+
+    let error =
+        field.parentElement.querySelector(
+            ".home-profile-field-error"
+        );
+
+    if (!error) {
+        error =
+            document.createElement("div");
+
+        error.className =
+            "home-profile-field-error";
+
+        field.parentElement.appendChild(
+            error
+        );
+    }
+
+    if (message) {
+        error.textContent = message;
+        error.style.display = "block";
+
+        field.style.borderColor =
+            "#dc2626";
+    }
+    else {
+        error.textContent = "";
+        error.style.display = "none";
+
+        field.style.borderColor =
+            "#16a34a";
+    }
+}
 
 function openCreateProjectNamePopup(projectType) {
 
-    const popup =
+    if (projectType === "home") {
+
+    const homeCountry =
         document.getElementById(
-            "createProjectNamePopup"
+            "homePropertyCountryInput"
         );
+
+    const homePhoneCode =
+        document.getElementById(
+            "homeProfilePhoneCountryCode"
+        );
+
+    const professionalCountry =
+        document.getElementById(
+            "professionalProfileCountry"
+        );
+
+    const professionalPhoneCode =
+        document.getElementById(
+            "professionalProfilePhoneCountryCode"
+        );
+
+
+    // ==========================================
+    // HOME COUNTRY OPTIONS
+    // ==========================================
+
+    if (
+        homeCountry &&
+        professionalCountry
+    ) {
+
+        homeCountry.innerHTML = "";
+
+        Array.from(
+            professionalCountry.options
+        ).forEach(option => {
+
+            const clonedOption =
+                option.cloneNode(true);
+
+            homeCountry.appendChild(
+                clonedOption
+            );
+        });
+    }
+
+
+    // ==========================================
+    // HOME PHONE COUNTRY CODE
+    // ==========================================
+
+    if (
+        homePhoneCode &&
+        professionalPhoneCode
+    ) {
+
+        // Use the existing Professional Profile
+        // calling-code system as the source.
+        initializeProfessionalPhoneCountryCode?.();
+
+
+        homePhoneCode.innerHTML = "";
+
+        Array.from(
+            professionalPhoneCode.options
+        ).forEach(option => {
+
+            homePhoneCode.appendChild(
+                option.cloneNode(true)
+            );
+        });
+
+
+        // ==========================================
+        // INITIAL COUNTRY → PHONE CODE
+        // ==========================================
+
+        const initialCountry =
+            homeCountry?.value?.trim() || "";
+
+        if (initialCountry) {
+
+            const matchingInitialOption =
+                Array.from(
+                    professionalPhoneCode.options
+                ).find(option =>
+                    option.dataset.country ===
+                    initialCountry
+                );
+
+            if (matchingInitialOption) {
+
+                homePhoneCode.value =
+                    matchingInitialOption.value;
+            }
+        }
+    }
+
+
+    // ==========================================
+    // COUNTRY → PHONE CODE
+    // ==========================================
+
+    if (
+        homeCountry &&
+        homePhoneCode &&
+        professionalPhoneCode
+    ) {
+
+        homeCountry.addEventListener(
+            "change",
+            function () {
+
+                const selectedCountry =
+                    homeCountry.value.trim();
+
+                const matchingOption =
+                    Array.from(
+                        professionalPhoneCode.options
+                    ).find(option =>
+                        option.dataset.country ===
+                        selectedCountry
+                    );
+
+                if (matchingOption) {
+
+                    homePhoneCode.value =
+                        matchingOption.value;
+
+                } else {
+
+                    homePhoneCode.value = "";
+                }
+            }
+        );
+    }
+    // ==========================================
+    // LOAD CURRENT USER
+    // ==========================================
+
+    loadCurrentUser()
+        .then(user => {
+
+            if (!user) {
+                return;
+            }
+
+            const firstNameInput =
+                document.getElementById(
+                    "homeProfileFirstName"
+                );
+
+            const lastNameInput =
+                document.getElementById(
+                    "homeProfileLastName"
+                );
+
+            const emailInput =
+                document.getElementById(
+                    "homeProfileEmail"
+                );
+
+            const phoneInput =
+                document.getElementById(
+                    "homeProfilePhone"
+                );
+
+
+            if (firstNameInput) {
+                firstNameInput.value =
+                    user.first_name || "";
+            }
+
+            if (lastNameInput) {
+                lastNameInput.value =
+                    user.last_name || "";
+            }
+
+            if (emailInput) {
+                emailInput.value =
+                    user.email || "";
+            }
+
+            if (phoneInput) {
+                phoneInput.value =
+                    user.phone || "";
+            }
+        });
+}
+
+
+const popup =
+    document.getElementById(
+        "createProjectNamePopup"
+    );
 
     const title =
         document.getElementById(
@@ -3172,28 +3751,300 @@ function openCreateProjectNamePopup(projectType) {
    
 
     input.value = "";
+    
 
     popup.style.display = "flex";
+
     popup.setAttribute(
         "aria-hidden",
         "false"
     );
 
+
+    // ==========================================
+    // HOME PHONE — NUMBERS ONLY
+    // ==========================================
+
+    if (projectType === "home") {
+
+        const phoneField =
+            document.getElementById(
+                "homeProfilePhone"
+            );
+
+        if (
+            phoneField &&
+            !phoneField.dataset.numericOnlyBound
+        ) {
+
+            phoneField.addEventListener(
+                "input",
+                function () {
+
+                    this.value =
+                        this.value.replace(
+                            /\D/g,
+                            ""
+                        );
+                }
+            );
+
+            phoneField.dataset.numericOnlyBound =
+                "true";
+        }
+    }
+
+
     button.onclick =
-        function (event) {
+        async function (event) {
 
             event.preventDefault();
             event.stopPropagation();
 
-            const name =
-                input.value.trim();
+        const name =
+            input.value.trim();
 
-            if (!name) {
+        if (
+            projectType !== "home" &&
+            !name
+        ) {
 
-                input.focus();
+            input.focus();
 
-                return;
+            return;
+        }
+
+            if (projectType === "home") {
+
+                const requiredHomeFields = [
+                    {
+                        id: "homeProfileFirstName",
+                        message: "Please enter your first name."
+                    },
+                    {
+                        id: "homeProfileLastName",
+                        message: "Please enter your last name."
+                    },
+                    {
+                        id: "homeProfileEmail",
+                        message: "Please enter a valid email address."
+                    },
+                    {
+                        id: "newProjectNameInput",
+                        message: "Please enter a property name."
+                    },
+                    {
+                        id: "homePropertyTypeInput",
+                        message: "Please select a property type."
+                    },
+                    {
+                        id: "homePropertyCountryInput",
+                        message: "Please select a country."
+                    },
+                    {
+                        id: "homePropertyCityInput",
+                        message: "Please enter a city or town."
+                    }
+                ];
+
+
+                let firstInvalid = null;
+
+
+                requiredHomeFields.forEach(item => {
+
+                    const field =
+                        document.getElementById(
+                            item.id
+                        );
+
+                    if (!field) {
+                        return;
+                    }
+
+
+                    const value =
+                        field.value?.trim() || "";
+
+
+                    let invalid =
+                        !value;
+
+
+                    if (
+                        !invalid &&
+                        item.id ===
+                            "homeProfileEmail"
+                    ) {
+
+                        invalid =
+                            !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+                                .test(value);
+                    }
+
+
+                    let error =
+                        field.parentElement.querySelector(
+                            ".home-field-error"
+                        );
+
+
+                    if (!error) {
+
+                        error =
+                            document.createElement(
+                                "div"
+                            );
+
+                        error.className =
+                            "home-field-error";
+
+                        error.style.fontSize =
+                            "12px";
+
+                        error.style.marginTop =
+                            "4px";
+
+                        error.style.color =
+                            "#dc2626";
+
+                        field.parentElement.appendChild(
+                            error
+                        );
+                    }
+
+
+                    if (invalid) {
+
+                        error.textContent =
+                            item.message;
+
+                        error.style.display =
+                            "block";
+
+                        field.style.borderColor =
+                            "#dc2626";
+
+
+                        if (!firstInvalid) {
+                            firstInvalid =
+                                field;
+                        }
+
+                    } else {
+
+                        error.style.display =
+                            "none";
+
+                        field.style.borderColor =
+                            "#16a34a";
+                    }
+                });
+
+
+                // ==========================================
+                // OPTIONAL PHONE
+                // ==========================================
+
+                const phoneField =
+                    document.getElementById(
+                        "homeProfilePhone"
+                    );
+
+
+                if (phoneField) {
+
+                    const phoneValue =
+                        phoneField.value.trim();
+
+
+                    let phoneError =
+                        phoneField.parentElement.querySelector(
+                            ".home-field-error"
+                        );
+
+
+                    if (!phoneError) {
+
+                        phoneError =
+                            document.createElement(
+                                "div"
+                            );
+
+                        phoneError.className =
+                            "home-field-error";
+
+                        phoneError.style.fontSize =
+                            "12px";
+
+                        phoneError.style.marginTop =
+                            "4px";
+
+                        phoneError.style.color =
+                            "#dc2626";
+
+                        phoneField.parentElement.appendChild(
+                            phoneError
+                        );
+                    }
+
+
+                    if (
+                        phoneValue &&
+                        !/^\d+$/.test(
+                            phoneValue
+                        )
+                    ) {
+
+                        phoneError.textContent =
+                            "Please enter numbers only.";
+
+                        phoneError.style.display =
+                            "block";
+
+                        phoneField.style.borderColor =
+                            "#dc2626";
+
+
+                        if (!firstInvalid) {
+                            firstInvalid =
+                                phoneField;
+                        }
+
+                    } else if (phoneValue) {
+
+                        phoneError.style.display =
+                            "none";
+
+                        phoneField.style.borderColor =
+                            "#16a34a";
+
+                    } else {
+
+                        phoneError.style.display =
+                            "none";
+
+                        phoneField.style.borderColor =
+                            "";
+                    }
+                }
+
+
+                if (firstInvalid) {
+
+                    firstInvalid.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                    firstInvalid.focus();
+
+                    return;
+                }
             }
+
+          
+
 
 
             // ==================================================
@@ -3237,10 +4088,76 @@ function openCreateProjectNamePopup(projectType) {
                     }
                     : null;
 
+            // ==================================================
+            // USER PROFILE
+            // ==================================================
 
+            if (projectType === "home") {
+
+                console.error("🔥 PROFILE SAVE — BEFORE FETCH");
+
+                const userProfileResponse =
+                    await fetch(
+                        `${API}/me/profile`,
+                        {
+                            method: "POST",
+
+                            headers:
+                                getAuthHeaders(),
+
+                            body:
+                                JSON.stringify({
+                                    first_name:
+                                        document
+                                            .getElementById(
+                                                "homeProfileFirstName"
+                                            )
+                                            ?.value
+                                            ?.trim() || "",
+
+                                    last_name:
+                                        document
+                                            .getElementById(
+                                                "homeProfileLastName"
+                                            )
+                                            ?.value
+                                            ?.trim() || "",
+
+                                    phone:
+                                        document
+                                            .getElementById(
+                                                "homeProfilePhone"
+                                            )
+                                            ?.value
+                                            ?.trim() || ""
+                                })
+                        }
+                    );
+
+                    console.error("🔥 PROFILE SAVE — AFTER FETCH", {
+                        status: userProfileResponse.status,
+                        ok: userProfileResponse.ok
+                    });
+
+                if (!userProfileResponse.ok) {
+
+                    console.error(
+                        "❌ HOME USER PROFILE SAVE FAILED",
+                        userProfileResponse.status
+                    );
+
+                    return;
+                }
+            }
+
+                    
             // ==================================================
             // CREATE PROJECT
             // ==================================================
+
+            console.error("🔥 STEP 3 — CALLING createProject");
+
+    
 
             closeCreateProjectNamePopup();
 
@@ -3305,6 +4222,170 @@ function openCreateProjectNamePopup(projectType) {
     }, 50);
 }
 
+async function changeAccountPassword() {
+    const currentPassword =
+        document.getElementById("accountSecurityCurrentPassword");
+
+    const newPassword =
+        document.getElementById("accountSecurityNewPassword");
+
+    const confirmPassword =
+        document.getElementById("accountSecurityConfirmPassword");
+
+    const message =
+        document.getElementById("accountSecurityMessage");
+
+    if (
+        !currentPassword ||
+        !newPassword ||
+        !confirmPassword ||
+        !message
+    ) {
+        return;
+    }
+
+    const currentValue = currentPassword.value;
+    const newValue = newPassword.value;
+    const confirmValue = confirmPassword.value;
+
+    message.style.display = "none";
+    message.textContent = "";
+    message.style.color = "";
+
+    if (!currentValue) {
+        message.textContent = "Current password is required.";
+        message.style.color = "#dc2626";
+        message.style.display = "block";
+        currentPassword.focus();
+        return;
+    }
+
+    if (!newValue) {
+        message.textContent = "New password is required.";
+        message.style.color = "#dc2626";
+        message.style.display = "block";
+        newPassword.focus();
+        return;
+    }
+
+    if (newValue.length < 8) {
+        message.textContent =
+            "Password must contain at least 8 characters.";
+        message.style.color = "#dc2626";
+        message.style.display = "block";
+        newPassword.focus();
+        return;
+    }
+
+    if (!confirmValue) {
+        message.textContent =
+            "Please confirm your new password.";
+        message.style.color = "#dc2626";
+        message.style.display = "block";
+        confirmPassword.focus();
+        return;
+    }
+
+    if (newValue !== confirmValue) {
+        message.textContent = "Passwords do not match.";
+        message.style.color = "#dc2626";
+        message.style.display = "block";
+        confirmPassword.focus();
+        return;
+    }
+
+    if (newValue === currentValue) {
+        message.textContent =
+            "New password must be different from your current password.";
+            message.style.color = "#dc2626";
+            message.style.display = "block";
+        newPassword.focus();
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API}/me/change-password`,
+            {
+                method: "POST",
+                headers: {
+                    ...getAuthHeaders(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    current_password: currentValue,
+                    new_password: newValue,
+                    confirm_password: confirmValue
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail || "Unable to change password."
+            );
+        }
+
+        message.textContent =
+            "Password changed successfully.";
+        message.style.color = "#16a34a";
+        message.style.display = "block";
+
+        currentPassword.value = "";
+        newPassword.value = "";
+        confirmPassword.value = "";
+
+    } catch (error) {
+        console.error(
+            "CHANGE PASSWORD FAILED",
+            error
+        );
+
+        message.textContent =
+            error.message ||
+            "Unable to change password.";
+        message.style.color = "#dc2626";
+        message.style.display = "block";
+    }
+}
+
+window.changeAccountPassword = changeAccountPassword;
+
+function toggleAccountPasswordVisibility(
+    fieldId,
+    button
+) {
+    const field = document.getElementById(fieldId);
+
+    if (!field) {
+        return;
+    }
+
+    const isPassword =
+        field.type === "password";
+
+    field.type =
+        isPassword
+            ? "text"
+            : "password";
+
+    button.setAttribute(
+        "aria-label",
+        isPassword
+            ? "Hide password"
+            : "Show password"
+    );
+
+    button.textContent =
+        isPassword
+            ? "🙈"
+            : "👁";
+}
+
+window.toggleAccountPasswordVisibility =
+    toggleAccountPasswordVisibility;
 
 function closeCreateProjectNamePopup() {
 
@@ -5573,6 +6654,57 @@ async function loadProject(
     }
 }
 
+
+// =====================================================
+// 🔥 CURRENT USER
+// =====================================================
+
+async function loadCurrentUser() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/me`,
+                {
+                    method: "GET",
+                    headers:
+                        getAuthHeaders(),
+                    cache: "no-store"
+                }
+            );
+
+        if (!response.ok) {
+
+            console.warn(
+                "CURRENT USER LOAD FAILED",
+                response.status
+            );
+
+            return null;
+        }
+
+        const user =
+            await response.json();
+
+        console.log(
+            "CURRENT USER LOADED",
+            user
+        );
+
+        return user;
+    }
+    catch (error) {
+
+        console.error(
+            "CURRENT USER LOAD ERROR",
+            error
+        );
+
+        return null;
+    }
+}
+
 // =====================================================
 // 🔥 GLOBAL PROJECT API
 // =====================================================
@@ -5597,6 +6729,9 @@ window.openProjectMenu =
 
 window.closeProjectMenu =
     closeProjectMenu;
+
+window.loadCurrentUser =
+    loadCurrentUser;
 
 
 console.error(

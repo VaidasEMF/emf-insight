@@ -188,6 +188,31 @@ def my_projects(
             "id": p.id,
             "name": p.name,
             "type": project_type,
+
+            "property_id":
+                data.get("propertyId"),
+
+            "property_health_record_id":
+                data.get("propertyHealthRecordId"),
+
+            "property_type":
+                data.get("propertyType"),
+
+            "country":
+                data.get("country"),
+
+            "city":
+                data.get("city"),
+
+            "postal_code":
+                data.get("postalCode"),
+
+            "address":
+                data.get("address"),
+
+            "unit":
+                data.get("unit"),
+
             "created_at": (
                 created_at.isoformat()
                 if created_at

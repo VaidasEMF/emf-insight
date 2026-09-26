@@ -16225,11 +16225,11 @@
     }
 
     .project-name-popup-card {
-      width: 420px !important;
+      width: min(720px, calc(100vw - 32px)) !important;
       max-width: calc(100vw - 32px) !important;
       height: auto !important;
       min-height: 0 !important;
-      max-height: 420px !important;
+      max-height: calc(100vh - 32px) !important;
     }
 
     .project-name-popup-content {
@@ -20167,6 +20167,581 @@
       line-height: 1.2;
       font-weight: 600;
     }
+
+
+    .home-profile-popup-field input.home-profile-field-valid,
+    .home-profile-popup-field select.home-profile-field-valid {
+      border-color: #9bc9ad;
+      box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.08);
+    }
+
+    .home-profile-popup-field input.home-profile-field-invalid,
+    .home-profile-popup-field select.home-profile-field-invalid {
+      border-color: #e2a1a1;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.07);
+    }
+
+    .home-profile-contact-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr 1fr;
+      gap: 14px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .home-profile-contact-field {
+      min-width: 0;
+    }
+
+    .home-profile-contact-field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .home-profile-contact-field input,
+    .home-profile-contact-field select {
+      width: 100%;
+      height: 44px;
+      min-height: 44px;
+      box-sizing: border-box;
+      padding: 0 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #334155;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .home-profile-contact-field input:focus,
+    .home-profile-contact-field select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+
+    /* ==========================================
+   USER PROFILE MODAL
+   ========================================== */
+
+    .user-profile-modal {
+      width: min(680px, calc(100vw - 40px));
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .user-profile-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .user-profile-modal-header h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .user-profile-modal-header p {
+      margin: 5px 0 0;
+      color: #718096;
+      font-size: 13px;
+    }
+
+    .user-profile-close {
+      border: 0;
+      background: transparent;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+      color: #718096;
+    }
+
+    .user-profile-section {
+      margin-top: 22px;
+    }
+
+    .user-profile-section-title {
+      margin-bottom: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #718096;
+    }
+
+    .user-profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .user-profile-field {
+      margin-bottom: 14px;
+    }
+
+    .user-profile-field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .user-profile-field input {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    .user-profile-phone-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 10px;
+    }
+
+    .user-profile-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 8px;
+      padding-top: 18px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .user-profile-save-btn {
+      min-height: 40px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .user-profile-save-message {
+      font-size: 13px;
+      color: #dc2626;
+    }
+
+    .user-profile-save-message.success {
+      color: #16a34a;
+    }
+
+    .user-profile-account-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .user-profile-account-grid>div {
+      padding: 13px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+
+    .user-profile-account-grid span {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #718096;
+    }
+
+    .user-profile-account-grid strong {
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .user-profile-danger-section {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .user-profile-danger-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+    }
+
+    .user-profile-danger-row strong {
+      color: #b91c1c;
+    }
+
+    .user-profile-danger-row p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: #718096;
+    }
+
+    .user-profile-delete-btn {
+      flex: 0 0 auto;
+      padding: 9px 14px;
+      border: 1px solid #dc2626;
+      border-radius: 7px;
+      background: white;
+      color: #dc2626;
+      cursor: pointer;
+    }
+
+    #userProfileModal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 200000 !important;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(15, 23, 42, 0.38);
+    }
+
+
+    #userProfileModal .user-profile-card {
+      width: min(760px, calc(100vw - 40px));
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+
+      background: #ffffff;
+      border-radius: 16px;
+      box-sizing: border-box;
+      padding: 28px 32px;
+
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+      position: relative;
+    }
+
+    /* ==========================================
+   USER PROFILE MODAL
+   ========================================== */
+
+    #userProfileModal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 200000 !important;
+
+      align-items: center;
+      justify-content: center;
+
+      box-sizing: border-box;
+    }
+
+    #userProfileModal .modal-content.user-profile-modal {
+      width: min(600px, calc(100vw - 40px)) !important;
+      max-width: 600px !important;
+
+      max-height: calc(100vh - 40px) !important;
+
+      background: #ffffff !important;
+
+      border-radius: 16px !important;
+      box-sizing: border-box;
+
+      padding: 28px 32px !important;
+
+      overflow-y: auto;
+
+      position: relative;
+    }
+
+
+    @media (max-width: 600px) {
+
+      .user-profile-grid,
+      .user-profile-account-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .user-profile-danger-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+
+    #accountSecurityModal {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 200000 !important;
+
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+
+      background: rgba(15, 23, 42, 0.42) !important;
+    }
+
+    #accountSecurityModal .modal-content.user-profile-modal {
+      width: min(500px, calc(100vw - 40px)) !important;
+      max-width: 500px !important;
+      max-height: calc(100vh - 40px) !important;
+
+      background: #ffffff !important;
+      border-radius: 16px !important;
+      box-sizing: border-box;
+      padding: 28px 32px !important;
+
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .account-security-password-field {
+      position: relative;
+    }
+
+    .account-security-password-field input {
+      width: 100%;
+      box-sizing: border-box;
+      padding-right: 48px !important;
+    }
+
+    .account-security-password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      width: 34px;
+      height: 34px;
+
+      padding: 0;
+      border: 0;
+      background: transparent;
+
+      cursor: pointer;
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    #accountSecurityModal .modal-close-btn {
+      position: absolute !important;
+      top: 20px !important;
+      right: 20px !important;
+
+      width: 32px;
+      height: 32px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 0;
+      margin: 0;
+
+      cursor: pointer;
+    }
+
+
+    .my-property-hub-modal {
+      width: min(620px, calc(100vw - 40px));
+      max-width: 620px;
+      max-height: calc(100vh - 40px);
+
+      background: #ffffff;
+      border-radius: 16px;
+
+      box-sizing: border-box;
+      padding: 28px 32px;
+
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .my-property-hub-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+
+      margin-bottom: 24px;
+    }
+
+    .my-property-hub-eyebrow {
+      margin-bottom: 6px;
+
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+
+      color: #2563eb;
+    }
+
+    .my-property-hub-header h2 {
+      margin: 0;
+
+      font-size: 26px;
+      line-height: 1.2;
+
+      color: #0f172a;
+    }
+
+    .my-property-hub-header p {
+      margin: 7px 0 0;
+
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .my-property-hub-close {
+      width: 34px;
+      height: 34px;
+
+      flex: 0 0 auto;
+
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+
+      background: #ffffff;
+      color: #334155;
+
+      font-size: 20px;
+      line-height: 1;
+
+      cursor: pointer;
+    }
+
+    .my-property-hub-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .my-property-add,
+    .my-property-view-all {
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .my-property-add {
+      border: 1px solid #2563eb;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .my-property-add:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    .my-property-view-all {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+    }
+
+    .my-property-add {
+      margin-right: 8px;
+    }
+
+    .my-property-add,
+    .my-property-view-all {
+      margin-top: 10px;
+    }
+
+    .my-property-view-all:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .my-property-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding: 18px 20px;
+
+      border: 1px solid #dbe4f0;
+      border-radius: 12px;
+
+      background: #f8fbff;
+    }
+
+    .my-property-card-info {
+      min-width: 0;
+    }
+
+    .my-property-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .my-property-card-meta {
+      margin-top: 5px;
+
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .my-property-card-open {
+      flex: 0 0 auto;
+
+      min-height: 38px;
+      padding: 0 15px;
+
+      border: 1px solid #2563eb;
+      border-radius: 8px;
+
+      background: #2563eb;
+      color: #ffffff;
+
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .my-property-card-open:hover {
+      background: #1d4ed8;
+    }
+
+    .my-property-empty {
+      padding: 32px 20px;
+
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+
+      text-align: center;
+
+      color: #64748b;
+    }
+
+    #myPropertyHubModal {
+      position: fixed !important;
+      inset: 0 !important;
+
+      width: 100vw !important;
+      height: 100vh !important;
+
+      z-index: 200000 !important;
+
+      align-items: center;
+      justify-content: center;
+
+      box-sizing: border-box;
+
+      background: rgba(15, 23, 42, 0.42) !important;
+    }
   </style>
 </head>
 
@@ -21936,8 +22511,9 @@
                     ACCOUNT
                   </div>
 
+                  <!-- PROFILE -->
+                  <div class="user-menu-item" id="userProfileItem" onclick="openUserProfile()">
 
-                  <div class="user-menu-item" id="userProfileItem" onclick="openProfessionalProfile()">
                     <span class="user-menu-icon">👤</span>
 
                     <span class="user-menu-content">
@@ -21947,33 +22523,87 @@
                       </span>
 
                       <span class="user-menu-subtitle">
-                        Personal & account details
+                        Personal account details
                       </span>
 
                     </span>
                   </div>
 
 
-                  <div class="user-menu-item" id="userBrandingItem"
+                  <!-- SECURITY -->
+                  <div class="user-menu-item" id="userSecurityItem" onclick="openAccountSecurity()">
+
+                    <span class="user-menu-icon">🔐</span>
+
+                    <span class="user-menu-content">
+
+                      <span class="user-menu-title">
+                        Security
+                      </span>
+
+                      <span class="user-menu-subtitle">
+                        Password & account security
+                      </span>
+
+                    </span>
+                  </div>
+
+                </div>
+
+
+
+
+                <!-- HOME / BUSINESS -->
+                <div class="user-menu-section" id="userWorkspaceAccountSection">
+
+                  <div class="user-menu-section-title" id="userWorkspaceSectionTitle">
+                    HOME WELLNESS
+                  </div>
+
+
+                  <!-- HOME PROPERTY -->
+                  <div class="user-menu-item" id="userPropertyItem" onclick="openMyProperty()">
+
+                    <span class="user-menu-icon">🏠</span>
+
+                    <span class="user-menu-content">
+
+                      <span class="user-menu-title">
+                        My Property
+                      </span>
+
+                      <span class="user-menu-subtitle">
+                        Property profile & health record
+                      </span>
+
+                    </span>
+                  </div>
+
+
+                  <!-- BUSINESS BRANDING -->
+                  <div class="user-menu-item" id="userBrandingItem" style="display:none;"
                     onclick="window.location.href='dashboard.html#branding'">
+
                     <span class="user-menu-icon">🎨</span>
 
                     <span class="user-menu-content">
 
                       <span class="user-menu-title">
-                        Branding
+                        Company & Branding
                       </span>
 
                       <span class="user-menu-subtitle">
-                        Company name, email & logo
+                        Company identity & reporting
                       </span>
 
                     </span>
                   </div>
 
 
+                  <!-- BILLING -->
                   <div class="user-menu-item" id="userBillingItem"
                     onclick="window.location.href='dashboard.html#billing'">
+
                     <span class="user-menu-icon">💳</span>
 
                     <span class="user-menu-content">
@@ -21989,25 +22619,18 @@
                     </span>
                   </div>
 
+                </div>
 
-                  <div class="user-menu-item" id="userSecurityItem">
-                    <span class="user-menu-icon">🔐</span>
 
-                    <span class="user-menu-content">
+                <!-- SUPPORT -->
+                <div class="user-menu-section">
 
-                      <span class="user-menu-title">
-                        Security
-                      </span>
-
-                      <span class="user-menu-subtitle">
-                        Password & security
-                      </span>
-
-                    </span>
+                  <div class="user-menu-section-title">
+                    SUPPORT
                   </div>
 
-
                   <div class="user-menu-item" id="userHelpItem" onclick="window.location.href='dashboard.html#help'">
+
                     <span class="user-menu-icon">❓</span>
 
                     <span class="user-menu-content">
@@ -22021,6 +22644,7 @@
                       </span>
 
                     </span>
+
                   </div>
 
                 </div>
@@ -22029,26 +22653,12 @@
                 <div class="user-menu-divider"></div>
 
 
-                <div class="user-menu-item user-menu-item-danger" id="userDeleteAccountItem">
-
-                  <span class="user-menu-icon">⚠️</span>
-
-                  <span class="user-menu-content">
-
-                    <span class="user-menu-title">
-                      Delete Account
-                    </span>
-
-                    <span class="user-menu-subtitle">
-                      Permanently delete your account and data
-                    </span>
-
-                  </span>
-
-                </div>
 
 
+
+                <!-- SIGN OUT -->
                 <div class="user-menu-item user-menu-item-danger" id="userSignOutItem" onclick="signOut()">
+
                   <span class="user-menu-icon">
                     🚪
                   </span>
@@ -22063,8 +22673,182 @@
 
                 </div>
 
+
+                <div class="user-menu-divider"></div>
+
+
+
+
               </div>
 
+              <!-- ==============================
+     USER PROFILE MODAL
+     ============================== -->
+
+              <div id="userProfileModal" class="modal-overlay" style="display:none;">
+
+                <div class="modal-content user-profile-modal">
+
+                  <div class="user-profile-modal-header">
+                    <div>
+                      <h3>Profile</h3>
+                      <p>Personal information and account identity</p>
+                    </div>
+
+                    <button type="button" class="user-profile-close" onclick="closeUserProfile()" aria-label="Close">
+                      ×
+                    </button>
+                  </div>
+
+                  <div class="user-profile-section">
+
+                    <div class="user-profile-section-title">
+                      PERSONAL INFORMATION
+                    </div>
+
+                    <div class="user-profile-grid">
+
+                      <div class="user-profile-field">
+                        <label for="userProfileFirstName">
+                          First name
+                        </label>
+
+                        <input id="userProfileFirstName" type="text" autocomplete="given-name">
+                      </div>
+
+                      <div class="user-profile-field">
+                        <label for="userProfileLastName">
+                          Last name
+                        </label>
+
+                        <input id="userProfileLastName" type="text" autocomplete="family-name">
+                      </div>
+
+                    </div>
+
+                    <div class="user-profile-field">
+                      <label for="userProfileEmail">
+                        Email address
+                      </label>
+
+                      <input id="userProfileEmail" type="email" autocomplete="email" readonly>
+                    </div>
+
+                    <div class="user-profile-field">
+
+                      <label>
+                        Phone
+                      </label>
+
+                      <div class="user-profile-phone-row">
+
+                        <input id="userProfilePhoneCountryCode" type="text" placeholder="+370"
+                          autocomplete="tel-country-code" readonly>
+
+                        <input id="userProfilePhone" type="tel" inputmode="numeric" autocomplete="tel"
+                          placeholder="Phone number">
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div class="user-profile-actions">
+
+                    <div id="userProfileSaveMessage" class="user-profile-save-message">
+                    </div>
+
+                    <button type="button" class="user-profile-save-btn" onclick="saveUserProfile()">
+                      Save changes
+                    </button>
+
+                  </div>
+
+                  <div class="user-profile-section">
+
+                    <div class="user-profile-section-title">
+                      ACCOUNT INFORMATION
+                    </div>
+
+                    <div class="user-profile-account-grid">
+
+                      <div>
+                        <span>Account type</span>
+                        <strong id="userProfileAccountType">Free</strong>
+                      </div>
+
+                      <div>
+                        <span>Member since</span>
+                        <strong id="userProfileMemberSince">—</strong>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div class="user-profile-danger-section">
+
+                    <div class="user-profile-section-title">
+                      DANGER ZONE
+                    </div>
+
+                    <div class="user-profile-danger-row">
+
+                      <div>
+                        <strong>Delete Account</strong>
+
+                        <p>
+                          Permanently delete your account and data
+                        </p>
+                      </div>
+
+                      <button type="button" class="user-profile-delete-btn"
+                        onclick="closeUserProfile(); openDeleteAccountModal()">
+                        Delete Account
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- MY PROPERTY HUB -->
+            <div id="myPropertyHubModal" class="modal-overlay" style="display:none;">
+
+              <div class="modal-content my-property-hub-modal">
+
+                <div class="my-property-hub-header">
+
+                  <div>
+                    <div class="my-property-hub-eyebrow">
+                      HOME WELLNESS
+                    </div>
+
+                    <h2>
+                      My Properties
+                    </h2>
+
+                    <p>
+                      Select a property to open its Property Health Record.
+                    </p>
+                  </div>
+
+                  <button type="button" class="my-property-hub-close" onclick="closeMyPropertyHub()" aria-label="Close">
+                    ×
+                  </button>
+
+                </div>
+
+                <div id="myPropertyHubList" class="my-property-hub-list">
+                </div>
+
+              </div>
             </div>
 
             <!-- ================================================== -->
@@ -24021,26 +24805,46 @@
                             </div>
 
 
-                            <div class="home-profile-popup-field">
-                              <label for="homeProfileEmail">
-                                Email
-                              </label>
+                            <div class="home-profile-contact-row">
 
-                              <input id="homeProfileEmail" type="email" maxlength="160" autocomplete="email"
-                                placeholder="Email address">
-                            </div>
+                              <div class="home-profile-contact-field">
+
+                                <label for="homeProfileEmail">
+                                  Email
+                                </label>
+
+                                <input id="homeProfileEmail" type="email" maxlength="160" autocomplete="email"
+                                  placeholder="Email address">
+
+                              </div>
 
 
-                            <div class="home-profile-popup-field">
-                              <label for="homeProfilePhone">
-                                Phone
-                                <span class="home-profile-optional">
-                                  Optional
-                                </span>
-                              </label>
+                              <div class="home-profile-contact-field">
 
-                              <input id="homeProfilePhone" type="tel" maxlength="40" autocomplete="tel"
-                                placeholder="Phone number">
+                                <label for="homeProfilePhoneCountryCode">
+                                  Phone code
+                                </label>
+
+                                <select id="homeProfilePhoneCountryCode" autocomplete="tel-country-code">
+                                  <option value="">
+                                    Select code
+                                  </option>
+                                </select>
+
+                              </div>
+
+
+                              <div class="home-profile-contact-field">
+
+                                <label for="homeProfilePhone">
+                                  Phone number
+                                </label>
+
+                                <input id="homeProfilePhone" type="tel" inputmode="numeric" autocomplete="tel"
+                                  placeholder="Enter phone number">
+
+                              </div>
+
                             </div>
 
                           </div>
@@ -24109,8 +24913,9 @@
                                 Country
                               </label>
 
-                              <input id="homePropertyCountryInput" type="text" maxlength="100"
-                                autocomplete="country-name" placeholder="Country">
+                              <select id="homePropertyCountryInput" autocomplete="country">
+                                <option value="">Select country</option>
+                              </select>
                             </div>
 
 
@@ -24120,7 +24925,7 @@
                               </label>
 
                               <input id="homePropertyCityInput" type="text" maxlength="100"
-                                autocomplete="address-level2" placeholder="City or town">
+                                autocomplete="address-level2" placeholder="City / Town">
                             </div>
 
 
@@ -26474,6 +27279,8 @@
 
       </div>
 
+
+
       <!-- ================================================== -->
       <!-- PROFESSIONAL DEMO FEEDBACK MODAL -->
       <!-- ================================================== -->
@@ -26743,15 +27550,7 @@
 
       </div>
 
-      <!-- ================================================== -->
-      <!-- HOME FLOOR CONTEXT -->
-      <!-- ================================================== -->
 
-      <div id="homeFloorTabsBar" class="home-only">
-
-        <div id="homeFloorTabs"></div>
-
-      </div>
 
       <!-- ===================== -->
       <!-- 🔥 CORE -->
@@ -26945,7 +27744,134 @@
 
     </div>
 
+    <!-- DELETE ACCOUNT MODAL -->
+    <div id="deleteAccountModal">
+      <div class="modal-content">
 
+        <h3>Delete Account?</h3>
+
+        <p>
+          This action will permanently delete your account and all associated data.
+        </p>
+
+        <p>
+          This cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+
+          <button type="button" onclick="closeDeleteAccountModal()">
+            Cancel
+          </button>
+
+          <button type="button" onclick="confirmDeleteAccount()">
+            Delete Account
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ACCOUNT SECURITY MODAL -->
+    <div id="accountSecurityModal" class="modal-overlay" style="display:none;">
+      <div class="modal-content user-profile-modal">
+
+        <div class="user-profile-header">
+          <div>
+            <h2>Security</h2>
+            <p>Password & account security</p>
+          </div>
+
+          <button type="button" class="modal-close-btn" onclick="closeAccountSecurity()" aria-label="Close">
+            ×
+          </button>
+        </div>
+
+        <div class="user-profile-section">
+
+          <div class="user-profile-section-title">
+            PASSWORD
+          </div>
+
+          <div class="user-profile-field">
+            <label for="accountSecurityCurrentPassword">
+              Current password
+            </label>
+
+            <div class="account-security-password-field">
+              <input id="accountSecurityCurrentPassword" type="password" autocomplete="current-password"
+                placeholder="Enter current password">
+
+              <button type="button" class="account-security-password-toggle"
+                onclick="toggleAccountPasswordVisibility('accountSecurityCurrentPassword', this)"
+                aria-label="Show password">
+                👁
+              </button>
+            </div>
+          </div>
+
+          <div class="user-profile-field">
+            <div class="account-security-password-field">
+              <input id="accountSecurityNewPassword" type="password" autocomplete="new-password"
+                placeholder="Enter new password">
+
+              <button type="button" class="account-security-password-toggle"
+                onclick="toggleAccountPasswordVisibility('accountSecurityNewPassword', this)"
+                aria-label="Show password">
+                👁
+              </button>
+            </div>
+          </div>
+
+          <div class="user-profile-field">
+            <div class="account-security-password-field">
+              <input id="accountSecurityConfirmPassword" type="password" autocomplete="new-password"
+                placeholder="Repeat new password">
+
+              <button type="button" class="account-security-password-toggle"
+                onclick="toggleAccountPasswordVisibility('accountSecurityConfirmPassword', this)"
+                aria-label="Show password">
+                👁
+              </button>
+            </div>
+
+
+          </div>
+
+          <div id="accountSecurityMessage" style="display:none;">
+          </div>
+
+          <div class="user-profile-actions">
+            <button type="button" class="user-profile-save-btn" onclick="changeAccountPassword()">
+              Change password
+            </button>
+          </div>
+
+        </div>
+
+        <div class="user-profile-section">
+
+          <div class="user-profile-section-title">
+            TWO-FACTOR AUTHENTICATION
+          </div>
+
+          <div class="user-profile-info-row">
+            <strong>Two-factor authentication</strong>
+
+            <p>
+              Add an additional layer of protection to your account.
+            </p>
+          </div>
+
+          <button type="button" disabled>
+            Coming soon
+          </button>
+
+        </div>
+
+      </div>
+    </div>
 
 </body>
 
@@ -30117,6 +31043,288 @@
     return score;
   }
 
+  function openAccountSecurity() {
+    const modal = document.getElementById(
+      "accountSecurityModal"
+    );
+
+    if (modal) {
+      modal.style.display = "flex";
+    }
+  }
+
+  function closeAccountSecurity() {
+    const modal = document.getElementById(
+      "accountSecurityModal"
+    );
+
+    if (modal) {
+      modal.style.setProperty("display", "none", "important");
+    }
+  }
+
+  window.openAccountSecurity = openAccountSecurity;
+  window.closeAccountSecurity = closeAccountSecurity;
+
+  let myPropertyShowAll = false;
+
+  async function openMyProperty() {
+
+    const modal =
+      document.getElementById("myPropertyHubModal");
+
+    const list =
+      document.getElementById("myPropertyHubList");
+
+    if (!modal || !list) {
+      return;
+    }
+
+    modal.style.display = "flex";
+
+    list.innerHTML = `
+        <div class="my-property-empty">
+            Loading your properties...
+        </div>
+    `;
+
+    try {
+
+      const response = await fetch(
+        `${API}/projects/me`,
+        {
+          method: "GET",
+          headers: getAuthHeaders(),
+          cache: "no-store"
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Unable to load properties (${response.status}).`
+        );
+      }
+
+      const projects = await response.json();
+
+      const homeProjects =
+        Array.isArray(projects)
+          ? projects
+            .filter(
+              project =>
+                project.type === "home"
+            )
+            .sort(
+              (a, b) =>
+                Number(b.id) -
+                Number(a.id)
+            )
+          : [];
+
+      const visibleHomeProjects =
+        myPropertyShowAll
+          ? homeProjects
+          : homeProjects.slice(0, 4);
+
+      if (!homeProjects.length) {
+
+        list.innerHTML = `
+                <div class="my-property-empty">
+                    <strong>No properties yet.</strong>
+                    <br>
+                    Create your first Home Wellness property
+                    to see it here.
+                </div>
+            `;
+
+        return;
+      }
+
+
+
+      list.innerHTML =
+        visibleHomeProjects
+          .map(project => {
+
+            const projectId =
+              project.id ??
+              project.project_id;
+
+            const name =
+              project.name ||
+              "Unnamed Property";
+
+            const propertyType =
+              project.property_type ||
+              "";
+
+            const city =
+              project.city ||
+              "";
+
+            const country =
+              project.country ||
+              "";
+
+            const propertyLocation = [
+              propertyType,
+              city && country
+                ? `${city}, ${country}`
+                : city || country
+            ]
+              .filter(Boolean)
+              .join(" · ");
+
+            return `
+                <div class="my-property-card">
+
+                    <div class="my-property-card-info">
+
+                        <div class="my-property-card-title">
+                            🏠 ${name}
+                        </div>
+
+                        <div class="my-property-card-meta">
+                            ${propertyLocation ||
+              "Property profile not available"}
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="my-property-card-open"
+                        onclick="openMyPropertyProject(${projectId})">
+
+                        Open →
+
+                    </button>
+
+                </div>
+            `;
+          })
+          .join("");
+
+      const existingViewAll =
+        list.parentElement?.querySelector(
+          ".my-property-view-all"
+        );
+
+      const existingAdd =
+        list.parentElement?.querySelector(
+          ".my-property-add"
+        );
+
+      existingViewAll?.remove();
+      existingAdd?.remove();
+
+      if (homeProjects.length > 4 && !myPropertyShowAll) {
+        list.insertAdjacentHTML(
+          "afterend",
+          `
+            <button
+                type="button"
+                class="my-property-view-all"
+                onclick="showAllMyProperties()">
+                View all properties
+            </button>
+        `
+        );
+      }
+
+      list.insertAdjacentHTML(
+        "afterend",
+        `
+        <button
+            type="button"
+            class="my-property-add"
+            onclick="closeMyPropertyHub(); createProject?.()">
+            + Add Property
+        </button>
+    `
+      );
+
+    } catch (error) {
+
+      console.error(
+        "MY PROPERTY HUB LOAD FAILED",
+        error
+      );
+
+      const propertyType = project.property_type || "";
+      const city = project.city || "";
+      const country = project.country || "";
+
+      const propertyLocation = [
+        propertyType,
+        city && country
+          ? `${city}, ${country}`
+          : city || country
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
+      list.innerHTML = `
+            <div class="my-property-empty">
+                Unable to load your properties.
+                Please try again.
+            </div>
+        `;
+    }
+  }
+
+
+  function closeMyPropertyHub() {
+
+    const modal =
+      document.getElementById(
+        "myPropertyHubModal"
+      );
+
+    if (modal) {
+      modal.style.display = "none";
+    }
+
+    myPropertyShowAll = false;
+  }
+
+  function showAllMyProperties() {
+    myPropertyShowAll = true;
+    openMyProperty();
+  }
+
+
+  function openMyPropertyProject(projectId) {
+
+    localStorage.setItem(
+      "workspaceMode",
+      "home"
+    );
+
+    localStorage.setItem(
+      "home_project_id",
+      String(projectId)
+    );
+
+    localStorage.removeItem(
+      "project_id"
+    );
+
+    closeMyPropertyHub();
+
+    window.location.href =
+      "index.html";
+  }
+
+
+  window.openMyProperty =
+    openMyProperty;
+
+  window.closeMyPropertyHub =
+    closeMyPropertyHub;
+
+  window.openMyPropertyProject =
+    openMyPropertyProject;
 
   function safeRooms() {
 
@@ -30453,7 +31661,250 @@
     }
   }
 
+  // ==========================================
+  // USER PROFILE
+  // ==========================================
 
+  async function openUserProfile() {
+
+    const modal =
+      document.getElementById("userProfileModal");
+
+    if (!modal) {
+      console.error(
+        "❌ USER PROFILE MODAL NOT FOUND"
+      );
+      return;
+    }
+
+    modal.style.display = "flex";
+
+    const user =
+      await loadCurrentUser();
+
+    if (!user) {
+      console.error(
+        "❌ USER PROFILE LOAD FAILED"
+      );
+      return;
+    }
+
+    const firstName =
+      document.getElementById(
+        "userProfileFirstName"
+      );
+
+    const lastName =
+      document.getElementById(
+        "userProfileLastName"
+      );
+
+    const email =
+      document.getElementById(
+        "userProfileEmail"
+      );
+
+    const phone =
+      document.getElementById(
+        "userProfilePhone"
+      );
+
+    const accountType =
+      document.getElementById(
+        "userProfileAccountType"
+      );
+
+    const memberSince =
+      document.getElementById(
+        "userProfileMemberSince"
+      );
+
+
+    if (firstName) {
+      firstName.value =
+        user.first_name || "";
+    }
+
+    if (lastName) {
+      lastName.value =
+        user.last_name || "";
+    }
+
+    if (email) {
+      email.value =
+        user.email || "";
+    }
+
+    if (phone) {
+      phone.value =
+        user.phone || "";
+    }
+
+    if (accountType) {
+      accountType.textContent =
+        user.plan
+          ? String(user.plan)
+            .charAt(0)
+            .toUpperCase() +
+          String(user.plan).slice(1)
+          : "Free";
+    }
+
+    if (memberSince) {
+      memberSince.textContent =
+        user.created_at
+          ? new Date(user.created_at)
+            .toLocaleDateString(
+              undefined,
+              {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              }
+            )
+          : "—";
+    }
+  }
+
+
+  function closeUserProfile() {
+
+    const modal =
+      document.getElementById(
+        "userProfileModal"
+      );
+
+    if (modal) {
+      modal.style.display = "none";
+    }
+  }
+
+
+  async function saveUserProfile() {
+
+    const firstName =
+      document.getElementById(
+        "userProfileFirstName"
+      )?.value.trim() || "";
+
+    const lastName =
+      document.getElementById(
+        "userProfileLastName"
+      )?.value.trim() || "";
+
+    const phone =
+      document.getElementById(
+        "userProfilePhone"
+      )?.value.trim() || "";
+
+    const message =
+      document.getElementById(
+        "userProfileSaveMessage"
+      );
+
+
+    if (!firstName) {
+      if (message) {
+        message.textContent =
+          "Please enter your first name.";
+      }
+      return;
+    }
+
+
+    if (!lastName) {
+      if (message) {
+        message.textContent =
+          "Please enter your last name.";
+      }
+      return;
+    }
+
+
+    if (phone && !/^\d+$/.test(phone)) {
+      if (message) {
+        message.textContent =
+          "Phone number must contain digits only.";
+      }
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          `${API}/me/profile`,
+          {
+            method: "POST",
+
+            headers:
+              getAuthHeaders(),
+
+            body:
+              JSON.stringify({
+                first_name:
+                  firstName,
+
+                last_name:
+                  lastName,
+
+                phone:
+                  phone
+              })
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          `Profile save failed: ${response.status}`
+        );
+      }
+
+
+      if (message) {
+
+        message.textContent =
+          "Profile saved.";
+
+        message.classList.add(
+          "success"
+        );
+      }
+
+      // Refresh header/account data
+      await loadCurrentUser();
+
+    } catch (error) {
+
+      console.error(
+        "❌ USER PROFILE SAVE ERROR",
+        error
+      );
+
+      if (message) {
+
+        message.textContent =
+          "Unable to save profile.";
+
+        message.classList.remove(
+          "success"
+        );
+      }
+    }
+  }
+
+
+  window.openUserProfile =
+    openUserProfile;
+
+  window.closeUserProfile =
+    closeUserProfile;
+
+  window.saveUserProfile =
+    saveUserProfile;
 
   // =====================
   // 🔥 DANGER ZONE OVERLAY
@@ -31333,6 +32784,7 @@
       button.style.display = "";
 
       button.onclick = function () {
+
 
         if (typeof window.setAppMode === "function") {
           window.setAppMode("business");

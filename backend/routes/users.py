@@ -20,6 +20,10 @@ from fastapi import File
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from models.user import User
+from auth.passwords import (
+    hash_password,
+    verify_password,
+)
 
 router = APIRouter()
 
@@ -139,6 +143,10 @@ def me(
     return {
         "id": current_user.id,
         "email": current_user.email,
+
+        "first_name": current_user.first_name,
+        "last_name": current_user.last_name,
+        "phone": current_user.phone,
         "country": getattr(current_user, "country", None),
         "city": getattr(current_user, "city", None),
 
@@ -375,6 +383,21 @@ def update_profile(
     ),
 ):
 
+    current_user.first_name = body.get(
+        "first_name",
+        current_user.first_name
+    )
+
+    current_user.last_name = body.get(
+        "last_name",
+        current_user.last_name
+    )
+
+    current_user.phone = body.get(
+        "phone",
+        current_user.phone
+    )
+
     current_user.company_name = body.get(
         "company_name",
         "",
@@ -394,6 +417,101 @@ def update_profile(
 
     return {
         "status": "ok",
+    }
+
+@router.post("/me/change-password")
+def change_password(
+    body: dict,
+    current_user=Depends(
+        get_current_user,
+    ),
+    db: Session = Depends(
+        get_db,
+    ),
+):
+
+    current_password = (
+        body.get("current_password", "")
+    )
+
+    new_password = (
+        body.get("new_password", "")
+    )
+
+    confirm_password = (
+        body.get("confirm_password", "")
+    )
+
+    # =====================
+    # REQUIRED FIELDS
+    # =====================
+
+    if not current_password:
+        raise HTTPException(
+            status_code=400,
+            detail="Current password is required.",
+        )
+
+    if not new_password:
+        raise HTTPException(
+            status_code=400,
+            detail="New password is required.",
+        )
+
+    if not confirm_password:
+        raise HTTPException(
+            status_code=400,
+            detail="Please confirm your new password.",
+        )
+
+    # =====================
+    # CURRENT PASSWORD
+    # =====================
+
+    if not verify_password(
+        current_password,
+        current_user.hashed_password,
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Current password is incorrect.",
+        )
+
+    # =====================
+    # NEW PASSWORD
+    # =====================
+
+    if len(new_password) < 8:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must contain at least 8 characters.",
+        )
+
+    if new_password != confirm_password:
+        raise HTTPException(
+            status_code=400,
+            detail="Passwords do not match.",
+        )
+
+    if new_password == current_password:
+        raise HTTPException(
+            status_code=400,
+            detail="New password must be different from your current password.",
+        )
+
+    # =====================
+    # SAVE NEW PASSWORD
+    # =====================
+
+    current_user.hashed_password = hash_password(
+        new_password
+    )
+
+    db.commit()
+
+    return {
+        "status": "ok",
+        "message": "Password changed successfully.",
     }
 
 # =====================

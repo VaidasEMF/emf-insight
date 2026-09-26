@@ -252,6 +252,11 @@ def _ensure_user_admin_fields(db):
 
     db.execute(text("""
         ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS phone VARCHAR DEFAULT ''
+    """))
+
+    db.execute(text("""
+        ALTER TABLE users
         ADD COLUMN IF NOT EXISTS company_website VARCHAR DEFAULT ''
     """))
 
