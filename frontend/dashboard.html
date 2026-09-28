@@ -3132,6 +3132,380 @@
         .professional-contact-error-ok:hover {
             background: #0c5f76;
         }
+
+
+        .price-details-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .price-details-link:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .price-details-link:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
+
+        .price-details-link {
+            margin-top: 14px;
+        }
+
+
+        /* =========================================
+   PLAN DETAILS MODAL
+   ========================================= */
+
+        .plan-details-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 24px;
+
+            background: rgba(15, 23, 42, 0.48);
+            backdrop-filter: blur(3px);
+        }
+
+        .plan-details-modal {
+            width: min(540px, 94vw);
+            max-height: min(780px, 90vh);
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+
+            background: #ffffff;
+
+            border: 1px solid #dbe3ec;
+            border-radius: 18px;
+
+            box-shadow:
+                0 24px 60px rgba(15, 23, 42, 0.20),
+                0 8px 24px rgba(15, 23, 42, 0.10);
+        }
+
+        .plan-details-modal.is-current {
+            border: 2px solid #1f7a94;
+
+            box-shadow:
+                0 24px 60px rgba(15, 23, 42, 0.20),
+                0 0 0 5px rgba(31, 122, 148, 0.08);
+        }
+
+
+        /* HEADER */
+
+        .plan-details-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            padding: 24px 26px 20px;
+
+            border-bottom: 1px solid #e5eaf0;
+        }
+
+        .plan-details-icon {
+            width: 54px;
+            height: 54px;
+
+            flex: 0 0 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background: #e8f4f7;
+            color: #14758e;
+
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .plan-details-heading {
+            flex: 1;
+        }
+
+        .plan-details-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .plan-details-title-row h3 {
+            margin: 0;
+
+            font-size: 22px;
+            font-weight: 700;
+
+            color: #0f172a;
+        }
+
+        .plan-current-badge {
+            align-items: center;
+            justify-content: center;
+
+            padding: 4px 8px;
+
+            border-radius: 999px;
+
+            background: #e7f6ee;
+            color: #177245;
+
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .plan-details-price {
+            margin-top: 5px;
+
+            color: #14758e;
+
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .plan-details-close {
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 36px;
+
+            border: 1px solid #dbe3ec;
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: #475569;
+
+            font-size: 22px;
+            line-height: 1;
+
+            cursor: pointer;
+        }
+
+        .plan-details-close:hover {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+
+        /* BODY */
+
+        .plan-details-body {
+            padding: 20px 26px;
+
+            overflow-y: auto;
+        }
+
+        .plan-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .plan-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            min-height: 24px;
+
+            padding: 8px 10px;
+
+            border: 1px solid #dce5ee;
+            border-radius: 10px;
+
+            background: #f8fafc;
+
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease,
+                transform 0.15s ease;
+        }
+
+        .plan-detail-item:hover {
+            background: #f1f7f9;
+            border-color: #c6dbe2;
+            transform: translateX(2px);
+        }
+
+        .plan-detail-item-icon {
+            width: 36px;
+            height: 36px;
+
+            flex: 0 0 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: #eaf6f8;
+            color: #14758e;
+
+            font-size: 17px;
+            font-weight: 700;
+
+            border: 1px solid #d5e9ed;
+        }
+
+        .plan-detail-item:nth-child(2n) .plan-detail-item-icon {
+            background: #f0f4fb;
+            color: #42658a;
+            border-color: #dce6f1;
+        }
+
+        .plan-detail-item:nth-child(3n) .plan-detail-item-icon {
+            background: #f4f2fb;
+            color: #68599a;
+            border-color: #e5e0f2;
+        }
+
+        .plan-detail-item:nth-child(4n) .plan-detail-item-icon {
+            background: #f2f7ef;
+            color: #557c45;
+            border-color: #dfead8;
+        }
+
+        .plan-detail-item-text {
+            color: #243447;
+
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+
+        /* FOOTER */
+
+        .plan-details-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+
+            padding: 17px 26px;
+
+            border-top: 1px solid #e5eaf0;
+
+            background: #fbfcfd;
+        }
+
+        .plan-details-footer-note {
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        .plan-details-footer-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-details-close-button {
+            min-height: 42px;
+
+            padding: 0 17px;
+
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+
+            background: #ffffff;
+            color: #334155;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        .plan-details-close-button:hover {
+            background: #f8fafc;
+        }
+
+        .plan-details-cta {
+            min-height: 42px;
+
+            padding: 0 19px;
+
+            border: 0;
+            border-radius: 8px;
+
+            background: #14758e;
+            color: #ffffff;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow: 0 2px 5px rgba(20, 117, 142, 0.18);
+        }
+
+        .plan-details-cta:hover {
+            background: #10657b;
+        }
+
+        .plan-details-cta.is-current,
+        .plan-details-cta:disabled {
+            background: #e2e8f0;
+            color: #64748b;
+
+            cursor: default;
+            box-shadow: none;
+        }
+
+        .plan-branding-link {
+            padding: 0;
+            border: 0;
+            background: transparent;
+
+            color: #14758e;
+            font: inherit;
+            font-weight: 600;
+
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .plan-branding-link:hover {
+            text-decoration: underline;
+        }
+
+        .billing-branding-highlight {
+            border-radius: 12px;
+            box-shadow: 0 0 0 4px rgba(20, 117, 142, 0.12);
+            transition: box-shadow 0.25s ease;
+        }
     </style>
 </head>
 
@@ -4222,11 +4596,45 @@
                                     <div class="billing-note" id="homePriceSummary">?</div>
                                 </div>
 
-                                <div class="billing-panel">
-                                    <h4>Business Survey</h4>
-                                    <p>Your current Business Survey account status and available credits.</p>
-                                    <div class="billing-value" id="billingBusinessPlan">?</div>
-                                    <div class="billing-note" id="billingBusinessCredits">? credits available</div>
+                                <div class="billing-panel" id="professionalBillingPanel">
+                                    <h4>Professional Plan</h4>
+
+                                    <div class="billing-value" id="billingBusinessPlan">
+                                        Professional
+                                    </div>
+
+                                    <div class="billing-note" id="billingBusinessPrice">
+                                        €79 / month
+                                    </div>
+
+                                    <div id="billingBusinessUsage" style="
+            margin-top:16px;
+            display:grid;
+            grid-template-columns:1fr auto;
+            gap:10px 24px;
+            max-width:420px;
+        ">
+                                        <div style="font-weight:600;">Resource</div>
+                                        <div style="font-weight:600;">Usage</div>
+
+                                        <div>Assessments</div>
+                                        <div id="billingAssessmentsUsage">—</div>
+
+                                        <div>Reports</div>
+                                        <div id="billingReportsUsage">—</div>
+
+                                        <div>Contact Points</div>
+                                        <div id="billingContactUsage">—</div>
+
+                                        <div>Projects</div>
+                                        <div id="billingProjectsUsage">—</div>
+
+                                        <div style="margin-top:6px;color:#667085;">Status</div>
+                                        <div id="billingBusinessStatus"
+                                            style="margin-top:6px;font-weight:600;color:var(--success);">
+                                            Active
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -4250,10 +4658,15 @@
                             </div>
                             <div class="pricing-grid" id="businessPricingGrid"></div>
 
-                            <div class="pricing-footnote">
-                                Prices are shown in your selected currency. Home Full EMF Insight Report is a one-time
-                                purchase.
-                                Business plans and credits are managed separately from Home Wellness.
+                            <div class="pricing-footnote" id="homePricingFootnote">
+                                Prices are shown in your selected currency.
+                                The Full EMF Insight Report is a one-time purchase.
+                            </div>
+
+                            <div class="pricing-footnote" id="businessPricingFootnote">
+                                Prices are shown in your selected currency.
+                                Business plans include Professional Assessments, reports and Contact Points.
+                                Home Wellness purchases are separate.
                             </div>
                         </div>
                     </div>
@@ -4283,24 +4696,23 @@
 
                             <div style="
                 display:flex;
-                align-items:center;
                 justify-content:space-between;
-                gap:24px;
+                align-items:flex-start;
+                gap:20px;
                 flex-wrap:wrap;
             ">
 
                                 <div>
                                     <div style="
-                        font-size:13px;
-                        font-weight:600;
-                        color:#667085;
-                        margin-bottom:6px;
+                        font-size:12px;
+                        color:#64748b;
+                        margin-bottom:5px;
                     ">
                                         Branding status
                                     </div>
 
                                     <div id="brandingStatus" style="
-                        font-size:22px;
+                        font-size:20px;
                         font-weight:700;
                         color:#1f2937;
                     ">
@@ -4308,114 +4720,105 @@
                                     </div>
 
                                     <div id="brandingPlanStatus" style="
-                        margin-top:5px;
+                        margin-top:6px;
                         font-size:13px;
                         color:#667085;
+                        max-width:520px;
                     ">
-                                        Activate Professional Branding to use your company identity
+                                        Add Professional Branding to use your company identity
                                         in client-facing reports.
                                     </div>
                                 </div>
 
 
-                                <div style="
-    display:flex;
-    gap:10px;
-    align-items:stretch;
-    flex-wrap:wrap;
-">
+                                <div id="brandingPlanOptions" style="
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                ">
 
                                     <!-- MONTHLY -->
-                                    <div style="
-        padding:12px 14px;
-        border:1px solid #e2e8f0;
-        border-radius:10px;
-        background:#f8fafc;
-        min-width:145px;
-    ">
-
+                                    <div id="brandingMonthlyOption" style="
+                        padding:14px;
+                        min-width:155px;
+                        border:1px solid #dbe4ec;
+                        border-radius:10px;
+                        background:#f8fafc;
+                    ">
                                         <div style="
-            font-size:11px;
-            font-weight:600;
-            color:#667085;
-            margin-bottom:3px;
-        ">
+                            font-size:12px;
+                            color:#64748b;
+                        ">
                                             Monthly
                                         </div>
 
                                         <div style="
-            font-size:16px;
-            font-weight:700;
-            color:#1f2937;
-        ">
-                                            2 Points
+                            margin-top:3px;
+                            font-size:18px;
+                            font-weight:700;
+                            color:#0f172a;
+                        ">
+                                            €7
+                                            <span style="
+                                font-size:12px;
+                                font-weight:400;
+                                color:#64748b;
+                            ">
+                                                / month
+                                            </span>
                                         </div>
 
-                                        <div style="
-            font-size:11px;
-            color:#667085;
-            margin-top:2px;
-            margin-bottom:10px;
-        ">
-                                            per month
-                                        </div>
-
-                                        <button type="button" class="btn-secondary"
-                                            onclick="openBrandingActivation('monthly')" style="width:100%;">
+                                        <button id="brandingMonthlyButton" type="button" class="btn-secondary"
+                                            onclick="openBrandingActivation('monthly')" style="
+                            width:100%;
+                            margin-top:9px;
+                        ">
                                             Activate Monthly
                                         </button>
-
                                     </div>
 
 
                                     <!-- ANNUAL -->
-                                    <div style="
-        padding:12px 14px;
-        border:1px solid #e2e8f0;
-        border-radius:10px;
-        background:#f8fafc;
-        min-width:145px;
-    ">
-
+                                    <div id="brandingAnnualOption" style="
+                        padding:14px;
+                        min-width:155px;
+                        border:1px solid #dbe4ec;
+                        border-radius:10px;
+                        background:#f8fafc;
+                    ">
                                         <div style="
-            font-size:11px;
-            font-weight:600;
-            color:#667085;
-            margin-bottom:3px;
-        ">
+                            font-size:12px;
+                            color:#64748b;
+                        ">
                                             Annual
                                         </div>
 
                                         <div style="
-            font-size:16px;
-            font-weight:700;
-            color:#1f2937;
-        ">
-                                            15 Points
+                            margin-top:3px;
+                            font-size:18px;
+                            font-weight:700;
+                            color:#0f172a;
+                        ">
+                                            €49
+                                            <span style="
+                                font-size:12px;
+                                font-weight:400;
+                                color:#64748b;
+                            ">
+                                                / year
+                                            </span>
                                         </div>
 
-                                        <div style="
-            font-size:11px;
-            color:#667085;
-            margin-top:2px;
-            margin-bottom:10px;
-        ">
-                                            per year
-                                        </div>
-
-                                        <button type="button" class="btn-primary"
-                                            onclick="openBrandingActivation('annual')" style="width:100%;">
+                                        <button id="brandingAnnualButton" type="button" class="btn-primary"
+                                            onclick="openBrandingActivation('annual')" style="
+                            width:100%;
+                            margin-top:9px;
+                        ">
                                             Activate Annual
                                         </button>
-
                                     </div>
 
                                 </div>
-
-
-
-
-
 
                             </div>
 
@@ -9143,7 +9546,12 @@ ADMIN PAYMENTS
 
                 }
 
-                if (text === "Business Survey") {
+                if (
+                    text === "Business Survey" ||
+                    text === "Professional Survey" ||
+                    text === "Professional Plan" ||
+                    text === "Professional"
+                ) {
 
                     card.style.display =
                         isHome ? "none" : "";
@@ -9603,15 +10011,14 @@ ADMIN PAYMENTS
             }
 
 
-            // =========================================================
+            // =============================
             // BILLING PANELS
-            // =========================================================
+            // =============================
 
             const billingPanels =
                 document.querySelectorAll(".billing-panel");
 
             billingPanels.forEach(panel => {
-
                 const title = panel.querySelector("h4");
 
                 if (!title) {
@@ -9622,9 +10029,7 @@ ADMIN PAYMENTS
 
                 if (text === "Home Wellness") {
                     panel.style.display = isHome ? "" : "none";
-                }
-
-                if (text === "Business Survey") {
+                } else if (text === "Professional Plan") {
                     panel.style.display = isHome ? "none" : "";
                 }
             });
@@ -9640,6 +10045,19 @@ ADMIN PAYMENTS
             const businessGrid =
                 document.getElementById("businessPricingGrid");
 
+            const homePricingFootnote =
+                document.getElementById("homePricingFootnote");
+
+            const businessPricingFootnote =
+                document.getElementById("businessPricingFootnote");
+
+            if (homePricingFootnote) {
+                homePricingFootnote.style.display = isHome ? "" : "none";
+            }
+
+            if (businessPricingFootnote) {
+                businessPricingFootnote.style.display = isHome ? "none" : "";
+            }
 
             if (homeGrid) {
 
@@ -9727,12 +10145,22 @@ ADMIN PAYMENTS
                 maximumFractionDigits: 0
             }).format(value);
         }
-
         function setPricingCurrency(currency) {
             if (!window.EMF_PRICING.supportedCurrencies.includes(currency)) return;
+
             pricingCurrency = currency;
-            localStorage.setItem("pricingCurrency", currency);
+
+            localStorage.setItem(
+                "pricingCurrency",
+                currency
+            );
+
             renderPricing();
+
+            // Refresh currency-dependent account sections
+            if (window.currentUser) {
+                loadUser();
+            }
         }
 
         function pricingButton(label, plan, enabled = false) {
@@ -9754,9 +10182,9 @@ ADMIN PAYMENTS
         function renderPriceCard(item, key, workspace) {
             const price = item.prices[pricingCurrency];
             const isTbd = item.type === "tbd" || typeof price !== "number";
-            const featured = key === "pro";
+            const featured = false;
             const credits = item.credits
-                ? `${item.credits} report${item.credits === 1 ? "" : "s"}`
+                ? `${item.credits} Professional Assessment${item.credits === 1 ? "" : "s"}`
                 : "";
             const period = item.type === "monthly" ? "/ month" : "one-time";
 
@@ -9768,10 +10196,10 @@ ADMIN PAYMENTS
             const description = workspace === "home"
                 ? "Unlock the complete EMF Insight report."
                 : key === "single"
-                    ? "One Business Survey report credit."
+                    ? "1 Professional Assessment, 1 report and 1 Contact Point."
                     : key === "pro"
-                        ? "Five Business Survey report credits each month."
-                        : "Higher-volume plan to be defined later.";
+                        ? "5 Professional Assessments, 5 reports and 3 Contact Points each month."
+                        : "25 Professional Assessments, 25 reports and 10 Contact Points each month.";
 
             return `
         <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""}">
@@ -9784,16 +10212,32 @@ ADMIN PAYMENTS
                     ? `<span class="price-period">${period}</span>`
                     : ""}
             </div>
-            <div class="price-meta">
-                ${isTbd ? "Not available yet" : credits ? credits : period}
-            </div>
-            <div class="price-actions">
-                ${pricingButton(
-                        isTbd ? "Coming later" : "Buy now",
+
+${!isTbd
+                    ? `<button
+            type="button"
+            class="price-details-link"
+            onclick="window.openPlanDetails('${key}')"
+        >
+            View plan details →
+       </button>`
+                    : ""}
+
+                            <div class="price-actions">
+    ${pricingButton(
+                        isTbd
+                            ? "Coming later"
+                            : workspace === "home"
+                                ? "Buy Full Report"
+                                : key === "single"
+                                    ? "Buy Single"
+                                    : key === "pro"
+                                        ? "Choose Pro"
+                                        : "Choose Professional",
                         checkoutPlan,
                         !isTbd
                     )}
-            </div>
+</div>
         </article>
     `;
         }
@@ -9849,6 +10293,7 @@ ADMIN PAYMENTS
 
             const homeGrid = document.getElementById("homePricingGrid");
 
+
             if (homeGrid) {
                 homeGrid.innerHTML = renderPriceCard(
                     home,
@@ -9872,8 +10317,8 @@ ADMIN PAYMENTS
                         "business"
                     ),
                     renderPriceCard(
-                        window.EMF_PRICING.business.premium,
-                        "premium",
+                        window.EMF_PRICING.business.professional,
+                        "professional",
                         "business"
                     )
                 ].join("");
@@ -9890,7 +10335,320 @@ ADMIN PAYMENTS
                         ? `Full report unlock: ${formatPrice(price)} one-time`
                         : "Full report pricing: TBD";
             }
+
+            window.BUSINESS_PLAN_DETAILS = {
+                single: {
+                    title: "Single",
+                    price: "€9 one-time",
+                    items: [
+                        "1 Professional Assessment",
+                        "1 Professional Report",
+                        "1 Contact Point",
+                        "14-day contact access",
+                        "Up to 10 active projects",
+                        "Full Business Survey workflow",
+                        "Heatmaps",
+                        "Professional PDF report",
+                        "Professional Branding available as an add-on"
+                    ]
+                },
+
+                pro: {
+                    title: "Pro",
+                    price: "€39/month",
+                    items: [
+                        "5 Professional Assessments per month",
+                        "5 Professional Reports per month",
+                        "3 Contact Points per month",
+                        "14-day contact access",
+                        "Unlimited projects",
+                        "Full Business Survey workflow",
+                        "Heatmaps",
+                        "Professional PDF reports",
+                        "Professional Branding available as an add-on"
+                    ]
+                },
+
+                professional: {
+                    title: "Professional",
+                    price: "€79/month",
+                    items: [
+                        "25 Professional Assessments per month",
+                        "25 Professional Reports per month",
+                        "10 Contact Points per month",
+                        "14-day contact access",
+                        "Unlimited projects",
+                        "Full Business Survey workflow",
+                        "Heatmaps",
+                        "Professional PDF reports",
+                        "Professional Branding included",
+                        "Priority support",
+                        "Access to new Professional features"
+                    ]
+                }
+            };
         }
+
+        window.openPlanDetails = function (plan) {
+            const details = window.BUSINESS_PLAN_DETAILS?.[plan];
+
+            if (!details) {
+                console.error("Plan details not found:", plan);
+                return;
+            }
+
+            const currency = String(
+                window.EMF_SELECTED_CURRENCY ||
+                pricingCurrency ||
+                "EUR"
+            ).toUpperCase();
+
+            let displayPrice = details.price;
+
+            if (plan === "single") {
+                const price =
+                    window.EMF_PRICING?.business?.single?.prices?.[currency];
+
+                if (typeof price === "number") {
+                    displayPrice = `${formatPrice(price)} one-time`;
+                }
+            }
+
+            if (plan === "pro") {
+                const price =
+                    window.EMF_PRICING?.business?.pro?.prices?.[currency];
+
+                if (typeof price === "number") {
+                    displayPrice = `${formatPrice(price)} / month`;
+                }
+            }
+
+            if (plan === "professional") {
+                const price =
+                    window.EMF_PRICING?.business?.professional?.prices?.[currency];
+
+                if (typeof price === "number") {
+                    displayPrice = `${formatPrice(price)} / month`;
+                }
+            }
+
+            const existing = document.getElementById("planDetailsModal");
+
+            if (existing) {
+                existing.remove();
+            }
+
+            const modal = document.createElement("div");
+            modal.id = "planDetailsModal";
+            modal.className = "plan-details-overlay";
+            modal.innerHTML = `
+    <div class="plan-details-modal">
+
+        <div class="plan-details-header">
+
+            <div class="plan-details-icon">
+                ${plan === "professional"
+                    ? "✦"
+                    : plan === "pro"
+                        ? "◆"
+                        : "●"
+                }
+            </div>
+
+            <div class="plan-details-heading">
+
+                <div class="plan-details-title-row">
+                    <h3>${details.title}</h3>
+
+                    <span
+                        class="plan-current-badge"
+                        style="display:none;"
+                    >
+                        CURRENT PLAN
+                    </span>
+                </div>
+
+                <div class="plan-details-price">
+                    ${displayPrice}
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="plan-details-close"
+                onclick="window.closePlanDetails()"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="plan-details-body">
+
+            <div class="plan-details-list">
+
+                ${details.items.map(item => {
+
+                    const text = String(item).toLowerCase();
+
+                    let icon = "✓";
+
+                    if (text.includes("assessment")) {
+                        icon = "◎";
+                    } else if (text.includes("report")) {
+                        icon = "▤";
+                    } else if (text.includes("contact")) {
+                        icon = "●";
+                    } else if (text.includes("14-day")) {
+                        icon = "◷";
+                    } else if (text.includes("project")) {
+                        icon = "□";
+                    } else if (text.includes("workflow")) {
+                        icon = "⌂";
+                    } else if (text.includes("heatmap")) {
+                        icon = "◈";
+                    } else if (text.includes("branding")) {
+                        icon = "✦";
+                    } else if (text.includes("support")) {
+                        icon = "◉";
+                    } else if (text.includes("features")) {
+                        icon = "✦";
+                    }
+
+                    const isBranding =
+                        text.includes("branding");
+
+                    return `
+                        <div class="plan-detail-item">
+
+                            <div class="plan-detail-item-icon">
+                                ${icon}
+                            </div>
+
+                           <div class="plan-detail-item-text">
+    ${isBranding && plan !== "professional"
+                            ? `
+                <button
+                    type="button"
+                    class="plan-branding-link"
+                    onclick="window.openBrandingFromPlanDetails()"
+                >
+                    ${item} →
+                </button>
+            `
+                            : item
+                        }
+</div>
+
+                        </div>
+                    `;
+
+                }).join("")}
+
+            </div>
+
+        </div>
+
+
+        <div class="plan-details-footer">
+
+            <div class="plan-details-footer-note">
+                ${plan === "single"
+                    ? "One-time purchase"
+                    : "Recurring monthly plan"}
+            </div>
+
+            <div class="plan-details-footer-actions">
+
+                <button
+                    type="button"
+                    class="plan-details-close-button"
+                    onclick="window.closePlanDetails()"
+                >
+                    Close
+                </button>
+
+                <button
+                    type="button"
+                    class="plan-details-cta"
+                    id="planDetailsCta"
+                    onclick="buyPlan('${plan}')"
+                >
+                    ${plan === "single"
+                    ? "Buy Single"
+                    : plan === "pro"
+                        ? "Choose Pro"
+                        : "Choose Professional"
+                }
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+`;
+            modal.addEventListener("click", function (event) {
+                if (event.target === modal) {
+                    modal.remove();
+                }
+            });
+
+            document.body.appendChild(modal);
+
+            const currentPlan = String(
+                window.currentUser?.plan || ""
+            ).toLowerCase();
+
+            if (currentPlan === String(plan).toLowerCase()) {
+
+                const modalCard =
+                    modal.querySelector(".plan-details-modal");
+
+                const badge =
+                    modal.querySelector(".plan-current-badge");
+
+                const cta =
+                    modal.querySelector("#planDetailsCta");
+
+                if (modalCard) {
+                    modalCard.classList.add("is-current");
+                }
+
+                if (badge) {
+                    badge.style.display = "inline-flex";
+                }
+
+                if (cta) {
+                    cta.textContent = "Current plan";
+                    cta.disabled = true;
+                    cta.classList.add("is-current");
+                    cta.removeAttribute("onclick");
+                }
+            }
+        };
+
+
+        window.closePlanDetails = function () {
+            const modal = document.getElementById("planDetailsModal");
+
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                const modal = document.getElementById("planDetailsModal");
+
+                if (modal) {
+                    window.closePlanDetails();
+                }
+            }
+        });
 
         async function loadPricing() {
             try {
@@ -9977,14 +10735,35 @@ ADMIN PAYMENTS
                             }
                         },
 
-                        premium: {
-                            name: eu?.products?.BUSINESS_PREMIUM?.name
-                                || "Premium",
-                            type: "tbd",
-                            credits: null,
+                        professional: {
+                            name: eu?.products?.PROFESSIONAL?.name
+                                || "Professional",
+                            type: eu?.products?.PROFESSIONAL?.billing
+                                || "monthly",
+                            credits: eu?.products?.PROFESSIONAL?.credits,
                             prices: {
-                                EUR: eu?.products?.BUSINESS_PREMIUM?.price,
-                                USD: us?.products?.BUSINESS_PREMIUM?.price
+                                EUR: eu?.products?.PROFESSIONAL?.price,
+                                USD: us?.products?.PROFESSIONAL?.price
+                            }
+                        },
+
+                        branding: {
+                            name:
+                                eu?.products?.PROFESSIONAL_BRANDING_MONTHLY?.name
+                                || "Professional Branding",
+
+                            prices: {
+                                EUR:
+                                    eu?.products?.PROFESSIONAL_BRANDING_MONTHLY?.price,
+                                USD:
+                                    us?.products?.PROFESSIONAL_BRANDING_MONTHLY?.price
+                            },
+
+                            annualPrices: {
+                                EUR:
+                                    eu?.products?.PROFESSIONAL_BRANDING_ANNUAL?.price,
+                                USD:
+                                    us?.products?.PROFESSIONAL_BRANDING_ANNUAL?.price
                             }
                         }
                     }
@@ -15772,43 +16551,237 @@ ${request.has_active_unlock
                 const brandingPlanStatus =
                     document.getElementById("brandingPlanStatus");
 
-                if (brandingStatus) {
+                const brandingMonthlyOption =
+                    document.getElementById("brandingMonthlyOption");
 
-                    if (data.branding_active === true) {
+                const brandingAnnualOption =
+                    document.getElementById("brandingAnnualOption");
 
+                const brandingMonthlyButton =
+                    document.getElementById("brandingMonthlyButton");
+
+                const brandingAnnualButton =
+                    document.getElementById("brandingAnnualButton");
+
+
+                const userPlan =
+                    String(data.plan || "").toLowerCase();
+
+                const brandingActive =
+                    data.branding_active === true;
+
+                const brandingPlan =
+                    String(data.branding_plan || "").toLowerCase();
+
+
+                /* =========================================
+   PROFESSIONAL — BRANDING INCLUDED
+   ========================================= */
+
+                if (userPlan === "professional") {
+
+                    if (brandingStatus) {
                         brandingStatus.textContent =
-                            "Active";
+                            "Branding included";
 
                         brandingStatus.style.color =
                             "var(--success)";
+                    }
 
-                        if (brandingPlanStatus) {
-                            brandingPlanStatus.textContent =
-                                data.branding_plan === "annual"
-                                    ? "Annual branding is active."
-                                    : "Monthly branding is active.";
-                        }
+                    if (brandingPlanStatus) {
 
-                    } else {
+                        brandingPlanStatus.innerHTML = `
+            <div style="
+                display:grid;
+                grid-template-columns:150px 1fr;
+                gap:8px 16px;
+                line-height:1.5;
+            ">
+                <div style="color:#667085;">Status</div>
+                <div style="font-weight:600;color:var(--success);">
+                    Active
+                </div>
 
+                <div style="color:#667085;">Billing</div>
+                <div style="font-weight:600;">
+                    Included with Professional
+                </div>
+
+                <div style="color:#667085;">Additional cost</div>
+<div style="font-weight:600;">
+    ${document.getElementById("currencySelect")?.value === "USD"
+                                ? "$0"
+                                : "€0"
+                            }
+</div>
+
+                <div style="color:#667085;">Valid while</div>
+                <div>
+                    Professional plan is active
+                </div>
+            </div>
+        `;
+                    }
+
+                    if (brandingMonthlyOption) {
+                        brandingMonthlyOption.style.display = "none";
+                    }
+
+                    if (brandingAnnualOption) {
+                        brandingAnnualOption.style.display = "none";
+                    }
+
+                }
+
+
+                /* =========================================
+                   SINGLE / PRO — BRANDING ACTIVE
+                   ========================================= */
+
+                else if (brandingActive) {
+
+                    if (brandingStatus) {
                         brandingStatus.textContent =
-                            "Not active";
+                            "Branding active";
 
                         brandingStatus.style.color =
-                            "#1f2937";
-
-                        if (brandingPlanStatus) {
-                            brandingPlanStatus.textContent =
-                                "Activate Professional Branding to use your company identity in client-facing reports.";
-                        }
+                            "var(--success)";
                     }
+
+                    const brandingPricing =
+                        window.EMF_PRICING?.business?.branding;
+
+                    const currency = String(
+                        window.EMF_SELECTED_CURRENCY ||
+                        pricingCurrency ||
+                        "EUR"
+                    ).toUpperCase();
+
+                    const brandingPrice =
+                        brandingPlan === "annual"
+                            ? brandingPricing?.annualPrices?.[currency]
+                            : brandingPricing?.prices?.[currency];
+
+                    const formattedBrandingPrice =
+                        typeof brandingPrice === "number"
+                            ? `${formatPrice(brandingPrice)} / ${brandingPlan === "annual"
+                                ? "year"
+                                : "month"
+                            }`
+                            : "Pricing unavailable";
+
+                    const activatedAt =
+                        window.currentUser?.branding_activated_at;
+
+                    const expiresAt =
+                        window.currentUser?.branding_expires_at;
+
+                    const formatDate = (value) => {
+
+                        if (!value) {
+                            return "—";
+                        }
+
+                        const date = new Date(value);
+
+                        if (Number.isNaN(date.getTime())) {
+                            return "—";
+                        }
+
+                        return date.toLocaleDateString(undefined, {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric"
+                        });
+                    };
+
+                    if (brandingPlanStatus) {
+
+                        brandingPlanStatus.innerHTML = `
+            <div style="
+                display:grid;
+                grid-template-columns:150px 1fr;
+                gap:8px 16px;
+                line-height:1.5;
+            ">
+                <div style="color:#667085;">Status</div>
+                <div style="font-weight:600;color:var(--success);">
+                    Active
+                </div>
+
+                <div style="color:#667085;">Plan</div>
+                <div style="font-weight:600;">
+                    ${brandingPlan === "annual"
+                                ? "Annual"
+                                : "Monthly"
+                            }
+                </div>
+
+                <div style="color:#667085;">Price</div>
+                <div style="font-weight:600;">
+                    ${formattedBrandingPrice}
+                </div>
+
+                <div style="color:#667085;">Activated</div>
+                <div>
+                    ${formatDate(activatedAt)}
+                </div>
+
+                <div style="color:#667085;">Valid until</div>
+                <div>
+                    ${formatDate(expiresAt)}
+                </div>
+            </div>
+        `;
+                    }
+
+                    if (brandingMonthlyOption) {
+                        brandingMonthlyOption.style.display = "none";
+                    }
+
+                    if (brandingAnnualOption) {
+                        brandingAnnualOption.style.display = "none";
+                    }
+
                 }
+
+
+                /* =========================================
+                   SINGLE / PRO — BRANDING NOT ACTIVE
+                   ========================================= */
+
+                else {
+
+                    if (brandingStatus) {
+                        brandingStatus.textContent =
+                            "Branding available";
+
+                        brandingStatus.style.color =
+                            "#14758e";
+                    }
+
+                    if (brandingPlanStatus) {
+                        brandingPlanStatus.textContent =
+                            "Add Professional Branding to use your company identity in client-facing reports.";
+                    }
+
+                    if (brandingMonthlyOption) {
+                        brandingMonthlyOption.style.display =
+                            "block";
+                    }
+
+                    if (brandingAnnualOption) {
+                        brandingAnnualOption.style.display =
+                            "block";
+                    }
+
+                }
+
 
                 console.log("BRANDING DEBUG:", {
                     logo_url: data.logo_url,
                     logoPreview: document.getElementById("logoPreview")
                 });
-
                 // ================================
                 // LOAD COMPANY IDENTITY
                 // ================================
@@ -15888,8 +16861,15 @@ ${request.has_active_unlock
                 );
 
                 document.getElementById("userName").textContent = displayName;
+
                 const dashboardMode =
                     localStorage.getItem("workspaceMode") || "business";
+
+                console.log("WORKSPACE LOAD:", {
+                    dashboardMode,
+                    localStorageWorkspace: localStorage.getItem("workspaceMode"),
+                    appMode: window.AppMode?.current
+                });
 
                 if (dashboardMode === "home") {
                     await loadHomeProfessionalRequests();
@@ -15926,38 +16906,123 @@ ${request.has_active_unlock
                     dashboardMode === "home"
                         ? "Home Wellness"
                         : plan;
+
+                console.log(
+                    "BILLING DEBUG:",
+                    {
+                        dashboardMode,
+                        plan,
+                        billingBusinessPlan:
+                            document.getElementById("billingBusinessPlan")
+                    }
+                );
+
                 const billingBusinessPlan =
                     document.getElementById("billingBusinessPlan");
 
-                const billingBusinessCredits =
-                    document.getElementById("billingBusinessCredits");
+                const billingBusinessPrice =
+                    document.getElementById("billingBusinessPrice");
 
-                if (professionalDemoActive && professionalDemoExpiresAt) {
-                    const expiresAt = new Date(professionalDemoExpiresAt);
-                    const now = new Date();
+                const billingAssessmentsUsage =
+                    document.getElementById("billingAssessmentsUsage");
 
-                    const remainingMs = expiresAt.getTime() - now.getTime();
-                    const remainingDays = Math.max(
-                        0,
-                        Math.ceil(remainingMs / (1000 * 60 * 60 * 24))
-                    );
+                const billingReportsUsage =
+                    document.getElementById("billingReportsUsage");
 
+                const billingContactUsage =
+                    document.getElementById("billingContactUsage");
+
+                const billingProjectsUsage =
+                    document.getElementById("billingProjectsUsage");
+
+                const billingBusinessStatus =
+                    document.getElementById("billingBusinessStatus");
+
+                const isProfessional =
+                    dashboardMode !== "home" &&
+                    String(plan || "").toLowerCase() === "professional";
+
+                if (isProfessional) {
                     if (billingBusinessPlan) {
-                        billingBusinessPlan.textContent = "Professional Demo";
+                        billingBusinessPlan.textContent = "Professional";
                     }
 
-                    if (billingBusinessCredits) {
-                        billingBusinessCredits.textContent =
-                            `Active ┬╖ ${remainingDays} day${remainingDays === 1 ? "" : "s"} remaining ┬╖ Full Business access`;
-                    }
-                } else {
-                    if (billingBusinessPlan) {
-                        billingBusinessPlan.textContent = plan;
+                    if (billingBusinessPrice) {
+                        const currency =
+                            String(
+                                window.EMF_SELECTED_CURRENCY ||
+                                pricingCurrency ||
+                                "EUR"
+                            ).toUpperCase();
+
+                        const price =
+                            window.EMF_PRICING?.business?.professional?.prices?.[currency];
+
+                        billingBusinessPrice.textContent =
+                            typeof price === "number"
+                                ? `${formatPrice(price)} / month`
+                                : currency === "USD"
+                                    ? "$79 / month"
+                                    : "€79 / month";
                     }
 
-                    if (billingBusinessCredits) {
-                        billingBusinessCredits.textContent =
-                            `${credits} credit${credits === 1 ? "" : "s"} available`;
+                    const assessmentLimit =
+                        Number(data.assessment_limit ?? 25);
+
+                    const assessmentsUsed =
+                        Number(data.assessments_used ?? 0);
+
+                    const contactLimit =
+                        Number(
+                            data.contact_opportunity_limit ??
+                            data.contact_limit ??
+                            10
+                        );
+
+                    const contactsUsed =
+                        Number(
+                            data.contact_opportunities_used ??
+                            data.contact_points_used ??
+                            0
+                        );
+
+                    const reportLimit = 25;
+
+                    const reportsRemaining =
+                        Number(data.credits || 0);
+
+                    const reportsUsed =
+                        Math.max(0, reportLimit - reportsRemaining);
+
+                    const projectsUsed =
+                        Number(
+                            data.active_projects_count ??
+                            data.projects_count ??
+                            0
+                        );
+
+                    if (billingAssessmentsUsage) {
+                        billingAssessmentsUsage.textContent =
+                            `${assessmentsUsed} / ${assessmentLimit} used`;
+                    }
+
+                    if (billingReportsUsage) {
+                        billingReportsUsage.textContent =
+                            `${reportsUsed} / ${reportLimit} used`;
+                    }
+
+                    if (billingContactUsage) {
+                        billingContactUsage.textContent =
+                            `${contactsUsed} / ${contactLimit} used`;
+                    }
+
+                    if (billingProjectsUsage) {
+                        billingProjectsUsage.textContent =
+                            `${projectsUsed} active / Unlimited`;
+                    }
+
+                    if (billingBusinessStatus) {
+                        billingBusinessStatus.textContent = "Active";
                     }
                 }
 
@@ -16002,6 +17067,8 @@ ${request.has_active_unlock
                 return null;
             }
         }
+
+
 
         async function confirmBrandingActivation() {
 
@@ -16127,25 +17194,26 @@ ${request.has_active_unlock
                 message.style.display = "none";
             }
 
+            const brandingPricing =
+                window.EMF_PRICING?.business?.branding;
+
+            const brandingPrice =
+                brandingPricing?.prices?.[
+                pricingCurrency
+                ];
+
             if (plan === "annual") {
-
-                if (planEl) {
-                    planEl.textContent = "Annual";
-                }
-
-                if (priceEl) {
-                    priceEl.textContent = "15 Points / year";
-                }
-
+                priceEl.textContent =
+                    typeof brandingPricing?.annualPrices?.[pricingCurrency] === "number"
+                        ? `${formatPrice(
+                            brandingPricing.annualPrices[pricingCurrency]
+                        )} / year`
+                        : "Annual pricing unavailable";
             } else {
-
-                if (planEl) {
-                    planEl.textContent = "Monthly";
-                }
-
-                if (priceEl) {
-                    priceEl.textContent = "2 Points / month";
-                }
+                priceEl.textContent =
+                    typeof brandingPrice === "number"
+                        ? `${formatPrice(brandingPrice)} / month`
+                        : "Monthly pricing unavailable";
             }
 
             window.selectedBrandingPlan =
@@ -17056,6 +18124,33 @@ ${request.has_active_unlock
 
     `;
         }
+
+
+        window.openBrandingFromPlanDetails = function () {
+            window.closePlanDetails();
+
+            setTimeout(() => {
+                const branding =
+                    document.getElementById("branding");
+
+                if (!branding) {
+                    return;
+                }
+
+                branding.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+                branding.classList.add("billing-branding-highlight");
+
+                setTimeout(() => {
+                    branding.classList.remove(
+                        "billing-branding-highlight"
+                    );
+                }, 1800);
+            }, 150);
+        };
 
 
         async function openAdminHomeProjects(userId) {
@@ -19304,6 +20399,14 @@ ${request.contact_expires_at
                 document.getElementById("summaryProjects").textContent =
                     projects.length;
 
+                const billingProjectsUsage =
+                    document.getElementById("billingProjectsUsage");
+
+                if (billingProjectsUsage) {
+                    billingProjectsUsage.textContent =
+                        `${projects.length} active / Unlimited`;
+                }
+
                 if (!projects.length) {
                     const title =
                         currentMode === "home"
@@ -19427,6 +20530,7 @@ ${request.contact_expires_at
             window.location.href = "index.html";
         }
 
+
         async function deleteProject(projectId) {
             if (!confirm("Delete this project? This action cannot be undone.")) return;
 
@@ -19468,6 +20572,26 @@ ${request.contact_expires_at
 
                 document.getElementById("summaryReports").textContent = list.length;
                 document.getElementById("homeReportCount").textContent = list.length;
+
+                const billingReportsUsage =
+                    document.getElementById("billingReportsUsage");
+
+                if (billingReportsUsage) {
+                    const plan =
+                        String(window.currentUser?.plan || "").toLowerCase();
+
+                    const reportLimit =
+                        plan === "professional"
+                            ? 25
+                            : plan === "pro"
+                                ? 5
+                                : plan === "single"
+                                    ? 1
+                                    : 0;
+
+                    billingReportsUsage.textContent =
+                        `${list.length} / ${reportLimit} used`;
+                }
 
                 if (!list.length) {
                     container.innerHTML = `
@@ -21429,9 +22553,12 @@ ${request.contact_expires_at
         async function initDashboard() {
             if (!token) return;
 
-
+            // Apply workspace immediately, before slow account loading.
+            applyDashboardWorkspaceMode();
 
             await loadUser();
+
+            // Re-apply after user data is loaded.
             applyDashboardWorkspaceMode();
 
             await Promise.all([

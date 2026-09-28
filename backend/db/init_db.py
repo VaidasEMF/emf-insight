@@ -541,20 +541,21 @@ def init_db():
                                 'EUR',
                                 'BUSINESS_PRO',
                                 'Pro',
-                                19,
+                                39,
                                 'monthly',
                                 5,
                                 TRUE
                             ),
+
                             (
                                 'EU',
                                 'EUR',
-                                'BUSINESS_PREMIUM',
-                                'Premium',
-                                NULL,
+                                'PROFESSIONAL',
+                                'Professional',
+                                79,
                                 'monthly',
-                                NULL,
-                                FALSE
+                                25,
+                                TRUE
                             ),
                             (
                                 'US',
@@ -581,20 +582,21 @@ def init_db():
                                 'USD',
                                 'BUSINESS_PRO',
                                 'Pro',
-                                19,
+                                39,
                                 'monthly',
                                 5,
                                 TRUE
                             ),
+
                             (
                                 'US',
                                 'USD',
-                                'BUSINESS_PREMIUM',
-                                'Premium',
-                                NULL,
+                                'PROFESSIONAL',
+                                'Professional',
+                                79,
                                 'monthly',
-                                NULL,
-                                FALSE
+                                25,
+                                TRUE
                             )
                         """
                     )

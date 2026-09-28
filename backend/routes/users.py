@@ -48,6 +48,49 @@ def me(
     professional_demo_active = False
     professional_demo_expires_at = None
 
+    assessment_limit = 0
+    assessments_used = 0
+    contact_opportunity_limit = 0
+    contact_opportunities_used = 0
+
+    # -----------------------------------------------
+    # PROFESSIONAL ENTITLEMENTS
+    # -----------------------------------------------
+    try:
+        from sqlalchemy import text
+
+        entitlement = db.execute(
+            text("""
+                SELECT
+                    assessment_limit,
+                    assessments_used,
+                    contact_opportunity_limit,
+                    contact_opportunities_used
+                FROM professional_entitlements
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": str(current_user.id),
+            },
+        ).mappings().first()
+
+        if entitlement:
+            assessment_limit = int(
+                entitlement["assessment_limit"] or 0
+            )
+            assessments_used = int(
+                entitlement["assessments_used"] or 0
+            )
+            contact_opportunity_limit = int(
+                entitlement["contact_opportunity_limit"] or 0
+            )
+            contact_opportunities_used = int(
+                entitlement["contact_opportunities_used"] or 0
+            )
+
+    except Exception as e:
+        print("Failed to load professional entitlements:", e)
+
     # ---------------------------------------------------------
     # PROFESSIONAL DEMO
     # ---------------------------------------------------------
@@ -175,6 +218,11 @@ def me(
         ),
 
         "credits": current_user.credits,
+
+        "assessment_limit": assessment_limit,
+        "assessments_used": assessments_used,
+        "contact_opportunity_limit": contact_opportunity_limit,
+        "contact_opportunities_used": contact_opportunities_used,
         "plan": current_user.plan,
         "role": current_user.role,
         "is_admin": current_user.is_admin,
