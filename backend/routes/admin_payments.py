@@ -496,49 +496,47 @@ def get_admin_payments(
                 invoice.get("subscription")
             )
 
-            # -----------------------------------------------------
+            # -----------------------------
             # FALLBACK: subscription metadata
-            # -----------------------------------------------------
+            # -----------------------------
+
+            parent = invoice.get("parent") or {}
+            subscription_details = parent.get("subscription_details") or {}
+
+            if subscription_details:
+                subscription_metadata = (
+                    subscription_details.get("metadata") or {}
+                )
+
+                if not plan:
+                    plan = subscription_metadata.get("plan") or ""
+
+                if not user_id:
+                    user_id = subscription_metadata.get("user_id") or ""
+
+                if not subscription_id:
+                    subscription_id = subscription_details.get("subscription")
 
             if subscription_id and not plan:
                 try:
                     subscription_obj = stripe.Subscription.retrieve(
                         subscription_id
                     )
-
-                    subscription_data = stripe_object_dict(
-                        subscription_obj
-                    )
-
+                    subscription_data = stripe_object_dict(subscription_obj)
                     subscription_metadata = (
-                        subscription_data.get("metadata")
-                        or {}
+                        subscription_data.get("metadata") or {}
                     )
 
-                    if not isinstance(subscription_metadata, dict):
-                        try:
-                            subscription_metadata = dict(
-                                subscription_metadata
-                            )
-                        except Exception:
-                            subscription_metadata = {}
-
-                    plan = (
-                        subscription_metadata.get("plan")
-                        or ""
-                    )
+                    plan = subscription_metadata.get("plan") or ""
 
                     if not user_id:
-                        user_id = (
-                            subscription_metadata.get("user_id")
-                            or ""
-                        )
+                        user_id = subscription_metadata.get("user_id") or ""
 
                 except Exception as exc:
                     print(
                         "Admin invoice subscription metadata lookup failed:",
                         subscription_id,
-                        repr(exc)
+                        repr(exc),
                     )
 
             # -----------------------------------------------------
