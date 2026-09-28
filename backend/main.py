@@ -956,7 +956,16 @@ async def stripe_webhook(request: Request):
         # =============================================================
         elif event_type == "invoice.paid":
             invoice = event["data"]["object"]
+
             subscription_id = invoice.get("subscription")
+
+            # Stripe newer invoice structure:
+            # subscription is stored under parent.subscription_details
+            # when invoice.subscription is not populated.
+            if not subscription_id:
+                parent = invoice.get("parent") or {}
+                subscription_details = parent.get("subscription_details") or {}
+                subscription_id = subscription_details.get("subscription")
 
             if subscription_id:
                 subscription = stripe.Subscription.retrieve(subscription_id)
