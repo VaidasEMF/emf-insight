@@ -3506,6 +3506,30 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="professional-status-row" id="professionalAssessmentsRow">
+                                <div class="professional-status-icon account-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="5" y="4" width="14" height="16" rx="2"></rect>
+                                        <path d="M8 8h8"></path>
+                                        <path d="M8 12h8"></path>
+                                        <path d="M8 16h5"></path>
+                                    </svg>
+                                </div>
+
+                                <div class="professional-status-label">Assessments</div>
+
+                                <div class="professional-status-content">
+                                    <div class="professional-status-pill" id="professionalAssessmentsBalance">
+                                        Checking...
+                                    </div>
+
+                                    <div class="professional-status-note">
+                                        Professional Assessments available under your current plan.
+                                    </div>
+                                </div>
+                            </div>
+
                     </section>
 
                     <!-- PROFESSIONAL DEMO -->
@@ -15841,6 +15865,9 @@ ${request.has_active_unlock
 
                 initializeProfessionalDashboardSubnav();
 
+                const firstName = data.first_name || "";
+                const lastName = data.last_name || "";
+
                 const email = data.email || "Account";
                 const displayName = email;
                 const plan = data.plan || "free";
@@ -18965,6 +18992,25 @@ ${request.contact_expires_at
                 }
 
                 const profile = await res.json();
+
+                const entitlement = profile.entitlement;
+
+                const assessmentLimit =
+                    Number(entitlement?.assessment_limit || 0);
+
+                const assessmentsUsed =
+                    Number(entitlement?.assessments_used || 0);
+
+                const assessmentsRemaining =
+                    Math.max(assessmentLimit - assessmentsUsed, 0);
+
+                const assessmentsEl =
+                    document.getElementById("professionalAssessmentsBalance");
+
+                if (assessmentsEl) {
+                    assessmentsEl.textContent =
+                        `${assessmentsRemaining} available`;
+                }
 
                 const contactPointsEl =
                     document.getElementById("professionalContactPointsBalance");

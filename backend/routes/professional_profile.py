@@ -96,8 +96,31 @@ def get_professional_profile(
         {"profile_id": profile["id"]},
     ).mappings().all()
 
+    entitlement = db.execute(
+        text(
+            """
+            SELECT
+                plan_code,
+                assessment_limit,
+                assessments_used,
+                contact_opportunity_limit,
+                contact_opportunities_used,
+                branding_included,
+                status
+            FROM professional_entitlements
+            WHERE user_id = :user_id
+            """
+        ),
+        {"user_id": str(current_user.id)},
+    ).mappings().first()
+
     result = dict(profile)
     result["service_areas"] = [dict(area) for area in service_areas]
+
+    if entitlement:
+        result["entitlement"] = dict(entitlement)
+    else:
+        result["entitlement"] = None
 
     return result
 
