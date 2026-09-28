@@ -20472,6 +20472,48 @@
     }
 
 
+    #accountNotificationsModal {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 200000 !important;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+
+      background: rgba(15, 23, 42, 0.42) !important;
+    }
+
+    #accountNotificationsModal .modal-content.user-profile-modal {
+      width: min(500px, calc(100vw - 40px)) !important;
+      max-width: 500px !important;
+      max-height: calc(100vh - 40px) !important;
+
+      background: #ffffff !important;
+      border-radius: 16px !important;
+      box-sizing: border-box;
+      padding: 28px 32px !important;
+
+      overflow-y: auto;
+      position: relative;
+    }
+
+    #accountNotificationsList {
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .account-notification-date {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+
     #accountSecurityModal {
       position: fixed !important;
       inset: 0 !important;
@@ -20528,7 +20570,8 @@
       line-height: 1;
     }
 
-    #accountSecurityModal .modal-close-btn {
+    #accountSecurityModal .modal-close-btn,
+    #accountNotificationsModal .modal-close-btn {
       position: absolute !important;
       top: 20px !important;
       right: 20px !important;
@@ -20544,6 +20587,171 @@
       margin: 0;
 
       cursor: pointer;
+    }
+
+    .user-notifications-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+
+      margin-left: 7px;
+
+      border-radius: 999px;
+
+      background: #2563eb;
+      color: #ffffff;
+
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .account-notifications-summary {
+      margin: 0 0 14px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .account-notifications-history {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .account-notification-item {
+      cursor: pointer;
+      position: relative;
+      padding: 15px 16px !important;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #ffffff;
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+
+    /* =========================
+   UNREAD
+   ========================= */
+
+    .account-notification-item.is-unread {
+      background: #f0f7ff;
+      border-color: #93c5fd;
+      border-left: 4px solid #2563eb;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
+    }
+
+    .account-notification-item.is-unread .account-notification-title strong {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    /* =========================
+   READ
+   ========================= */
+
+    .account-notification-item.is-read {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      border-left: 4px solid #cbd5e1;
+    }
+
+    .account-notification-item.is-read .account-notification-title strong {
+      color: #475569;
+      font-weight: 600;
+    }
+
+    /* =========================
+   HOVER
+   ========================= */
+
+    .account-notification-item:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .account-notification-item.is-unread:hover {
+      background: #eaf3ff;
+      border-color: #60a5fa;
+    }
+
+    /* =========================
+   HEADER
+   ========================= */
+
+    .account-notification-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 7px;
+    }
+
+    .account-notification-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    /* =========================
+   UNREAD DOT
+   ========================= */
+
+    .account-notification-dot {
+      font-size: 10px;
+      line-height: 1;
+      color: #2563eb;
+    }
+
+    /* =========================
+   NEW BADGE
+   ========================= */
+
+    .account-notification-new {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    /* =========================
+   MESSAGE
+   ========================= */
+
+    .account-notification-item p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #64748b;
+    }
+
+    /* =========================
+   STATUS
+   ========================= */
+
+    .account-notification-status {
+      margin-top: 9px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .account-notification-item.is-unread .account-notification-status {
+      color: #2563eb;
+    }
+
+    .account-notification-item.is-read .account-notification-status {
+      color: #94a3b8;
     }
 
 
@@ -20741,6 +20949,38 @@
       box-sizing: border-box;
 
       background: rgba(15, 23, 42, 0.42) !important;
+    }
+
+
+    .account-notification-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      margin-top: 10px;
+      padding: 8px 14px;
+
+      border-radius: 8px;
+
+      background: #2563eb;
+      color: #ffffff !important;
+
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.2;
+
+      text-decoration: none !important;
+
+      cursor: pointer;
+    }
+
+    .account-notification-action:hover {
+      background: #1d4ed8;
+    }
+
+    .account-notification-action:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
     }
   </style>
 </head>
@@ -21761,6 +22001,8 @@
           </div>
         </div>
 
+
+
         <!-- ===================== -->
         <!-- 🔥 BUSINESS WORKFLOW -->
         <!-- ===================== -->
@@ -22512,7 +22754,7 @@
                   </div>
 
                   <!-- PROFILE -->
-                  <div class="user-menu-item" id="userProfileItem" onclick="openUserProfile()">
+                  <div class="user-menu-item" id="userProfileItem" onclick="openAccountProfile()">
 
                     <span class="user-menu-icon">👤</span>
 
@@ -22550,7 +22792,25 @@
 
                 </div>
 
+                <!-- NOTIFICATIONS -->
+                <div class="user-menu-item" id="userNotificationsItem" onclick="openAccountNotifications()">
 
+                  <span class="user-menu-icon">🔔</span>
+
+                  <span class="user-menu-content">
+
+                    <span class="user-menu-title">
+                      Notifications
+                      <span id="userNotificationsBadge" class="user-notifications-badge" style="display:none;"></span>
+                    </span>
+
+                    <span class="user-menu-subtitle">
+                      Alerts and account updates
+                    </span>
+
+                  </span>
+
+                </div>
 
 
                 <!-- HOME / BUSINESS -->
@@ -27873,6 +28133,42 @@
       </div>
     </div>
 
+    <!-- ACCOUNT NOTIFICATIONS MODAL -->
+    <div id="accountNotificationsModal" class="modal-overlay" style="display:none;">
+      <div class="modal-content user-profile-modal">
+
+        <div class="user-profile-header">
+          <div>
+            <h2>Notifications</h2>
+            <p>Alerts and account updates</p>
+          </div>
+
+          <button type="button" class="modal-close-btn" onclick="closeAccountNotifications()" aria-label="Close">
+            ×
+          </button>
+        </div>
+
+        <div class="user-profile-section">
+
+          <div class="user-profile-section-title">
+            NOTIFICATIONS
+          </div>
+
+          <div id="accountNotificationsList">
+            <div class="user-profile-info-row">
+              <strong>No new notifications</strong>
+
+              <p>
+                You’re all caught up. Important account and platform updates will appear here.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
 </body>
 
 </html>
@@ -31058,6 +31354,296 @@
       modal.style.display = "flex";
     }
   }
+  async function openAccountNotifications() {
+    const modal = document.getElementById(
+      "accountNotificationsModal"
+    );
+
+    if (!modal) {
+      return;
+    }
+
+    modal.style.display = "flex";
+
+    try {
+      const response = await fetch(
+        `${API}/me/notifications`,
+        {
+          method: "GET",
+          headers: getAuthHeaders(),
+          cache: "no-store"
+        }
+      );
+
+      if (!response.ok) {
+        console.error(
+          "NOTIFICATIONS LOAD FAILED",
+          response.status
+        );
+        return;
+      }
+
+      const notifications = await response.json();
+
+      let unreadCount = notifications.filter(
+        notification => !notification.is_read
+      ).length;
+
+      if (unreadCount > 0) {
+        const markAllResponse = await fetch(
+          `${API}/me/notifications/read-all`,
+          {
+            method: "PATCH",
+            headers: getAuthHeaders()
+          }
+        );
+
+        if (markAllResponse.ok) {
+          notifications.forEach(notification => {
+            notification.is_read = true;
+          });
+
+          unreadCount = 0;
+        } else {
+          console.error(
+            "NOTIFICATIONS MARK ALL READ FAILED",
+            markAllResponse.status
+          );
+        }
+      }
+
+      const notificationBadge = document.getElementById(
+        "userNotificationsBadge"
+      );
+
+      if (notificationBadge) {
+        if (unreadCount > 0) {
+          notificationBadge.textContent = unreadCount;
+          notificationBadge.style.display = "inline-flex";
+        } else {
+          notificationBadge.textContent = "";
+          notificationBadge.style.display = "none";
+        }
+      }
+
+      console.log(
+        "ACCOUNT NOTIFICATIONS LOADED",
+        notifications
+      );
+
+      const list = document.getElementById(
+        "accountNotificationsList"
+      );
+
+      if (!list) {
+        return;
+      }
+
+      if (!notifications.length) {
+        list.innerHTML = `
+    <div class="user-profile-info-row">
+      <strong>No new notifications</strong>
+
+      <p>
+        You’re all caught up. Important account and platform updates will appear here.
+      </p>
+    </div>
+  `;
+
+        return;
+      }
+
+      const unreadSummary = unreadCount
+        ? `<div class="account-notifications-summary">
+             ${unreadCount} unread
+           </div>`
+        : "";
+
+      list.innerHTML = `
+        ${unreadSummary}
+
+        <div class="account-notifications-history">
+          ${notifications.map(notification => `
+            <div
+              class="user-profile-info-row account-notification-item ${notification.is_read ? "is-read" : "is-unread"}"
+              data-notification-id="${notification.id}"
+              onclick="markAccountNotificationRead(${notification.id})"
+            >
+              <div class="account-notification-header">
+                <div class="account-notification-title">
+                  ${!notification.is_read ? '<span class="account-notification-dot">●</span>' : ""}
+                  <strong>${notification.title}</strong>
+                </div>
+
+                ${!notification.is_read
+          ? '<span class="account-notification-new">NEW</span>'
+          : ""}
+              </div>
+
+              <p>
+                ${notification.message}
+              </p>
+
+             <div class="account-notification-date">
+  ${new Date(notification.created_at).toLocaleDateString(undefined, {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+          })}
+</div>
+
+              <div class="account-notification-status">
+                ${notification.is_read ? "Read" : "Unread"}
+              </div>
+
+              ${notification.action_label && notification.action_url ? `
+  <a
+    href="${notification.action_url}"
+    class="account-notification-action"
+    onclick="event.stopPropagation()"
+  >
+    ${notification.action_label}
+  </a>
+` : ""}
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+    } catch (error) {
+      console.error(
+        "NOTIFICATIONS LOAD ERROR",
+        error
+      );
+    }
+  }
+
+  function closeAccountNotifications() {
+    const modal = document.getElementById(
+      "accountNotificationsModal"
+    );
+
+    if (modal) {
+      modal.style.setProperty("display", "none", "important");
+    }
+  }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      const modal = document.getElementById(
+        "accountNotificationsModal"
+      );
+
+      if (modal && modal.style.display !== "none") {
+        closeAccountNotifications();
+      }
+    }
+  });
+
+  async function markAccountNotificationRead(notificationId) {
+    try {
+      const response = await fetch(
+        `${API}/me/notifications/${notificationId}/read`,
+        {
+          method: "PATCH",
+          headers: getAuthHeaders()
+        }
+      );
+
+      if (!response.ok) {
+        console.error(
+          "NOTIFICATION READ FAILED",
+          response.status
+        );
+        return;
+      }
+
+      const item = document.querySelector(
+        `[data-notification-id="${notificationId}"]`
+      );
+
+      if (item) {
+        item.classList.remove("is-unread");
+        item.classList.add("is-read");
+
+        const newBadge = item.querySelector(
+          ".account-notification-new"
+        );
+
+        if (newBadge) {
+          newBadge.remove();
+        }
+
+        const dot = item.querySelector(
+          ".account-notification-dot"
+        );
+
+        if (dot) {
+          dot.remove();
+        }
+
+        const status = item.querySelector(
+          ".account-notification-status"
+        );
+
+        if (status) {
+          status.textContent = "Read";
+        }
+      }
+
+      const unreadItems = document.querySelectorAll(
+        "#accountNotificationsList .account-notification-item.is-unread"
+      );
+
+      const unreadCount = unreadItems.length;
+
+      const summary = document.querySelector(
+        "#accountNotificationsList .account-notifications-summary"
+      );
+
+      if (summary) {
+        if (unreadCount > 0) {
+          summary.textContent = `${unreadCount} unread`;
+        } else {
+          summary.remove();
+        }
+      }
+
+      const notificationBadge = document.getElementById(
+        "userNotificationsBadge"
+      );
+
+      if (notificationBadge) {
+        if (unreadCount > 0) {
+          notificationBadge.textContent = unreadCount;
+          notificationBadge.style.display = "inline-flex";
+        } else {
+          notificationBadge.textContent = "";
+          notificationBadge.style.display = "none";
+        }
+      }
+
+      console.log(
+        "NOTIFICATION MARKED AS READ",
+        notificationId
+      );
+
+    } catch (error) {
+      console.error(
+        "NOTIFICATION READ ERROR",
+        error
+      );
+    }
+  }
+
+  window.markAccountNotificationRead =
+    markAccountNotificationRead;
+
+  window.openAccountNotifications =
+    openAccountNotifications;
+
+  window.closeAccountNotifications =
+    closeAccountNotifications;
 
   function closeAccountSecurity() {
     const modal = document.getElementById(
@@ -31785,6 +32371,19 @@
     }
   }
 
+  function openAccountProfile() {
+    if (window.AppMode?.current === "business") {
+      if (typeof window.openProfessionalProfile === "function") {
+        window.openProfessionalProfile();
+      }
+      return;
+    }
+
+    openUserProfile();
+  }
+
+  window.openAccountProfile = openAccountProfile;
+
 
   async function saveUserProfile() {
 
@@ -32385,9 +32984,19 @@
       return;
     }
 
+    const projectId =
+      localStorage.getItem("home_project_id") ||
+      localStorage.getItem("homeProjectId");
+
+    if (!projectId) {
+      window.homeProfessionalRequest = null;
+      updateHomeProfessionalAssessment();
+      return;
+    }
+
     try {
       const response = await fetch(
-        `${API}/professional-requests`,
+        `${API}/professional-requests?project_id=${encodeURIComponent(projectId)}`,
         {
           headers: {
             "Authorization": `Bearer ${token}`

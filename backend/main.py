@@ -5,7 +5,7 @@
 import os
 import uuid
 import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 from sqlalchemy import text
@@ -191,18 +191,32 @@ STRIPE_PRICE_IDS = {
     "EUR": {
         "single": os.getenv("STRIPE_EU_BUSINESS_SINGLE_PRICE_ID"),
         "pro": os.getenv("STRIPE_EU_BUSINESS_PRO_PRICE_ID"),
+        "professional": os.getenv("STRIPE_EU_PROFESSIONAL_PRICE_ID"),
         "home_full_report": os.getenv("STRIPE_EU_HOME_FULL_REPORT_PRICE_ID"),
     },
     "USD": {
         "single": os.getenv("STRIPE_US_BUSINESS_SINGLE_PRICE_ID"),
         "pro": os.getenv("STRIPE_US_BUSINESS_PRO_PRICE_ID"),
+        "professional": os.getenv("STRIPE_US_PROFESSIONAL_PRICE_ID"),
         "home_full_report": os.getenv("STRIPE_US_HOME_FULL_REPORT_PRICE_ID"),
+    },
+}
+
+STRIPE_BRANDING_PRICE_IDS = {
+    "EUR": {
+        "monthly": os.getenv("STRIPE_EU_PROFESSIONAL_BRANDING_MONTHLY_PRICE_ID"),
+        "annual": os.getenv("STRIPE_EU_PROFESSIONAL_BRANDING_YEARLY_PRICE_ID"),
+    },
+    "USD": {
+        "monthly": os.getenv("STRIPE_US_PROFESSIONAL_BRANDING_MONTHLY_PRICE_ID"),
+        "annual": os.getenv("STRIPE_US_PROFESSIONAL_BRANDING_YEARLY_PRICE_ID"),
     },
 }
 
 STRIPE_ALLOWED_PLANS = {
     "single": "Business Single",
     "pro": "Business Pro",
+    "professional": "Professional",
     "home_full_report": "Full EMF Insight Report",
 }
 
@@ -384,6 +398,37 @@ def _ensure_professional_contact_points_tables(db):
         ON CONFLICT (setting_key) DO NOTHING
     """))
 
+
+def _ensure_professional_entitlements_table(db):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS professional_entitlements (
+            id SERIAL PRIMARY KEY,
+            user_id VARCHAR(255) NOT NULL UNIQUE,
+
+            plan_code VARCHAR(50) NOT NULL,
+
+            period_start TIMESTAMP,
+            period_end TIMESTAMP,
+
+            assessment_limit INTEGER NOT NULL DEFAULT 0,
+            assessments_used INTEGER NOT NULL DEFAULT 0,
+
+            contact_opportunity_limit INTEGER NOT NULL DEFAULT 0,
+            contact_opportunities_used INTEGER NOT NULL DEFAULT 0,
+
+            branding_included BOOLEAN NOT NULL DEFAULT FALSE,
+
+            status VARCHAR(50) NOT NULL DEFAULT 'active',
+
+            stripe_customer_id VARCHAR(255),
+            stripe_subscription_id VARCHAR(255),
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+
 def _claim_stripe_event(db, event_id):
     result = db.execute(
         text("""
@@ -405,6 +450,7 @@ db = SessionLocal()
 try:
     _ensure_user_admin_fields(db)
     _ensure_professional_contact_points_tables(db)
+    _ensure_professional_entitlements_table(db)
     db.commit()
 finally:
     db.close()
@@ -470,9 +516,9 @@ def create_checkout(
                     "Home project not found",
                 )
 
-        # Business Pro is the only recurring V1 product.
+        # Business Pro and Professional are recurring subscriptions.
         # Business Single and Home Full Report are one-time payments.
-        mode = "subscription" if plan == "pro" else "payment"
+        mode = "subscription" if plan in {"pro", "professional"} else "payment"
 
         try:
             session = stripe.checkout.Session.create(
@@ -517,6 +563,79 @@ def create_checkout(
     finally:
         db.close()
 
+# =====================
+# STRIPE BRANDING CHECKOUT
+# =====================
+
+@app.post("/create-branding-checkout-session")
+def create_branding_checkout(
+    body: dict,
+    current_user=Depends(get_current_user),
+):
+    currency = str(body.get("currency") or "EUR").upper()
+    billing_period = body.get("billing_period") or "monthly"
+
+    if currency not in STRIPE_BRANDING_PRICE_IDS:
+        raise HTTPException(
+            400,
+            "Unsupported currency",
+        )
+
+    if billing_period not in ("monthly", "annual"):
+        raise HTTPException(
+            400,
+            "Invalid branding billing period",
+        )
+
+    price_id = STRIPE_BRANDING_PRICE_IDS[currency].get(
+        billing_period
+    )
+
+    if not price_id:
+        raise HTTPException(
+            503,
+            "Professional Branding price is not configured for this currency",
+        )
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price": price_id,
+                    "quantity": 1,
+                }
+            ],
+            mode="subscription",
+            success_url=f"{STRIPE_APP_URL}/success.html",
+            cancel_url=f"{STRIPE_APP_URL}/dashboard.html#billing",
+            metadata={
+                "user_id": str(current_user.id),
+                "plan": "branding",
+                "currency": currency,
+                "billing_period": billing_period,
+            },
+            subscription_data={
+                "metadata": {
+                    "user_id": str(current_user.id),
+                    "plan": "branding",
+                    "currency": currency,
+                    "billing_period": billing_period,
+                }
+            },
+        )
+
+    except Exception as exc:
+        print(
+            "Stripe branding checkout error:",
+            repr(exc),
+        )
+        raise HTTPException(
+            502,
+            "Unable to create Professional Branding checkout session",
+        )
+
+    return {"url": session.url}
 
 # =====================
 # STRIPE WEBHOOK
@@ -563,7 +682,10 @@ async def stripe_webhook(request: Request):
             user_id = metadata.get("user_id")
             plan = metadata.get("plan")
 
-            if not user_id or plan not in STRIPE_ALLOWED_PLANS:
+            if not user_id or (
+                plan not in STRIPE_ALLOWED_PLANS
+                and plan != "branding"
+            ):
                 print("Stripe checkout webhook missing/invalid metadata")
                 db.commit()
                 return {"status": "ok"}
@@ -575,9 +697,79 @@ async def stripe_webhook(request: Request):
                 db.commit()
                 return {"status": "ok"}
 
+            if plan == "branding":
+                billing_period = metadata.get("billing_period")
+
+                if billing_period not in ("monthly", "annual"):
+                    print(
+                        "Stripe Branding webhook invalid billing period:",
+                        billing_period,
+                    )
+                    db.commit()
+                    return {"status": "ok"}
+
+                now = datetime.utcnow()
+
+                if billing_period == "monthly":
+                    expires_at = now + timedelta(days=30)
+                else:
+                    expires_at = now + timedelta(days=365)
+
+                user.branding_active = True
+                user.branding_plan = billing_period
+                user.branding_activated_at = now
+                user.branding_expires_at = expires_at
+
+                db.commit()
+
+                print(
+                    "BRANDING ACTIVATED",
+                    user.email,
+                    billing_period,
+                )
+
+                return {"status": "ok"}
+
             if plan == "single":
                 # One successful Business Single purchase = one Business credit.
                 user.credits = (user.credits or 0) + 1
+
+                db.execute(
+                    text("""
+                        INSERT INTO professional_entitlements (
+                            user_id,
+                            plan_code,
+                            assessment_limit,
+                            assessments_used,
+                            contact_opportunity_limit,
+                            contact_opportunities_used,
+                            branding_included,
+                            status
+                        )
+                        VALUES (
+                            :user_id,
+                            'single',
+                            1,
+                            0,
+                            1,
+                            0,
+                            FALSE,
+                            'active'
+                        )
+                        ON CONFLICT (user_id) DO UPDATE SET
+                            plan_code = 'single',
+                            assessment_limit = 1,
+                            assessments_used = 0,
+                            contact_opportunity_limit = 1,
+                            contact_opportunities_used = 0,
+                            branding_included = FALSE,
+                            status = 'active',
+                            updated_at = CURRENT_TIMESTAMP
+                    """),
+                    {
+                        "user_id": str(user.id),
+                    },
+                )
 
                 db.add(
                     ReportCreditLedger(
@@ -595,6 +787,43 @@ async def stripe_webhook(request: Request):
                 user.plan = "pro"
                 user.credits = 5
 
+                db.execute(
+                    text("""
+                        INSERT INTO professional_entitlements (
+                            user_id,
+                            plan_code,
+                            assessment_limit,
+                            assessments_used,
+                            contact_opportunity_limit,
+                            contact_opportunities_used,
+                            branding_included,
+                            status
+                        )
+                        VALUES (
+                            :user_id,
+                            'pro',
+                            5,
+                            0,
+                            3,
+                            0,
+                            FALSE,
+                            'active'
+                        )
+                        ON CONFLICT (user_id) DO UPDATE SET
+                            plan_code = 'pro',
+                            assessment_limit = 5,
+                            assessments_used = 0,
+                            contact_opportunity_limit = 3,
+                            contact_opportunities_used = 0,
+                            branding_included = FALSE,
+                            status = 'active',
+                            updated_at = CURRENT_TIMESTAMP
+                    """),
+                    {
+                        "user_id": str(user.id),
+                    },
+                )
+
                 db.add(
                     ReportCreditLedger(
                         user_id=user.id,
@@ -604,6 +833,49 @@ async def stripe_webhook(request: Request):
                         reference_type="stripe_checkout",
                         reference_id=session.get("id"),
                     )
+                )
+
+            elif plan == "professional":
+                # First Professional billing cycle.
+                # Professional includes 25 assessments,
+                # 10 contact opportunities and branding.
+                user.plan = "professional"
+
+                db.execute(
+                    text("""
+                        INSERT INTO professional_entitlements (
+                            user_id,
+                            plan_code,
+                            assessment_limit,
+                            assessments_used,
+                            contact_opportunity_limit,
+                            contact_opportunities_used,
+                            branding_included,
+                            status
+                        )
+                        VALUES (
+                            :user_id,
+                            'professional',
+                            25,
+                            0,
+                            10,
+                            0,
+                            TRUE,
+                            'active'
+                        )
+                        ON CONFLICT (user_id) DO UPDATE SET
+                            plan_code = 'professional',
+                            assessment_limit = 25,
+                            assessments_used = 0,
+                            contact_opportunity_limit = 10,
+                            contact_opportunities_used = 0,
+                            branding_included = TRUE,
+                            status = 'active',
+                            updated_at = CURRENT_TIMESTAMP
+                    """),
+                    {
+                        "user_id": str(user.id),
+                    },
                 )
 
             elif plan == "home_full_report":
@@ -693,6 +965,16 @@ async def stripe_webhook(request: Request):
                 user_id = metadata.get("user_id")
                 plan = metadata.get("plan")
 
+                print(
+                    "ADMIN INVOICE DEBUG:",
+                    {
+                        "invoice_id": invoice.get("id"),
+                        "plan": plan,
+                        "metadata": metadata,
+                        "subscription_id": invoice.get("subscription"),
+                    }
+                )
+
                 if user_id and plan == "pro":
                     user = db.query(User).filter(User.id == user_id).first()
 
@@ -703,6 +985,27 @@ async def stripe_webhook(request: Request):
                             # New successful monthly billing cycle = fresh 5-credit allowance.
                             user.plan = "pro"
                             user.credits = 5
+
+                            db.execute(
+                                text("""
+                                    UPDATE professional_entitlements
+                                    SET
+                                        plan_code = 'pro',
+                                        assessment_limit = 5,
+                                        assessments_used = 0,
+                                        contact_opportunity_limit = 3,
+                                        contact_opportunities_used = 0,
+                                        branding_included = FALSE,
+                                        status = 'active',
+                                        period_start = CURRENT_TIMESTAMP,
+                                        period_end = NULL,
+                                        updated_at = CURRENT_TIMESTAMP
+                                    WHERE user_id = :user_id
+                                """),
+                                {
+                                    "user_id": str(user.id),
+                                },
+                            )
 
                             db.add(
                                 ReportCreditLedger(
@@ -720,6 +1023,78 @@ async def stripe_webhook(request: Request):
                                 user.email,
                                 "5 credits",
                             )
+
+                if user_id and plan == "professional":
+                    user = db.query(User).filter(User.id == user_id).first()
+
+                    if user:
+                        billing_reason = invoice.get("billing_reason")
+
+                        if billing_reason == "subscription_cycle":
+                            # New successful monthly Professional billing cycle.
+                            # Fresh allowance: 25 assessments + 10 contact opportunities.
+                            user.plan = "professional"
+
+                            db.execute(
+                                text("""
+                                    UPDATE professional_entitlements
+                                    SET
+                                        plan_code = 'professional',
+                                        assessment_limit = 25,
+                                        assessments_used = 0,
+                                        contact_opportunity_limit = 10,
+                                        contact_opportunities_used = 0,
+                                        branding_included = TRUE,
+                                        status = 'active',
+                                        period_start = CURRENT_TIMESTAMP,
+                                        period_end = NULL,
+                                        updated_at = CURRENT_TIMESTAMP
+                                    WHERE user_id = :user_id
+                                """),
+                                {
+                                    "user_id": str(user.id),
+                                },
+                            )
+
+                            print(
+                                "PROFESSIONAL MONTHLY RENEWAL",
+                                user.email,
+                                "25 assessments / 10 contact opportunities",
+                            )
+
+                if user_id and plan == "branding":
+                    user = db.query(User).filter(User.id == user_id).first()
+
+                    if user:
+                        billing_reason = invoice.get("billing_reason")
+
+                        if billing_reason == "subscription_cycle":
+                            billing_period = metadata.get("billing_period")
+
+                            if billing_period not in ("monthly", "annual"):
+                                print(
+                                    "BRANDING RENEWAL INVALID BILLING PERIOD",
+                                    user.email,
+                                    billing_period,
+                                )
+                            else:
+                                now = datetime.utcnow()
+
+                                if billing_period == "monthly":
+                                    expires_at = now + timedelta(days=30)
+                                else:
+                                    expires_at = now + timedelta(days=365)
+
+                                user.branding_active = True
+                                user.branding_plan = billing_period
+                                user.branding_activated_at = now
+                                user.branding_expires_at = expires_at
+
+                                print(
+                                    "BRANDING RENEWAL",
+                                    user.email,
+                                    billing_period,
+                                )
 
             db.commit()
 
@@ -1041,83 +1416,8 @@ def save_project(
 
             project.name = project_name
 
-        # =================================================
-        # VERIFY BEFORE COMMIT
-        # =================================================
-
-        print(
-            "\n🔥🔥🔥 BEFORE DB COMMIT"
-        )
-
-        print(
-            "🔥 DATA PROJECT ID:",
-            data.get(
-                "project_id"
-            ),
-        )
-
-        print(
-            "🔥 DATA ZONES:",
-            [
-                len(
-                    floor.get(
-                        "zones",
-                        [],
-                    )
-                )
-                if isinstance(
-                    floor,
-                    dict,
-                )
-                else "INVALID"
-                for floor in data.get(
-                    "floors",
-                    [],
-                )
-            ],
-        )
-
-        print(
-            "🔥 DATA SOURCES:",
-            [
-                len(
-                    floor.get(
-                        "sources",
-                        [],
-                    )
-                )
-                if isinstance(
-                    floor,
-                    dict,
-                )
-                else "INVALID"
-                for floor in data.get(
-                    "floors",
-                    [],
-                )
-            ],
-        )
-
-        print(
-            "🔥 DATA ROOMS:",
-            [
-                len(
-                    floor.get(
-                        "rooms",
-                        [],
-                    )
-                )
-                if isinstance(
-                    floor,
-                    dict,
-                )
-                else "INVALID"
-                for floor in data.get(
-                    "floors",
-                    [],
-                )
-            ],
-        )
+       
+    
 
         # =================================================
         # SAVE VERSION IN SAME TRANSACTION
@@ -1146,36 +1446,7 @@ def save_project(
             project
         )
 
-        # =================================================
-        # DB SAVE VERIFY
-        # =================================================
-
-        print(
-            "\n🔥🔥🔥 DB SAVE VERIFY"
-        )
-
-        print(
-            "🔥 DB PROJECT ID:",
-            project.id,
-        )
-
-        print(
-            "🔥 DB PROJECT OWNER:",
-            project.user_id,
-        )
-
-        print(
-            "🔥 DATA PROJECT ID:",
-            project.data.get(
-                "project_id"
-            )
-            if isinstance(
-                project.data,
-                dict,
-            )
-            else None,
-        )
-
+       
         saved_floors = (
             project.data.get(
                 "floors",

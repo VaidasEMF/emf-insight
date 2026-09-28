@@ -16,6 +16,8 @@ from auth.dependencies import (
     get_db,
 )
 
+from services.notification_service import create_notification
+
 router = APIRouter()
 
 
@@ -160,6 +162,46 @@ def create_professional_request(
         }
 
     # ---------------------------------
+    # CHECK PROFESSIONAL ASSESSMENT ENTITLEMENT
+    # ---------------------------------
+
+    professional_entitlement = db.execute(
+        text("""
+            SELECT
+                id,
+                assessment_limit,
+                assessments_used,
+                status
+            FROM professional_entitlements
+            WHERE user_id = :user_id
+        """),
+        {
+            "user_id": str(current_user.id),
+        },
+    ).mappings().first()
+
+    if not professional_entitlement:
+        raise HTTPException(
+            status_code=403,
+            detail="No Professional Assessment entitlement is available for your account.",
+        )
+
+    if professional_entitlement["status"] != "active":
+        raise HTTPException(
+            status_code=403,
+            detail="Your Professional Assessment entitlement is not active.",
+        )
+
+    if (
+        professional_entitlement["assessments_used"]
+        >= professional_entitlement["assessment_limit"]
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="You have used all available Professional Assessments for your current plan.",
+        )
+
+    # ---------------------------------
     # CREATE REQUEST
     # ---------------------------------
 
@@ -208,7 +250,31 @@ def create_professional_request(
         },
     ).mappings().first()
 
+    db.execute(
+        text("""
+            UPDATE professional_entitlements
+            SET
+                assessments_used = assessments_used + 1,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = :user_id
+        """),
+        {
+            "user_id": str(current_user.id),
+        },
+    )
+
     db.commit()
+
+    create_notification(
+        db=db,
+        user_id=current_user.id,
+        title="Professional assessment request submitted",
+        message="Your professional assessment request has been submitted successfully.",
+        notification_type="assessment",
+        source_workspace="home",
+        action_label="View Request Status",
+        action_url="dashboard.html#home-professional-requests",
+    )
 
     return {
         "id": result["id"],
@@ -655,7 +721,7 @@ def unlock_professional_request_contact(
             "unlocked_at": existing_unlock["unlocked_at"],
             "expires_at": existing_unlock["expires_at"],
             "duration_days": existing_unlock["duration_days"],
-            "contact_points_spent": 0,
+            "contact_opportunities_spent": 0,
             "contact": {
                 "first_name": contact_user["first_name"],
                 "last_name": contact_user["last_name"],
@@ -692,46 +758,33 @@ def unlock_professional_request_contact(
     if duration_days < 1:
         duration_days = 14
 
-    # ---------------------------------------------------------
-    # Ensure Contact Point account exists
-    # ---------------------------------------------------------
-    db.execute(
-        text("""
-            INSERT INTO professional_contact_points (
-                user_id,
-                balance
-            )
-            VALUES (
-                :user_id,
-                0
-            )
-            ON CONFLICT (user_id) DO NOTHING
-        """),
-        {"user_id": str(current_user.id)},
-    )
 
     # ---------------------------------------------------------
-    # Atomically spend 1 Contact Point
+    # Atomically spend 1 Contact Opportunity
     # ---------------------------------------------------------
-    balance_result = db.execute(
+    opportunity_result = db.execute(
         text("""
-            UPDATE professional_contact_points
+            UPDATE professional_entitlements
             SET
-                balance = balance - 1,
+                contact_opportunities_used =
+                    contact_opportunities_used + 1,
                 updated_at = CURRENT_TIMESTAMP
             WHERE user_id = :user_id
-              AND balance >= 1
-            RETURNING balance
+            AND status = 'active'
+            AND contact_opportunities_used < contact_opportunity_limit
+            RETURNING
+                contact_opportunity_limit,
+                contact_opportunities_used
         """),
         {"user_id": str(current_user.id)},
-    ).scalar()
+    ).mappings().first()
 
-    if balance_result is None:
+    if opportunity_result is None:
         db.rollback()
 
         raise HTTPException(
             status_code=402,
-            detail="You need at least 1 Contact Point to unlock this contact.",
+            detail="You need at least 1 Contact Opportunity to unlock this contact.",
         )
 
     # ---------------------------------------------------------
@@ -769,9 +822,10 @@ def unlock_professional_request_contact(
     if not unlock_result:
         db.execute(
             text("""
-                UPDATE professional_contact_points
+                UPDATE professional_entitlements
                 SET
-                    balance = balance + 1,
+                    contact_opportunities_used =
+                        GREATEST(contact_opportunities_used - 1, 0),
                     updated_at = CURRENT_TIMESTAMP
                 WHERE user_id = :user_id
             """),
@@ -798,7 +852,7 @@ def unlock_professional_request_contact(
     )
 
     # ---------------------------------------------------------
-    # Record Contact Point transaction
+    # Record Contact Opportunity transaction
     # ---------------------------------------------------------
     db.execute(
         text("""
@@ -821,7 +875,10 @@ def unlock_professional_request_contact(
         """),
         {
             "user_id": str(current_user.id),
-            "balance_after": int(balance_result),
+            "balance_after": int(
+                opportunity_result["contact_opportunity_limit"]
+                - opportunity_result["contact_opportunities_used"]
+            ),
             "request_id": str(request_id),
         },
     )
@@ -860,8 +917,11 @@ def unlock_professional_request_contact(
         "unlocked_at": unlock_result["unlocked_at"],
         "expires_at": unlock_result["expires_at"],
         "duration_days": unlock_result["duration_days"],
-        "contact_points_spent": 1,
-        "contact_points_remaining": int(balance_result),
+        "contact_opportunities_spent": 1,
+        "contact_opportunities_remaining": int(
+            opportunity_result["contact_opportunity_limit"]
+            - opportunity_result["contact_opportunities_used"]
+        ),
         "contact": {
             "first_name": contact_user["first_name"],
             "last_name": contact_user["last_name"],
@@ -870,7 +930,7 @@ def unlock_professional_request_contact(
     }
 
 @router.get("/professional-requests/contact-points")
-def get_professional_contact_points(
+def get_professional_contact_opportunities(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -882,17 +942,28 @@ def get_professional_contact_points(
 
     result = db.execute(
         text("""
-            SELECT balance
-            FROM professional_contact_points
+            SELECT
+                contact_opportunity_limit,
+                contact_opportunities_used
+            FROM professional_entitlements
             WHERE user_id = :user_id
+            AND status = 'active'
+            LIMIT 1
         """),
         {"user_id": str(current_user.id)},
     ).mappings().first()
 
-    balance = int(result["balance"]) if result else 0
+    remaining = 0
+
+    if result:
+        remaining = max(
+            0,
+            int(result["contact_opportunity_limit"] or 0)
+            - int(result["contact_opportunities_used"] or 0)
+        )
 
     return {
-        "contact_points": balance
+        "contact_opportunities": remaining
     }
 
 @router.get("/professional-requests/mine")
@@ -1109,6 +1180,7 @@ def update_home_contact_feedback(
 
 @router.get("/professional-requests")
 def get_professional_request(
+    project_id: str | None = None,
     current_user=Depends(
         get_current_user,
     ),
@@ -1131,34 +1203,16 @@ def get_professional_request(
                 status,
                 created_at
             FROM professional_requests
-                 WHERE user_id = :user_id
+            WHERE user_id = :user_id
+              AND project_id = :project_id
             ORDER BY created_at DESC
             LIMIT 1
         """),
         {
             "user_id": str(current_user.id),
+            "project_id": project_id,
         },
     ).mappings().first()
-
-    if not request:
-        return {
-            "request": None,
-        }
-
-    return {
-        "request": {
-            "id": request["id"],
-            "user_id": request["user_id"],
-            "project_id": request["project_id"],
-            "country": request["country"],
-            "region": request["region"],
-            "city": request["city"],
-            "postal_code": request["postal_code"],
-            "requested_service": request["requested_service"],
-            "status": request["status"],
-            "created_at": request["created_at"],
-        }
-    }
 
 @router.get("/admin/professional-requests")
 def get_admin_professional_requests(

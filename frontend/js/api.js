@@ -60,8 +60,15 @@ async function createProject(options = {}) {
         "business";
 
 
+    console.log("CREATE PROJECT FLOW:", {
+        projectType,
+        confirmed: options.confirmed
+    });
+
     if (!options.confirmed) {
+        console.log("ABOUT TO OPEN CREATE PROJECT POPUP:", projectType);
         openCreateProjectNamePopup(projectType);
+        console.log("CREATE PROJECT POPUP CALL FINISHED");
         return;
     }
 
@@ -3521,151 +3528,174 @@ function setHomeFieldError(
 
 function openCreateProjectNamePopup(projectType) {
 
+    console.log("OPEN CREATE PROJECT POPUP:", projectType);
+
     if (projectType === "home") {
 
-    const homeCountry =
-        document.getElementById(
-            "homePropertyCountryInput"
-        );
-
-    const homePhoneCode =
-        document.getElementById(
-            "homeProfilePhoneCountryCode"
-        );
-
-    const professionalCountry =
-        document.getElementById(
-            "professionalProfileCountry"
-        );
-
-    const professionalPhoneCode =
-        document.getElementById(
-            "professionalProfilePhoneCountryCode"
-        );
-
-
-    // ==========================================
-    // HOME COUNTRY OPTIONS
-    // ==========================================
-
-    if (
-        homeCountry &&
-        professionalCountry
-    ) {
-
-        homeCountry.innerHTML = "";
-
-        Array.from(
-            professionalCountry.options
-        ).forEach(option => {
-
-            const clonedOption =
-                option.cloneNode(true);
-
-            homeCountry.appendChild(
-                clonedOption
+        const homeCountry =
+            document.getElementById(
+                "homePropertyCountryInput"
             );
-        });
-    }
 
-
-    // ==========================================
-    // HOME PHONE COUNTRY CODE
-    // ==========================================
-
-    if (
-        homePhoneCode &&
-        professionalPhoneCode
-    ) {
-
-        // Use the existing Professional Profile
-        // calling-code system as the source.
-        initializeProfessionalPhoneCountryCode?.();
-
-
-        homePhoneCode.innerHTML = "";
-
-        Array.from(
-            professionalPhoneCode.options
-        ).forEach(option => {
-
-            homePhoneCode.appendChild(
-                option.cloneNode(true)
+        const homePhoneCode =
+            document.getElementById(
+                "homeProfilePhoneCountryCode"
             );
-        });
+
+        const professionalCountry =
+            document.getElementById(
+                "professionalProfileCountry"
+            );
+
+        const professionalPhoneCode =
+            document.getElementById(
+                "professionalProfilePhoneCountryCode"
+            );
 
 
         // ==========================================
-        // INITIAL COUNTRY → PHONE CODE
+        // HOME COUNTRY OPTIONS
         // ==========================================
 
-        const initialCountry =
-            homeCountry?.value?.trim() || "";
+        if (
+            homeCountry &&
+            professionalCountry
+        ) {
 
-        if (initialCountry) {
+            homeCountry.innerHTML = "";
 
-            const matchingInitialOption =
-                Array.from(
-                    professionalPhoneCode.options
-                ).find(option =>
-                    option.dataset.country ===
-                    initialCountry
+            Array.from(
+                professionalCountry.options
+            ).forEach(option => {
+
+                const clonedOption =
+                    option.cloneNode(true);
+
+                homeCountry.appendChild(
+                    clonedOption
                 );
-
-            if (matchingInitialOption) {
-
-                homePhoneCode.value =
-                    matchingInitialOption.value;
-            }
+            });
         }
-    }
 
 
-    // ==========================================
-    // COUNTRY → PHONE CODE
-    // ==========================================
+        // ==========================================
+        // HOME PHONE COUNTRY CODE
+        // ==========================================
 
-    if (
-        homeCountry &&
-        homePhoneCode &&
-        professionalPhoneCode
-    ) {
+        if (
+            homePhoneCode &&
+            professionalPhoneCode
+        ) {
 
-        homeCountry.addEventListener(
-            "change",
-            function () {
+            // Use the existing Professional Profile
+            // calling-code system as the source.
+            initializeProfessionalPhoneCountryCode?.();
 
-                const selectedCountry =
-                    homeCountry.value.trim();
 
-                const matchingOption =
+            homePhoneCode.innerHTML = "";
+
+            Array.from(
+                professionalPhoneCode.options
+            ).forEach(option => {
+
+                homePhoneCode.appendChild(
+                    option.cloneNode(true)
+                );
+            });
+
+
+            // ==========================================
+            // INITIAL COUNTRY → PHONE CODE
+            // ==========================================
+
+            const initialCountry =
+                homeCountry?.value?.trim() || "";
+
+            if (initialCountry) {
+
+                const matchingInitialOption =
                     Array.from(
                         professionalPhoneCode.options
                     ).find(option =>
                         option.dataset.country ===
-                        selectedCountry
+                        initialCountry
                     );
 
-                if (matchingOption) {
+                if (matchingInitialOption) {
 
                     homePhoneCode.value =
-                        matchingOption.value;
-
-                } else {
-
-                    homePhoneCode.value = "";
+                        matchingInitialOption.value;
                 }
             }
-        );
+        }
+
+
+        // ==========================================
+        // COUNTRY → PHONE CODE
+        // ==========================================
+
+        if (
+            homeCountry &&
+            homePhoneCode &&
+            professionalPhoneCode
+        ) {
+
+            homeCountry.addEventListener(
+                "change",
+                function () {
+
+                    const selectedCountry =
+                        homeCountry.value.trim();
+
+                    const matchingOption =
+                        Array.from(
+                            professionalPhoneCode.options
+                        ).find(option =>
+                            option.dataset.country ===
+                            selectedCountry
+                        );
+
+                    if (matchingOption) {
+
+                        homePhoneCode.value =
+                            matchingOption.value;
+
+                    } else {
+
+                        homePhoneCode.value = "";
+                    }
+                }
+            );
+        }
     }
+    
     // ==========================================
-    // LOAD CURRENT USER
+    // PROFILE PREFILL
     // ==========================================
 
-    loadCurrentUser()
-        .then(user => {
+    console.log(
+        "PROJECT PROFILE PREFILL DEBUG:",
+        {
+            projectType,
+            isHome: projectType === "home",
+            professionalLoader:
+                typeof loadProfessionalProfile,
+            currentUserLoader:
+                typeof loadCurrentUser
+        }
+    );
 
-            if (!user) {
+    console.log("CREATE PROJECT PROFILE BLOCK REACHED");
+
+    const profilePromise =
+        projectType === "home"
+            ? loadCurrentUser()
+            : loadProfessionalProfile();
+
+    profilePromise
+        .then(profile => {
+
+            if (!profile) {
                 return;
             }
 
@@ -3689,28 +3719,37 @@ function openCreateProjectNamePopup(projectType) {
                     "homeProfilePhone"
                 );
 
-
             if (firstNameInput) {
                 firstNameInput.value =
-                    user.first_name || "";
+                    profile.first_name || "";
             }
 
             if (lastNameInput) {
                 lastNameInput.value =
-                    user.last_name || "";
+                    profile.last_name || "";
             }
 
             if (emailInput) {
                 emailInput.value =
-                    user.email || "";
+                    projectType === "home"
+                        ? profile.email || ""
+                        : profile.professional_email || "";
             }
 
             if (phoneInput) {
                 phoneInput.value =
-                    user.phone || "";
+                    projectType === "home"
+                        ? profile.phone || ""
+                        : profile.professional_phone || "";
             }
+        })
+        .catch(error => {
+            console.error(
+                "Profile prefill failed:",
+                error
+            );
         });
-}
+
 
 
 const popup =

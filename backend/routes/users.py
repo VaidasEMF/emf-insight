@@ -28,6 +28,8 @@ from auth.passwords import (
 router = APIRouter()
 
 from routes.admin_users import require_admin
+from models.notification import Notification
+from services.notification_service import create_notification
 
 # =====================
 # ME
@@ -136,10 +138,6 @@ def me(
     # The entitlement is project-scoped.
 
 
-    print(
-        "BRANDING DEBUG logo_path:",
-        repr(current_user.logo_path)
-    )
     return {
         "id": current_user.id,
         "email": current_user.email,
@@ -187,6 +185,86 @@ def me(
             if professional_demo_expires_at
             else None
         ),
+    }
+
+@router.get("/me/notifications")
+def get_my_notifications(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    notifications = (
+        db.query(Notification)
+        .filter(Notification.user_id == current_user.id)
+        .order_by(Notification.created_at.desc())
+        .all()
+    )
+
+    return [
+    {
+        "id": notification.id,
+        "title": notification.title,
+        "message": notification.message,
+        "type": notification.type,"source_workspace": notification.source_workspace,
+        "action_label": notification.action_label,
+        "action_url": notification.action_url,"source_workspace": notification.source_workspace,
+        "is_read": notification.is_read,
+        "created_at": notification.created_at.isoformat(),
+    }
+    for notification in notifications
+]
+
+@router.patch("/me/notifications/{notification_id}/read")
+def mark_notification_read(
+    notification_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    notification = (
+        db.query(Notification)
+        .filter(
+            Notification.id == notification_id,
+            Notification.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not notification:
+        raise HTTPException(
+            status_code=404,
+            detail="Notification not found",
+        )
+
+    notification.is_read = True
+    db.commit()
+
+    return {
+        "status": "ok",
+        "id": notification.id,
+        "is_read": True,
+    }
+
+@router.patch("/me/notifications/read-all")
+def mark_all_notifications_read(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    notifications = (
+        db.query(Notification)
+        .filter(
+            Notification.user_id == current_user.id,
+            Notification.is_read == False,
+        )
+        .all()
+    )
+
+    for notification in notifications:
+        notification.is_read = True
+
+    db.commit()
+
+    return {
+        "status": "ok",
+        "updated": len(notifications),
     }
 
 
@@ -507,6 +585,17 @@ def change_password(
         new_password
     )
 
+    db.commit()
+
+    notification = Notification(
+        user_id=current_user.id,
+        title="Password changed",
+        message="Your account password was successfully changed.",
+        type="security",
+        source_workspace=None,
+    )
+
+    db.add(notification)
     db.commit()
 
     return {

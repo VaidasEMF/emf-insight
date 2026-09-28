@@ -144,3 +144,9 @@ class User(Base):
         "Project",
         back_populates="user"
     )
+
+    notifications = relationship(
+        "Notification",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )

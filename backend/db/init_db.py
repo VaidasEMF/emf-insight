@@ -11,7 +11,8 @@ from models.project import Project
 from models.report import Report
 from models.pricing import Pricing
 from models.report_credit_ledger import ReportCreditLedger
-
+from models.notification import Notification
+from models.project_version import ProjectVersion
 
 def init_db():
 
@@ -26,6 +27,26 @@ def init_db():
     if engine.dialect.name == "postgresql":
 
         with engine.begin() as connection:
+
+            # =====================
+            # ACCOUNT NOTIFICATIONS
+            # =====================
+
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS notifications (
+                        id SERIAL PRIMARY KEY,
+                        user_id INTEGER NOT NULL,
+                        title VARCHAR(255) NOT NULL,
+                        message TEXT NOT NULL,
+                        type VARCHAR(50) NOT NULL DEFAULT 'info',
+                        is_read BOOLEAN NOT NULL DEFAULT FALSE,
+                        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
 
             connection.execute(
                 text(

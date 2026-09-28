@@ -317,6 +317,9 @@ def get_admin_payments(
             elif plan == "pro":
                 source = "Business"
                 product = "Business Pro"
+            elif plan == "branding":
+                source = "Professional"
+                product = "Professional Branding"
             else:
                 source = "—"
                 product = plan or "Unknown"
@@ -494,6 +497,51 @@ def get_admin_payments(
             )
 
             # -----------------------------------------------------
+            # FALLBACK: subscription metadata
+            # -----------------------------------------------------
+
+            if subscription_id and not plan:
+                try:
+                    subscription_obj = stripe.Subscription.retrieve(
+                        subscription_id
+                    )
+
+                    subscription_data = stripe_object_dict(
+                        subscription_obj
+                    )
+
+                    subscription_metadata = (
+                        subscription_data.get("metadata")
+                        or {}
+                    )
+
+                    if not isinstance(subscription_metadata, dict):
+                        try:
+                            subscription_metadata = dict(
+                                subscription_metadata
+                            )
+                        except Exception:
+                            subscription_metadata = {}
+
+                    plan = (
+                        subscription_metadata.get("plan")
+                        or ""
+                    )
+
+                    if not user_id:
+                        user_id = (
+                            subscription_metadata.get("user_id")
+                            or ""
+                        )
+
+                except Exception as exc:
+                    print(
+                        "Admin invoice subscription metadata lookup failed:",
+                        subscription_id,
+                        repr(exc)
+                    )
+
+            # -----------------------------------------------------
             # Skip the first Pro invoice if it belongs to a
             # subscription already represented by Checkout.
             # Later recurring invoices are still shown.
@@ -608,8 +656,24 @@ def get_admin_payments(
             else:
                 normalized_status = "pending"
 
-            source = "Business"
-            product = "Business Pro"
+            if plan == "branding":
+                source = "Professional"
+                product = "Professional Branding"
+            elif plan == "professional":
+                source = "Professional"
+                product = "Professional"
+            elif plan == "pro":
+                source = "Business"
+                product = "Business Pro"
+            elif plan == "single":
+                source = "Business"
+                product = "Business Single Report"
+            elif plan == "home_full_report":
+                source = "Home"
+                product = "Full EMF Insight Report"
+            else:
+                source = "—"
+                product = plan or "Unknown"
 
             created = (
                 invoice.get("created")

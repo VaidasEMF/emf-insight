@@ -285,6 +285,7 @@ def update_my_demo_feedback(
             SELECT id
             FROM professional_demo_feedback
             WHERE user_id = :user_id
+                AND project_id = :project_id
             ORDER BY created_at DESC
             LIMIT 1
             """

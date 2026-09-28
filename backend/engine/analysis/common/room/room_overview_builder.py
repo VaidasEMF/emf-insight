@@ -84,9 +84,7 @@ def _first_value(
 # ==========================================================
 # BUILD ROOM OVERVIEW
 # ==========================================================
-print(
-    "🔥 BUILD_ROOM_OVERVIEW MODULE READY"
-)
+
 
 def build_room_overview(
     room,

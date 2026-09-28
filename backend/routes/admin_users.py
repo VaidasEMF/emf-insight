@@ -7,6 +7,8 @@ from models.user import User
 
 from models.project import Project
 
+from models.notification import Notification
+
 
 router = APIRouter(
     prefix="/admin",
@@ -653,4 +655,75 @@ def adjust_admin_user_credits(
         "user_id": user.id,
         "amount": amount,
         "balance": new_balance,
+    }
+
+@router.post("/notifications")
+def create_admin_notification(
+    body: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    user_id = body.get("user_id")
+    title = (body.get("title") or "").strip()
+    message = (body.get("message") or "").strip()
+    notification_type = (body.get("type") or "info").strip()
+    source_workspace = (body.get("source_workspace") or "").strip() or None
+    action_label = (body.get("action_label") or "").strip() or None
+    action_url = (body.get("action_url") or "").strip() or None
+
+    if not user_id:
+        raise HTTPException(
+            status_code=400,
+            detail="user_id is required",
+        )
+
+    if not title:
+        raise HTTPException(
+            status_code=400,
+            detail="title is required",
+        )
+
+    if not message:
+        raise HTTPException(
+            status_code=400,
+            detail="message is required",
+        )
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    notification = Notification(
+        user_id=user.id,
+        title=title,
+        message=message,
+        type=notification_type,
+        source_workspace=source_workspace,
+        action_label=action_label,
+        action_url=action_url,
+    )
+
+    db.add(notification)
+    db.commit()
+    db.refresh(notification)
+
+    return {
+        "id": notification.id,
+        "user_id": notification.user_id,
+        "title": notification.title,
+        "message": notification.message,
+        "type": notification.type,
+        "source_workspace": notification.source_workspace,
+        "action_label": notification.action_label,
+        "action_url": notification.action_url,
+        "is_read": notification.is_read,
+        "created_at": notification.created_at.isoformat(),
     }

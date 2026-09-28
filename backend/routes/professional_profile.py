@@ -108,11 +108,21 @@ def update_professional_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+
+    print("=== PROFESSIONAL PROFILE ROUTE HIT ===", flush=True)
     if current_user.role != "professional" and not current_user.is_admin:
         raise HTTPException(
             status_code=403,
             detail="Professional account required",
         )
+
+    
+    print(
+        "PROFESSIONAL PROFILE DEBUG:",
+        "user_id=", current_user.id,
+        "email=", current_user.email,
+        "role=", current_user.role,
+    )
 
     profile = db.execute(
         text(
