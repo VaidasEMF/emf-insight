@@ -238,3 +238,30 @@ def update_admin_pricing(
     db.refresh(pricing)
 
     return pricing
+
+
+@router.delete("/pricing/{pricing_id}")
+def delete_admin_pricing(
+    pricing_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    pricing = (
+        db.query(Pricing)
+        .filter(Pricing.id == pricing_id)
+        .first()
+    )
+
+    if pricing is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Pricing entry not found",
+        )
+
+    db.delete(pricing)
+    db.commit()
+
+    return {
+        "status": "ok",
+        "deleted_id": pricing_id,
+    }

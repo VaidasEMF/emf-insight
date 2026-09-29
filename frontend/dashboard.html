@@ -3533,6 +3533,17 @@
             box-shadow: 0 0 0 1px rgba(180, 140, 0, 0.18);
             font-weight: 700;
         }
+
+
+        .button-danger {
+            border: 1px solid #e1b7b7;
+            background: #fff;
+            color: #a33;
+        }
+
+        .button-danger:hover {
+            background: #fff5f5;
+        }
     </style>
 </head>
 
@@ -16988,15 +16999,25 @@ ${!isTbd
                                     ${entry.available ? "Available" : "Off"}
                                 </span>
                             </td>
-                            <td>
-                                <button
-                                    type="button"
-                                    class="admin-edit-button"
-                                    onclick="openAdminPricingEdit(${entry.id})"
-                                >
-                                    Edit
-                                </button>
-                            </td>
+                           <td>
+    <div style="display:flex; gap:6px; align-items:center;">
+        <button
+            type="button"
+            class="button button-secondary"
+            onclick="openAdminPricingEdit(${entry.id})"
+        >
+            Edit
+        </button>
+
+        <button
+            type="button"
+            class="button button-danger"
+            onclick="deleteAdminPricing(${entry.id})"
+        >
+            Delete
+        </button>
+    </div>
+</td>
                         </tr>
                     `).join("")}
                             </tbody>
@@ -17181,6 +17202,65 @@ ${!isTbd
             }
 
             adminPricingEditingId = null;
+        }
+
+        async function deleteAdminPricing(pricingId) {
+            const entry = adminPricingEntries.find(
+                item => Number(item.id) === Number(pricingId)
+            );
+
+            if (!entry) {
+                return;
+            }
+
+            const confirmed = window.confirm(
+                `Delete pricing entry "${entry.product_key}" (${entry.region} / ${entry.currency})?`
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("Please sign in again.");
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/admin/pricing/${pricingId}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        `Delete failed: ${response.status}`
+                    );
+                }
+
+                await loadAdminPricing();
+
+            } catch (error) {
+                console.error(
+                    "Unable to delete admin pricing:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to delete pricing entry."
+                );
+            }
         }
 
         function openAdminPricingCreateModal() {
