@@ -11713,14 +11713,28 @@ ${!isTbd
                         },
 
                         professional: {
-                            name: eu?.products?.PROFESSIONAL?.name
+                            name:
+                                eu?.products?.PROFESSIONAL?.name
+                                || eu?.products?.BUSINESS_PREMIUM?.name
                                 || "Professional",
-                            type: eu?.products?.PROFESSIONAL?.billing
+
+                            type:
+                                eu?.products?.PROFESSIONAL?.billing
+                                || eu?.products?.BUSINESS_PREMIUM?.billing
                                 || "monthly",
-                            credits: eu?.products?.PROFESSIONAL?.credits,
+
+                            credits:
+                                eu?.products?.PROFESSIONAL?.credits
+                                ?? eu?.products?.BUSINESS_PREMIUM?.credits,
+
                             prices: {
-                                EUR: eu?.products?.PROFESSIONAL?.price,
-                                USD: us?.products?.PROFESSIONAL?.price
+                                EUR:
+                                    eu?.products?.PROFESSIONAL?.price
+                                    ?? eu?.products?.BUSINESS_PREMIUM?.price,
+
+                                USD:
+                                    us?.products?.PROFESSIONAL?.price
+                                    ?? us?.products?.BUSINESS_PREMIUM?.price
                             }
                         },
 
