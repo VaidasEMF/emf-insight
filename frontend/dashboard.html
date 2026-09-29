@@ -3506,6 +3506,16 @@
             box-shadow: 0 0 0 4px rgba(20, 117, 142, 0.12);
             transition: box-shadow 0.25s ease;
         }
+
+
+        .help-search-highlight {
+            background: #fff1a8;
+            color: inherit;
+            padding: 2px 4px;
+            border-radius: 4px;
+            box-shadow: 0 0 0 1px rgba(180, 140, 0, 0.18);
+            font-weight: 700;
+        }
     </style>
 </head>
 
@@ -4753,17 +4763,17 @@
                                         </div>
 
                                         <div style="
-                            margin-top:3px;
-                            font-size:18px;
-                            font-weight:700;
-                            color:#0f172a;
-                        ">
-                                            €7
+    margin-top:3px;
+    font-size:18px;
+    font-weight:700;
+    color:#0f172a;
+">
+                                            <span id="brandingMonthlyPrice"></span>
                                             <span style="
-                                font-size:12px;
-                                font-weight:400;
-                                color:#64748b;
-                            ">
+        font-size:12px;
+        font-weight:400;
+        color:#64748b;
+    ">
                                                 / month
                                             </span>
                                         </div>
@@ -4794,22 +4804,22 @@
                                         </div>
 
                                         <div style="
-                            margin-top:3px;
-                            font-size:18px;
-                            font-weight:700;
-                            color:#0f172a;
-                        ">
-                                            €49
+    margin-top:3px;
+    font-size:18px;
+    font-weight:700;
+    color:#0f172a;
+">
+                                            <span id="brandingAnnualPrice"></span>
                                             <span style="
-                                font-size:12px;
-                                font-weight:400;
-                                color:#64748b;
-                            ">
+        font-size:12px;
+        font-weight:400;
+        color:#64748b;
+    ">
                                                 / year
                                             </span>
                                         </div>
 
-                                        <button id="brandingAnnualButton" type="button" class="btn-primary"
+                                        <button id="brandingAnnualButton" type="button" class="btn-secondary"
                                             onclick="openBrandingActivation('annual')" style="
                             width:100%;
                             margin-top:9px;
@@ -4827,72 +4837,143 @@
 
 
                     <!-- COMPANY IDENTITY -->
-                    <div class="content-card" style="margin-top:18px;">
+                    <div class="content-card" id="companyIdentityCard" style="margin-top:18px;">
 
                         <div class="content-body">
 
-                            <div style="margin-bottom:20px;">
+                            <div id="companyIdentityLocked" style="
+        display:none;
+        padding:28px 10px 32px;
+        text-align:center;
+    ">
+                                <div style="
+        font-size:30px;
+        margin-bottom:12px;
+    ">🔒</div>
+
                                 <h3 style="
+        margin:0 0 8px;
+        font-size:18px;
+        color:#1f2937;
+    ">
+                                    Company Identity
+                                </h3>
+
+                                <p style="
+        margin:0 auto 18px;
+        max-width:560px;
+        color:#64748b;
+        font-size:14px;
+        line-height:1.6;
+    ">
+                                    Company Identity is available when Professional Branding is active.
+                                    Activate Professional Branding to add your company name, contact
+                                    details and logo to client-facing reports.
+                                </p>
+
+                                <button type="button" class="btn-primary" onclick="openBrandingActivation()">
+                                    Activate Professional Branding
+                                </button>
+                            </div>
+
+                            <div id="companyIdentityLocked" style="
+        display:none;
+        padding:28px 10px 32px;
+        text-align:center;
+    ">
+                                <div style="
+        font-size:30px;
+        margin-bottom:12px;
+    ">🔒</div>
+
+                                <h3 style="
+        margin:0 0 8px;
+        font-size:18px;
+        color:#1f2937;
+    ">
+                                    Company Identity
+                                </h3>
+
+                                <p style="
+        margin:0 auto 18px;
+        max-width:560px;
+        color:#64748b;
+        font-size:14px;
+        line-height:1.6;
+    ">
+                                    Company Identity is available when Professional Branding is active.
+                                    Activate Professional Branding to add your company name, contact
+                                    details and logo to client-facing reports.
+                                </p>
+
+                                <button type="button" class="btn-primary" onclick="openBrandingActivation()">
+                                    Activate Professional Branding
+                                </button>
+                            </div>
+
+                            <div id="companyIdentityEditor">
+
+                                <div style="margin-bottom:20px;">
+                                    <h3 style="
                     margin:0 0 5px 0;
                     font-size:17px;
                     color:#1f2937;
                 ">
-                                    Company identity
-                                </h3>
+                                        Company identity
+                                    </h3>
 
-                                <p style="
+                                    <p style="
                     margin:0;
                     font-size:13px;
                     color:#667085;
                 ">
-                                    This information can be used in your professional client-facing reports.
-                                </p>
-                            </div>
+                                        This information can be used in your professional client-facing reports.
+                                    </p>
+                                </div>
 
+                                <div class="form-grid">
 
-                            <div class="form-grid">
+                                    <!-- COMPANY NAME -->
+                                    <div class="field">
+                                        <label for="company_name">
+                                            Company name
+                                        </label>
 
-                                <!-- COMPANY NAME -->
-                                <div class="field">
-                                    <label for="company_name">
-                                        Company name
-                                    </label>
+                                        <input id="company_name" type="text" placeholder="Company name">
 
-                                    <input id="company_name" type="text" placeholder="Company name">
-
-                                    <div id="companyNameError" style="
+                                        <div id="companyNameError" style="
                 margin-top:6px;
                 font-size:12px;
                 color:#a33b3b;
                 display:none;
             "></div>
-                                </div>
+                                    </div>
 
 
-                                <!-- COMPANY EMAIL -->
-                                <div class="field">
-                                    <label for="company_email">
-                                        Company email
-                                    </label>
+                                    <!-- COMPANY EMAIL -->
+                                    <div class="field">
+                                        <label for="company_email">
+                                            Company email
+                                        </label>
 
-                                    <input id="company_email" type="email" placeholder="Company email">
+                                        <input id="company_email" type="email" placeholder="Company email">
 
-                                    <div id="companyEmailError" style="
+                                        <div id="companyEmailError" style="
         margin-top:6px;
         font-size:12px;
         display:none;
     "></div>
-                                </div>
+                                    </div>
 
 
-                                <!-- COMPANY WEBSITE -->
-                                <div class="field" style="grid-column:1 / -1;">
-                                    <label for="company_website">
-                                        Company website
-                                    </label>
+                                    <!-- COMPANY WEBSITE -->
+                                    <div class="field" style="grid-column:1 / -1;">
+                                        <label for="company_website">
+                                            Company website
+                                        </label>
 
-                                    <input type="url" id="company_website" name="company_website"
-                                        placeholder="https://www.yourcompany.com" autocomplete="url" style="
+                                        <input type="url" id="company_website" name="company_website"
+                                            placeholder="https://www.yourcompany.com" autocomplete="url" style="
                 width:100%;
                 box-sizing:border-box;
                 height:42px;
@@ -4905,42 +4986,42 @@
                 outline:none;
             ">
 
-                                    <div id="companyWebsiteError" style="
+                                        <div id="companyWebsiteError" style="
         margin-top:6px;
         font-size:12px;
         display:none;
     "></div>
+                                    </div>
+
                                 </div>
 
-                            </div>
 
-
-                            <!-- LOGO -->
-                            <div style="
+                                <!-- LOGO -->
+                                <div style="
     margin-top:22px;
     padding-top:22px;
     border-top:1px solid #e5e7eb;
 ">
 
-                                <div style="
+                                    <div style="
         margin-bottom:6px;
         font-size:14px;
         font-weight:600;
         color:#1f2937;
     ">
-                                    Company logo
-                                </div>
+                                        Company logo
+                                    </div>
 
-                                <div style="
+                                    <div style="
         font-size:13px;
         color:#667085;
         margin-bottom:16px;
     ">
-                                    Your logo can appear on professional client-facing reports
-                                    when Branding is active.
-                                </div>
+                                        Your logo can appear on professional client-facing reports
+                                        when Branding is active.
+                                    </div>
 
-                                <div style="
+                                    <div style="
         display:flex;
         align-items:center;
         justify-content:space-between;
@@ -4948,22 +5029,22 @@
         flex-wrap:wrap;
     ">
 
-                                    <div style="
+                                        <div style="
             display:flex;
             align-items:center;
             gap:12px;
             flex-wrap:wrap;
         ">
 
-                                        <input type="file" id="logo" accept="image/*" onchange="uploadLogo()">
+                                            <input type="file" id="logo" accept="image/*" onchange="uploadLogo()">
 
-                                        <div style="
+                                            <div style="
     margin-top:14px;
     display:flex;
     align-items:center;
     gap:12px;
 ">
-                                            <img id="logoPreview" src="" alt="Company logo preview" style="
+                                                <img id="logoPreview" src="" alt="Company logo preview" style="
             display:none;
             max-width:180px;
             max-height:80px;
@@ -4973,23 +5054,25 @@
             padding:8px;
             background:#fff;
         ">
+                                            </div>
+
+                                            <button type="button" class="btn-secondary"
+                                                onclick="document.getElementById('logo').click()">
+                                                Upload logo
+                                            </button>
+
                                         </div>
 
-                                        <button type="button" class="btn-secondary"
-                                            onclick="document.getElementById('logo').click()">
-                                            Upload logo
+                                        <button type="button" class="btn-primary"
+                                            onclick="saveProfile(event); return false;">
+                                            Save company details
                                         </button>
 
                                     </div>
 
-                                    <button type="button" class="btn-primary"
-                                        onclick="saveProfile(event); return false;">
-                                        Save company details
-                                    </button>
+                                    <div class="save-message" id="brandingMessage" style="margin-top:10px;"></div>
 
                                 </div>
-
-                                <div class="save-message" id="brandingMessage" style="margin-top:10px;"></div>
 
                             </div>
 
@@ -4999,7 +5082,7 @@
 
 
                     <!-- BRANDING VALUE -->
-                    <div class="content-card" style="margin-top:18px;">
+                    <div class="content-card" id="brandingValueCard" style="margin-top:18px;">
 
                         <div class="content-body">
 
@@ -5077,136 +5160,6 @@
                     </div>
 
                 </section>
-
-                <!-- BRANDING ACTIVATION MODAL -->
-                <div id="brandingActivationModal" style="
-        display:none;
-        position:fixed;
-        inset:0;
-        z-index:9999;
-        background:rgba(15,23,42,0.45);
-        align-items:center;
-        justify-content:center;
-        padding:20px;
-    ">
-
-                    <div style="
-        width:min(460px, 100%);
-        background:#fff;
-        border-radius:16px;
-        box-shadow:0 20px 60px rgba(15,23,42,0.20);
-        padding:26px;
-    ">
-
-                        <div style="
-            display:flex;
-            align-items:flex-start;
-            justify-content:space-between;
-            gap:20px;
-        ">
-
-                            <div>
-                                <h3 style="
-                    margin:0 0 7px 0;
-                    font-size:20px;
-                    color:#1f2937;
-                ">
-                                    Activate Professional Branding
-                                </h3>
-
-                                <p style="
-                    margin:0;
-                    font-size:13px;
-                    line-height:1.5;
-                    color:#667085;
-                ">
-                                    Use your professional company identity in
-                                    client-facing reports.
-                                </p>
-                            </div>
-
-                            <button type="button" onclick="closeBrandingActivation()" style="
-                    border:0;
-                    background:none;
-                    font-size:22px;
-                    line-height:1;
-                    color:#667085;
-                    cursor:pointer;
-                " aria-label="Close">
-                                ×
-                            </button>
-
-                        </div>
-
-
-                        <div style="
-            margin-top:22px;
-            padding:16px;
-            border:1px solid #e2e8f0;
-            border-radius:12px;
-            background:#f8fafc;
-        ">
-
-                            <div style="
-                font-size:12px;
-                font-weight:600;
-                color:#667085;
-                margin-bottom:5px;
-            ">
-                                Selected plan
-                            </div>
-
-                            <div id="brandingActivationPlan" style="
-                    font-size:18px;
-                    font-weight:700;
-                    color:#1f2937;
-                ">
-                                Monthly Branding
-                            </div>
-
-                            <div id="brandingActivationCost" style="
-                    margin-top:5px;
-                    font-size:13px;
-                    color:#667085;
-                ">
-                                2 Points / month
-                            </div>
-
-                        </div>
-
-
-                        <p id="brandingActivationConfirmation" style="
-                margin:18px 0 0 0;
-                font-size:13px;
-                line-height:1.5;
-                color:#475467;
-            ">
-                            Activate this Branding plan for your professional account?
-                        </p>
-
-
-                        <div style="
-            display:flex;
-            justify-content:flex-end;
-            gap:10px;
-            margin-top:24px;
-        ">
-
-                            <button type="button" class="btn-secondary" onclick="closeBrandingActivation()">
-                                Cancel
-                            </button>
-
-                            <button type="button" class="btn-primary" id="confirmBrandingActivationButton"
-                                onclick="confirmBrandingActivation()">
-                                Confirm activation
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
 
                 <!-- =========================
 ADMIN PROFESSIONALS
@@ -6438,6 +6391,21 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>How to read Property Insights</h3>
+
+                                <p>
+                                    Property Insights brings together the available information
+                                    from your assessment so that you can review the property
+                                    as a whole and examine specific assessed areas.
+                                </p>
+
+                                <p>
+                                    The information shown depends on what was measured,
+                                    recorded and assessed for the property.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -6449,6 +6417,21 @@ ADMIN PAYMENTS
                                     measurement results and their location within the property.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Results by area</h3>
+
+                                <p>
+                                    Where sufficient assessment data is available, results can
+                                    be understood in relation to the rooms and areas where
+                                    measurements were collected.
+                                </p>
+
+                                <p>
+                                    This helps connect individual measurement results with
+                                    their location within the property.
+                                </p>
                             </div>
 
 
@@ -6465,6 +6448,22 @@ ADMIN PAYMENTS
                                 <p>
                                     Measurement coverage also provides context for understanding
                                     how much of the property has actually been assessed.
+                                </p>
+
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Why measurement coverage matters</h3>
+
+                                <p>
+                                    Measurement coverage shows how much of the assessed property
+                                    has actually been measured.
+                                </p>
+
+                                <p>
+                                    A result from a limited measurement area should therefore
+                                    be understood within the context of the areas that were
+                                    assessed and the areas that were not measured.
                                 </p>
 
                             </div>
@@ -6497,6 +6496,21 @@ ADMIN PAYMENTS
                                     and findings.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Insights and recommendations</h3>
+
+                                <p>
+                                    Property Insights can bring together assessment results,
+                                    identified sources and recommendations in one view.
+                                </p>
+
+                                <p>
+                                    Recommendations are based on the information available
+                                    from the assessment and are intended to help you identify
+                                    possible next steps.
+                                </p>
                             </div>
 
 
@@ -6659,7 +6673,8 @@ ADMIN PAYMENTS
                                     <h3>Your Property Health Record</h3>
 
                                     <p>
-                                        Understand how your property record keeps your assessment history connected to
+                                        Understand how your property record keeps your assessment history connected
+                                        to
                                         the
                                         property.
                                     </p>
@@ -6805,6 +6820,27 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>What happens after you create the property</h3>
+
+                                <p>
+                                    Once your property is created, it becomes the foundation
+                                    for your Home Wellness assessment workflow.
+                                </p>
+
+                                <p>
+                                    Your property is connected to its
+                                    <strong>Property Health Record</strong>, where assessment
+                                    information can be kept and followed over time.
+                                </p>
+
+                                <p>
+                                    From the property, you can continue with an assessment,
+                                    review property insights and, where available, request
+                                    professional assistance.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -6871,15 +6907,62 @@ ADMIN PAYMENTS
 
 
                             <div class="help-detail-section">
-
                                 <h3>One property, an ongoing record</h3>
 
                                 <p>
-                                    A Home Property is not just a single assessment. Its Property
-                                    Health Record provides a continuing place for the property's
-                                    assessment information.
+                                    A Home Property is not just a single assessment.
+                                    Its Property Health Record provides a continuing place
+                                    for the property's assessment information.
                                 </p>
 
+                                <p>
+                                    As new assessments and relevant information are added,
+                                    the record can continue to develop with the property.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Property and Property Health Record</h3>
+
+                                <p>
+                                    Each Home Property has its own Property Health Record.
+                                    The record belongs to the property rather than to an individual
+                                    assessment.
+                                </p>
+
+                                <p>
+                                    This means that assessment information can remain connected
+                                    to the same property as the Home Wellness workflow develops.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Using your Property Health Record</h3>
+
+                                <p>
+                                    Start by creating your Home Property. The property then becomes
+                                    the starting point for your Home Wellness assessment.
+                                </p>
+
+                                <p>
+                                    As you continue working with the property, assessment results,
+                                    insights and recommendations remain associated with that property.
+                                </p>
+
+                                <p>
+                                    This provides continuity when you return to the same property
+                                    for further assessment or review.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-note">
+                                <strong>Important</strong>
+
+                                <p>
+                                    The Property Health Record is property-specific.
+                                    Creating a new property creates a separate property context
+                                    and does not merge its information with another property.
+                                </p>
                             </div>
 
 
@@ -7110,12 +7193,31 @@ ADMIN PAYMENTS
                                 <ul class="help-article-list-items">
                                     <li>Property and assessment context</li>
                                     <li>Assessment results</li>
-                                    <li>Measurement and coverage information</li>
+                                    <li>Coverage information</li>
                                     <li>Relevant EMF sources</li>
                                     <li>Recommendations</li>
                                     <li>Supporting visual information</li>
                                 </ul>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>What is included in the report?</h3>
+
+                                <p>
+                                    The Full EMF Insight Report brings the available assessment
+                                    information together into a structured document that can be
+                                    retained and reviewed outside the interactive dashboard.
+                                </p>
+
+                                <ul class="help-article-list-items">
+                                    <li>Property and assessment context</li>
+                                    <li>Assessment results</li>
+                                    <li>Coverage information</li>
+                                    <li>Heatmap and other supporting visual information</li>
+                                    <li>Identified EMF sources, where available</li>
+                                    <li>Recommendations related to the assessment</li>
+                                </ul>
                             </div>
 
 
@@ -7135,6 +7237,27 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Report access</h3>
+
+                                <p>
+                                    The Full EMF Insight Report is a separate report output from
+                                    the interactive Property Insights view.
+                                </p>
+
+                                <p>
+                                    Where the report requires unlocking or purchase, the available
+                                    option and current price are shown in the platform before
+                                    you proceed.
+                                </p>
+
+                                <p>
+                                    Current pricing is displayed in the selected billing currency.
+                                    See <strong>Billing &amp; Plan</strong> for the current price
+                                    and purchase options.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7149,6 +7272,27 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Interactive insights vs. report</h3>
+
+                                <p>
+                                    <strong>Property Insights</strong> is designed for reviewing
+                                    assessment information within EMF Insight.
+                                </p>
+
+                                <p>
+                                    The <strong>Full EMF Insight Report</strong> packages the
+                                    available assessment information into a structured document
+                                    that can be retained as a record of the assessment.
+                                </p>
+
+                                <p>
+                                    The two are therefore complementary: Insights support
+                                    interactive review, while the report provides a consolidated
+                                    document of the available assessment information.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-note">
 
@@ -7156,7 +7300,9 @@ ADMIN PAYMENTS
 
                                 <span>
                                     The report reflects the assessment information available
-                                    for the property at the time it is generated.
+                                    for the property at the time it is generated. If additional
+                                    assessment information becomes available later, a new report
+                                    may reflect the updated information.
                                 </span>
 
                             </div>
@@ -7209,6 +7355,23 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>How the request works</h3>
+
+                                <p>
+                                    A Professional Assessment request connects a Home Wellness
+                                    property owner with professionals who are available to provide
+                                    assessment services.
+                                </p>
+
+                                <ol>
+                                    <li>Submit a Professional Assessment request for your property.</li>
+                                    <li>Your request becomes available to eligible professionals.</li>
+                                    <li>An interested professional can unlock your contact information.</li>
+                                    <li>The professional can then contact you to discuss the assessment.</li>
+                                </ol>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7224,6 +7387,54 @@ ADMIN PAYMENTS
                                     participating in the EMF Insight professional network.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Professional contact access</h3>
+
+                                <p>
+                                    Professionals use Contact Points to unlock contact information
+                                    for available Professional Assessment requests.
+                                </p>
+
+                                <p>
+                                    Unlocking a request gives the professional access to the
+                                    available contact information for a limited period.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>14-day contact access</h3>
+
+                                <p>
+                                    Once a professional unlocks your request, contact access
+                                    remains available for 14 days.
+                                </p>
+
+                                <p>
+                                    After the 14-day period expires, the professional must unlock
+                                    the request again if they need to regain contact access.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Contact Points</h3>
+
+                                <p>
+                                    Each contact unlock uses one Contact Point from the professional's
+                                    available allowance.
+                                </p>
+
+                                <p>
+                                    The Contact Point is used when contact access is unlocked.
+                                    An expired 14-day access period does not automatically return
+                                    the Contact Point to the professional's allowance.
+                                </p>
+
+                                <p>
+                                    If contact access is required again after expiry, another
+                                    Contact Point is required.
+                                </p>
                             </div>
 
 
@@ -7251,6 +7462,26 @@ ADMIN PAYMENTS
                                     how contact information becomes available.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>What happens next?</h3>
+
+                                <p>
+                                    After your request becomes available, professionals who are
+                                    eligible to respond can review the request and decide whether
+                                    to unlock contact access.
+                                </p>
+
+                                <p>
+                                    Availability and response depend on the professionals
+                                    participating in the EMF Insight professional network.
+                                </p>
+
+                                <p>
+                                    EMF Insight does not guarantee that a professional will accept
+                                    or respond to every request.
+                                </p>
                             </div>
 
 
@@ -7422,6 +7653,20 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>One project, one property context</h3>
+
+                                <p>
+                                    A Business Project keeps the information for a professional
+                                    survey organized in one place.
+                                </p>
+
+                                <p>
+                                    Project information provides the context for the sessions,
+                                    floors, rooms, zones and measurements created during the survey.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7439,6 +7684,21 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Why use sessions?</h3>
+
+                                <p>
+                                    A session represents a specific survey activity within a project.
+                                    This allows work on the same project to be organized into
+                                    separate assessment activities.
+                                </p>
+
+                                <p>
+                                    For example, a project may contain an initial survey session
+                                    and later sessions for additional assessment work.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7454,6 +7714,20 @@ ADMIN PAYMENTS
                                     measurements.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Working within a floor</h3>
+
+                                <p>
+                                    The current floor is the spatial context in which you define
+                                    rooms, zones and measurement areas.
+                                </p>
+
+                                <p>
+                                    When a property contains multiple floors, each floor can be
+                                    handled as its own spatial level within the project.
+                                </p>
                             </div>
 
 
@@ -7474,6 +7748,28 @@ ADMIN PAYMENTS
                                     <li>Measure</li>
                                 </ul>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>From plan to results</h3>
+
+                                <p>
+                                    The workflow moves from preparing the property plan to defining
+                                    the areas that will be assessed and then collecting measurements.
+                                </p>
+
+                                <ol>
+                                    <li><strong>Plan</strong> — prepare the floor plan.</li>
+                                    <li><strong>Scale</strong> — establish the drawing scale.</li>
+                                    <li><strong>Rooms</strong> — define the rooms.</li>
+                                    <li><strong>Zones</strong> — define relevant assessment zones.</li>
+                                    <li><strong>Measure</strong> — collect measurement data.</li>
+                                </ol>
+
+                                <p>
+                                    The resulting information can then be used for heatmaps,
+                                    analysis and professional reporting.
+                                </p>
                             </div>
 
 
@@ -7503,7 +7799,8 @@ ADMIN PAYMENTS
                                 </h3>
 
                                 <p class="section-description">
-                                    Understand how the physical structure of a property is organized within a Business
+                                    Understand how the physical structure of a property is organized within a
+                                    Business
                                     Survey.
                                 </p>
                             </div>
@@ -7542,6 +7839,20 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Session context</h3>
+
+                                <p>
+                                    Each session belongs to a Business Project and provides the
+                                    context for the survey activity being performed.
+                                </p>
+
+                                <p>
+                                    When you return to a project, the session helps keep the
+                                    assessment work organized and connected to the property.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7560,6 +7871,21 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Working with multiple floors</h3>
+
+                                <p>
+                                    If a property contains more than one floor, each floor can
+                                    be organized separately within the project.
+                                </p>
+
+                                <p>
+                                    Rooms, zones and measurements belong to their relevant
+                                    floor, helping keep results associated with the correct
+                                    part of the property.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7573,6 +7899,21 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Rooms as the measurement context</h3>
+
+                                <p>
+                                    Rooms provide the spatial context for measurements and
+                                    assessment information.
+                                </p>
+
+                                <p>
+                                    Organizing measurements by room makes it easier to understand
+                                    where data was collected and how results relate to individual
+                                    areas of the property.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7584,6 +7925,29 @@ ADMIN PAYMENTS
                                     and how results relate to the property.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Recommended structure</h3>
+
+                                <p>
+                                    For a clear professional survey, keep the physical structure
+                                    consistent throughout the project:
+                                </p>
+
+                                <ul class="help-article-list-items">
+                                    <li>Project</li>
+                                    <li>Session</li>
+                                    <li>Floor</li>
+                                    <li>Room</li>
+                                    <li>Zone</li>
+                                    <li>Measurement</li>
+                                </ul>
+
+                                <p>
+                                    This structure helps keep measurements, heatmaps, analysis
+                                    and reports connected to the correct location.
+                                </p>
                             </div>
 
 
@@ -7648,6 +8012,20 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Zones within rooms</h3>
+
+                                <p>
+                                    Zones provide a more specific assessment context within
+                                    the property's room structure.
+                                </p>
+
+                                <p>
+                                    They can be used when a particular part of a room needs to
+                                    be assessed or measured separately.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7672,6 +8050,26 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Choosing a Measurement Profile</h3>
+
+                                <p>
+                                    The Measurement Profile defines which measurement modalities
+                                    are relevant for the survey area.
+                                </p>
+
+                                <ul class="help-article-list-items">
+                                    <li><strong>RF</strong> — radio frequency measurements</li>
+                                    <li><strong>Electric</strong> — electric field measurements</li>
+                                    <li><strong>Magnetic</strong> — magnetic field measurements</li>
+                                </ul>
+
+                                <p>
+                                    The selected profile determines which measurements are expected
+                                    and contributes to assessment completion and confidence.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7687,6 +8085,25 @@ ADMIN PAYMENTS
                                     complete picture of the assessed area.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Measurement grid and points</h3>
+
+                                <p>
+                                    Measurement points define where readings are collected within
+                                    the assessed room or zone.
+                                </p>
+
+                                <p>
+                                    Multiple points across an area allow the survey to capture
+                                    spatial variation rather than relying on a single location.
+                                </p>
+
+                                <p>
+                                    The collected points provide the measurement data used for
+                                    subsequent analysis and visualisation.
+                                </p>
                             </div>
 
 
@@ -7705,6 +8122,28 @@ ADMIN PAYMENTS
                                     assessed.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Measurement status</h3>
+
+                                <p>
+                                    Measurement progress indicates whether the relevant area has
+                                    been measured and whether the expected measurement work is complete.
+                                </p>
+
+                                <ul class="help-article-list-items">
+                                    <li><strong>Not measured</strong> — measurement work has not started.</li>
+                                    <li><strong>Partial / In progress</strong> — some measurement data is available, but
+                                        the area is not yet complete.</li>
+                                    <li><strong>Confirmed</strong> — the relevant measurement work has been completed.
+                                    </li>
+                                </ul>
+
+                                <p>
+                                    These statuses describe measurement progress and completion.
+                                    They should not be interpreted as the property's risk level.
+                                </p>
                             </div>
 
 
@@ -7765,6 +8204,20 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>What a heatmap shows</h3>
+
+                                <p>
+                                    A heatmap provides a visual representation of how measured
+                                    values are distributed across the assessed area.
+                                </p>
+
+                                <p>
+                                    It helps you see spatial patterns in the measurement data
+                                    and identify areas where measured values differ.
+                                </p>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7776,6 +8229,20 @@ ADMIN PAYMENTS
                                     rooms, zones and floors.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Reading results in context</h3>
+
+                                <p>
+                                    Heatmap results should be viewed together with the room,
+                                    zone and floor where the measurements were collected.
+                                </p>
+
+                                <p>
+                                    The spatial context helps you understand where the displayed
+                                    measurement patterns occur within the property.
+                                </p>
                             </div>
 
 
@@ -7791,6 +8258,20 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>Heatmaps and coverage</h3>
+
+                                <p>
+                                    A heatmap represents the measurement data available for
+                                    the assessed area. It does not represent areas where no
+                                    measurement data has been collected.
+                                </p>
+
+                                <p>
+                                    Measurement coverage should therefore be considered when
+                                    reviewing and interpreting the visual result.
+                                </p>
+                            </div>
 
                             <div class="help-detail-section">
 
@@ -7815,6 +8296,22 @@ ADMIN PAYMENTS
                                     results.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Heatmap and assessment results</h3>
+
+                                <p>
+                                    Heatmaps are one part of the Business Survey results.
+                                    They work together with measurement data, room and zone
+                                    information, sources and other assessment results.
+                                </p>
+
+                                <p>
+                                    The heatmap should therefore be understood as a visual
+                                    representation of the available measurement data rather
+                                    than as a standalone assessment conclusion.
+                                </p>
                             </div>
 
 
@@ -7877,6 +8374,24 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>From survey to report</h3>
+                                <p>
+                                    A Business Survey report is created from the information collected
+                                    during the survey workflow. The quality and completeness of the report
+                                    therefore depend on the information available in the project.
+                                </p>
+
+                                <ol class="help-article-list-items">
+                                    <li>Set up the property and floor structure.</li>
+                                    <li>Define rooms and zones.</li>
+                                    <li>Select the required Measurement Profile.</li>
+                                    <li>Collect measurements at the required points.</li>
+                                    <li>Review coverage, sources, heatmaps and assessment results.</li>
+                                    <li>Generate the report from the completed assessment information.</li>
+                                </ol>
+                            </div>
+
 
                             <div class="help-detail-section">
 
@@ -7888,6 +8403,22 @@ ADMIN PAYMENTS
                                     measurement coverage available for those areas.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Reading a Business Survey report</h3>
+                                <p>
+                                    The report should be read as a structured representation of the
+                                    assessment rather than as a replacement for the underlying survey.
+                                    Results are best understood together with the areas assessed,
+                                    measurements collected and available measurement coverage.
+                                </p>
+
+                                <p>
+                                    Use the report to review the property as a whole and then examine
+                                    individual floors, rooms, zones, measurements and identified sources
+                                    where more detail is required.
+                                </p>
                             </div>
 
 
@@ -7917,6 +8448,50 @@ ADMIN PAYMENTS
                                     record.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Reports and assessment history</h3>
+                                <p>
+                                    A generated report represents the assessment information available
+                                    when the report is created. If the project is later updated with
+                                    additional measurements or other assessment information, the updated
+                                    project data remains the underlying source for subsequent analysis
+                                    and reporting.
+                                </p>
+
+                                <p>
+                                    This allows the survey project to remain the working assessment
+                                    environment while the report provides a structured presentation of
+                                    the information for review or client communication.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Professional Branding</h3>
+                                <p>
+                                    Professional Branding allows Business Survey reports to present your
+                                    professional identity together with the assessment information.
+                                </p>
+
+                                <p>
+                                    Depending on your plan and branding access, this can include your
+                                    company name, email, website and logo.
+                                </p>
+
+                                <ul class="help-article-list-items">
+                                    <li><strong>Single:</strong> Professional Branding is available as an optional
+                                        add-on.</li>
+                                    <li><strong>Pro:</strong> Professional Branding is available as an optional add-on.
+                                    </li>
+                                    <li><strong>Professional:</strong> Professional Branding is included in the plan.
+                                    </li>
+                                </ul>
+
+                                <p>
+                                    When enabled, branding is used to support client-facing professional
+                                    communication and branded reports.
+                                </p>
                             </div>
 
 
@@ -8041,11 +8616,10 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
-
-                                <h3>Personal information</h3>
-
+                                <h3>What you can manage</h3>
                                 <p>
-                                    Your profile includes:
+                                    Your Profile contains the personal account information associated
+                                    with your EMF Insight account.
                                 </p>
 
                                 <ul class="help-article-list-items">
@@ -8054,7 +8628,30 @@ ADMIN PAYMENTS
                                     <li>Email address</li>
                                     <li>Phone number</li>
                                 </ul>
+                            </div>
 
+                            <div class="help-detail-section">
+                                <h3>Your account identity</h3>
+                                <p>
+                                    Profile information identifies the account owner and is separate
+                                    from your professional company identity.
+                                </p>
+
+                                <p>
+                                    If you use Business Survey features and have Professional Branding,
+                                    your company name, website, email and logo are managed as part of
+                                    your professional branding information.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Profile and Professional Branding</h3>
+                                <p>
+                                    Your personal profile and your professional brand serve different
+                                    purposes. Profile information describes your account, while
+                                    Professional Branding is used to present your company identity
+                                    in professional client-facing communication and reports.
+                                </p>
                             </div>
 
                             <div class="help-detail-section">
@@ -8125,6 +8722,15 @@ ADMIN PAYMENTS
                                 <p>
                                     Security settings help protect access to your EMF Insight
                                     account.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Password</h3>
+                                <p>
+                                    Use your Security settings to manage your account password.
+                                    Keep your password private and use a strong, unique password
+                                    for your EMF Insight account.
                                 </p>
                             </div>
 
@@ -8262,6 +8868,20 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
+                                <h3>Multiple properties</h3>
+                                <p>
+                                    Each Home Property represents a separate property context.
+                                    You can create more than one property and return to an existing
+                                    property from My Property.
+                                </p>
+
+                                <p>
+                                    Property-specific assessments, insights and the Property Health
+                                    Record remain associated with the relevant property.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
 
                                 <h3>Property information</h3>
 
@@ -8352,26 +8972,265 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
-
-                                <h3>Pricing</h3>
+                                <h3>Business Survey Plans</h3>
 
                                 <p>
-                                    Pricing displayed in the platform can change over time.
-                                    Always use the current Billing &amp; Plan page for the
-                                    latest pricing information.
+                                    EMF Insight provides three Business Survey plans for
+                                    professionals: Single, Pro and Professional. Each plan
+                                    provides access to the professional assessment workflow,
+                                    with different usage allowances and account features.
                                 </p>
 
+                                <h4>Single — €9 one-time</h4>
+                                <p>
+                                    Designed for professionals who need to complete an individual
+                                    assessment.
+                                </p>
+                                <ul>
+                                    <li>1 Professional Assessment</li>
+                                    <li>1 Professional Report</li>
+                                    <li>1 Contact Point</li>
+                                    <li>Contact access for 14 days</li>
+                                    <li>Up to 10 active projects</li>
+                                    <li>Full Business Survey workflow</li>
+                                    <li>Heatmaps and professional reports</li>
+                                    <li>Professional Branding available as an optional add-on</li>
+                                </ul>
+                                <p>
+                                    Professional Branding is available for €7/month or €49/year.
+                                </p>
+
+                                <h4>Pro — €39/month</h4>
+                                <p>
+                                    Designed for professionals who perform assessments regularly.
+                                </p>
+                                <ul>
+                                    <li>5 Professional Assessments per month</li>
+                                    <li>5 Professional Reports per month</li>
+                                    <li>3 Contact Points per month</li>
+                                    <li>Contact access for 14 days</li>
+                                    <li>Unlimited projects</li>
+                                    <li>Full Business Survey workflow</li>
+                                    <li>Heatmaps and professional reports</li>
+                                    <li>Professional Branding available as an optional add-on</li>
+                                </ul>
+                                <p>
+                                    Professional Branding is available for €7/month or €49/year.
+                                </p>
+
+                                <h4>Professional — €79/month</h4>
+                                <p>
+                                    Designed for professionals and businesses performing
+                                    assessments as an ongoing service.
+                                </p>
+                                <ul>
+                                    <li>25 Professional Assessments per month</li>
+                                    <li>25 Professional Reports per month</li>
+                                    <li>10 Contact Points per month</li>
+                                    <li>Contact access for 14 days</li>
+                                    <li>Unlimited projects</li>
+                                    <li>Full Business Survey workflow</li>
+                                    <li>Heatmaps and professional reports</li>
+                                    <li>Professional Branding included</li>
+                                    <li>Company Identity and branded client-facing reports</li>
+                                    <li>Priority support</li>
+                                    <li>Access to new Professional features</li>
+                                </ul>
                             </div>
 
                             <div class="help-detail-section">
+                                <h3>Professional Branding</h3>
 
+                                <p>
+                                    Professional Branding allows professionals to present their
+                                    company identity in client-facing reports and professional
+                                    materials.
+                                </p>
+
+                                <h4>Availability</h4>
+
+                                <p>
+                                    <strong>Single and Pro</strong><br>
+                                    Professional Branding is available as an optional add-on:
+                                    €7/month or €49/year.
+                                </p>
+
+                                <p>
+                                    <strong>Professional</strong><br>
+                                    Professional Branding is included with the Professional plan
+                                    at no additional cost.
+                                </p>
+
+                                <h4>What Branding enables</h4>
+
+                                <ul>
+                                    <li>Company name</li>
+                                    <li>Company email</li>
+                                    <li>Company website</li>
+                                    <li>Company logo</li>
+                                </ul>
+
+                                <p>
+                                    These details can be used in client-facing professional reports.
+                                </p>
+
+                                <h4>Company Identity access</h4>
+
+                                <p>
+                                    Company Identity is available when Professional Branding is active.
+                                    Professional plan users have access to Company Identity because
+                                    Branding is included in their plan.
+                                </p>
+
+                                <p>
+                                    Single and Pro users must activate Professional Branding before
+                                    Company Identity can be edited.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Contact Points</h3>
+
+                                <p>
+                                    Contact Points are used by professionals to unlock contact
+                                    information from Home users who have requested a Professional
+                                    Assessment.
+                                </p>
+
+                                <h4>How it works</h4>
+
+                                <ol>
+                                    <li>
+                                        A Home user submits a Professional Assessment request.
+                                    </li>
+                                    <li>
+                                        The request becomes available to eligible professionals.
+                                    </li>
+                                    <li>
+                                        A professional can use one Contact Point to unlock the
+                                        user's contact information.
+                                    </li>
+                                    <li>
+                                        Once unlocked, contact access remains available for 14 days.
+                                    </li>
+                                    <li>
+                                        After the 14-day access period expires, the professional
+                                        must use another Contact Point to regain access.
+                                    </li>
+                                </ol>
+
+                                <p>
+                                    Contact Points are used when contact access is unlocked.
+                                    An expired contact access period does not automatically refund
+                                    the Contact Point. A new Contact Point is required to unlock
+                                    access again after expiry.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Assessments &amp; Reports</h3>
+
+                                <p>
+                                    Professional plans include a monthly allowance of Professional
+                                    Assessments and Professional Reports.
+                                </p>
+
+                                <p>
+                                    <strong>Single</strong><br>
+                                    Includes one Professional Assessment and one Professional Report.
+                                </p>
+
+                                <p>
+                                    <strong>Pro</strong><br>
+                                    Includes five Professional Assessments and five Professional
+                                    Reports per month.
+                                </p>
+
+                                <p>
+                                    <strong>Professional</strong><br>
+                                    Includes 25 Professional Assessments and 25 Professional Reports
+                                    per month.
+                                </p>
+
+                                <p>
+                                    Usage is tracked against the limits included in the user's
+                                    current plan. Monthly allowances apply to recurring monthly
+                                    plans. The Single plan provides its included allowance as a
+                                    one-time purchase.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>How plan limits work</h3>
+
+                                <p>
+                                    Your plan determines the number of Professional Assessments,
+                                    Reports and Contact Points available to your account.
+                                </p>
+
+                                <p>
+                                    The Billing &amp; Plan area shows your current plan and usage.
+                                    For example, a Professional account may show:
+                                </p>
+
+                                <ul>
+                                    <li>Assessments: 8 / 25 used</li>
+                                    <li>Reports: 8 / 25 used</li>
+                                    <li>Contact Points: 3 / 10 used</li>
+                                </ul>
+
+                                <p>
+                                    These limits are separate from the project workflow itself.
+                                    Project access and plan usage limits are managed independently.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>Pricing</h3>
+
+                                <p>
+                                    EMF Insight offers separate pricing structures for Home Wellness
+                                    and Business Survey users.
+                                </p>
+
+                                <p>
+                                    Business Survey plans currently include Single, Pro and
+                                    Professional. Professional Branding is available as an add-on
+                                    for Single and Pro users and is included with the Professional plan.
+                                </p>
+
+                                <p>
+                                    Prices displayed in the platform may change over time.
+                                    The current Billing &amp; Plan page is the source of truth for
+                                    available plans and current pricing.
+                                </p>
+
+                                <p>
+                                    If you change the selected currency, available prices are
+                                    displayed in the selected currency.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
                                 <h3>Currency</h3>
 
                                 <p>
-                                    The Billing &amp; Plan area provides a currency selector
-                                    for displaying available pricing.
+                                    Billing &amp; Plan provides a currency selector for displaying
+                                    available pricing.
                                 </p>
 
+                                <p>
+                                    Currently available currencies include EUR and USD. More currencies are coming
+                                    soon.
+                                    Changing the selected currency changes how available prices
+                                    are displayed, but does not change the features, plan limits
+                                    or services included in a plan.
+                                </p>
+
+                                <p>
+                                    Currency selection is also applied to available Professional
+                                    Branding pricing where applicable.
+                                </p>
                             </div>
 
                             <div class="help-detail-note">
@@ -8507,15 +9366,13 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
-
-                                <h3>Cannot sign in</h3>
-
-                                <p>
-                                    Check that you are using the email address associated with
-                                    your EMF Insight account and that your password is entered
-                                    correctly.
-                                </p>
-
+                                <h3>If you cannot sign in</h3>
+                                <ul class="help-article-list-items">
+                                    <li>Check that you are using the email address associated with your account.</li>
+                                    <li>Check that your password is entered correctly.</li>
+                                    <li>If you recently changed your password, use the new password.</li>
+                                    <li>Refresh the page and try signing in again.</li>
+                                </ul>
                             </div>
 
                             <div class="help-detail-section">
@@ -8532,6 +9389,26 @@ ADMIN PAYMENTS
                                     be different from the current password.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>If your account information looks incorrect</h3>
+                                <p>
+                                    Check your Profile settings and confirm that your personal account
+                                    information is correct.
+                                </p>
+
+                                <p>
+                                    Personal profile information and Professional Branding information
+                                    are managed separately.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-note">
+                                <strong>Important</strong>
+                                <span>
+                                    Do not share your password or authentication codes with another person.
+                                </span>
                             </div>
 
                             <div class="help-detail-section">
@@ -8625,6 +9502,20 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
+                                <h3>If a property or project is missing</h3>
+                                <p>
+                                    First check that you are working in the correct workspace and that
+                                    you are looking at the correct property or project.
+                                </p>
+
+                                <ul class="help-article-list-items">
+                                    <li>Home Wellness uses Home Properties.</li>
+                                    <li>Business Survey uses Business Projects.</li>
+                                    <li>Open the relevant property or project before continuing your assessment.</li>
+                                </ul>
+                            </div>
+
+                            <div class="help-detail-section">
 
                                 <h3>Cannot open a property</h3>
 
@@ -8673,6 +9564,29 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>If you cannot continue an assessment</h3>
+                                <p>
+                                    Check whether the required project information has been completed.
+                                    Depending on the workflow, this may include the floor plan, scale,
+                                    rooms, zones or measurement setup.
+                                </p>
+
+                                <p>
+                                    In Business Survey, work through the survey workflow in order:
+                                    Plan → Scale → Rooms → Zones → Measure.
+                                </p>
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>If you are working on the wrong property or project</h3>
+                                <p>
+                                    Stop before adding new assessment data. Return to the property or
+                                    project you intended to assess and confirm the active workspace,
+                                    project and floor before continuing.
+                                </p>
+                            </div>
+
                             <div class="help-detail-note">
 
                                 <strong>Tip</strong>
@@ -8718,19 +9632,16 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
-
-                                <h3>Measurements are missing</h3>
-
+                                <h3>If measurements are not available</h3>
                                 <p>
-                                    Check that measurement points have actually been collected
-                                    for the room or zone you are reviewing.
+                                    Check that a Measurement Profile has been selected and that the
+                                    relevant measurement points have been completed.
                                 </p>
 
                                 <p>
-                                    Also check that you are viewing the correct floor, room or
-                                    zone.
+                                    The Measurement Profile determines which measurement modalities
+                                    are collected, such as RF, Electric or Magnetic.
                                 </p>
-
                             </div>
 
                             <div class="help-detail-section">
@@ -8766,6 +9677,21 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
+                                <h3>If a heatmap looks incomplete</h3>
+                                <p>
+                                    Check the measurement coverage for the relevant room or zone.
+                                    A heatmap can only represent measurement information that has been
+                                    collected for the assessed area.
+                                </p>
+
+                                <ul class="help-article-list-items">
+                                    <li>Check whether measurement points have been completed.</li>
+                                    <li>Check whether the relevant area has sufficient coverage.</li>
+                                    <li>Check that you are viewing the intended floor or area.</li>
+                                </ul>
+                            </div>
+
+                            <div class="help-detail-section">
 
                                 <h3>Results look different between areas</h3>
 
@@ -8779,6 +9705,19 @@ ADMIN PAYMENTS
                                     before comparing results.
                                 </p>
 
+                            </div>
+
+                            <div class="help-detail-section">
+                                <h3>If measurement status is not confirmed</h3>
+                                <p>
+                                    Review the measurement points for the relevant room or zone and
+                                    complete any missing measurements.
+                                </p>
+
+                                <p>
+                                    Measurement status describes the state of measurement collection.
+                                    It does not by itself determine the property's risk level.
+                                </p>
                             </div>
 
                             <div class="help-detail-note">
@@ -8838,26 +9777,39 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
+                                <h3>If a report is missing information</h3>
+                                <p>
+                                    Review the underlying assessment before generating the report.
+                                    Check the property structure, rooms, zones, measurements, coverage,
+                                    sources and assessment results.
+                                </p>
+                            </div>
 
-                                <h3>Report is missing information</h3>
+                            <div class="help-detail-section">
+                                <h3>If a heatmap or result is missing from the report</h3>
+                                <p>
+                                    First check whether the relevant information exists in the
+                                    underlying survey and assessment data.
+                                </p>
 
                                 <p>
-                                    Review the underlying assessment and check that the relevant
-                                    rooms, zones, measurements and other assessment information
-                                    have been completed.
+                                    A report presents the assessment information available for the
+                                    project. It does not replace the underlying survey data.
                                 </p>
 
                             </div>
 
                             <div class="help-detail-section">
-
-                                <h3>Heatmap or measurement information is missing</h3>
-
+                                <h3>If the report does not reflect recent changes</h3>
                                 <p>
-                                    Check the underlying measurement coverage and confirm that
-                                    the relevant areas contain measurement data.
+                                    Review the current assessment data and generate the report again
+                                    when the assessment information has been updated.
                                 </p>
 
+                                <p>
+                                    The generated report represents the assessment information available
+                                    when the report was created.
+                                </p>
                             </div>
 
                             <div class="help-detail-section">
@@ -8919,14 +9871,22 @@ ADMIN PAYMENTS
                             </div>
 
                             <div class="help-detail-section">
-
-                                <h3>Refresh the page</h3>
-
+                                <h3>Refresh and try again</h3>
                                 <p>
-                                    Refresh the current page and check whether the problem
-                                    remains.
+                                    If something behaves unexpectedly, refresh the page and try the
+                                    same action again.
                                 </p>
+                            </div>
 
+                            <div class="help-detail-section">
+                                <h3>If the problem continues</h3>
+                                <ul class="help-article-list-items">
+                                    <li>Note which workspace you were using.</li>
+                                    <li>Note the property or project you were working on.</li>
+                                    <li>Note the action that caused the problem.</li>
+                                    <li>Record any error message that was displayed.</li>
+                                    <li>Try again after refreshing the application.</li>
+                                </ul>
                             </div>
 
                             <div class="help-detail-section">
@@ -8963,6 +9923,15 @@ ADMIN PAYMENTS
 
                             </div>
 
+                            <div class="help-detail-section">
+                                <h3>When contacting support</h3>
+                                <p>
+                                    Include the workspace, project or property, the action you were
+                                    performing, and any visible error message. This makes it easier
+                                    to identify where the problem occurred.
+                                </p>
+                            </div>
+
                             <div class="help-detail-note">
 
                                 <strong>Tip</strong>
@@ -8972,6 +9941,14 @@ ADMIN PAYMENTS
                                     the problem can make technical troubleshooting much faster.
                                 </span>
 
+                            </div>
+
+                            <div class="help-detail-note">
+                                <strong>Tip</strong>
+                                <span>
+                                    Before reporting a technical issue, refresh the application and
+                                    repeat the action once if possible.
+                                </span>
                             </div>
 
                         </div>
@@ -10792,7 +11769,7 @@ ${!isTbd
             }
         }
 
-        loadPricing();
+        window.pricingReady = loadPricing();
 
         function adminEscapeHtml(value) {
             return String(value ?? "")
@@ -16082,7 +17059,7 @@ ${!isTbd
 
             try {
                 const response = await fetch(
-                    `${API} /admin/pricing / ${adminPricingEditingId} `,
+                    `${API}/admin/pricing/${adminPricingEditingId}`,
                     {
                         method: "PUT",
                         headers: {
@@ -16563,6 +17540,37 @@ ${request.has_active_unlock
                 const brandingAnnualButton =
                     document.getElementById("brandingAnnualButton");
 
+                const brandingMonthlyPrice =
+                    document.getElementById("brandingMonthlyPrice");
+
+                const brandingAnnualPrice =
+                    document.getElementById("brandingAnnualPrice");
+
+                const brandingPricing =
+                    window.EMF_PRICING?.business?.branding;
+
+                if (brandingPricing) {
+                    const monthlyPrice =
+                        brandingPricing.prices?.[pricingCurrency];
+
+                    const annualPrice =
+                        brandingPricing.annualPrices?.[pricingCurrency];
+
+                    if (brandingMonthlyPrice) {
+                        brandingMonthlyPrice.textContent =
+                            typeof monthlyPrice === "number"
+                                ? formatPrice(monthlyPrice)
+                                : "Pricing unavailable";
+                    }
+
+                    if (brandingAnnualPrice) {
+                        brandingAnnualPrice.textContent =
+                            typeof annualPrice === "number"
+                                ? formatPrice(annualPrice)
+                                : "Pricing unavailable";
+                    }
+                }
+
 
                 const userPlan =
                     String(data.plan || "").toLowerCase();
@@ -16830,6 +17838,49 @@ ${request.has_active_unlock
                 window.currentUserRole =
                     String(data.role || "").toLowerCase();
 
+                // ================================
+                // COMPANY IDENTITY ACCESS
+                // ================================
+
+                const companyIdentityCard =
+                    document.getElementById("companyIdentityCard");
+
+                const companyIdentityEditor =
+                    document.getElementById("companyIdentityEditor");
+
+                const companyIdentityLocked =
+                    document.getElementById("companyIdentityLocked");
+
+                const companyIdentityUnlocked =
+                    userPlan === "professional" ||
+                    brandingActive;
+
+                if (companyIdentityCard) {
+                    companyIdentityCard.style.display = "block";
+                }
+
+                if (companyIdentityEditor) {
+                    companyIdentityEditor.style.display =
+                        companyIdentityUnlocked ? "block" : "none";
+                }
+
+                if (companyIdentityLocked) {
+                    companyIdentityLocked.style.display =
+                        companyIdentityUnlocked ? "none" : "block";
+                }
+
+                // ================================
+                // BRANDING VALUE VISIBILITY
+                // ================================
+
+                const brandingValueCard =
+                    document.getElementById("brandingValueCard");
+
+                if (brandingValueCard) {
+                    brandingValueCard.style.display =
+                        companyIdentityUnlocked ? "none" : "block";
+                }
+
                 await loadProfessionalDashboardStatus();
 
                 if (typeof updateProfessionalMyContacts === "function") {
@@ -16961,9 +18012,7 @@ ${request.has_active_unlock
                         billingBusinessPrice.textContent =
                             typeof price === "number"
                                 ? `${formatPrice(price)} / month`
-                                : currency === "USD"
-                                    ? "$79 / month"
-                                    : "€79 / month";
+                                : "Pricing unavailable";
                     }
 
                     const assessmentLimit =
@@ -17192,6 +18241,13 @@ ${request.has_active_unlock
             if (message) {
                 message.textContent = "";
                 message.style.display = "none";
+            }
+
+            if (planEl) {
+                planEl.textContent =
+                    plan === "annual"
+                        ? "Annual"
+                        : "Monthly";
             }
 
             const brandingPricing =
@@ -22318,7 +23374,7 @@ ${request.contact_expires_at
                 title: "Property Insights",
                 category: "Home Wellness",
                 keywords: "insights exposure measurements coverage sources recommendations",
-                action: "openHelpHomePropertyInsightsArticle"
+                action: "openHelpHomeInsightsArticle"
             },
             {
                 title: "Full EMF Insight Report",
@@ -22418,19 +23474,450 @@ ${request.contact_expires_at
             }
         ];
 
+        function highlightHelpSearchTerms(
+            article,
+            queryWords,
+            query
+        ) {
+
+            if (
+                !article ||
+                !queryWords ||
+                !queryWords.length
+            ) {
+                return null;
+            }
+
+            // ========================
+            // CLEAR OLD HIGHLIGHTS
+            // ========================
+
+            article
+                .querySelectorAll(
+                    ".help-search-highlight"
+                )
+                .forEach(
+                    mark => {
+
+                        const parent =
+                            mark.parentNode;
+
+                        if (!parent) {
+                            return;
+                        }
+
+                        parent.replaceChild(
+                            document.createTextNode(
+                                mark.textContent
+                            ),
+                            mark
+                        );
+
+                        parent.normalize();
+                    }
+                );
+
+            // ========================
+            // HIGHLIGHT STYLE
+            // ========================
+
+            if (
+                !document.getElementById(
+                    "helpSearchHighlightStyle"
+                )
+            ) {
+
+                const style =
+                    document.createElement(
+                        "style"
+                    );
+
+                style.id =
+                    "helpSearchHighlightStyle";
+
+                style.textContent = `
+            .help-search-highlight {
+                background: #fff3a6;
+                color: inherit;
+                border-radius: 3px;
+                padding: 1px 3px;
+                box-decoration-break: clone;
+                -webkit-box-decoration-break: clone;
+            }
+        `;
+
+                document.head.appendChild(
+                    style
+                );
+            }
+
+            // ========================
+            // PREPARE TERMS
+            // ========================
+
+            const terms =
+                queryWords
+                    .map(
+                        word =>
+                            String(word)
+                                .trim()
+                                .toLowerCase()
+                    )
+                    .filter(
+                        word =>
+                            word.length >= 2
+                    )
+                    .sort(
+                        (a, b) =>
+                            b.length -
+                            a.length
+                    );
+
+            if (!terms.length) {
+                return null;
+            }
+
+            // ========================
+            // FIND TEXT NODES
+            // ========================
+
+            const walker =
+                document.createTreeWalker(
+                    article,
+                    NodeFilter.SHOW_TEXT,
+                    {
+                        acceptNode(node) {
+
+                            const parent =
+                                node.parentElement;
+
+                            if (!parent) {
+                                return NodeFilter.FILTER_REJECT;
+                            }
+
+                            const tag =
+                                parent.tagName
+                                    .toLowerCase();
+
+                            if (
+                                tag === "script" ||
+                                tag === "style" ||
+                                tag === "button" ||
+                                tag === "input" ||
+                                tag === "textarea"
+                            ) {
+                                return NodeFilter.FILTER_REJECT;
+                            }
+
+                            if (
+                                parent.closest(
+                                    ".help-search-highlight"
+                                )
+                            ) {
+                                return NodeFilter.FILTER_REJECT;
+                            }
+
+                            if (
+                                !node.nodeValue ||
+                                !node.nodeValue.trim()
+                            ) {
+                                return NodeFilter.FILTER_REJECT;
+                            }
+
+                            return NodeFilter.FILTER_ACCEPT;
+                        }
+                    }
+                );
+
+            const textNodes = [];
+
+            let node;
+
+            while (
+                (node = walker.nextNode())
+            ) {
+                textNodes.push(node);
+            }
+
+            // ========================
+            // EXACT PHRASE FIRST
+            // ========================
+
+            const normalizedQuery =
+                String(
+                    query || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            let firstHighlight = null;
+
+            // ========================
+            // HIGHLIGHT TERMS
+            // ========================
+
+            textNodes.forEach(
+                textNode => {
+
+                    if (
+                        !textNode.parentNode
+                    ) {
+                        return;
+                    }
+
+                    const original =
+                        textNode.nodeValue;
+
+                    const lower =
+                        original.toLowerCase();
+
+                    let ranges = [];
+
+                    // --------------------------------
+                    // EXACT PHRASE
+                    // --------------------------------
+
+                    if (
+                        normalizedQuery &&
+                        normalizedQuery.length > 2
+                    ) {
+
+                        let start =
+                            lower.indexOf(
+                                normalizedQuery
+                            );
+
+                        while (
+                            start !== -1
+                        ) {
+
+                            ranges.push({
+                                start,
+                                end:
+                                    start +
+                                    normalizedQuery.length
+                            });
+
+                            start =
+                                lower.indexOf(
+                                    normalizedQuery,
+                                    start +
+                                    normalizedQuery.length
+                                );
+                        }
+                    }
+
+                    // --------------------------------
+                    // INDIVIDUAL TERMS
+                    // --------------------------------
+
+                    terms.forEach(
+                        term => {
+
+                            const escaped =
+                                term.replace(
+                                    /[.*+?^${}()|[\]\\]/g,
+                                    "\\$&"
+                                );
+
+                            const regex =
+                                new RegExp(
+                                    `\\b${escaped}\\w*\\b`,
+                                    "gi"
+                                );
+
+                            let match;
+
+                            while (
+                                (match =
+                                    regex.exec(
+                                        original
+                                    ))
+                            ) {
+
+                                ranges.push({
+                                    start:
+                                        match.index,
+                                    end:
+                                        match.index +
+                                        match[0].length
+                                });
+                            }
+                        }
+                    );
+
+                    if (!ranges.length) {
+                        return;
+                    }
+
+                    // --------------------------------
+                    // MERGE OVERLAPPING RANGES
+                    // --------------------------------
+
+                    ranges.sort(
+                        (a, b) =>
+                            a.start -
+                            b.start
+                    );
+
+                    const merged = [];
+
+                    ranges.forEach(
+                        range => {
+
+                            const last =
+                                merged[
+                                merged.length - 1
+                                ];
+
+                            if (
+                                last &&
+                                range.start <=
+                                last.end
+                            ) {
+
+                                last.end =
+                                    Math.max(
+                                        last.end,
+                                        range.end
+                                    );
+
+                            } else {
+
+                                merged.push({
+                                    start:
+                                        range.start,
+                                    end:
+                                        range.end
+                                });
+                            }
+                        }
+                    );
+
+                    // --------------------------------
+                    // REPLACE TEXT NODE
+                    // --------------------------------
+
+                    const fragment =
+                        document.createDocumentFragment();
+
+                    let cursor = 0;
+
+                    merged.forEach(
+                        range => {
+
+                            if (
+                                range.start >
+                                cursor
+                            ) {
+
+                                fragment.appendChild(
+                                    document.createTextNode(
+                                        original.slice(
+                                            cursor,
+                                            range.start
+                                        )
+                                    )
+                                );
+                            }
+
+                            const mark =
+                                document.createElement(
+                                    "span"
+                                );
+
+                            mark.className =
+                                "help-search-highlight";
+
+                            mark.textContent =
+                                original.slice(
+                                    range.start,
+                                    range.end
+                                );
+
+                            fragment.appendChild(
+                                mark
+                            );
+
+                            if (
+                                !firstHighlight
+                            ) {
+                                firstHighlight =
+                                    mark;
+                            }
+
+                            cursor =
+                                range.end;
+                        }
+                    );
+
+                    if (
+                        cursor <
+                        original.length
+                    ) {
+
+                        fragment.appendChild(
+                            document.createTextNode(
+                                original.slice(
+                                    cursor
+                                )
+                            )
+                        );
+                    }
+
+                    textNode.parentNode.replaceChild(
+                        fragment,
+                        textNode
+                    );
+                }
+            );
+
+            return firstHighlight;
+        }
+
+
         function searchHelpCenter() {
+
             const input =
-                document.getElementById("helpSearchInput");
+                document.getElementById(
+                    "helpSearchInput"
+                );
 
             const results =
-                document.getElementById("helpSearchResults");
+                document.getElementById(
+                    "helpSearchResults"
+                );
 
             if (!input || !results) {
                 return;
             }
 
+            const rawQuery =
+                input.value
+                    .trim()
+                    .toLowerCase();
+
+            if (!rawQuery) {
+                results.style.display = "none";
+                results.innerHTML = "";
+                return;
+            }
+
+            // ========================
+            // NORMALIZE QUERY
+            // ========================
+
             const query =
-                input.value.trim().toLowerCase();
+                rawQuery
+                    .replace(
+                        /[^\p{L}\p{N}\s-]/gu,
+                        " "
+                    )
+                    .replace(
+                        /\s+/g,
+                        " "
+                    )
+                    .trim();
 
             if (!query) {
                 results.style.display = "none";
@@ -22438,46 +23925,615 @@ ${request.contact_expires_at
                 return;
             }
 
-            const matches =
-                HELP_SEARCH_INDEX.filter(item => {
-                    const searchable =
-                        `${item.title} ${item.category} ${item.keywords}`
-                            .toLowerCase();
+            // ========================
+            // STOP WORDS
+            // ========================
 
-                    return searchable.includes(query);
-                });
+            const STOP_WORDS = new Set([
+                "a",
+                "an",
+                "and",
+                "are",
+                "can",
+                "do",
+                "does",
+                "for",
+                "how",
+                "i",
+                "in",
+                "is",
+                "it",
+                "me",
+                "my",
+                "of",
+                "on",
+                "or",
+                "the",
+                "to",
+                "what",
+                "when",
+                "where",
+                "which",
+                "with",
+                "you",
+                "your"
+            ]);
 
-            if (!matches.length) {
-                results.style.display = "block";
-                results.innerHTML = `
-            <div class="help-search-no-results">
-                No help articles found for
-                <strong>${input.value.trim()}</strong>.
-            </div>
-        `;
+            const queryWords =
+                query
+                    .split(/\s+/)
+                    .map(word =>
+                        word.trim()
+                    )
+                    .filter(
+                        word =>
+                            word.length >= 2 &&
+                            !STOP_WORDS.has(word)
+                    );
+
+            if (!queryWords.length) {
+                results.style.display = "none";
+                results.innerHTML = "";
                 return;
             }
 
+            // ========================
+            // SEARCH
+            // ========================
+
+            const matches =
+                HELP_SEARCH_INDEX
+                    .map(item => {
+
+                        const title =
+                            String(
+                                item.title || ""
+                            ).toLowerCase();
+
+                        const category =
+                            String(
+                                item.category || ""
+                            ).toLowerCase();
+
+                        const keywords =
+                            String(
+                                item.keywords || ""
+                            ).toLowerCase();
+
+                        // --------------------------------
+                        // FIND ARTICLE
+                        // openHelpXxxArticle
+                        //        ↓
+                        // helpXxxArticle
+                        // --------------------------------
+
+                        let article = null;
+
+                        if (item.action) {
+
+                            const articleId =
+                                item.action.replace(
+                                    /^openHelp/,
+                                    "help"
+                                );
+
+                            article =
+                                document.getElementById(
+                                    articleId
+                                );
+                        }
+
+                        // --------------------------------
+                        // ARTICLE TEXT
+                        // --------------------------------
+
+                        const articleText =
+                            article
+                                ? (
+                                    article.innerText ||
+                                    article.textContent ||
+                                    ""
+                                ).toLowerCase()
+                                : "";
+
+                        // --------------------------------
+                        // ARTICLE HEADINGS
+                        // --------------------------------
+
+                        const headings =
+                            article
+                                ? Array.from(
+                                    article.querySelectorAll(
+                                        "h1, h2, h3, h4, h5, strong"
+                                    )
+                                )
+                                    .map(
+                                        el =>
+                                            el.innerText ||
+                                            el.textContent ||
+                                            ""
+                                    )
+                                    .join(" ")
+                                    .toLowerCase()
+                                : "";
+
+                        // --------------------------------
+                        // MATCH EACH SEARCH TERM
+                        // --------------------------------
+
+                        const wordResults =
+                            queryWords.map(word => {
+
+                                const exact =
+                                    word;
+
+                                // Allows:
+                                // measure
+                                // measurement
+                                // measurements
+                                // measuring
+
+                                const stem =
+                                    word.length >= 5
+                                        ? word.slice(0, -1)
+                                        : word;
+
+                                return {
+
+                                    title:
+                                        title.includes(
+                                            exact
+                                        ),
+
+                                    keywords:
+                                        keywords.includes(
+                                            exact
+                                        ),
+
+                                    headings:
+                                        headings.includes(
+                                            exact
+                                        ),
+
+                                    body:
+                                        articleText.includes(
+                                            exact
+                                        ),
+
+                                    stem:
+                                        (
+                                            title.includes(
+                                                stem
+                                            ) ||
+                                            keywords.includes(
+                                                stem
+                                            ) ||
+                                            headings.includes(
+                                                stem
+                                            ) ||
+                                            articleText.includes(
+                                                stem
+                                            )
+                                        )
+                                };
+                            });
+
+                        // --------------------------------
+                        // EVERY MEANINGFUL WORD MUST MATCH
+                        // --------------------------------
+
+                        const allWordsMatch =
+                            wordResults.every(
+                                result =>
+                                    result.title ||
+                                    result.keywords ||
+                                    result.headings ||
+                                    result.body ||
+                                    result.stem
+                            );
+
+                        if (!allWordsMatch) {
+                            return null;
+                        }
+
+                        // --------------------------------
+                        // MATCH COUNTS
+                        // --------------------------------
+
+                        const titleMatches =
+                            wordResults.filter(
+                                result =>
+                                    result.title
+                            ).length;
+
+                        const keywordMatches =
+                            wordResults.filter(
+                                result =>
+                                    result.keywords
+                            ).length;
+
+                        const headingMatches =
+                            wordResults.filter(
+                                result =>
+                                    result.headings
+                            ).length;
+
+                        const bodyMatches =
+                            wordResults.filter(
+                                result =>
+                                    result.body
+                            ).length;
+
+                        // --------------------------------
+                        // EXACT PHRASE
+                        // --------------------------------
+
+                        const exactPhrase =
+                            title.includes(query) ||
+                            keywords.includes(query) ||
+                            headings.includes(query) ||
+                            articleText.includes(query);
+
+                        // --------------------------------
+                        // SCORE
+                        // --------------------------------
+
+                        let score = 0;
+
+                        if (exactPhrase) {
+                            score += 200;
+                        }
+
+                        score +=
+                            titleMatches * 100;
+
+                        score +=
+                            keywordMatches * 60;
+
+                        score +=
+                            headingMatches * 40;
+
+                        score +=
+                            bodyMatches * 5;
+
+                        return {
+                            ...item,
+                            score,
+                            titleMatches,
+                            keywordMatches,
+                            headingMatches,
+                            bodyMatches,
+                            exactPhrase
+                        };
+                    })
+                    .filter(Boolean);
+
+            // ========================
+            // NO RESULTS
+            // ========================
+
+            if (!matches.length) {
+
+                results.style.display = "block";
+
+                results.innerHTML = `
+            <div class="help-search-no-results">
+                No help articles found for
+                <strong>
+                    ${escapeHtmlHelpSearch(
+                    input.value.trim()
+                )}
+                </strong>.
+            </div>
+        `;
+
+                return;
+            }
+
+            // ========================
+            // PREFER STRONG MATCHES
+            // ========================
+
+            /*
+             * If we have matches in:
+             * - title
+             * - keywords
+             * - headings
+             *
+             * do not show articles that only
+             * contain the word somewhere in
+             * the body.
+             */
+
+            const strongMatches =
+                matches.filter(
+                    item =>
+                        item.titleMatches > 0 ||
+                        item.keywordMatches > 0 ||
+                        item.headingMatches > 0
+                );
+
+            const finalMatches =
+                strongMatches.length
+                    ? strongMatches
+                    : matches;
+
+            // ========================
+            // SORT
+            // ========================
+
+            finalMatches.sort(
+                (a, b) => {
+
+                    if (
+                        b.score !==
+                        a.score
+                    ) {
+                        return (
+                            b.score -
+                            a.score
+                        );
+                    }
+
+                    return String(
+                        a.title || ""
+                    ).localeCompare(
+                        String(
+                            b.title || ""
+                        )
+                    );
+                }
+            );
+
+            // ========================
+            // LIMIT RESULTS
+            // ========================
+
+            const visibleMatches =
+                finalMatches.slice(
+                    0,
+                    8
+                );
+
+            // ========================
+            // RENDER RESULTS
+            // ========================
+
             results.style.display = "block";
 
-            results.innerHTML = matches
-                .map(item => `
-            <button
-                type="button"
-                class="help-search-result"
-                onclick="${item.action}()">
+            results.innerHTML =
+                visibleMatches
+                    .map(
+                        item => `
+                    <button
+                        type="button"
+                        class="help-search-result"
+                        data-help-action="${escapeHtmlHelpSearch(
+                            item.action || ""
+                        )}"
+                        data-help-category="${escapeHtmlHelpSearch(
+                            item.category || ""
+                        )}"
+                    >
 
-                <span class="help-search-result-title">
-                    ${item.title}
-                </span>
+                        <span
+                            class="help-search-result-title"
+                        >
+                            ${escapeHtmlHelpSearch(
+                            item.title || ""
+                        )}
+                        </span>
 
-                <span class="help-search-result-category">
-                    ${item.category}
-                </span>
+                        <span
+                            class="help-search-result-category"
+                        >
+                            ${escapeHtmlHelpSearch(
+                            item.category || ""
+                        )}
+                        </span>
 
-            </button>
-        `)
-                .join("");
+                    </button>
+                `
+                    )
+                    .join("");
+
+            // ========================
+            // RESULT CLICK
+            // ========================
+
+            results
+                .querySelectorAll(
+                    ".help-search-result"
+                )
+                .forEach(
+                    button => {
+
+                        button.addEventListener(
+                            "click",
+                            () => {
+
+                                const action =
+                                    button.dataset
+                                        .helpAction;
+
+                                const category =
+                                    button.dataset
+                                        .helpCategory;
+
+                                if (!action) {
+                                    return;
+                                }
+
+                                // --------------------------------
+                                // OPEN CATEGORY FIRST
+                                // --------------------------------
+
+                                if (
+                                    category ===
+                                    "Getting Started" &&
+                                    typeof window
+                                        .openHelpGettingStarted ===
+                                    "function"
+                                ) {
+
+                                    window.openHelpGettingStarted();
+
+                                } else if (
+                                    category ===
+                                    "Home Wellness" &&
+                                    typeof window
+                                        .openHelpHomeWellness ===
+                                    "function"
+                                ) {
+
+                                    window.openHelpHomeWellness();
+
+                                } else if (
+                                    category ===
+                                    "Business Survey" &&
+                                    typeof window
+                                        .openHelpBusinessSurvey ===
+                                    "function"
+                                ) {
+
+                                    window.openHelpBusinessSurvey();
+
+                                } else if (
+                                    category ===
+                                    "Account & Billing" &&
+                                    typeof window
+                                        .openHelpAccountBilling ===
+                                    "function"
+                                ) {
+
+                                    window.openHelpAccountBilling();
+
+                                } else if (
+                                    category ===
+                                    "Troubleshooting" &&
+                                    typeof window
+                                        .openHelpTroubleshooting ===
+                                    "function"
+                                ) {
+
+                                    window.openHelpTroubleshooting();
+                                }
+
+                                // --------------------------------
+                                // OPEN ARTICLE
+                                // --------------------------------
+
+                                const handler =
+                                    window[action];
+
+                                if (
+                                    typeof handler !==
+                                    "function"
+                                ) {
+
+                                    console.warn(
+                                        "Help search action not found:",
+                                        action
+                                    );
+
+                                    return;
+                                }
+
+                                handler();
+
+                                // --------------------------------
+                                // HIDE SEARCH RESULTS
+                                // --------------------------------
+
+                                results.style.display =
+                                    "none";
+
+                                results.innerHTML =
+                                    "";
+
+                                // --------------------------------
+                                // FIND ARTICLE + HIGHLIGHT
+                                // --------------------------------
+
+                                setTimeout(
+                                    () => {
+
+                                        const articleId =
+                                            action.replace(
+                                                /^openHelp/,
+                                                "help"
+                                            );
+
+                                        const article =
+                                            document.getElementById(
+                                                articleId
+                                            );
+
+                                        if (!article) {
+                                            return;
+                                        }
+
+                                        const highlight =
+                                            highlightHelpSearchTerms(
+                                                article,
+                                                queryWords,
+                                                query
+                                            );
+
+                                        if (highlight) {
+
+                                            highlight.scrollIntoView({
+                                                behavior:
+                                                    "smooth",
+                                                block:
+                                                    "center"
+                                            });
+
+                                        } else {
+
+                                            article.scrollIntoView({
+                                                behavior:
+                                                    "smooth",
+                                                block:
+                                                    "start"
+                                            });
+                                        }
+
+                                    },
+                                    150
+                                );
+                            }
+                        );
+                    }
+                );
+        }
+        function escapeHtmlHelpSearch(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
         }
 
         window.searchHelpCenter = searchHelpCenter;
@@ -22556,6 +24612,7 @@ ${request.contact_expires_at
             // Apply workspace immediately, before slow account loading.
             applyDashboardWorkspaceMode();
 
+            await window.pricingReady;
             await loadUser();
 
             // Re-apply after user data is loaded.
