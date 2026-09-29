@@ -2075,11 +2075,19 @@
         }
 
         .admin-modal {
-            width: min(520px, 100%);
+
+            width: min(520px, calc(100vw - 32px));
+            max-width: calc(100vw - 32px);
+            box-sizing: border-box;
+
             background: #fff;
+
             border: 1px solid var(--line);
+
             border-radius: 16px;
+
             box-shadow: 0 24px 60px rgba(21, 39, 63, 0.18);
+
         }
 
         #adminProfessionalDemoFeedbackModal .admin-modal {
@@ -2150,11 +2158,20 @@
         .admin-modal-actions {
             display: flex;
             justify-content: flex-end;
+            align-items: center;
             gap: 8px;
             margin-top: 18px;
-            padding-top: 16px;
-            padding-bottom: 8px;
+            padding: 16px 20px;
             border-top: 1px solid var(--line);
+            box-sizing: border-box;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .admin-modal-actions button {
+            flex: 0 0 auto;
+            box-sizing: border-box;
+            min-width: 90px;
         }
 
         @media (max-width: 760px) {
@@ -5724,10 +5741,17 @@ ADMIN PAYMENTS
                             <h2 class="section-title" id="admin-pricing-title">
                                 Pricing Management
                             </h2>
+
                             <p class="section-description">
                                 Manage the pricing configuration used by EMF Insight.
                                 Product identity fields remain read-only.
                             </p>
+                        </div>
+
+                        <div>
+                            <button type="button" class="button button-primary" onclick="openAdminPricingCreateModal()">
+                                + Create Pricing
+                            </button>
                         </div>
                     </div>
 
@@ -10283,80 +10307,99 @@ ADMIN PAYMENTS
     <!-- =========================
      ADMIN PRICING MODAL
      ========================= -->
-
     <div class="admin-modal-backdrop" id="adminPricingModal" role="dialog" aria-modal="true"
         aria-labelledby="adminPricingModalTitle">
         <div class="admin-modal">
+
             <div class="admin-modal-header">
-                <h3 id="adminPricingModalTitle">Edit Pricing</h3>
+                <h3 id="adminPricingModalTitle">
+                    Edit Pricing
+                </h3>
+
                 <p id="adminPricingModalSubtitle">
                     Update the selected pricing entry.
                 </p>
             </div>
 
             <div class="admin-modal-body">
+
                 <div class="admin-pricing-status" id="adminPricingModalStatus"></div>
 
                 <div class="admin-modal-grid">
 
+                    <!-- PRODUCT KEY -->
                     <div class="admin-modal-field">
                         <label for="adminPricingProductKey">
                             Product Key
                         </label>
-                        <input type="text" id="adminPricingProductKey" disabled>
+
+                        <input type="text" id="adminPricingProductKey" maxlength="120">
                     </div>
 
+                    <!-- REGION -->
                     <div class="admin-modal-field">
                         <label for="adminPricingRegion">
                             Region
                         </label>
-                        <input type="text" id="adminPricingRegion" disabled>
+
+                        <input type="text" id="adminPricingRegion" maxlength="20">
                     </div>
 
+                    <!-- CURRENCY -->
                     <div class="admin-modal-field">
                         <label for="adminPricingCurrency">
                             Currency
                         </label>
-                        <input type="text" id="adminPricingCurrency" disabled>
+
+                        <input type="text" id="adminPricingCurrency" maxlength="10">
                     </div>
 
+                    <!-- PRODUCT NAME -->
                     <div class="admin-modal-field">
                         <label for="adminPricingName">
                             Product Name
                         </label>
+
                         <input type="text" id="adminPricingName" maxlength="120">
                     </div>
 
+                    <!-- PRICE -->
                     <div class="admin-modal-field">
                         <label for="adminPricingPrice">
                             Price
                         </label>
-                        <input type="number" id="adminPricingPrice" min="0" step="0.01"
-                            placeholder="Leave blank for TBD">
+
+                        <input type="number" id="adminPricingPrice" min="0" step="0.01">
                     </div>
 
+                    <!-- BILLING -->
                     <div class="admin-modal-field">
                         <label for="adminPricingBilling">
                             Billing
                         </label>
+
                         <select id="adminPricingBilling">
                             <option value="one_time">One-time</option>
                             <option value="monthly">Monthly</option>
+                            <option value="annual">Annual</option>
                         </select>
                     </div>
 
+                    <!-- CREDITS -->
                     <div class="admin-modal-field">
                         <label for="adminPricingCredits">
                             Credits
                         </label>
-                        <input type="number" id="adminPricingCredits" min="0" step="1"
-                            placeholder="Leave blank if not applicable">
+
+                        <input type="number" id="adminPricingCredits" min="0" step="1">
                     </div>
 
+                    <!-- AVAILABILITY -->
                     <div class="admin-modal-field">
                         <label for="adminPricingAvailable">
                             Availability
                         </label>
+
                         <select id="adminPricingAvailable">
                             <option value="true">Available</option>
                             <option value="false">Unavailable</option>
@@ -10365,17 +10408,21 @@ ADMIN PAYMENTS
 
                 </div>
 
-                <div class="admin-modal-actions">
-                    <button type="button" class="admin-edit-button" onclick="closeAdminPricingModal()">
-                        Cancel
-                    </button>
-
-                    <button type="button" class="button button-primary" id="adminPricingSaveButton"
-                        onclick="saveAdminPricing()">
-                        Save changes
-                    </button>
-                </div>
             </div>
+
+            <div class="admin-modal-actions">
+
+                <button type="button" class="admin-edit-button" onclick="closeAdminPricingModal()">
+                    Cancel
+                </button>
+
+                <button type="button" class="button button-primary" id="adminPricingSaveButton"
+                    onclick="saveAdminPricing()">
+                    Save Pricing
+                </button>
+
+            </div>
+
         </div>
     </div>
 
@@ -16958,7 +17005,6 @@ ${!isTbd
             `;
         }
 
-
         function openAdminPricingEdit(pricingId) {
             const entry = adminPricingEntries.find(
                 item => Number(item.id) === Number(pricingId)
@@ -16970,20 +17016,43 @@ ${!isTbd
 
             adminPricingEditingId = entry.id;
 
-            document.getElementById("adminPricingProductKey").value =
+            document.getElementById("adminPricingModalTitle").textContent =
+                "Edit Pricing";
+
+            document.getElementById("adminPricingModalSubtitle").textContent =
+                `${entry.region} · ${entry.product_key}`;
+
+            const productKey = document.getElementById(
+                "adminPricingProductKey"
+            );
+
+            const region = document.getElementById(
+                "adminPricingRegion"
+            );
+
+            const currency = document.getElementById(
+                "adminPricingCurrency"
+            );
+
+            productKey.disabled = true;
+            region.disabled = true;
+            currency.disabled = true;
+
+            productKey.value =
                 entry.product_key || "";
 
-            document.getElementById("adminPricingRegion").value =
+            region.value =
                 entry.region || "";
 
-            document.getElementById("adminPricingCurrency").value =
+            currency.value =
                 entry.currency || "";
 
             document.getElementById("adminPricingName").value =
                 entry.name || "";
 
             document.getElementById("adminPricingPrice").value =
-                entry.price === null || entry.price === undefined
+                entry.price === null ||
+                    entry.price === undefined
                     ? ""
                     : entry.price;
 
@@ -16991,19 +17060,116 @@ ${!isTbd
                 entry.billing || "one_time";
 
             document.getElementById("adminPricingCredits").value =
-                entry.credits === null || entry.credits === undefined
+                entry.credits === null ||
+                    entry.credits === undefined
                     ? ""
                     : entry.credits;
 
             document.getElementById("adminPricingAvailable").value =
                 entry.available ? "true" : "false";
 
-            document.getElementById("adminPricingModalStatus").textContent = "";
+            document.getElementById(
+                "adminPricingModalStatus"
+            ).textContent = "";
 
-            document.getElementById("adminPricingModalSubtitle").textContent =
-                `${entry.region} ┬╖ ${entry.product_key} `;
+            document.getElementById(
+                "adminPricingModalStatus"
+            ).className = "admin-pricing-status";
 
-            document.getElementById("adminPricingModal").style.display = "flex";
+            document.getElementById(
+                "adminPricingSaveButton"
+            ).textContent = "Save Pricing";
+
+            document.getElementById(
+                "adminPricingModal"
+            ).style.display = "flex";
+        }
+
+        function openAdminPricingCreateModal() {
+            adminPricingEditingId = null;
+
+            const modal = document.getElementById(
+                "adminPricingModal"
+            );
+
+            const title = document.getElementById(
+                "adminPricingModalTitle"
+            );
+
+            const subtitle = document.getElementById(
+                "adminPricingModalSubtitle"
+            );
+
+            const status = document.getElementById(
+                "adminPricingModalStatus"
+            );
+
+            const productKey = document.getElementById(
+                "adminPricingProductKey"
+            );
+
+            const region = document.getElementById(
+                "adminPricingRegion"
+            );
+
+            const currency = document.getElementById(
+                "adminPricingCurrency"
+            );
+
+            const name = document.getElementById(
+                "adminPricingName"
+            );
+
+            const price = document.getElementById(
+                "adminPricingPrice"
+            );
+
+            const billing = document.getElementById(
+                "adminPricingBilling"
+            );
+
+            const credits = document.getElementById(
+                "adminPricingCredits"
+            );
+
+            const available = document.getElementById(
+                "adminPricingAvailable"
+            );
+
+            if (!modal) {
+                return;
+            }
+
+            title.textContent = "Create Pricing";
+
+            subtitle.textContent =
+                "Create a new pricing configuration.";
+
+            status.textContent = "";
+            status.className = "admin-pricing-status";
+
+            productKey.disabled = false;
+            region.disabled = false;
+            currency.disabled = false;
+
+            productKey.value = "";
+            region.value = "EU";
+            currency.value = "EUR";
+
+            name.value = "";
+            price.value = "";
+
+            billing.value = "monthly";
+
+            credits.value = "0";
+
+            available.value = "true";
+
+            document.getElementById(
+                "adminPricingSaveButton"
+            ).textContent = "Create Pricing";
+
+            modal.style.display = "flex";
         }
 
 
@@ -17017,124 +17183,341 @@ ${!isTbd
             adminPricingEditingId = null;
         }
 
+        function openAdminPricingCreateModal() {
 
-        async function saveAdminPricing() {
-            if (!adminPricingEditingId) {
-                return;
-            }
+            adminPricingEditingId = null;
 
-            const status = document.getElementById("adminPricingModalStatus");
-            const button = document.getElementById("adminPricingSaveButton");
+            const modal = document.getElementById(
+                "adminPricingModal"
+            );
 
-            const name = document.getElementById("adminPricingName").value.trim();
-            const priceValue = document.getElementById("adminPricingPrice").value.trim();
-            const billing = document.getElementById("adminPricingBilling").value;
-            const creditsValue = document.getElementById("adminPricingCredits").value.trim();
-            const available =
-                document.getElementById("adminPricingAvailable").value === "true";
+            const title = document.getElementById(
+                "adminPricingModalTitle"
+            );
 
-            if (!name) {
-                status.textContent = "Product name is required.";
-                status.className = "admin-pricing-status error";
-                return;
-            }
+            const subtitle = document.getElementById(
+                "adminPricingModalSubtitle"
+            );
 
-            const payload = {
-                name,
-                price: priceValue === "" ? null : Number(priceValue),
-                billing,
-                credits: creditsValue === "" ? null : Number(creditsValue),
-                available
-            };
+            const status = document.getElementById(
+                "adminPricingModalStatus"
+            );
 
-            if (
-                payload.price !== null &&
-                (!Number.isFinite(payload.price) || payload.price < 0)
-            ) {
-                status.textContent = "Please enter a valid price.";
-                status.className = "admin-pricing-status error";
-                return;
-            }
+            const productKey = document.getElementById(
+                "adminPricingProductKey"
+            );
 
-            if (
-                payload.credits !== null &&
-                (!Number.isInteger(payload.credits) || payload.credits < 0)
-            ) {
-                status.textContent = "Please enter valid credits.";
-                status.className = "admin-pricing-status error";
-                return;
-            }
+            const region = document.getElementById(
+                "adminPricingRegion"
+            );
 
-            button.disabled = true;
-            button.textContent = "Saving...";
+            const currency = document.getElementById(
+                "adminPricingCurrency"
+            );
+
+            const name = document.getElementById(
+                "adminPricingName"
+            );
+
+            const price = document.getElementById(
+                "adminPricingPrice"
+            );
+
+            const billing = document.getElementById(
+                "adminPricingBilling"
+            );
+
+            const credits = document.getElementById(
+                "adminPricingCredits"
+            );
+
+            const available = document.getElementById(
+                "adminPricingAvailable"
+            );
+
+            if (!modal) return;
+
+            title.textContent = "Create Pricing";
+
+            subtitle.textContent =
+                "Create a new dynamic pricing entry.";
 
             status.textContent = "";
             status.className = "admin-pricing-status";
 
+            productKey.value = "";
+            region.value = "EU";
+            currency.value = "EUR";
+            name.value = "";
+            price.value = "";
+            billing.value = "monthly";
+            credits.value = "0";
+            available.value = "true";
+
+            modal.style.display = "flex";
+        }
+
+        async function saveAdminPricing() {
+
+            const status = document.getElementById(
+                "adminPricingModalStatus"
+            );
+
+            const button = document.getElementById(
+                "adminPricingSaveButton"
+            );
+
+            const productKey = document.getElementById(
+                "adminPricingProductKey"
+            ).value.trim().toUpperCase();
+
+            const region = document.getElementById(
+                "adminPricingRegion"
+            ).value.trim().toUpperCase();
+
+            const currency = document.getElementById(
+                "adminPricingCurrency"
+            ).value.trim().toUpperCase();
+
+            const name = document.getElementById(
+                "adminPricingName"
+            ).value.trim();
+
+            const priceValue = document.getElementById(
+                "adminPricingPrice"
+            ).value.trim();
+
+            const billing = document.getElementById(
+                "adminPricingBilling"
+            ).value;
+
+            const creditsValue = document.getElementById(
+                "adminPricingCredits"
+            ).value.trim();
+
+            const available =
+                document.getElementById(
+                    "adminPricingAvailable"
+                ).value === "true";
+
+
+            // --------------------------------------------------------
+            // VALIDATION
+            // --------------------------------------------------------
+
+            if (!productKey) {
+                status.textContent = "Product Key is required.";
+                status.className =
+                    "admin-pricing-status error";
+                return;
+            }
+
+            if (!region) {
+                status.textContent = "Region is required.";
+                status.className =
+                    "admin-pricing-status error";
+                return;
+            }
+
+            if (!currency) {
+                status.textContent = "Currency is required.";
+                status.className =
+                    "admin-pricing-status error";
+                return;
+            }
+
+            if (!name) {
+                status.textContent = "Product name is required.";
+                status.className =
+                    "admin-pricing-status error";
+                return;
+            }
+
+
+            // --------------------------------------------------------
+            // PAYLOAD
+            // --------------------------------------------------------
+
+            const price =
+                priceValue === ""
+                    ? null
+                    : Number(priceValue);
+
+            const credits =
+                creditsValue === ""
+                    ? null
+                    : Number(creditsValue);
+
+
+            if (
+                price !== null &&
+                (!Number.isFinite(price) || price < 0)
+            ) {
+                status.textContent =
+                    "Price must be a valid positive number.";
+
+                status.className =
+                    "admin-pricing-status error";
+
+                return;
+            }
+
+
+            if (
+                credits !== null &&
+                (!Number.isInteger(credits) || credits < 0)
+            ) {
+                status.textContent =
+                    "Credits must be a valid non-negative integer.";
+
+                status.className =
+                    "admin-pricing-status error";
+
+                return;
+            }
+
+
+            const isCreate =
+                adminPricingEditingId === null;
+
+
+            const payload = isCreate
+                ? {
+                    region,
+                    currency,
+                    product_key: productKey,
+                    name,
+                    price,
+                    billing,
+                    credits,
+                    available
+                }
+                : {
+                    name,
+                    price,
+                    billing,
+                    credits,
+                    available
+                };
+
+
+            // --------------------------------------------------------
+            // REQUEST
+            // --------------------------------------------------------
+
+            const url = isCreate
+                ? `${API}/admin/pricing`
+                : `${API}/admin/pricing/${adminPricingEditingId}`;
+
+            const method = isCreate
+                ? "POST"
+                : "PUT";
+
+
             try {
+
+                button.disabled = true;
+
+                button.textContent =
+                    isCreate
+                        ? "Creating..."
+                        : "Saving...";
+
+                status.textContent = "";
+                status.className =
+                    "admin-pricing-status";
+
+
+                const token =
+                    localStorage.getItem("token");
+
+
                 const response = await fetch(
-                    `${API}/admin/pricing/${adminPricingEditingId}`,
+                    url,
                     {
-                        method: "PUT",
+                        method,
                         headers: {
-                            ...authHeaders(),
-                            "Content-Type": "application/json"
+                            "Content-Type":
+                                "application/json",
+
+                            ...(token
+                                ? {
+                                    Authorization:
+                                        `Bearer ${token}`
+                                }
+                                : {})
                         },
                         body: JSON.stringify(payload)
                     }
                 );
 
-                if (response.status === 401) {
-                    signOut();
-                    return;
+
+                let data = null;
+
+                try {
+                    data = await response.json();
+                } catch (_) {
+                    data = null;
                 }
 
-                if (response.status === 403) {
-                    status.textContent = "Admin access required.";
-                    status.className = "admin-pricing-status error";
-                    return;
-                }
 
                 if (!response.ok) {
-                    let detail = "Unable to save pricing.";
 
-                    try {
-                        const errorData = await response.json();
-
-                        if (errorData.detail) {
-                            detail = errorData.detail;
-                        }
-                    } catch (_) {
-                        // Keep the default error message.
-                    }
+                    const detail =
+                        data?.detail ||
+                        `Request failed: ${response.status}`;
 
                     throw new Error(detail);
                 }
 
-                await response.json();
 
-                status.textContent = "Pricing updated successfully.";
-                status.className = "admin-pricing-status success";
+                status.textContent =
+                    isCreate
+                        ? "Pricing entry created successfully."
+                        : "Pricing entry updated successfully.";
 
-                await loadAdminPricing();
-                loadAdminProfessionalRequests();
+                status.className =
+                    "admin-pricing-status success";
+
+
+                // Refresh admin pricing table
+                if (
+                    typeof loadAdminPricing ===
+                    "function"
+                ) {
+                    await loadAdminPricing();
+                }
+
 
                 setTimeout(() => {
                     closeAdminPricingModal();
                 }, 500);
+
+
             } catch (error) {
-                console.error("Unable to save admin pricing:", error);
+
+                console.error(
+                    "Unable to save admin pricing:",
+                    error
+                );
 
                 status.textContent =
-                    error.message || "Unable to save pricing.";
+                    error.message ||
+                    "Unable to save pricing.";
 
-                status.className = "admin-pricing-status error";
+                status.className =
+                    "admin-pricing-status error";
+
             } finally {
+
                 button.disabled = false;
-                button.textContent = "Save changes";
+
+                button.textContent =
+                    isCreate
+                        ? "Create Pricing"
+                        : "Save Pricing";
             }
         }
-
         async function loadHomeProfessionalRequests() {
 
             const container =
