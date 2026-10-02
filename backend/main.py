@@ -20,6 +20,7 @@ from fastapi import (
 )
 
 from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes.pricing import router as pricing_router
@@ -100,6 +101,16 @@ app.mount(
     "/uploads",
     StaticFiles(directory="uploads"),
     name="uploads",
+)
+
+app.mount(
+    "/assets",
+    StaticFiles(
+        directory=str(
+            Path(__file__).resolve().parent.parent / "frontend" / "assets"
+        )
+    ),
+    name="assets",
 )
 
 app.include_router(

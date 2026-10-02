@@ -27,9 +27,11 @@ from auth.passwords import (
 
 router = APIRouter()
 
-from routes.admin_users import require_admin
+from auth.dependencies import require_admin
+from services.user_deletion import delete_user_data
 from models.notification import Notification
 from services.notification_service import create_notification
+
 
 # =====================
 # ME
@@ -381,6 +383,57 @@ def get_admin_home_summary(
     }
 
 
+# =========================================================
+# DELETE USER
+# =========================================================
+
+@router.delete("/users/{user_id}")
+def delete_admin_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    if user_id == current_user.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Admin account cannot be deleted here",
+        )
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    try:
+        delete_user_data(
+            user.id,
+            db,
+        )
+
+        db.delete(user)
+
+        db.commit()
+
+        return {
+            "status": "deleted",
+            "user_id": user_id,
+        }
+
+    except Exception:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail="User deletion failed",
+        )
+
 
 # =====================
 # DELETE ACCOUNT
@@ -406,82 +459,21 @@ def delete_me(
     user_id = str(current_user.id)
 
     try:
-        # Delete professional requests
-        db.execute(
-            text("""
-                DELETE FROM professional_requests
-                WHERE user_id = :user_id
-            """),
-            {"user_id": user_id},
+        delete_user_data(
+            current_user.id,
+            db,
         )
 
-        # Delete professional profile
-        db.execute(
-            text("""
-                DELETE FROM professional_profiles
-                WHERE user_id = :user_id
-            """),
-            {"user_id": user_id},
-        )
-
-        # Delete Home entitlements
-        db.execute(
-            text("""
-                DELETE FROM home_entitlements
-                WHERE user_id = :user_id
-            """),
-            {"user_id": user_id},
-        )
-
-        # Delete Home Project entitlements
-        db.execute(
-            text("""
-                DELETE FROM home_project_entitlements
-                WHERE user_id = :user_id
-            """),
-            {"user_id": user_id},
-        )
-
-        # Delete reports belonging to user's projects
-        db.execute(
-            text("""
-                DELETE FROM reports
-                WHERE project_id IN (
-                    SELECT id
-                    FROM projects
-                    WHERE user_id = :user_id
-                )
-            """),
-            {"user_id": current_user.id},
-        )
-
-        # Delete project versions belonging to user's projects
-        db.execute(
-            text("""
-                DELETE FROM project_versions
-                WHERE project_id IN (
-                    SELECT id
-                    FROM projects
-                    WHERE user_id = :user_id
-                )
-            """),
-            {"user_id": current_user.id},
-        )
-
-        # Delete user's projects
-        db.execute(
-            text("""
-                DELETE FROM projects
-                WHERE user_id = :user_id
-            """),
-            {"user_id": current_user.id},
-        )
-
-        # Finally delete the user
         db.delete(current_user)
 
         db.commit()
 
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Account deletion failed",
+        )
     except Exception:
         db.rollback()
         raise HTTPException(
@@ -734,3 +726,4 @@ def activate_branding(
         "branding_activated_at": now.isoformat(),
         "branding_expires_at": expires_at.isoformat(),
     }
+

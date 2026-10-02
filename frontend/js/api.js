@@ -6,7 +6,7 @@ console.error(
 
 const API =
     window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
+        window.location.hostname === "127.0.0.1"
         ? "http://127.0.0.1:8000"
         : "https://emf-insight.onrender.com";
 
@@ -107,91 +107,91 @@ async function createProject(options = {}) {
             projectType
         );
 
-        // ==================================================
-        // 🔥 CANONICAL PROPERTY PROFILE
-        // ==================================================
-        //
-        // The Property is the persistent parent object.
-        // createProjectModel() creates the assessment workspace.
-        // The profile data belongs to AppState.property.
-        //
-        // ==================================================
+    // ==================================================
+    // 🔥 CANONICAL PROPERTY PROFILE
+    // ==================================================
+    //
+    // The Property is the persistent parent object.
+    // createProjectModel() creates the assessment workspace.
+    // The profile data belongs to AppState.property.
+    //
+    // ==================================================
 
-        if (
-            projectType === "home" &&
-            window.AppState?.property
-        ) {
+    if (
+        projectType === "home" &&
+        window.AppState?.property
+    ) {
 
-            // NEW HOME PROPERTY = NEW CANONICAL PROPERTY
-            AppState.property.id =
-                window.PhiIdFactory
-                    ?.createPropertyId?.();
+        // NEW HOME PROPERTY = NEW CANONICAL PROPERTY
+        AppState.property.id =
+            window.PhiIdFactory
+                ?.createPropertyId?.();
 
-            AppState.property.propertyHealthRecordId =
-                window.PhiIdFactory
-                    ?.createPropertyHealthRecordId?.();
+        AppState.property.propertyHealthRecordId =
+            window.PhiIdFactory
+                ?.createPropertyHealthRecordId?.();
 
-            AppState.property.createdAt =
-                 new Date().toISOString();
-            
-            AppState.property.name =
-                projectName;
+        AppState.property.createdAt =
+            new Date().toISOString();
 
-            AppState.property.propertyType =
-                propertyProfile.propertyType ||
-                "";
+        AppState.property.name =
+            projectName;
 
-            AppState.property.country =
-                propertyProfile.country ||
-                "";
+        AppState.property.propertyType =
+            propertyProfile.propertyType ||
+            "";
 
-            AppState.property.city =
-                propertyProfile.city ||
-                "";
+        AppState.property.country =
+            propertyProfile.country ||
+            "";
 
-            AppState.property.postalCode =
-                propertyProfile.postalCode ||
-                "";
+        AppState.property.city =
+            propertyProfile.city ||
+            "";
 
-            AppState.property.address =
-                propertyProfile.address ||
-                "";
+        AppState.property.postalCode =
+            propertyProfile.postalCode ||
+            "";
 
-            AppState.property.unit =
-                propertyProfile.unit ||
-                "";
+        AppState.property.address =
+            propertyProfile.address ||
+            "";
 
-            // --------------------------------------------------
-            // PROPERTY → PROJECT LINK
-            // --------------------------------------------------
+        AppState.property.unit =
+            propertyProfile.unit ||
+            "";
 
-            newProject.propertyId =
-                AppState.property.id;
+        // --------------------------------------------------
+        // PROPERTY → PROJECT LINK
+        // --------------------------------------------------
 
-            newProject.propertyHealthRecordId =
-                AppState.property.propertyHealthRecordId;
+        newProject.propertyId =
+            AppState.property.id;
 
-            newProject.propertyCreatedAt =
-                AppState.property.createdAt;
+        newProject.propertyHealthRecordId =
+            AppState.property.propertyHealthRecordId;
 
-            newProject.propertyType =
-                AppState.property.propertyType;
+        newProject.propertyCreatedAt =
+            AppState.property.createdAt;
 
-            newProject.country =
-                AppState.property.country;
+        newProject.propertyType =
+            AppState.property.propertyType;
 
-            newProject.city =
-                AppState.property.city;
+        newProject.country =
+            AppState.property.country;
 
-            newProject.postalCode =
-                AppState.property.postalCode;
+        newProject.city =
+            AppState.property.city;
 
-            newProject.address =
-                AppState.property.address;
+        newProject.postalCode =
+            AppState.property.postalCode;
 
-            newProject.unit =
-                AppState.property.unit;
-        }
+        newProject.address =
+            AppState.property.address;
+
+        newProject.unit =
+            AppState.property.unit;
+    }
 
     // ==================================================
     // PROJECT NAME
@@ -299,7 +299,7 @@ async function createProject(options = {}) {
         }
     );
 
-    
+
 
     console.log(
         "🔥 NEW PROJECT PROPERTY DATA",
@@ -1568,7 +1568,7 @@ async function loadProjectList() {
 
             const emptyTitle =
                 currentMode === "home"
-                    ? "No Home projects yet"
+                    ? "No Home Requests yet"
                     : "No Business projects yet";
 
 
@@ -2201,6 +2201,10 @@ async function openExistingProject(
             "business"
         ) {
 
+            localStorage.setItem(
+                "business_project_id",
+                String(projectId)
+            );
             console.log(
                 "🔥 OPENING BUSINESS PROJECT",
                 {
@@ -3668,7 +3672,7 @@ function openCreateProjectNamePopup(projectType) {
             );
         }
     }
-    
+
     // ==========================================
     // PROFILE PREFILL
     // ==========================================
@@ -3752,10 +3756,10 @@ function openCreateProjectNamePopup(projectType) {
 
 
 
-const popup =
-    document.getElementById(
-        "createProjectNamePopup"
-    );
+    const popup =
+        document.getElementById(
+            "createProjectNamePopup"
+        );
 
     const title =
         document.getElementById(
@@ -3787,10 +3791,10 @@ const popup =
             ? "Set Up Your Property Profile"
             : "Create New Business Project";
 
-   
+
 
     input.value = "";
-    
+
 
     popup.style.display = "flex";
 
@@ -3840,18 +3844,18 @@ const popup =
             event.preventDefault();
             event.stopPropagation();
 
-        const name =
-            input.value.trim();
+            const name =
+                input.value.trim();
 
-        if (
-            projectType !== "home" &&
-            !name
-        ) {
+            if (
+                projectType !== "home" &&
+                !name
+            ) {
 
-            input.focus();
+                input.focus();
 
-            return;
-        }
+                return;
+            }
 
             if (projectType === "home") {
 
@@ -3913,7 +3917,7 @@ const popup =
                     if (
                         !invalid &&
                         item.id ===
-                            "homeProfileEmail"
+                        "homeProfileEmail"
                     ) {
 
                         invalid =
@@ -4082,7 +4086,7 @@ const popup =
                 }
             }
 
-          
+
 
 
 
@@ -4173,10 +4177,10 @@ const popup =
                         }
                     );
 
-                    console.error("🔥 PROFILE SAVE — AFTER FETCH", {
-                        status: userProfileResponse.status,
-                        ok: userProfileResponse.ok
-                    });
+                console.error("🔥 PROFILE SAVE — AFTER FETCH", {
+                    status: userProfileResponse.status,
+                    ok: userProfileResponse.ok
+                });
 
                 if (!userProfileResponse.ok) {
 
@@ -4189,14 +4193,14 @@ const popup =
                 }
             }
 
-                    
+
             // ==================================================
             // CREATE PROJECT
             // ==================================================
 
             console.error("🔥 STEP 3 — CALLING createProject");
 
-    
+
 
             closeCreateProjectNamePopup();
 
@@ -4336,8 +4340,8 @@ async function changeAccountPassword() {
     if (newValue === currentValue) {
         message.textContent =
             "New password must be different from your current password.";
-            message.style.color = "#dc2626";
-            message.style.display = "block";
+        message.style.color = "#dc2626";
+        message.style.display = "block";
         newPassword.focus();
         return;
     }
@@ -5371,6 +5375,22 @@ async function openExistingProject(
         return;
     }
 
+    // ==================================================
+    // PERSIST ACTIVE WORKSPACE PROJECT
+    // ==================================================
+
+    const currentWorkspace =
+        window.AppMode?.current ||
+        localStorage.getItem("workspaceMode") ||
+        "business";
+
+    if (currentWorkspace === "business") {
+        localStorage.setItem(
+            "business_project_id",
+            String(projectId)
+        );
+    }
+
 
     try {
 
@@ -5721,7 +5741,7 @@ window.closeProjectMenu =
     closeProjectMenu;
 
 
-    async function refreshHomeReportEntitlement() {
+async function refreshHomeReportEntitlement() {
     if (window.AppMode?.current !== "home") {
         return;
     }
@@ -5748,7 +5768,7 @@ window.closeProjectMenu =
 
     const API =
         window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
+            window.location.hostname === "127.0.0.1"
             ? "http://127.0.0.1:8000"
             : "https://emf-insight.onrender.com";
 
@@ -6216,6 +6236,39 @@ async function loadProject(
             project;
 
         // ==================================================
+        // REAL PROJECT — CLEAR DEMO WORKSPACE EXPERIENCE
+        // ==================================================
+
+        if (
+            currentWorkspace === "business" &&
+            projectType === "business"
+        ) {
+            const realExperience = {
+                mode: "real",
+                projectId: String(loadedProjectId)
+            };
+
+            AppState.workspaceExperience =
+                realExperience;
+
+            window.EMFWorkspaceExperience =
+                realExperience;
+
+            window.EMFBusinessDemo =
+                false;
+
+            if (window.WorkspaceAccess) {
+                window.WorkspaceAccess.mode =
+                    "business";
+            }
+
+            console.log(
+                "🏢 REAL BUSINESS PROJECT EXPERIENCE",
+                realExperience
+            );
+        }
+
+        // ==================================================
         // WORKSPACE-SPECIFIC PROJECT STATE
         // ==================================================
 
@@ -6224,7 +6277,7 @@ async function loadProject(
             AppState.homeProject =
                 project;
 
-                        // ==================================================
+            // ==================================================
             // RESTORE CANONICAL PROPERTY FROM HOME PROJECT
             // ==================================================
 
@@ -6245,7 +6298,7 @@ async function loadProject(
                 AppState.property.createdAt =
                     project.propertyCreatedAt ||
                     AppState.property.createdAt ||
-                    null;    
+                    null;
 
                 AppState.property.name =
                     project.name ||
@@ -6255,7 +6308,7 @@ async function loadProject(
                     AppState.property.createdAt =
                         new Date().toISOString();
                 }
-                    
+
 
                 AppState.property.propertyType =
                     project.propertyType ||
@@ -6293,7 +6346,7 @@ async function loadProject(
                     "🔥 CANONICAL PROPERTY RESTORED:",
                     AppState.property
                 );
-            }    
+            }
 
             // Home project is now canonical and active.
             // Refresh the project-scoped Full Report entitlement.
@@ -6303,6 +6356,13 @@ async function loadProject(
 
             AppState.businessProject =
                 project;
+
+            localStorage.setItem(
+                "business_project_id",
+                String(
+                    projectId
+                )
+            );
         }
 
         // ==================================================

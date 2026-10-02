@@ -1,5 +1,23 @@
 function handleImageUpload(evt) {
 
+    // ==================================================
+    // DEMO MODE — READ ONLY
+    // ==================================================
+
+    if (
+        window.EMFWorkspaceExperience?.mode === "demo"
+    ) {
+        console.log(
+            "🔒 DEMO MODE — FLOOR PLAN UPLOAD BLOCKED"
+        );
+
+        if (evt?.target) {
+            evt.target.value = "";
+        }
+
+        return;
+    }
+
     console.log(
         "================================="
     );
@@ -7,7 +25,6 @@ function handleImageUpload(evt) {
     console.log(
         "🔥 IMAGE UPLOAD START"
     );
-
     // ==================================================
     // FILE
     // ==================================================

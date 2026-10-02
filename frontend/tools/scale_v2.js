@@ -1926,6 +1926,69 @@ function openProjectUnitsSelector() {
                     return;
                 }
 
+                // ==================================================
+                // BUSINESS DEMO UNITS
+                // ==================================================
+
+                const isBusinessDemo =
+                    window.AppMode?.current === "business" &&
+                    window.EMFWorkspaceExperience?.mode === "demo" &&
+                    window.EMFWorkspaceExperience?.demoType === "business";
+
+                if (isBusinessDemo) {
+
+                    window.EMFBusinessDemoState =
+                        window.EMFBusinessDemoState ||
+                        {};
+
+                    window.EMFBusinessDemoState.units =
+                        newUnits;
+
+                    console.log(
+                        "🔥 DEMO UNITS AFTER SET",
+                        {
+                            newUnits,
+                            demoUnits:
+                                window.EMFBusinessDemoState?.units,
+                            getterUnits:
+                                getProjectUnits?.(),
+                            projectUnits:
+                                window.AppState?.project?.units,
+                            demoProjectUnits:
+                                window.AppState?.businessDemoProject?.units
+                        }
+                    );
+
+                    if (
+                        window.AppState?.businessDemoProject
+                    ) {
+
+                        window.AppState.businessDemoProject.units =
+                            newUnits;
+                    }
+
+                    if (
+                        window.AppState?.project
+                    ) {
+
+                        window.AppState.project.units =
+                            newUnits;
+                    }
+
+                    console.log(
+                        "🏢 BUSINESS DEMO UNITS SET",
+                        {
+                            units:
+                                newUnits,
+
+                            demoState:
+                                window.EMFBusinessDemoState.units,
+
+                            projectUnits:
+                                window.AppState?.project?.units
+                        }
+                    );
+                }
 
                 // ==================================================
                 // PERSIST PROJECT
@@ -2000,6 +2063,18 @@ function openProjectUnitsSelector() {
                 // ==================================================
 
                 requestRender?.();
+
+                if (
+                    isBusinessDemo &&
+                    typeof window.renderBusinessDemoWorkspace ===
+                    "function"
+                ) {
+
+                    window.renderBusinessDemoWorkspace(
+                        window.AppState?.businessDemoProject,
+                        window.AppState?.businessDemoAnalysis
+                    );
+                }
             }
         );
 }
@@ -2071,6 +2146,8 @@ function setProjectUnits(units) {
 // SHOW UNITS SELECTOR
 // ==================================================
 function showUnitsSelector() {
+
+    console.log("🔥🔥🔥 SHOW UNITS SELECTOR EXECUTED");
 
     // ==================================================
     // REMOVE EXISTING MODAL
@@ -2259,6 +2336,8 @@ function showUnitsSelector() {
                 }
             );
 
+
+            console.log("🔥🔥 UNITS SELECTOR HANDLER REACHED");
 
             // ==================================================
             // NO CHANGE

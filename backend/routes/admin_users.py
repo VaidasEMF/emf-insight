@@ -2,30 +2,23 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from auth.dependencies import get_current_user, get_db
+from auth.dependencies import (
+    get_current_user,
+    get_db,
+    require_admin,
+)
+
 from models.user import User
-
 from models.project import Project
-
 from models.notification import Notification
+
+from services.user_deletion import delete_user_data
 
 
 router = APIRouter(
     prefix="/admin",
     tags=["admin-users"],
 )
-
-
-def require_admin(
-    current_user: User = Depends(get_current_user),
-):
-    if not current_user.is_admin:
-        raise HTTPException(
-            status_code=403,
-            detail="Admin access required",
-        )
-
-    return current_user
 
 
 # =========================================================
@@ -175,8 +168,8 @@ def get_admin_user(
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
-            "country": user.country,
-            "city": user.city,
+            "country": getattr(user, "country", None),
+            "city": getattr(user, "city", None),    
             "company_name": user.company_name,
             "company_email": user.company_email,
             "plan": user.plan,
@@ -453,8 +446,6 @@ def update_admin_user(
         "first_name",
         "last_name",
         "email",
-        "country",
-        "city",
         "company_name",
         "company_email",
         "role",
@@ -656,6 +647,179 @@ def adjust_admin_user_credits(
         "amount": amount,
         "balance": new_balance,
     }
+
+# =========================================================
+# DELETE USER
+# =========================================================
+
+@router.delete("/users/{user_id}")
+def delete_admin_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    # Never allow the admin to delete their own account here.
+    if user_id == current_user.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Admin account cannot be deleted here",
+        )
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    try:
+        user_id_str = str(user.id)
+
+        # -------------------------------------------------
+        # PROFESSIONAL REQUESTS
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM professional_requests
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": user_id_str,
+            },
+        )
+
+        # -------------------------------------------------
+        # PROFESSIONAL PROFILE
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM professional_profiles
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": user_id_str,
+            },
+        )
+
+        # -------------------------------------------------
+        # HOME ENTITLEMENTS
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM home_entitlements
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": user_id_str,
+            },
+        )
+
+        # -------------------------------------------------
+        # HOME PROJECT ENTITLEMENTS
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM home_project_entitlements
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": user_id_str,
+            },
+        )
+
+        # -------------------------------------------------
+        # NOTIFICATIONS
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM notifications
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": user.id,
+            },
+        )
+
+        # -------------------------------------------------
+        # REPORTS
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM reports
+                WHERE project_id IN (
+                    SELECT id
+                    FROM projects
+                    WHERE user_id = :user_id
+                )
+            """),
+            {
+                "user_id": user.id,
+            },
+        )
+
+        # -------------------------------------------------
+        # PROJECT VERSIONS
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM project_versions
+                WHERE project_id IN (
+                    SELECT id
+                    FROM projects
+                    WHERE user_id = :user_id
+                )
+            """),
+            {
+                "user_id": user.id,
+            },
+        )
+
+        # -------------------------------------------------
+        # PROJECTS
+        # -------------------------------------------------
+
+        db.execute(
+            text("""
+                DELETE FROM projects
+                WHERE user_id = :user_id
+            """),
+            {
+                "user_id": user.id,
+            },
+        )
+
+        # -------------------------------------------------
+        # USER
+        # -------------------------------------------------
+
+        db.delete(user)
+
+        db.commit()
+
+        return {
+            "status": "deleted",
+            "user_id": user_id,
+        }
+
+    except Exception:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail="User deletion failed",
+        )
 
 @router.post("/notifications")
 def create_admin_notification(

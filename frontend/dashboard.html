@@ -3544,6 +3544,43 @@
         .button-danger:hover {
             background: #fff5f5;
         }
+
+
+        .admin-delete-user-confirm {
+            background: #dc2626;
+            color: #ffffff;
+            border: 1px solid #dc2626;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .admin-delete-user-confirm:hover {
+            background: #b91c1c;
+            border-color: #b91c1c;
+        }
+
+        .admin-delete-user-confirm:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .admin-delete-user-button {
+            background: #dc2626 !important;
+            border-color: #dc2626 !important;
+            color: #ffffff !important;
+        }
+
+        .admin-delete-user-button:hover {
+            background: #b91c1c !important;
+            border-color: #b91c1c !important;
+        }
     </style>
 </head>
 
@@ -4199,9 +4236,9 @@
                     <section class="section" id="home-requests">
                         <div class="section-heading">
                             <div>
-                                <h2 class="section-title">Available Home Requests</h2>
+                                <h2 class="section-title">Early Home Requests</h2>
                                 <p class="section-description">
-                                    Find Home Projects that match your professional service areas and availability.
+                                    Discover Home assessment requests as the EMF Insight professional network grows.
                                 </p>
                             </div>
                         </div>
@@ -4210,9 +4247,14 @@
                             <div class="content-body" id="professionalHomeProjectsContainer">
                                 <div class="empty-state">
                                     <div class="empty-icon">⌂</div>
-                                    <div class="empty-title">No Home Projects available</div>
+
+                                    <div class="empty-title">
+                                        No Home Requests available yet
+                                    </div>
+
                                     <div class="empty-copy">
-                                        Matching Home Projects will appear here.
+                                        The network is growing as more Home users request professional assessments.
+                                        New requests matching your service areas and availability will appear here.
                                     </div>
                                 </div>
                             </div>
@@ -4551,9 +4593,9 @@
 
                         <div class="content-card-header">
                             <div>
-                                <h3>Professional Assessment Requests</h3>
+                                <h3>My Professional Requests</h3>
                                 <p>
-                                    Your Home Wellness requests and their current status.
+                                    Track your requests and stay informed as professional coverage grows in your area.
                                 </p>
                             </div>
                         </div>
@@ -4628,30 +4670,148 @@
                             <div class="billing-layout">
                                 <div class="billing-panel">
                                     <h4>Home Wellness</h4>
-                                    <p>Personal property assessment with the option to unlock the complete EMF Insight
-                                        report.</p>
-                                    <div class="billing-value" id="homeAccessStatus">Full EMF Insight Report</div>
-                                    <div class="billing-note" id="homePriceSummary">?</div>
+
+                                    <p>
+                                        Personal property assessment with the option to unlock the complete EMF Insight
+                                        report.
+                                    </p>
+
+                                    <div style="
+            margin-top:18px;
+            font-size:12px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.05em;
+            color:#667085;
+        ">
+                                        Current workspace
+                                    </div>
+
+                                    <div class="billing-value" id="homeAccessStatus" style="margin-top:6px;">
+                                        Home Wellness · Free
+                                    </div>
+
+                                    <div class="billing-note" id="homePriceSummary">
+                                        One-time purchase available
+                                    </div>
                                 </div>
 
                                 <div class="billing-panel" id="professionalBillingPanel">
-                                    <h4>Professional Plan</h4>
 
-                                    <div class="billing-value" id="billingBusinessPlan">
-                                        Professional
+                                    <h4>Business Survey</h4>
+
+                                    <p id="businessBillingDescription">
+                                        Professional EMF assessment workspace for businesses and consultants.
+                                    </p>
+
+                                    <div id="businessCurrentAccess" style="
+            margin-top:18px;
+            margin-bottom:18px;
+            padding:14px 16px;
+            border-radius:10px;
+            background:#f8fafc;
+        ">
+                                        <div style="
+                font-size:12px;
+                font-weight:700;
+                text-transform:uppercase;
+                letter-spacing:.05em;
+                color:#667085;
+            ">
+                                            AVAILABLE TO EXPLORE
+                                        </div>
+
+                                        <div id="businessCurrentAccessValue" style="
+                margin-top:5px;
+                font-size:18px;
+                font-weight:700;
+            ">
+                                            Free · Demo
+                                        </div>
+
+                                        <div id="businessCurrentAccessNote" style="
+                margin-top:5px;
+                color:#667085;
+                font-size:14px;
+            ">
+                                            Explore the Business Survey workflow using example data.
+                                        </div>
                                     </div>
 
-                                    <div class="billing-note" id="billingBusinessPrice">
-                                        €79 / month
+                                    <div id="businessUpgradeSection" style="
+            margin-top:20px;
+        ">
+                                        <div style="
+                font-size:12px;
+                font-weight:700;
+                text-transform:uppercase;
+                letter-spacing:.05em;
+                color:#667085;
+            ">
+                                            Upgrade to Professional
+                                        </div>
+
+                                        <div class="billing-value" id="billingBusinessPlan" style="margin-top:6px;">
+                                            Professional
+                                        </div>
+
+                                        <div class="billing-note" id="billingBusinessPrice">
+                                            €79 / month
+                                        </div>
+
+                                        <p id="businessUpgradeDescription" style="
+                margin-top:10px;
+                color:#667085;
+                max-width:520px;
+            ">
+                                            Create real Business Projects, complete professional
+                                            assessments and generate professional reports.
+                                        </p>
+
+                                        <button type="button" class="bd-demo-cta" onclick="
+        if (typeof showSection === 'function') {
+            showSection('pricing');
+        }
+    ">
+                                            Become a Professional →
+                                        </button>
+                                    </div>
+
+                                    <div id="businessNextSteps" style="
+            margin-top:24px;
+            padding-top:20px;
+            border-top:1px solid #eaecf0;
+        ">
+                                        <div style="
+                font-size:12px;
+                font-weight:700;
+                text-transform:uppercase;
+                letter-spacing:.05em;
+                color:#667085;
+            ">
+                                            What happens next?
+                                        </div>
+
+                                        <ol style="
+                margin:10px 0 0 20px;
+                padding:0;
+                color:#475467;
+            ">
+                                            <li>Choose Professional</li>
+                                            <li>Create your first Business Project</li>
+                                            <li>Complete the assessment</li>
+                                            <li>Generate the Professional Report</li>
+                                        </ol>
                                     </div>
 
                                     <div id="billingBusinessUsage" style="
-            margin-top:16px;
+            margin-top:24px;
             display:grid;
             grid-template-columns:1fr auto;
             gap:10px 24px;
             max-width:420px;
         ">
+
                                         <div style="font-weight:600;">Resource</div>
                                         <div style="font-weight:600;">Usage</div>
 
@@ -4667,12 +4827,17 @@
                                         <div>Projects</div>
                                         <div id="billingProjectsUsage">—</div>
 
-                                        <div style="margin-top:6px;color:#667085;">Status</div>
+                                        <div style="margin-top:6px;color:#667085;">
+                                            Status
+                                        </div>
+
                                         <div id="billingBusinessStatus"
                                             style="margin-top:6px;font-weight:600;color:var(--success);">
-                                            Active
+                                            —
                                         </div>
+
                                     </div>
+
                                 </div>
                             </div>
 
@@ -10898,7 +11063,7 @@ ADMIN PAYMENTS
                         firstCard.querySelector(".summary-note");
 
                     if (firstLabel) {
-                        firstLabel.textContent = "Home projects";
+                        firstLabel.textContent = "Home requests";
                     }
 
                     if (firstNote) {
@@ -13211,6 +13376,19 @@ ${!isTbd
                             `
                 }
 
+                <button
+    type="button"
+    class="admin-action-button admin-delete-user-button"
+    onclick="
+        deleteAdminUser(
+            ${Number(user.id)},
+            '${escapeHtml(user.email)}'
+        );
+    "
+>
+    Delete User
+</button>
+
                 </div>
 
             </div>
@@ -13748,6 +13926,240 @@ ${!isTbd
                 alert(
                     error.message ||
                     "Unable to activate user."
+                );
+            }
+        }
+
+        function deleteAdminUser(userId, email) {
+
+            const existing =
+                document.getElementById(
+                    "adminDeleteUserModal"
+                );
+
+            if (existing) {
+                existing.remove();
+            }
+
+            const modal =
+                document.createElement("div");
+
+            modal.id =
+                "adminDeleteUserModal";
+
+            modal.className =
+                "admin-modal-backdrop open";
+
+            modal.setAttribute(
+                "role",
+                "dialog"
+            );
+
+            modal.setAttribute(
+                "aria-modal",
+                "true"
+            );
+
+            modal.innerHTML = `
+        <div class="admin-modal">
+
+            <div class="admin-modal-header">
+
+                <h3>
+                    Delete User
+                </h3>
+
+                <p>
+                    Permanently remove this user and their associated data.
+                </p>
+
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div
+                    style="
+                        padding:16px;
+                        border-radius:10px;
+                        background:#fff7ed;
+                        border:1px solid #fed7aa;
+                        color:#9a3412;
+                        line-height:1.5;
+                    "
+                >
+
+                    <strong>
+                        User #${Number(userId)}
+                    </strong>
+
+                    <br>
+
+                    ${escapeHtml
+                    ? escapeHtml(email)
+                    : email
+                }
+
+                    <br><br>
+
+                    This action cannot be undone.
+
+                </div>
+
+            </div>
+
+            <div class="admin-modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    onclick="
+                        document
+                            .getElementById(
+                                'adminDeleteUserModal'
+                            )
+                            ?.remove();
+                    "
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="admin-delete-user-confirm"
+                    onclick="
+                        executeDeleteAdminUser(
+                            ${Number(userId)}
+                        );
+                    "
+                >
+                    Delete User
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+            document.body.appendChild(
+                modal
+            );
+        }
+
+        async function executeDeleteAdminUser(
+            userId
+        ) {
+
+            const token =
+                localStorage.getItem(
+                    "token"
+                );
+
+            const button =
+                document.querySelector(
+                    "#adminDeleteUserModal .admin-delete-user-confirm"
+                );
+
+            if (button) {
+                button.disabled = true;
+                button.textContent =
+                    "Deleting...";
+            }
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/admin/users/${userId}`,
+                        {
+                            method: "DELETE",
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                const data =
+                    await response.json()
+                        .catch(() => ({}));
+
+                if (!response.ok) {
+
+                    console.error(
+                        "Delete user failed:",
+                        response.status,
+                        data
+                    );
+
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent =
+                            "Delete User";
+                    }
+
+                    const status =
+                        document.createElement(
+                            "div"
+                        );
+
+                    status.style.marginTop =
+                        "12px";
+
+                    status.style.color =
+                        "#b91c1c";
+
+                    status.textContent =
+                        data?.detail ||
+                        `Unable to delete user (${response.status}).`;
+
+                    document
+                        .querySelector(
+                            "#adminDeleteUserModal .admin-modal-body"
+                        )
+                        ?.appendChild(status);
+
+                    return;
+                }
+
+                console.log(
+                    "User deleted:",
+                    data
+                );
+
+                document
+                    .getElementById(
+                        "adminDeleteUserModal"
+                    )
+                    ?.remove();
+
+                document
+                    .getElementById(
+                        "adminUserManageModal"
+                    )
+                    ?.remove();
+
+                if (
+                    typeof loadAdminUsers ===
+                    "function"
+                ) {
+                    await loadAdminUsers();
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Delete user error:",
+                    error
+                );
+
+                if (button) {
+                    button.disabled = false;
+                    button.textContent =
+                        "Delete User";
+                }
+
+                alert(
+                    "Failed to delete user."
                 );
             }
         }
@@ -18471,11 +18883,17 @@ ${request.has_active_unlock
                     String(plan || "").toLowerCase() === "professional";
 
                 if (isProfessional) {
+
+                    // ---------------------------------------------------------
+                    // REAL PROFESSIONAL
+                    // ---------------------------------------------------------
+
                     if (billingBusinessPlan) {
                         billingBusinessPlan.textContent = "Professional";
                     }
 
                     if (billingBusinessPrice) {
+
                         const currency =
                             String(
                                 window.EMF_SELECTED_CURRENCY ||
@@ -18485,6 +18903,8 @@ ${request.has_active_unlock
 
                         const price =
                             window.EMF_PRICING?.business?.professional?.prices?.[currency];
+
+                        billingBusinessPrice.style.display = "";
 
                         billingBusinessPrice.textContent =
                             typeof price === "number"
@@ -18550,6 +18970,102 @@ ${request.has_active_unlock
                     if (billingBusinessStatus) {
                         billingBusinessStatus.textContent = "Active";
                     }
+
+                } else {
+
+                    // ---------------------------------------------------------
+                    // HOME USER / BUSINESS DEMO
+                    // ---------------------------------------------------------
+
+                    if (billingBusinessPlan) {
+                        billingBusinessPlan.textContent =
+                            "Choose a Business Survey plan";
+                    }
+
+                    // Do not show a single Professional price here.
+                    if (billingBusinessPrice) {
+                        billingBusinessPrice.textContent = "";
+                        billingBusinessPrice.style.display = "none";
+                    }
+
+                    // Usage belongs to a real Professional account,
+                    // not to the Business Demo.
+                    if (billingBusinessUsage) {
+                        billingBusinessUsage.style.display = "none";
+                    }
+                }
+
+                // =========================================================
+                // BUSINESS BILLING CARD — HOME MODE
+                // =========================================================
+
+                if (dashboardMode === "home") {
+
+                    const businessBillingDescription =
+                        document.getElementById("businessBillingDescription");
+
+                    const businessCurrentAccessValue =
+                        document.getElementById("businessCurrentAccessValue");
+
+                    const businessCurrentAccessNote =
+                        document.getElementById("businessCurrentAccessNote");
+
+                    const businessUpgradeSection =
+                        document.getElementById("businessUpgradeSection");
+
+                    const businessNextSteps =
+                        document.getElementById("businessNextSteps");
+
+                    const businessUpgradeButton =
+                        document.getElementById("businessUpgradeButton");
+
+                    const billingBusinessUsage =
+                        document.getElementById("billingBusinessUsage");
+
+                    if (businessBillingDescription) {
+                        businessBillingDescription.textContent =
+                            "Explore the professional EMF assessment workflow for businesses and consultants.";
+                    }
+
+                    if (businessCurrentAccessValue) {
+                        businessCurrentAccessValue.textContent =
+                            "Available to explore";
+                    }
+
+                    if (businessCurrentAccessNote) {
+                        businessCurrentAccessNote.textContent =
+                            "Try the Business Survey workflow using example data. No Business Project has been created.";
+                    }
+
+                    // Home users do not need Business upgrade
+                    // communication inside the Home billing view.
+                    if (businessUpgradeSection) {
+                        businessUpgradeSection.style.display = "";
+                    }
+
+                    if (businessNextSteps) {
+                        businessNextSteps.style.display = "none";
+                    }
+
+                    if (billingBusinessUsage) {
+                        billingBusinessUsage.style.display = "none";
+                    }
+
+                    if (businessUpgradeButton) {
+                        businessUpgradeButton.textContent =
+                            "Explore Business Survey →";
+
+                        businessUpgradeButton.style.display = "inline-flex";
+
+                        businessUpgradeButton.onclick = function () {
+                            localStorage.setItem(
+                                "workspaceMode",
+                                "business"
+                            );
+
+                            window.location.href = "index.html";
+                        };
+                    }
                 }
 
                 const homeAccessStatus = document.getElementById("homeAccessStatus");
@@ -18557,8 +19073,8 @@ ${request.has_active_unlock
 
                 if (homeAccessStatus) {
                     homeAccessStatus.textContent = homeFullReportUnlocked
-                        ? "Full EMF Insight Report unlocked"
-                        : "Full EMF Insight Report";
+                        ? "Home Wellness · Full EMF Insight Report"
+                        : "Home Wellness · Free";
                 }
 
                 if (homePriceSummary) {
@@ -19910,7 +20426,7 @@ ${request.has_active_unlock
                     if (!response.ok) {
                         throw new Error(
                             data?.detail ||
-                            "Unable to load Home projects."
+                            "Unable to load Home Requests."
                         );
                     }
 
@@ -20007,7 +20523,7 @@ ${request.has_active_unlock
 
             status.textContent =
                 data.total === 0
-                    ? "0 Home projects."
+                    ? "0 Home Requests."
                     : `Showing ${(
                         (data.page - 1) *
                         data.page_size
@@ -20021,7 +20537,7 @@ ${request.has_active_unlock
 
                 table.innerHTML = `
             <div class="admin-user-empty">
-                No Home projects found.
+                No Home Requests found.
             </div>
         `;
 
@@ -20272,27 +20788,24 @@ ${request.has_active_unlock
                     Array.isArray(data.requests)
                         ? data.requests
                         : [];
-
                 if (!requests.length) {
 
                     status.textContent =
-                        "No professional assessment requests.";
+                        "No Home Requests available yet.";
 
                     body.innerHTML = `
-                <tr>
-                    <td colspan="6">
-                        No requests found.
-                    </td>
-                </tr>
-            `;
+        <tr>
+            <td colspan="6">
+                No Home Requests available yet.
+            </td>
+        </tr>
+    `;
 
                     return;
                 }
 
                 status.textContent =
-                    `${requests.length} professional assessment request${requests.length === 1 ? "" : "s"
-                    }.`;
-
+                    `${requests.length} Home Request${requests.length === 1 ? "" : "s"} available.`;
                 body.innerHTML =
                     requests.map(request => `
 
@@ -20521,13 +21034,11 @@ ${request.has_active_unlock
             if (!container) return;
 
             container.innerHTML = `
-        <div class="empty-state">
-            <div class="empty-icon">⌛</div>
-            <div class="empty-title">Loading Home Projects</div>
-            <div class="empty-copy">
-                Finding Home Projects that match your service areas and availability.
-            </div>
-        </div>
+      <div class="empty-icon">⌛</div>
+<div class="empty-title">Loading Home Requests</div>
+<div class="empty-copy">
+    Finding Home assessment requests that match your service areas and availability.
+</div>
     `;
 
             try {
@@ -20544,37 +21055,42 @@ ${request.has_active_unlock
 
                 if (!response.ok) {
                     throw new Error(
-                        data.detail || "Unable to load Home Projects."
+                        data.detail || "Unable to load Home Requests."
                     );
                 }
 
-                if (data.locked) {
+                if (data.reason && (!data.requests || !data.requests.length)) {
                     container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">🔒</div>
-                    <div class="empty-title">Home Projects locked</div>
-                    <div class="empty-copy">
-                        ${data.reason || "Report Credit required."}
-                    </div>
-                    <a
-                        class="btn-secondary professional-home-projects-billing-button"
-                        href="#billing">
-                        Get Report Credits
-                    </a>
-                </div>
-            `;
+        <div class="empty-state">
+            <div class="empty-icon">⌂</div>
+
+            <div class="empty-title">
+                Early Home Network
+            </div>
+
+            <div class="empty-copy">
+                No matching Home Requests are available right now.
+                The network is growing as more Home users request professional assessments.
+            </div>
+        </div>
+    `;
                     return;
                 }
 
                 if (data.reason && (!data.requests || !data.requests.length)) {
                     container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">⌂</div>
-                    <div class="empty-title">Home Projects unavailable</div>
-                    <div class="empty-copy">
-                        ${data.reason}
-                    </div>
-                </div>
+               <div class="empty-state">
+    <div class="empty-icon">⌂</div>
+
+    <div class="empty-title">
+        Early Home Network
+    </div>
+
+    <div class="empty-copy">
+        No matching Home Requests are available right now.
+        The network is growing as more Home users request professional assessments.
+    </div>
+</div>
             `;
                     return;
                 }
@@ -20594,12 +21110,17 @@ ${request.has_active_unlock
                 if (!availableRequests.length) {
                     container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">⌂</div>
-                    <div class="empty-title">No Home Projects available</div>
-                    <div class="empty-copy">
-                        No matching Home Projects are currently available.
-                    </div>
-                </div>
+    <div class="empty-icon">⌂</div>
+
+    <div class="empty-title">
+        Early Home Network
+    </div>
+
+    <div class="empty-copy">
+        No matching Home Requests are available right now.
+        The network is growing as more Home users request professional assessments.
+    </div>
+</div>
             `;
                     return;
                 }
@@ -20741,14 +21262,14 @@ ${request.contact_expires_at
         `;
             } catch (error) {
                 console.error(
-                    "Failed to load available Home Projects:",
+                    "Failed to load available Home Requests:",
                     error
                 );
 
                 container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">⚠</div>
-                <div class="empty-title">Unable to load Home Projects</div>
+                <div class="empty-title">Unable to load Home Requests</div>
                 <div class="empty-copy">
                     Please try again later.
                 </div>
@@ -21786,7 +22307,7 @@ ${request.contact_expires_at
                     profileComplete ? "success" : "danger",
                     profileComplete
                         ? "Your professional profile is complete."
-                        : "Complete your professional profile to become eligible for Home Projects."
+                        : "Complete your professional profile to become eligible for Home Requests."
                 );
 
                 let verificationLabel = "Not requested";
@@ -21837,8 +22358,8 @@ ${request.contact_expires_at
                     availabilityLabel,
                     availability === "available" ? "success" : "",
                     availability === "available"
-                        ? "You are available for Home Projects."
-                        : "You are not currently available for Home Projects."
+                        ? "You are available for Home Requests."
+                        : "You are not currently available for Home Requests."
                 );
 
                 const homeEligible =
@@ -21943,7 +22464,7 @@ ${request.contact_expires_at
                 if (!projects.length) {
                     const title =
                         currentMode === "home"
-                            ? "No Home projects yet"
+                            ? "No Home Requests yet"
                             : "No Business projects yet";
 
                     const copy =
@@ -22669,7 +23190,7 @@ ${request.contact_expires_at
 
             try {
                 const res = await fetch(`${API}/project/${encodeURIComponent(projectId)}/versions`, {
-                    headers: {"Authorization": `Bearer ${token}`}
+                    headers: { "Authorization": `Bearer ${token}` }
                 });
                 if (!res.ok) throw new Error(`Versions request failed: ${res.status}`);
                 return await res.json();
@@ -22685,7 +23206,7 @@ ${request.contact_expires_at
             try {
                 const res = await fetch(`${API}/project/version/${encodeURIComponent(versionId)}/restore`, {
                     method: "POST",
-                    headers: {"Authorization": `Bearer ${token}`}
+                    headers: { "Authorization": `Bearer ${token}` }
                 });
                 if (!res.ok) throw new Error(`Restore failed: ${res.status}`);
                 alert("Version restored.");

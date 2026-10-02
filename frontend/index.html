@@ -17199,7 +17199,7 @@
     .professional-assessment-modal {
       position: fixed;
       inset: 0;
-      z-index: 10000;
+      z-index: 100000;
       display: none;
       align-items: center;
       justify-content: center;
@@ -17288,6 +17288,52 @@
       margin-bottom: 20px;
       color: #64748b;
       font-size: 13px;
+    }
+
+    .professional-assessment-how-it-works {
+      margin: 14px 0 18px;
+      padding: 12px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .professional-assessment-how-title {
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #344054;
+    }
+
+    .professional-assessment-how-step {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 9px;
+    }
+
+    .professional-assessment-how-step:last-of-type {
+      margin-bottom: 10px;
+    }
+
+    .professional-assessment-how-step strong {
+      font-size: 12px;
+      line-height: 16px;
+      color: #344054;
+    }
+
+    .professional-assessment-how-step span {
+      font-size: 11px;
+      line-height: 15px;
+      color: #667085;
+    }
+
+    .professional-assessment-how-note {
+      padding-top: 9px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 11px;
+      line-height: 15px;
+      color: #667085;
     }
 
     .professional-assessment-availability {
@@ -20982,6 +21028,45 @@
       outline: 2px solid #2563eb;
       outline-offset: 2px;
     }
+
+
+    /* ==================================================
+   WORKSPACE CONTEXTUAL RETURN
+   ================================================== */
+
+    .workspace-selector {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .contextual-return-action {
+      display: none;
+      width: 100%;
+      text-align: right;
+    }
+
+    .contextual-return-action button {
+      border: 0;
+      background: transparent;
+      padding: 2px 4px;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .contextual-return-action button:hover {
+      color: #1677d2;
+      text-decoration: underline;
+    }
+
+
+    .professional-assessment-modal .primary-btn,
+    .professional-assessment-modal .secondary-btn {
+      border-radius: 10px;
+    }
   </style>
 </head>
 
@@ -21778,8 +21863,14 @@
           </div>
 
           <div class="sidebar-subtitle">
-            Need a deeper assessment? Connect with an EMF professional for on-site measurement and professional
-            analysis.
+            Need a deeper assessment? Connect with an EMF professional
+            for on-site measurement and professional analysis.
+          </div>
+
+          <div id="homeProfessionalAssessmentLocked" class="workflow-hint">
+            <strong>Early Professional Network</strong><br>
+            Our professional network is growing.
+            Availability may vary by location as new professionals join.
           </div>
 
           <div id="homeProfessionalAssessmentLocked" class="workflow-hint">
@@ -21818,13 +21909,42 @@
               onclick="closeProfessionalAssessmentLocationModal();">
               ×
             </button>
-
             <div class="professional-assessment-title" id="professionalAssessmentTitle">
-              Professional Assessment
+              Request a Professional Assessment
+            </div>
+            <div class="professional-assessment-subtitle">
+              Submit a request to the EMF Insight professional network.
             </div>
 
-            <div class="professional-assessment-subtitle">
-              Find an EMF professional in your area.
+            <div class="professional-assessment-how-it-works">
+              <div class="professional-assessment-how-title">
+                How it works
+              </div>
+
+              <div class="professional-assessment-how-step">
+                <strong>1. Submit your request</strong>
+                <span>
+                  Enter your location and tell us where you need professional support.
+                </span>
+              </div>
+
+              <div class="professional-assessment-how-step">
+                <strong>2. Your request enters the network</strong>
+                <span>
+                  Your request becomes available to matching professionals in your area.
+                </span>
+              </div>
+
+              <div class="professional-assessment-how-step">
+                <strong>3. Connect with a professional</strong>
+                <span>
+                  When a suitable professional becomes available, you can continue directly with them.
+                </span>
+              </div>
+
+              <div class="professional-assessment-how-note">
+                Professional coverage varies by location and is growing as more professionals join EMF Insight.
+              </div>
             </div>
 
             <div class="form-group">
@@ -21898,11 +22018,12 @@
           </div>
         </div>
 
-        <!-- ================================
-     PROFESSIONAL REQUEST RESULT
-     ================================ -->
+        <!-- ================================ -->
+        <!-- PROFESSIONAL REQUEST RESULT -->
+        <!-- ================================ -->
         <div id="professionalAssessmentResultModal" class="professional-assessment-modal" style="display:none;"
           aria-hidden="true">
+
           <div class="professional-assessment-backdrop"></div>
 
           <div class="professional-assessment-dialog professional-assessment-result-dialog" role="dialog"
@@ -21917,13 +22038,24 @@
             </div>
 
             <div id="professionalAssessmentResultMessage" class="professional-assessment-subtitle">
-              Your professional assessment request has been submitted successfully.
+              <p>
+                Your professional assessment request has been submitted.
+              </p>
+
+              <p>
+                Your request is now part of the EMF Insight professional network.
+              </p>
+
+              <p>
+                Professional coverage is still growing in some areas.
+                We'll keep you informed as suitable professionals become available.
+              </p>
             </div>
 
             <div class="professional-assessment-result-actions">
 
               <button type="button" class="primary-btn" onclick="closeProfessionalAssessmentResultModal();">
-                OK
+                View Request Status →
               </button>
 
             </div>
@@ -22485,76 +22617,7 @@
         <div id="guideText" class="mutedText">
         </div>
 
-        <!-- ===================== -->
-        <!-- 🔥 WELLNESS CARD -->
-        <!-- ===================== -->
 
-        <div id="wellnessCard" class="wellnessCard home-only">
-
-          <div id="wellnessTitle">
-            YOUR PROPERTY HEALTH RECORD
-          </div>
-
-          <div id="wellnessScore">
-            Your Property Health Record has started
-          </div>
-
-          <div id="wellnessSummary">
-            Your property's environmental profile is being built as you explore
-            your home, sources and daily living areas.
-          </div>
-
-          <div class="property-record-grid">
-
-            <div class="property-record-item">
-              <div class="property-record-label">
-                PROPERTY
-              </div>
-              <div class="property-record-value">
-                My Property
-              </div>
-            </div>
-
-            <div class="property-record-item">
-              <div class="property-record-label">
-                ENVIRONMENT
-              </div>
-              <div class="property-record-value">
-                Environment profile in progress
-              </div>
-            </div>
-
-            <div class="property-record-item">
-              <div class="property-record-label">
-                LIFESTYLE
-              </div>
-              <div class="property-record-value">
-                Living areas not yet added
-              </div>
-            </div>
-
-            <div class="property-record-item">
-              <div class="property-record-label">
-                ASSESSMENT
-              </div>
-              <div class="property-record-value">
-                Initial Home Assessment
-              </div>
-            </div>
-
-          </div>
-
-          <div class="property-record-status">
-            <span class="property-record-status-label">
-              STATUS
-            </span>
-            <span class="property-record-status-value">
-              Initial record created
-            </span>
-          </div>
-
-
-        </div>
 
 
       </div>
@@ -22642,9 +22705,9 @@
                   <!-- BUSINESS -->
 
                   <div id="workspaceBusinessItem" class="workspace-menu-item" onclick="
-        setAppMode?.('business');
-        closeWorkspaceMenu?.();
-    ">
+                      setAppMode?.('business');
+                      closeWorkspaceMenu?.();
+                  ">
 
                     <span class="workspace-menu-icon">
                       🏢
@@ -22672,10 +22735,21 @@
                   <!-- HOME -->
 
                   <div id="workspaceHomeItem" class="workspace-menu-item" onclick="
-        setAppMode?.('home');
-        closeWorkspaceMenu?.();
-    ">
+    localStorage.setItem('workspaceMode', 'home');
 
+    const homeProjectId =
+        localStorage.getItem('home_project_id') ||
+        localStorage.getItem('homeProjectId');
+
+    if (homeProjectId) {
+        localStorage.setItem(
+            'home_project_id',
+            String(homeProjectId)
+        );
+    }
+
+    window.location.reload();
+">
                     <span class="workspace-menu-icon">
                       🏠
                     </span>
@@ -22707,6 +22781,17 @@
 
 
               </div>
+
+              <!-- ================================================== -->
+              <!-- CONTEXTUAL RETURN ACTION -->
+              <!-- ================================================== -->
+
+              <button id="contextualReturnButton" type="button" onclick="
+            localStorage.setItem('workspaceMode', 'home');
+            window.location.href = 'index.html';
+        ">
+                ← <span id="contextualReturnLabel">My Property</span>
+              </button>
 
             </div>
 
@@ -24142,6 +24227,100 @@
 
 
             <!-- ================================================== -->
+            <!-- WORKSPACE ACCESS / DEMO SCREEN -->
+            <!-- ================================================== -->
+            <div id="workspaceAccessScreen" style="
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:50;
+    background:#f7faff;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    box-sizing:border-box;
+  ">
+
+              <div id="workspaceAccessCard" style="
+      width:min(760px, 100%);
+      background:#fff;
+      border:1px solid #dfe6ef;
+      border-radius:20px;
+      box-shadow:0 18px 50px rgba(21,39,63,.10);
+      padding:38px 42px;
+      box-sizing:border-box;
+    ">
+
+                <div id="workspaceAccessEyebrow" style="
+        font-size:11px;
+        font-weight:800;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        margin-bottom:10px;
+      ">
+                </div>
+
+                <h2 id="workspaceAccessTitle" style="
+        margin:0;
+        font-size:30px;
+        line-height:1.15;
+        color:#172033;
+      ">
+                </h2>
+
+                <p id="workspaceAccessText" style="
+        margin:12px 0 24px;
+        max-width:620px;
+        font-size:14px;
+        line-height:1.65;
+        color:#667085;
+      ">
+                </p>
+
+                <div id="workspaceAccessFeatures" style="
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+        margin-bottom:28px;
+      ">
+                </div>
+
+                <div style="
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    ">
+
+                  <button id="workspaceAccessPrimary" type="button" style="
+          border:0;
+          border-radius:10px;
+          padding:12px 18px;
+          font-size:13px;
+          font-weight:750;
+          color:#fff;
+          cursor:pointer;
+        ">
+                  </button>
+
+                  <button id="workspaceAccessSecondary" type="button" style="
+          border:1px solid #dfe6ef;
+          border-radius:10px;
+          padding:12px 18px;
+          font-size:13px;
+          font-weight:700;
+          color:#4e596b;
+          background:#fff;
+          cursor:pointer;
+        ">
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ================================================== -->
             <!-- HOME CURRENT FLOOR CARD -->
             <!-- ================================================== -->
 
@@ -24532,25 +24711,34 @@
                 <div class="business-empty-plan-content">
 
                   <div id="businessEmptyPlanTitle" class="business-empty-plan-title">
-                    Add your floor plan
+                    Explore this Professional Assessment Demo
                   </div>
 
                   <div class="business-empty-plan-subtitle">
-                    Upload a floor plan or take a photo to begin your Business Assessment.
+                    Explore how a professional EMF assessment works using example data.
                   </div>
 
                   <div class="business-empty-plan-actions">
 
                     <button class="business-empty-plan-btn primary" type="button"
                       onclick="document.getElementById('btnUploadPlan')?.click()">
-                      📁 Upload Floor Plan
+                      🔒 Upload Floor Plan
                     </button>
 
                     <button class="business-empty-plan-btn secondary" type="button"
                       onclick="document.getElementById('btnTakePhoto')?.click()">
-                      📷 Take a Photo
+                      🔒 Take a Photo
                     </button>
 
+                  </div>
+
+                  <div style="
+            margin-top:14px;
+            font-size:12px;
+            color:#64748b;
+            text-align:center;
+        ">
+                    Available in a Professional Business Project.
                   </div>
 
                 </div>
@@ -27551,7 +27739,7 @@
 
           <h2 style="margin-top: 0;">Demo Feedback</h2>
 
-          <p class="mutedText">Please share your experience using EMF Maps Professional Demo.</p>
+          <p class="mutedText">Please share your experience using EMF Insights Professional Demo.</p>
 
           <form id="professionalDemoFeedbackForm">
 
@@ -27727,10 +27915,10 @@
 
             <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e5e7eb;">
 
-            <h3 style="margin: 0 0 6px;">About Home Projects</h3>
+            <h3 style="margin: 0 0 6px;">About Home Requests</h3>
 
             <div style="margin-top: 18px;">
-              <label><strong>How clear was the “Want to work with Home Projects?” section?</strong></label>
+              <label><strong>How clear was the “Want to join the Early Professional Network?” section?</strong></label>
               <select name="home_projects_clarity">
                 <option value="">Select one</option>
                 <option value="Very clear">Very clear</option>
@@ -27741,7 +27929,7 @@
             </div>
 
             <div style="margin-top: 18px;">
-              <label><strong>What would make the Home Projects section clearer?</strong></label>
+              <label><strong>What would make the Home Requests section clearer?</strong></label>
               <textarea name="home_projects_clarity_text" rows="3"
                 placeholder="Optional — tell us what was unclear or what you would change..."></textarea>
             </div>
@@ -27771,7 +27959,7 @@
             </div>
 
             <div style="margin-top: 14px;">
-              <label><strong>Would you use EMF Maps professionally?</strong></label>
+              <label><strong>Would you use EMF Insight professionally?</strong></label>
               <select name="professional_use">
                 <option value="">Select an option</option>
                 <option value="yes">Yes</option>
@@ -27781,7 +27969,7 @@
             </div>
 
             <div style="margin-top: 14px;">
-              <label><strong>How likely are you to recommend EMF Maps?</strong></label>
+              <label><strong>How likely are you to recommend EMF Insight?</strong></label>
               <select name="recommendation_score">
                 <option value="">Select score</option>
                 <option value="10">10</option>
@@ -27860,7 +28048,7 @@
 
       <script src="js/export.js"></script>
       <script src="js/business_results.js"></script>
-
+      <script src="js/business_demo.js"></script>
 
       <!-- ===================== -->
       <!-- 🔥 RENDER HELPERS -->
@@ -29999,7 +30187,7 @@
     floor.rooms.forEach(r => {
       (r.grid || []).forEach(p => {
         if (p.measurements?.[from]) {
-          p.measurements[to] = {...p.measurements[from]};
+          p.measurements[to] = { ...p.measurements[from] };
         }
       });
     });
@@ -32977,6 +33165,7 @@
     }
   }
 
+
   async function loadProfessionalAssessmentRequest() {
     const token = localStorage.getItem("token");
 
@@ -33062,7 +33251,7 @@
 
       if (availabilityEl) {
         availabilityEl.textContent =
-          "Checking professional availability...";
+          "Checking local professional network...";
 
         availabilityEl.className =
           "professional-assessment-availability";
@@ -33091,8 +33280,15 @@
 
       if (data.available) {
 
-        availabilityEl.textContent =
-          "✓ Professionals are currently available in this area. You can submit a request and we’ll help connect you with an available professional.";
+        availabilityEl.innerHTML = `
+    <strong>
+      ✓ Professionals are currently available in this area.
+    </strong>
+    <span>
+      You can submit a request to connect with an available professional.
+      Our professional network is growing, and availability may vary by location.
+    </span>
+  `;
 
         availabilityEl.className =
           "professional-assessment-availability available";
@@ -33100,12 +33296,15 @@
       } else {
 
         availabilityEl.innerHTML = `
-        <strong>⚠ No professionals currently listed</strong>
-        <span>
-            There are currently no EMF professionals listed in this area.
-            You can still submit a request.
-        </span>
-    `;
+    <strong>
+      Early Professional Network
+    </strong>
+    <span>
+      Our professional network is still growing in this area.
+      You can submit your request and we'll keep you informed
+      as local professional coverage develops.
+    </span>
+  `;
 
         availabilityEl.className =
           "professional-assessment-availability unavailable";
@@ -33119,8 +33318,16 @@
       );
 
       if (availabilityEl) {
-        availabilityEl.textContent =
-          "Professional availability could not be checked right now. You can still submit your request.";
+
+        availabilityEl.innerHTML = `
+    <strong>
+      We couldn't check local professional availability right now.
+    </strong>
+    <span>
+      You can still submit your request and we'll continue building
+      professional coverage in your area.
+    </span>
+  `;
 
         availabilityEl.className =
           "professional-assessment-availability error";
@@ -33159,6 +33366,10 @@
         "Professional Assessment Location modal not found."
       );
       return;
+    }
+
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
     }
 
     modal.style.display = "flex";
@@ -33475,12 +33686,12 @@
 
       if (title) {
         title.textContent =
-          "Find a Professional";
+          "Request a Professional Assessment";
       }
 
       if (subtitle) {
         subtitle.textContent =
-          "Request an on-site EMF assessment";
+          "Connect with a qualified EMF professional in your area";
       }
 
       if (icon) {
@@ -33500,7 +33711,39 @@
     button.style.display = "";
 
     button.onclick = function () {
-      scrollToUnlockReport();
+
+      const homeProjectId =
+        localStorage.getItem("home_project_id") ||
+        localStorage.getItem("homeProjectId");
+
+      if (!homeProjectId) {
+        console.error(
+          "HOME FULL REPORT: no home project ID available."
+        );
+
+        alert(
+          "Please open your Home Property before unlocking the Full EMF Insight Report."
+        );
+
+        return;
+      }
+
+      sessionStorage.setItem(
+        "professionalAssessmentReturnAfterUnlock",
+        "true"
+      );
+
+      localStorage.setItem(
+        "workspaceMode",
+        "home"
+      );
+
+      localStorage.setItem(
+        "home_project_id",
+        String(homeProjectId)
+      );
+
+      window.location.href = "index.html";
     };
 
     const title =
@@ -33904,9 +34147,107 @@
     // ==================================================
 
     if (window.homeFullReportUnlocked !== true) {
-      alert(
-        "Please unlock the Full EMF Insight Report before requesting a professional assessment."
-      );
+
+      const modal =
+        document.getElementById(
+          "professionalAssessmentResultModal"
+        );
+
+      const title =
+        document.getElementById(
+          "professionalAssessmentResultTitle"
+        );
+
+      const message =
+        document.getElementById(
+          "professionalAssessmentResultMessage"
+        );
+
+      const icon =
+        document.getElementById(
+          "professionalAssessmentResultIcon"
+        );
+
+      const actions =
+        modal?.querySelector(
+          ".professional-assessment-result-actions"
+        );
+
+      if (
+        modal &&
+        title &&
+        message &&
+        icon &&
+        actions
+      ) {
+
+        icon.textContent = "🔒";
+
+        title.textContent =
+          "Full Report Required";
+
+        message.innerHTML = `
+      <p>
+        Unlock the Full EMF Insight Report before requesting a professional assessment.
+      </p>
+      <p>
+        Your completed Home assessment provides the information needed for professional review.
+      </p>
+    `;
+
+        actions.innerHTML = `
+      <button
+        type="button"
+        class="secondary-btn"
+        onclick="closeProfessionalAssessmentResultModal();"
+      >
+        Cancel
+      </button>
+
+      <button
+  type="button"
+  class="primary-btn"
+  style="
+    min-width: 190px;
+    min-height: 44px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+  "
+  onclick="
+    sessionStorage.setItem(
+      'professionalAssessmentReturnAfterUnlock',
+      'true'
+    );
+
+    closeProfessionalAssessmentResultModal();
+    closeProfessionalAssessmentLocationModal();
+
+    scrollToUnlockReport();
+  "
+>
+  Unlock Full Report →
+</button>
+    `;
+
+        if (modal.parentElement !== document.body) {
+          document.body.appendChild(modal);
+        }
+
+        modal.style.display = "flex";
+
+        modal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+      } else {
+
+        alert(
+          "Please unlock the Full EMF Insight Report before requesting a professional assessment."
+        );
+      }
+
       return;
     }
 
@@ -34197,7 +34538,7 @@
     // 🔥 STARTUP WORKSPACE
     // ==================================================
 
-    const workspaceMode =
+    let workspaceMode =
       localStorage.getItem(
         "workspaceMode"
       ) || "home";
@@ -34225,37 +34566,23 @@
       );
 
     // ==================================================
-    // 🔥 LEGACY MIGRATION
+    // LEGACY PROJECT ID
     // ==================================================
     //
-    // Old projects used:
+    // `project_id` is a legacy key.
+    // It must NOT automatically become a Business
+    // project in the current two-workspace architecture.
     //
-    //     project_id
+    // Current workspace ownership is explicit:
     //
-    // That project belongs to Business.
+    //     home_project_id
+    //     business_project_id
     //
-    // IMPORTANT:
-    // Never use the legacy ID for Home.
+    // Existing legacy projects are handled only by
+    // explicit project-opening / migration flows.
     //
 
-    if (
-      legacyProjectId &&
-      !businessProjectId
-    ) {
 
-      businessProjectId =
-        legacyProjectId;
-
-      localStorage.setItem(
-        "business_project_id",
-        legacyProjectId
-      );
-
-      console.log(
-        "🔥 MIGRATED LEGACY PROJECT → BUSINESS:",
-        legacyProjectId
-      );
-    }
 
     // ==================================================
     // 🔥 SELECT PROJECT FOR CURRENT WORKSPACE
@@ -34804,31 +35131,208 @@
     updateProgressUI?.();
 
 
+
+    // ==================================================
+    // 🔥 LOAD ACCOUNT CONTEXT BEFORE WORKSPACE MODE
+    // ==================================================
+
+    try {
+
+      const token =
+        localStorage.getItem("token");
+
+      if (token) {
+
+        const meRes =
+          await fetch(
+            `${API}/me`,
+            {
+              headers: {
+                "Authorization":
+                  `Bearer ${token}`
+              }
+            }
+          );
+
+        if (meRes.ok) {
+
+          const me =
+            await meRes.json();
+
+          window.EMFProductContext.account.role =
+            me.role || null;
+
+          window.EMFProductContext.account.isAdmin =
+            me.is_admin === true;
+
+          window.EMFProductContext.entitlements.professionalDemo =
+            me.professional_demo_active === true;
+
+          window.isAdmin =
+            me.is_admin === true;
+
+          console.log(
+            "🔥 ACCOUNT CONTEXT READY BEFORE WORKSPACE:",
+            {
+              role:
+                window.EMFProductContext.account.role,
+              isAdmin:
+                window.EMFProductContext.account.isAdmin
+            }
+          );
+        }
+      }
+
+    } catch (error) {
+
+      console.error(
+        "❌ ACCOUNT CONTEXT INIT FAILED:",
+        error
+      );
+
+    }
+
+    // ==================================================
+    // PROFESSIONAL — RESTORE REAL BUSINESS PROJECT
+    // BEFORE STARTUP WORKSPACE
+    // ==================================================
+
+    if (
+      window.EMFProductContext?.account?.role ===
+      "professional" &&
+      workspaceMode === "business" &&
+      !localStorage.getItem("business_project_id")
+    ) {
+      try {
+        const res =
+          await fetch(
+            `${API}/projects/me`,
+            {
+              method: "GET",
+              cache: "no-store",
+              headers: getAuthHeaders()
+            }
+          );
+
+        if (res.ok) {
+          const response =
+            await res.json();
+
+          const projects =
+            Array.isArray(response)
+              ? response
+              : response.projects ||
+              response.data ||
+              [];
+
+          const businessProjects =
+            projects.filter(project => {
+              const type =
+                project?.type ||
+                project?.project_type ||
+                project?.projectType ||
+                project?.data?.type ||
+                project?.data?.project_type ||
+                project?.data?.projectType ||
+                "";
+
+              return (
+                String(type)
+                  .toLowerCase()
+                  .trim() === "business"
+              );
+            });
+
+          console.log(
+            "🔥 PROFESSIONAL BUSINESS PROJECTS FOUND",
+            {
+              count:
+                businessProjects.length,
+              projects:
+                businessProjects
+            }
+          );
+
+          if (businessProjects.length === 1) {
+            const project =
+              businessProjects[0];
+
+            const projectId =
+              project?.project_id ??
+              project?.id ??
+              null;
+
+            if (projectId) {
+              localStorage.setItem(
+                "business_project_id",
+                String(projectId)
+              );
+
+              console.log(
+                "🔥 PROFESSIONAL BUSINESS PROJECT RESTORED",
+                {
+                  projectId
+                }
+              );
+            }
+          }
+        }
+      } catch (error) {
+        console.error(
+          "❌ PROFESSIONAL BUSINESS PROJECT RESTORE FAILED:",
+          error
+        );
+      }
+    }
+
     // ==================================================
     // 🔥 APPLY STARTUP WORKSPACE MODE
     // ==================================================
+    if (
+      window.EMFProductContext?.account?.role ===
+      "professional"
+    ) {
+      workspaceMode = "business";
 
-    console.error(
-      "🔥🔥🔥 APPLY STARTUP MODE BEFORE PROJECT LOAD",
-      {
-        workspaceMode,
-        savedProjectId,
+      localStorage.setItem(
+        "workspaceMode",
+        "business"
+      );
 
-        homeProjectId,
-        businessProjectId
-      }
-    );
+      console.log(
+        "🔥 PROFESSIONAL STARTUP → BUSINESS",
+        {
+          workspaceMode,
+          businessProjectId:
+            localStorage.getItem(
+              "business_project_id"
+            )
+        }
+      );
+    }
+
 
     if (
       typeof setAppMode ===
       "function"
     ) {
 
+      console.log(
+        "🔥 BEFORE STARTUP SET APP MODE",
+        {
+          role:
+            window.EMFProductContext?.account?.role,
+          workspaceMode,
+          businessProjectId:
+            localStorage.getItem(
+              "business_project_id"
+            )
+        }
+      );
+
       await setAppMode(
         workspaceMode
       );
-
-
 
       if (
         workspaceMode ===
@@ -34882,6 +35386,24 @@
 
             window.homeFullReportUnlocked =
               me.home_full_report_unlocked === true;
+
+            if (
+              window.homeFullReportUnlocked === true &&
+              sessionStorage.getItem(
+                "professionalAssessmentReturnAfterUnlock"
+              ) === "true"
+            ) {
+              sessionStorage.removeItem(
+                "professionalAssessmentReturnAfterUnlock"
+              );
+
+              requestAnimationFrame(() => {
+                setTimeout(() => {
+                  openProfessionalAssessmentLocationModal();
+                }, 300);
+              });
+            }
+
 
             window.isAdmin =
               me.is_admin === true;
@@ -35095,7 +35617,7 @@
 
     <div style="margin-bottom:20px;padding:14px;border:1px solid #ddd;border-radius:8px;">
       <div style="font-weight:600;margin-bottom:5px;">
-        Want to work with Home Projects?
+        Want to work with Home Requests?
       </div>
       <div style="font-size:13px;color:#666;margin-bottom:10px;">
         Complete your professional profile, add your service areas and submit your profile for verification to become
@@ -35108,7 +35630,7 @@
       </div>
 
       <button type="button" id="professionalCompleteHomeProfileButton">
-        Complete Profile for Home Projects
+        Complete Profile for Home Requests
       </button>
 
       <button type="button" id="professionalRequestVerificationButton"
@@ -35512,47 +36034,7 @@
     }
   });
 </script>
-<script>
-  (function () {
-    if (!localStorage.getItem("professional_demo_activated")) return;
 
-    window.addEventListener("load", async function () {
-      if (!window.createProject) {
-        console.error("Professional Demo: createProject() not available");
-        return;
-      }
-
-      try {
-        console.log("Professional Demo: creating Business project...");
-
-        const projectId = await window.createProject({
-          type: "business",
-          name: "Professional Demo",
-          confirmed: true
-        });
-
-        if (!projectId) {
-          throw new Error("Business project was not created");
-        }
-
-        localStorage.removeItem("professional_demo_activated");
-
-        console.log(
-          "Professional Demo: Business project created",
-          projectId
-        );
-
-        window.location.reload();
-
-      } catch (error) {
-        console.error(
-          "Professional Demo: project creation failed",
-          error
-        );
-      }
-    });
-  })();
-</script>
 
 <script>
   window.addEventListener("load", function () {

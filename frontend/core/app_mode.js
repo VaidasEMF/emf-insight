@@ -7,7 +7,9 @@ window.AppMode = {
     current: "home"
 };
 
-
+window.WorkspaceAccess = {
+    mode: null
+};
 
 // =====================
 // 🔥 HELPERS
@@ -29,6 +31,263 @@ function isBusinessMode() {
         ===
         "business"
     );
+}
+
+function showWorkspaceAccessScreen(type) {
+
+    const screen =
+        document.getElementById("workspaceAccessScreen");
+
+    const eyebrow =
+        document.getElementById("workspaceAccessEyebrow");
+
+    const title =
+        document.getElementById("workspaceAccessTitle");
+
+    const text =
+        document.getElementById("workspaceAccessText");
+
+    const features =
+        document.getElementById("workspaceAccessFeatures");
+
+    const primary =
+        document.getElementById("workspaceAccessPrimary");
+
+    const secondary =
+        document.getElementById("workspaceAccessSecondary");
+
+    if (
+        !screen ||
+        !eyebrow ||
+        !title ||
+        !text ||
+        !features ||
+        !primary ||
+        !secondary
+    ) {
+        return;
+    }
+
+    /*
+     * ==========================================
+     * HOME USER → BUSINESS
+     * ==========================================
+     */
+
+    if (type === "business_demo") {
+
+        window.WorkspaceAccess.mode =
+            "business_demo";
+
+        eyebrow.textContent =
+            "BUSINESS SURVEY";
+
+        eyebrow.style.color =
+            "#2563eb";
+
+        title.textContent =
+            "Explore Professional EMF Assessment";
+
+        text.textContent =
+            "See how EMF Insight is used by professionals to assess buildings, work with measurements, analyze exposure and create professional reports.";
+
+        features.innerHTML = `
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#eff6ff;
+                color:#1e3a8a;
+                font-size:12px;
+                font-weight:650;
+            ">
+                🏢 Professional assessment workflow
+            </div>
+
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#eff6ff;
+                color:#1e3a8a;
+                font-size:12px;
+                font-weight:650;
+            ">
+                📐 Floors, rooms & zones
+            </div>
+
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#eff6ff;
+                color:#1e3a8a;
+                font-size:12px;
+                font-weight:650;
+            ">
+                📡 Professional measurements
+            </div>
+
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#eff6ff;
+                color:#1e3a8a;
+                font-size:12px;
+                font-weight:650;
+            ">
+                📊 Heatmaps & professional reports
+            </div>
+        `;
+
+        primary.textContent =
+            "Become a Professional";
+
+        primary.style.background =
+            "#2563eb";
+
+        primary.onclick =
+            function () {
+
+                window.location.href =
+                    "dashboard.html#billing";
+            };
+
+        secondary.textContent =
+            "Continue exploring";
+
+        secondary.onclick =
+            function () {
+
+                hideWorkspaceAccessScreen();
+            };
+
+        screen.style.display =
+            "flex";
+
+        return;
+    }
+
+    /*
+     * ==========================================
+     * PROFESSIONAL → HOME
+     * ==========================================
+     */
+
+    if (type === "home_demo") {
+
+        window.WorkspaceAccess.mode =
+            "home_demo";
+
+        eyebrow.textContent =
+            "HOME WELLNESS";
+
+        eyebrow.style.color =
+            "#15803d";
+
+        title.textContent =
+            "Explore Home Wellness";
+
+        text.textContent =
+            "See how EMF Insight helps people understand their home environment, identify EMF sources and build a Property Health Record.";
+
+        features.innerHTML = `
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#ecfdf5;
+                color:#166534;
+                font-size:12px;
+                font-weight:650;
+            ">
+                🏠 Property Health Record
+            </div>
+
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#ecfdf5;
+                color:#166534;
+                font-size:12px;
+                font-weight:650;
+            ">
+                🌿 Lifestyle Areas
+            </div>
+
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#ecfdf5;
+                color:#166534;
+                font-size:12px;
+                font-weight:650;
+            ">
+                📡 EMF Sources
+            </div>
+
+            <div style="
+                padding:12px 14px;
+                border-radius:10px;
+                background:#ecfdf5;
+                color:#166534;
+                font-size:12px;
+                font-weight:650;
+            ">
+                💡 Property Insights
+            </div>
+        `;
+
+        primary.textContent =
+            "Create My Home Property";
+
+        primary.style.background =
+            "#16a34a";
+
+        primary.onclick =
+            function () {
+
+                hideWorkspaceAccessScreen();
+
+                localStorage.removeItem(
+                    "workspaceAccessMode"
+                );
+
+                if (
+                    typeof window.createProject ===
+                    "function"
+                ) {
+                    window.createProject();
+                }
+            };
+
+        secondary.textContent =
+            "Continue exploring";
+
+        secondary.onclick =
+            function () {
+
+                hideWorkspaceAccessScreen();
+            };
+
+        screen.style.display =
+            "flex";
+
+        return;
+    }
+}
+
+
+function hideWorkspaceAccessScreen() {
+
+    const screen =
+        document.getElementById(
+            "workspaceAccessScreen"
+        );
+
+    if (screen) {
+        screen.style.display =
+            "none";
+    }
+
+    window.WorkspaceAccess.mode =
+        null;
 }
 
 // =====================================================
@@ -60,6 +319,36 @@ async function setAppMode(
     mode
 ) {
 
+    console.log(
+        "🔥 SET APP MODE START",
+        {
+            requestedMode: mode,
+            currentMode: window.AppMode?.current,
+            workspaceMode:
+                localStorage.getItem("workspaceMode"),
+            experience:
+                resolveWorkspaceExperience(mode)
+        }
+    );
+
+    const experience =
+        resolveWorkspaceExperience(mode);
+
+    AppState.workspaceExperience =
+        experience;
+
+    window.EMFWorkspaceExperience =
+        experience;
+
+    console.log(
+        "[WORKSPACE EXPERIENCE]",
+        {
+            role:
+                window.EMFProductContext?.account?.role,
+            workspace: mode,
+            experience
+        }
+    );
     console.log(
         "================================="
     );
@@ -128,37 +417,19 @@ async function setAppMode(
     );
 
 
-    // ==================================================
+    // ========================
     // SAVE PREVIOUS BUSINESS PROJECT ID
-    // ==================================================
-    //
-    // BUSINESS uses a persisted server project ID.
-    //
-    // HOME does NOT automatically persist
-    // AppState.project.id as home_project_id.
-    //
-    // ==================================================
+    // ========================
 
     if (
         previousProjectId &&
-        previousMode === "business"
+        previousMode === "business" &&
+        previousProject?.isDemo !== true &&
+        previousProjectId !== "demo-business-assessment"
     ) {
-
         localStorage.setItem(
             "business_project_id",
-            String(
-                previousProjectId
-            )
-        );
-
-        console.error(
-            "🔥 BUSINESS PROJECT ID PERSISTED",
-            {
-                businessProjectId:
-                    String(
-                        previousProjectId
-                    )
-            }
+            String(previousProjectId)
         );
     }
 
@@ -175,6 +446,45 @@ async function setAppMode(
         mode
     );
 
+    // ==================================================
+    // HOME — HIDE BUSINESS DEMO
+    // ==================================================
+
+    if (
+        mode === "home" &&
+        typeof window.hideBusinessDemoWorkspace === "function"
+    ) {
+        window.hideBusinessDemoWorkspace();
+    }
+    // ==================================================
+    // BUSINESS DEMO — EARLY EXIT
+    // ==================================================
+
+    if (
+        mode === "business" &&
+        experience.mode === "demo" &&
+        experience.demoType === "business"
+    ) {
+        console.log(
+            "🏢 BUSINESS DEMO MODE — EARLY",
+            {
+                role:
+                    window.EMFProductContext
+                        ?.account
+                        ?.role,
+                experience
+            }
+        );
+
+        AppState.project = null;
+        window.project = null;
+
+
+
+        await window.loadBusinessDemoExperience?.();
+
+        return;
+    }
 
     // ==================================================
     // TARGET BUSINESS PROJECT ID
@@ -182,10 +492,11 @@ async function setAppMode(
 
     const targetProjectId =
         mode === "business"
-            ? localStorage.getItem(
-                "business_project_id"
-            )
-            : null;
+            ? localStorage.getItem("business_project_id")
+            : (
+                localStorage.getItem("home_project_id") ||
+                localStorage.getItem("homeProjectId")
+            );
 
 
     console.error(
@@ -213,256 +524,212 @@ async function setAppMode(
         mode === "home"
     ) {
 
-        // ------------------------------------------------
-        // IMPORTANT
-        // ------------------------------------------------
-        //
-        // DO NOT call initializeProjects() here.
-        //
-        // If AppState.homeProject does not exist,
-        // Home simply has NO ACTIVE PROJECT.
-        //
-        // New Project is responsible for creating one.
-        //
-        // ------------------------------------------------
-
-        const homeProject =
-            AppState.homeProject ||
-            null;
-
+        // ==================================================
+        // HOME
+        // ==================================================
 
         if (
-            homeProject
+            mode === "home"
         ) {
 
-            activeProject =
-                homeProject;
-
-
-            // --------------------------------------------
-            // HOME PROJECT SAFETY
-            // --------------------------------------------
+            // ================================
+            // PROFESSIONAL → HOME DEMO
+            // ================================
 
             if (
-                !Array.isArray(
-                    homeProject.floors
-                )
+                experience.mode === "demo" &&
+                experience.demoType === "home"
             ) {
-
-                homeProject.floors =
-                    [];
-            }
-
-
-            homeProject.propertyId =
-                AppState.property?.id ||
-                null;
-
-
-            homeProject.assessmentId =
-                AppState.propertyAssessment
-                    ?.id ||
-                homeProject.assessmentId ||
-                null;
-
-
-            // --------------------------------------------
-            // HOME FLOOR
-            // --------------------------------------------
-
-            if (
-                homeProject.floors.length > 0
-            ) {
-
-                if (
-                    homeProject.currentFloorIndex ===
-                    undefined ||
-                    homeProject.currentFloorIndex ===
-                    null ||
-                    homeProject.currentFloorIndex < 0 ||
-                    homeProject.currentFloorIndex >=
-                    homeProject.floors.length
-                ) {
-
-                    homeProject.currentFloorIndex =
-                        0;
-                }
-            }
-
-
-            // --------------------------------------------
-            // HOME ACTIVE
-            // --------------------------------------------
-
-            AppState.project =
-                homeProject;
-
-            window.project =
-                homeProject;
-
-            currentProjectId =
-                null;
-
-
-            console.error(
-                "🔥 HOME WORKSPACE ACTIVE",
-                {
-                    assessmentId:
-                        homeProject
-                            ?.assessmentId,
-
-                    floors:
-                        homeProject
-                            ?.floors
-                            ?.length ||
-                        0
-                }
-            );
-        }
-
-        else {
-
-            // --------------------------------------------
-            // NO HOME PROJECT
-            // --------------------------------------------
-
-            activeProject =
-                null;
-
-            AppState.project =
-                null;
-
-            window.project =
-                null;
-
-            currentProjectId =
-                null;
-
-
-            console.error(
-                "🔥 HOME HAS NO ACTIVE PROJECT"
-            );
-        }
-    }
-
-    // ==================================================
-    // WORKSPACE MENU ACTIVE STATE
-    // ==================================================
-
-    const businessItem =
-        document.getElementById(
-            "workspaceBusinessItem"
-        );
-
-    const homeItem =
-        document.getElementById(
-            "workspaceHomeItem"
-        );
-
-    const businessCheck =
-        document.getElementById(
-            "workspaceBusinessCheck"
-        );
-
-    const homeCheck =
-        document.getElementById(
-            "workspaceHomeCheck"
-        );
-
-
-    const isHome =
-        window.AppMode?.current === "home";
-
-
-    if (businessItem) {
-
-        businessItem.classList.toggle(
-            "workspace-menu-item-active",
-            !isHome
-        );
-    }
-
-
-    if (homeItem) {
-
-        homeItem.classList.toggle(
-            "workspace-menu-item-active",
-            isHome
-        );
-    }
-
-
-    if (businessCheck) {
-        businessCheck.style.display =
-            "none";
-    }
-
-    if (homeCheck) {
-        homeCheck.style.display =
-            "none";
-    }
-
-    if (isHome) {
-        if (homeCheck) {
-            homeCheck.style.display =
-                "inline-flex";
-        }
-    } else {
-        if (businessCheck) {
-            businessCheck.style.display =
-                "inline-flex";
-        }
-    }
-
-
-    // ==================================================
-    // BUSINESS
-    // ==================================================
-
-    if (
-        mode === "business"
-    ) {
-
-        // ------------------------------------------------
-        // EXISTING PERSISTED BUSINESS PROJECT
-        // ------------------------------------------------
-
-        if (
-            targetProjectId
-        ) {
-
-            console.error(
-                "🔥 LOADING BUSINESS PROJECT",
-                {
-                    projectId:
-                        targetProjectId
-                }
-            );
-
-
-            currentProjectId =
-                String(
-                    targetProjectId
-                );
-
-
-            const loaded =
-                await window.loadProject(
-                    targetProjectId
-                );
-
-
-            if (
-                !loaded
-            ) {
-
-                console.error(
-                    "❌ BUSINESS PROJECT LOAD FAILED",
+                console.log(
+                    "🏠 HOME DEMO MODE",
                     {
-                        targetProjectId
+                        role:
+                            window.EMFProductContext
+                                ?.account
+                                ?.role,
+                        experience
                     }
                 );
 
+                // IMPORTANT:
+                // Demo must never create or load
+                // a real Home project.
+                AppState.project = null;
+                window.project = null;
+
+                currentProjectId = null;
+                activeProject = null;
+
+                await window.loadHomeDemoExperience?.();
+
+                return;
+            }
+
+            // ------------------------------------------------
+            // IMPORTANT
+            // ------------------------------------------------
+            //
+            // DO NOT call initializeProjects() here.
+            //
+            // If AppState.homeProject does not exist,
+            // Home simply has NO ACTIVE PROJECT.
+            //
+            // New Project is responsible for creating one.
+            //
+            // ------------------------------------------------
+
+            let homeProject =
+                AppState.homeProject ||
+                null;
+
+
+            // ------------------------------------------------
+            // RESTORE PERSISTED HOME PROJECT
+            // ------------------------------------------------
+
+            if (
+                !homeProject &&
+                targetProjectId
+            ) {
+
+                console.error(
+                    "🔥 LOADING HOME PROJECT",
+                    {
+                        projectId:
+                            targetProjectId
+                    }
+                );
+
+                currentProjectId =
+                    String(
+                        targetProjectId
+                    );
+
+                const loaded =
+                    await window.loadProject(
+                        targetProjectId
+                    );
+
+                if (
+                    loaded
+                ) {
+
+                    homeProject =
+                        AppState.homeProject ||
+                        null;
+
+                    activeProject =
+                        homeProject;
+
+                } else {
+
+                    console.error(
+                        "❌ HOME PROJECT LOAD FAILED",
+                        {
+                            targetProjectId
+                        }
+                    );
+                }
+            }
+
+
+            if (
+                homeProject
+            ) {
+
+                activeProject =
+                    homeProject;
+
+
+                // --------------------------------------------
+                // HOME PROJECT SAFETY
+                // --------------------------------------------
+
+                if (
+                    !Array.isArray(
+                        homeProject.floors
+                    )
+                ) {
+
+                    homeProject.floors =
+                        [];
+                }
+
+
+                homeProject.propertyId =
+                    AppState.property?.id ||
+                    null;
+
+
+                homeProject.assessmentId =
+                    AppState.propertyAssessment
+                        ?.id ||
+                    homeProject.assessmentId ||
+                    null;
+
+
+                // --------------------------------------------
+                // HOME FLOOR
+                // --------------------------------------------
+
+                if (
+                    homeProject.floors.length > 0
+                ) {
+
+                    if (
+                        homeProject.currentFloorIndex ===
+                        undefined ||
+                        homeProject.currentFloorIndex ===
+                        null ||
+                        homeProject.currentFloorIndex < 0 ||
+                        homeProject.currentFloorIndex >=
+                        homeProject.floors.length
+                    ) {
+
+                        homeProject.currentFloorIndex =
+                            0;
+                    }
+                }
+
+
+                // --------------------------------------------
+                // HOME ACTIVE
+                // --------------------------------------------
+
+                AppState.project =
+                    homeProject;
+
+                window.project =
+                    homeProject;
+
+                currentProjectId =
+                    null;
+
+
+                console.error(
+                    "🔥 HOME WORKSPACE ACTIVE",
+                    {
+                        assessmentId:
+                            homeProject
+                                ?.assessmentId,
+
+                        floors:
+                            homeProject
+                                ?.floors
+                                ?.length ||
+                            0
+                    }
+                );
+            }
+
+            else {
+
+                // --------------------------------------------
+                // NO HOME PROJECT
+                // --------------------------------------------
+
+                activeProject =
+                    null;
 
                 AppState.project =
                     null;
@@ -473,225 +740,718 @@ async function setAppMode(
                 currentProjectId =
                     null;
 
-                activeProject =
-                    null;
-            }
-
-            else {
 
                 console.error(
-                    "🔥 BUSINESS STATE AFTER LOAD",
+                    "🔥 HOME HAS NO ACTIVE PROJECT"
+                );
+            }
+        }
+
+        // ==================================================
+        // WORKSPACE MENU ACTIVE STATE
+        // ==================================================
+
+        const businessItem =
+            document.getElementById(
+                "workspaceBusinessItem"
+            );
+
+        const homeItem =
+            document.getElementById(
+                "workspaceHomeItem"
+            );
+
+        const businessCheck =
+            document.getElementById(
+                "workspaceBusinessCheck"
+            );
+
+        const homeCheck =
+            document.getElementById(
+                "workspaceHomeCheck"
+            );
+
+
+        const isHome =
+            window.AppMode?.current === "home";
+
+
+        if (businessItem) {
+
+            businessItem.classList.toggle(
+                "workspace-menu-item-active",
+                !isHome
+            );
+        }
+
+
+        if (homeItem) {
+
+            homeItem.classList.toggle(
+                "workspace-menu-item-active",
+                isHome
+            );
+        }
+
+
+        if (businessCheck) {
+            businessCheck.style.display =
+                "none";
+        }
+
+        if (homeCheck) {
+            homeCheck.style.display =
+                "none";
+        }
+
+        if (isHome) {
+            if (homeCheck) {
+                homeCheck.style.display =
+                    "inline-flex";
+            }
+        } else {
+            if (businessCheck) {
+                businessCheck.style.display =
+                    "inline-flex";
+            }
+        }
+
+
+        // ==================================================
+        // BUSINESS
+        // ==================================================
+        // ==================================================
+        // BUSINESS
+        // ==================================================
+
+        if (
+            mode === "business"
+        ) {
+
+            // ==================================================
+            // RESET HOME WORKSPACE CONTEXT
+            // ==================================================
+
+            window.EMFHomeDemo = false;
+
+            // Business is now the active workspace
+            window.AppMode.current = "business";
+
+            window.WorkspaceAccess =
+                window.WorkspaceAccess || {};
+
+            window.WorkspaceAccess.mode =
+                "business";
+
+
+            // ==================================================
+            // HOME USER → BUSINESS DEMO
+            // ==================================================
+
+            if (
+                experience.mode === "demo" &&
+                experience.demoType === "business"
+            ) {
+
+                console.log(
+                    "🏢 HOME USER → BUSINESS DEMO",
                     {
-                        businessProjectId:
-                            AppState.businessProject?.id ??
-                            AppState.businessProject?.project_id ??
-                            null,
+                        role:
+                            window.EMFProductContext
+                                ?.account
+                                ?.role,
 
-                        businessProjectType:
-                            AppState.businessProject?.type ??
-                            null,
-
-                        stateProjectId:
-                            AppState.project?.id ??
-                            AppState.project?.project_id ??
-                            null,
-
-                        stateProjectType:
-                            AppState.project?.type ??
-                            null
+                        experience
                     }
                 );
 
+
+                // Remove Home project from active state
+                AppState.project = null;
+                window.project = null;
+
+                currentProjectId = null;
+                activeProject = null;
+
+
+                // IMPORTANT:
+                // Business demo owns the workspace now.
+                window.EMFBusinessDemo = true;
+
+                window.WorkspaceAccess.mode =
+                    "business_demo";
+
+
+                await window.loadBusinessDemoExperience?.();
+
+                return;
+            }
+
+
+            // ------------------------------------------------
+            // EXISTING PERSISTED BUSINESS PROJECT
+            // ------------------------------------------------
+
+            if (
+                targetProjectId
+            ) {
+
+                console.error(
+                    "🔥 LOADING BUSINESS PROJECT",
+                    {
+                        projectId:
+                            targetProjectId
+                    }
+                );
+
+
+                currentProjectId =
+                    String(
+                        targetProjectId
+                    );
+
+
+                const loaded =
+                    await window.loadProject(
+                        targetProjectId
+                    );
+
+
+                if (
+                    !loaded
+                ) {
+
+                    console.error(
+                        "❌ BUSINESS PROJECT LOAD FAILED",
+                        {
+                            targetProjectId
+                        }
+                    );
+
+
+                    AppState.project =
+                        null;
+
+                    window.project =
+                        null;
+
+                    currentProjectId =
+                        null;
+
+                    activeProject =
+                        null;
+                }
+
+                else {
+
+                    console.error(
+                        "🔥 BUSINESS STATE AFTER LOAD",
+                        {
+                            businessProjectId:
+                                AppState.businessProject?.id ??
+                                AppState.businessProject?.project_id ??
+                                null,
+
+                            businessProjectType:
+                                AppState.businessProject?.type ??
+                                null,
+
+                            stateProjectId:
+                                AppState.project?.id ??
+                                AppState.project?.project_id ??
+                                null,
+
+                            stateProjectType:
+                                AppState.project?.type ??
+                                null
+                        }
+                    );
+
+                    activeProject =
+                        AppState.businessProject ||
+                        null;
+                }
+            }
+
+
+            // ------------------------------------------------
+            // BUSINESS PROJECT ALREADY CREATED IN MEMORY
+            // ------------------------------------------------
+            //
+            // This is the New Project path.
+            //
+            // New Project creates AppState.businessProject
+            // and then switches to Business.
+            //
+            // ------------------------------------------------
+
+            else if (
+                AppState.businessProject
+            ) {
+
                 activeProject =
-                    AppState.businessProject ||
+                    AppState.businessProject;
+
+
+                AppState.project =
+                    activeProject;
+
+                window.project =
+                    activeProject;
+
+
+                currentProjectId =
+                    activeProject
+                        ?.project_id ??
+                    activeProject
+                        ?.id ??
                     null;
+
+
+                console.error(
+                    "🔥 NEW BUSINESS PROJECT ACTIVE",
+                    {
+                        projectId:
+                            currentProjectId,
+
+                        floors:
+                            activeProject
+                                ?.floors
+                                ?.length ||
+                            0
+                    }
+                );
+            }
+
+
+            // ------------------------------------------------
+            // NO BUSINESS PROJECT
+            // ------------------------------------------------
+
+            else {
+
+                // --------------------------------------------
+                // IMPORTANT:
+                //
+                // DO NOT create a Business project here.
+                //
+                // New Project creates it.
+                // Open Project loads it.
+                //
+                // --------------------------------------------
+
+                activeProject =
+                    null;
+
+                AppState.project =
+                    null;
+
+                window.project =
+                    null;
+
+                currentProjectId =
+                    null;
+
+
+                console.error(
+                    "🔥 BUSINESS HAS NO ACTIVE PROJECT"
+                );
             }
         }
 
 
-        // ------------------------------------------------
-        // BUSINESS PROJECT ALREADY CREATED IN MEMORY
-        // ------------------------------------------------
-        //
-        // This is the New Project path.
-        //
-        // New Project creates AppState.businessProject
-        // and then switches to Business.
-        //
-        // ------------------------------------------------
+        // ==================================================
+        // RESET TRANSIENT UI
+        // ==================================================
 
-        else if (
-            AppState.businessProject
+        if (
+            AppState.ui
         ) {
 
-            activeProject =
-                AppState.businessProject;
+            AppState.ui.mode =
+                "idle";
 
-
-            AppState.project =
-                activeProject;
-
-            window.project =
-                activeProject;
-
-
-            currentProjectId =
-                activeProject
-                    ?.project_id ??
-                activeProject
-                    ?.id ??
+            AppState.ui.selectedRoom =
                 null;
+
+            AppState.ui.selectedZone =
+                null;
+
+            AppState.ui.selectedSource =
+                null;
+
+            AppState.ui.roomDraft =
+                null;
+
+            AppState.ui.zoneDraft =
+                null;
+        }
+
+
+        window.hoveredRoom =
+            null;
+
+        window.activeRoom =
+            null;
+
+        window.selectedSource =
+            null;
+
+        window.draggingSource =
+            null;
+
+        window.selectedGridPoint =
+            null;
+
+        window.roomDrawing =
+            false;
+
+        window.gridPreview =
+            null;
+
+        window.measurePreview =
+            null;
+
+
+        // ==================================================
+        // RESET SCALE TOOL
+        // ==================================================
+
+        window.scaleTool =
+            window.scaleTool ||
+            {};
+
+        window.scaleTool.active =
+            false;
+
+        window.scaleTool.points =
+            [];
+
+        window.scaleTool.calibrated =
+            false;
+
+        window.scaleTool.metersPerPixel =
+            0;
+
+
+        // ==================================================
+        // NO ACTIVE PROJECT
+        // ==================================================
+        //
+        // This is now a valid application state.
+        //
+        // The user sees:
+        //
+        //     New Project
+        //     Open Project
+        //
+        // and NOT:
+        //
+        //     Main Floor
+        //     Plan
+        //     Upload Floor Plan
+        //     Lifestyle Areas
+        //
+        // ==================================================
+
+        if (
+            !activeProject
+        ) {
+
+            window.planImage =
+                null;
+
+            if (
+                typeof planImage !==
+                "undefined"
+            ) {
+
+                planImage =
+                    null;
+            }
+
+
+            // ----------------------------------------------
+            // FLOOR TABS
+            // ----------------------------------------------
+
+            const homeFloorTabs =
+                document.getElementById(
+                    "homeFloorTabs"
+                );
+
+            const businessFloorTabs =
+                document.getElementById(
+                    "businessFloorTabs"
+                );
+
+
+            if (
+                homeFloorTabs
+            ) {
+
+                homeFloorTabs.innerHTML =
+                    "";
+
+                homeFloorTabs.style.display =
+                    "none";
+            }
+
+
+            if (
+                businessFloorTabs
+            ) {
+
+                businessFloorTabs.innerHTML =
+                    "";
+
+                businessFloorTabs.style.display =
+                    "none";
+            }
+
+
+            // ----------------------------------------------
+            // CURRENT FLOOR CARD
+            // ----------------------------------------------
+
+            const homeCurrentFloorCard =
+                document.getElementById(
+                    "homeCurrentFloorCard"
+                );
+
+
+            if (
+                homeCurrentFloorCard
+            ) {
+
+                homeCurrentFloorCard.innerHTML =
+                    "";
+
+                homeCurrentFloorCard.style.display =
+                    "none";
+            }
+
+
+            // ----------------------------------------------
+            // HOME EMPTY PLAN
+            // ----------------------------------------------
+
+            const homeEmptyPlanState =
+                document.getElementById(
+                    "homeEmptyPlanState"
+                );
+
+
+            if (
+                homeEmptyPlanState
+            ) {
+
+                homeEmptyPlanState.style.display =
+                    "none";
+            }
+
+
+            // ----------------------------------------------
+            // HOME PLAN ACTIONS
+            // ----------------------------------------------
+
+            const homePlanActions =
+                document.getElementById(
+                    "homePlanActions"
+                );
+
+
+            if (
+                homePlanActions
+            ) {
+
+                homePlanActions.style.display =
+                    "none";
+            }
+
+
+            // ----------------------------------------------
+            // BUSINESS PLAN ACTIONS
+            // ----------------------------------------------
+
+            const businessPlanActions =
+                document.getElementById(
+                    "businessPlanActions"
+                );
+
+
+            if (
+                businessPlanActions
+            ) {
+
+                businessPlanActions.style.display =
+                    "none";
+            }
+
+
+            // ----------------------------------------------
+            // BUSINESS PROJECT TOGGLES
+            // ----------------------------------------------
+
+            const businessProjectToggles =
+                document.getElementById(
+                    "businessProjectToggles"
+                );
+
+
+            if (
+                businessProjectToggles
+            ) {
+
+                businessProjectToggles.style.display =
+                    "none";
+            }
+
+
+            // ----------------------------------------------
+            // ROOM PROGRESS
+            // ----------------------------------------------
+
+            const roomProgressTop =
+                document.getElementById(
+                    "roomProgressTop"
+                );
+
+
+            if (
+                roomProgressTop
+            ) {
+
+                roomProgressTop.innerHTML =
+                    "";
+
+                roomProgressTop.style.display =
+                    "none";
+            }
+
+
+            // ----------------------------------------------
+            // GENERAL UI
+            // ----------------------------------------------
+
+            updateWorkspaceUI?.();
+            updateHomeWorkflow?.();
+            updateHomeLocks?.();
+            updateHomeEmptyPlanState?.();
+            updateHomeProfessionalAssessment?.();
+            updateProjectHeader?.();
+            updateWorkflowUI?.();
+            updateCurrentExposure?.();
+
+            updateEMFProductContext?.();
+
+
+            // ----------------------------------------------
+            // RENDER
+            // ----------------------------------------------
+
+            requestRender?.();
 
 
             console.error(
-                "🔥 NEW BUSINESS PROJECT ACTIVE",
+                "🔥 NO ACTIVE PROJECT UI READY",
                 {
-                    projectId:
-                        currentProjectId,
+                    mode
+                }
+            );
 
+
+            console.log(
+                "🔥 MODE SWITCH COMPLETE",
+                {
+                    mode,
+                    projectId:
+                        null,
+                    projectType:
+                        null,
                     floors:
-                        activeProject
-                            ?.floors
-                            ?.length ||
                         0
                 }
             );
+
+
+            console.log(
+                "================================="
+            );
+
+            return;
         }
 
 
-        // ------------------------------------------------
-        // NO BUSINESS PROJECT
-        // ------------------------------------------------
+        // ==================================================
+        // ACTIVE PROJECT SAFETY
+        // ==================================================
+
+        const project =
+            activeProject;
+
+
+        AppState.project =
+            project;
+
+        window.project =
+            project;
+
+
+        // ==================================================
+        // CURRENT FLOOR
+        // ==================================================
+
+        if (
+            !Array.isArray(
+                project?.floors
+            )
+        ) {
+
+            project.floors =
+                [];
+        }
+
+
+        if (
+            project.floors.length > 0
+        ) {
+
+            if (
+                project.currentFloorIndex ===
+                undefined ||
+                project.currentFloorIndex ===
+                null ||
+                project.currentFloorIndex < 0 ||
+                project.currentFloorIndex >=
+                project.floors.length
+            ) {
+
+                project.currentFloorIndex =
+                    0;
+            }
+        }
 
         else {
 
-            // --------------------------------------------
-            // IMPORTANT:
-            //
-            // DO NOT create a Business project here.
-            //
-            // New Project creates it.
-            // Open Project loads it.
-            //
-            // --------------------------------------------
-
-            activeProject =
-                null;
-
-            AppState.project =
-                null;
-
-            window.project =
-                null;
-
-            currentProjectId =
-                null;
-
-
-            console.error(
-                "🔥 BUSINESS HAS NO ACTIVE PROJECT"
-            );
+            project.currentFloorIndex =
+                0;
         }
-    }
 
 
-    // ==================================================
-    // RESET TRANSIENT UI
-    // ==================================================
-
-    if (
-        AppState.ui
-    ) {
-
-        AppState.ui.mode =
-            "idle";
-
-        AppState.ui.selectedRoom =
-            null;
-
-        AppState.ui.selectedZone =
-            null;
-
-        AppState.ui.selectedSource =
-            null;
-
-        AppState.ui.roomDraft =
-            null;
-
-        AppState.ui.zoneDraft =
-            null;
-    }
+        const activeFloor =
+            getCurrentFloor?.();
 
 
-    window.hoveredRoom =
-        null;
-
-    window.activeRoom =
-        null;
-
-    window.selectedSource =
-        null;
-
-    window.draggingSource =
-        null;
-
-    window.selectedGridPoint =
-        null;
-
-    window.roomDrawing =
-        false;
-
-    window.gridPreview =
-        null;
-
-    window.measurePreview =
-        null;
-
-
-    // ==================================================
-    // RESET SCALE TOOL
-    // ==================================================
-
-    window.scaleTool =
-        window.scaleTool ||
-        {};
-
-    window.scaleTool.active =
-        false;
-
-    window.scaleTool.points =
-        [];
-
-    window.scaleTool.calibrated =
-        false;
-
-    window.scaleTool.metersPerPixel =
-        0;
-
-
-    // ==================================================
-    // NO ACTIVE PROJECT
-    // ==================================================
-    //
-    // This is now a valid application state.
-    //
-    // The user sees:
-    //
-    //     New Project
-    //     Open Project
-    //
-    // and NOT:
-    //
-    //     Main Floor
-    //     Plan
-    //     Upload Floor Plan
-    //     Lifestyle Areas
-    //
-    // ==================================================
-
-    if (
-        !activeProject
-    ) {
+        // ==================================================
+        // RESET OLD PLAN IMAGE
+        // ==================================================
+        //
+        // Important when switching between projects/modes.
+        //
+        // loadFloorImage() restores the image if one exists.
+        //
+        // ==================================================
 
         window.planImage =
             null;
@@ -706,9 +1466,63 @@ async function setAppMode(
         }
 
 
-        // ----------------------------------------------
+        // ==================================================
+        // LOAD IMAGE
+        // ==================================================
+
+        if (
+            activeFloor
+        ) {
+
+            console.error(
+                "🔥 MODE SWITCH LOAD FLOOR IMAGE",
+                {
+                    mode,
+
+                    floorId:
+                        activeFloor.id,
+
+                    floorName:
+                        activeFloor.name,
+
+                    hasImage:
+                        !!activeFloor.image,
+
+                    hasImageData:
+                        !!activeFloor.imageData,
+
+                    imageFileName:
+                        activeFloor.imageFileName
+                }
+            );
+
+
+            loadFloorImage(
+                activeFloor
+            );
+
+
+            // ----------------------------------------------
+            // RESTORE SCALE
+            // ----------------------------------------------
+
+            if (
+                mode === "business"
+            ) {
+
+                window.scaleTool.calibrated =
+                    !!activeFloor.scaleConfirmed;
+
+                window.scaleTool.metersPerPixel =
+                    activeFloor.currentScale ||
+                    0;
+            }
+        }
+
+
+        // ==================================================
         // FLOOR TABS
-        // ----------------------------------------------
+        // ==================================================
 
         const homeFloorTabs =
             document.getElementById(
@@ -725,11 +1539,10 @@ async function setAppMode(
             homeFloorTabs
         ) {
 
-            homeFloorTabs.innerHTML =
-                "";
-
             homeFloorTabs.style.display =
-                "none";
+                mode === "home"
+                    ? "flex"
+                    : "none";
         }
 
 
@@ -737,96 +1550,16 @@ async function setAppMode(
             businessFloorTabs
         ) {
 
-            businessFloorTabs.innerHTML =
-                "";
-
             businessFloorTabs.style.display =
-                "none";
+                mode === "business"
+                    ? "flex"
+                    : "none";
         }
 
 
-        // ----------------------------------------------
-        // CURRENT FLOOR CARD
-        // ----------------------------------------------
-
-        const homeCurrentFloorCard =
-            document.getElementById(
-                "homeCurrentFloorCard"
-            );
-
-
-        if (
-            homeCurrentFloorCard
-        ) {
-
-            homeCurrentFloorCard.innerHTML =
-                "";
-
-            homeCurrentFloorCard.style.display =
-                "none";
-        }
-
-
-        // ----------------------------------------------
-        // HOME EMPTY PLAN
-        // ----------------------------------------------
-
-        const homeEmptyPlanState =
-            document.getElementById(
-                "homeEmptyPlanState"
-            );
-
-
-        if (
-            homeEmptyPlanState
-        ) {
-
-            homeEmptyPlanState.style.display =
-                "none";
-        }
-
-
-        // ----------------------------------------------
-        // HOME PLAN ACTIONS
-        // ----------------------------------------------
-
-        const homePlanActions =
-            document.getElementById(
-                "homePlanActions"
-            );
-
-
-        if (
-            homePlanActions
-        ) {
-
-            homePlanActions.style.display =
-                "none";
-        }
-
-
-        // ----------------------------------------------
-        // BUSINESS PLAN ACTIONS
-        // ----------------------------------------------
-
-        const businessPlanActions =
-            document.getElementById(
-                "businessPlanActions"
-            );
-
-
-        if (
-            businessPlanActions
-        ) {
-
-            businessPlanActions.style.display =
-                "none";
-        }
-
-
-        // ----------------------------------------------
-        // BUSINESS PROJECT TOGGLES
-        // ----------------------------------------------
+        // ==================================================
+        // BUSINESS TOGGLES
+        // ==================================================
 
         const businessProjectToggles =
             document.getElementById(
@@ -839,13 +1572,15 @@ async function setAppMode(
         ) {
 
             businessProjectToggles.style.display =
-                "none";
+                mode === "business"
+                    ? "flex"
+                    : "none";
         }
 
 
-        // ----------------------------------------------
-        // ROOM PROGRESS
-        // ----------------------------------------------
+        // ==================================================
+        // ROOM PANEL
+        // ==================================================
 
         const roomProgressTop =
             document.getElementById(
@@ -857,17 +1592,58 @@ async function setAppMode(
             roomProgressTop
         ) {
 
-            roomProgressTop.innerHTML =
-                "";
+            if (
+                mode === "business"
+            ) {
 
-            roomProgressTop.style.display =
-                "none";
+                roomProgressTop.style.display =
+                    "flex";
+            }
+
+            else {
+
+                roomProgressTop.innerHTML =
+                    "";
+
+                roomProgressTop.style.display =
+                    "none";
+            }
         }
 
 
-        // ----------------------------------------------
+        // ==================================================
+        // FLOOR UI
+        // ==================================================
+
+        if (
+            mode === "home"
+        ) {
+
+            renderHomeFloorTabs?.();
+
+        }
+
+        else {
+
+            renderBusinessFloorTabs?.();
+        }
+
+
+        renderFloorTabs?.();
+
+
+
+        if (homeCheck) {
+
+            homeCheck.style.display =
+                isHome
+                    ? "inline-flex"
+                    : "none";
+        }
+
+        // ==================================================
         // GENERAL UI
-        // ----------------------------------------------
+        // ==================================================
 
         updateWorkspaceUI?.();
         updateHomeWorkflow?.();
@@ -880,18 +1656,136 @@ async function setAppMode(
 
         updateEMFProductContext?.();
 
-
-        // ----------------------------------------------
+        // ==================================================
         // RENDER
-        // ----------------------------------------------
+        // ==================================================
 
         requestRender?.();
 
 
+        // ==================================================
+        // FINAL DEBUG
+        // ==================================================
+
         console.error(
-            "🔥 NO ACTIVE PROJECT UI READY",
+            "🔥 PROJECT MODE SWITCH COMPLETE",
             {
-                mode
+                mode,
+
+                projectId:
+                    project
+                        ?.project_id ??
+                    project
+                        ?.id ??
+                    null,
+
+                projectType:
+                    project
+                        ?.projectType ??
+                    project
+                        ?.type ??
+                    null,
+
+                floors:
+                    project
+                        ?.floors
+                        ?.length ||
+                    0,
+
+                currentFloorIndex:
+                    project
+                        ?.currentFloorIndex,
+
+                activeFloor:
+                    getCurrentFloor?.()
+                        ?.name,
+
+                activeFloorImage:
+                    !!getCurrentFloor?.()
+                        ?.image,
+
+                activeFloorImageData:
+                    !!getCurrentFloor?.()
+                        ?.imageData
+            }
+        );
+
+
+        requestAnimationFrame(
+            () => {
+
+                const floor =
+                    getCurrentFloor?.();
+
+
+                console.error(
+                    "🔥🔥 AFTER MODE SWITCH RENDER",
+                    {
+                        mode,
+
+                        projectId:
+                            AppState.project
+                                ?.project_id ??
+                            AppState.project
+                                ?.id ??
+                            null,
+
+                        projectType:
+                            AppState.project
+                                ?.projectType ??
+                            AppState.project
+                                ?.type ??
+                            null,
+
+                        floorIndex:
+                            AppState.project
+                                ?.currentFloorIndex,
+
+                        floorId:
+                            floor?.id,
+
+                        floorName:
+                            floor?.name,
+
+                        image:
+                            !!floor?.image,
+
+                        imageData:
+                            !!floor?.imageData,
+
+                        rooms:
+                            floor?.rooms?.length ||
+                            0,
+
+                        zones:
+                            floor?.zones?.length ||
+                            0,
+
+                        sources:
+                            floor?.sources?.length ||
+                            0,
+
+                        canvasWidth:
+                            window.canvas?.width,
+
+                        canvasHeight:
+                            window.canvas?.height,
+
+                        planImageWidth:
+                            window.planImage
+                                ?.naturalWidth ??
+                            window.planImage
+                                ?.width ??
+                            null,
+
+                        planImageHeight:
+                            window.planImage
+                                ?.naturalHeight ??
+                            window.planImage
+                                ?.height ??
+                            null
+                    }
+                );
             }
         );
 
@@ -900,12 +1794,30 @@ async function setAppMode(
             "🔥 MODE SWITCH COMPLETE",
             {
                 mode,
+
                 projectId:
+                    project
+                        ?.project_id ??
+                    project
+                        ?.id ??
                     null,
+
                 projectType:
+                    project
+                        ?.projectType ??
+                    project
+                        ?.type ??
                     null,
+
                 floors:
-                    0
+                    project
+                        ?.floors
+                        ?.length ||
+                    0,
+
+                currentFloorIndex:
+                    project
+                        ?.currentFloorIndex
             }
         );
 
@@ -913,447 +1825,1816 @@ async function setAppMode(
         console.log(
             "================================="
         );
-
-        return;
     }
 
 
-    // ==================================================
-    // ACTIVE PROJECT SAFETY
-    // ==================================================
+}
 
-    const project =
-        activeProject;
+// ============================================================
+// BUSINESS DEMO EXPERIENCE
+// Home user → Business workspace
+// Frontend-only. NEVER creates or loads a real project.
+// ============================================================
+async function loadBusinessDemoExperience() {
 
-
-    AppState.project =
-        project;
-
-    window.project =
-        project;
+    console.log("🏢 Loading Business Demo Experience");
 
 
-    // ==================================================
-    // CURRENT FLOOR
-    // ==================================================
+    // ========================================================
+    // DEMO PROJECT
+    // ========================================================
 
-    if (
-        !Array.isArray(
-            project?.floors
-        )
-    ) {
+    const demoProject = {
 
-        project.floors =
-            [];
-    }
+        id:
+            "demo-business-assessment",
 
+        project_id:
+            "demo-business-assessment",
 
-    if (
-        project.floors.length > 0
-    ) {
+        name:
+            "Demo Assessment · Example Office",
 
-        if (
-            project.currentFloorIndex ===
-            undefined ||
-            project.currentFloorIndex ===
-            null ||
-            project.currentFloorIndex < 0 ||
-            project.currentFloorIndex >=
-            project.floors.length
-        ) {
+        type:
+            "business",
 
-            project.currentFloorIndex =
-                0;
-        }
-    }
+        isDemo:
+            true,
 
-    else {
-
-        project.currentFloorIndex =
-            0;
-    }
+        demo:
+            true,
 
 
-    const activeFloor =
-        getCurrentFloor?.();
+        // ----------------------------------------------------
+        // FLOORS
+        // ----------------------------------------------------
 
+        floors: [
 
-    // ==================================================
-    // RESET OLD PLAN IMAGE
-    // ==================================================
-    //
-    // Important when switching between projects/modes.
-    //
-    // loadFloorImage() restores the image if one exists.
-    //
-    // ==================================================
-
-    window.planImage =
-        null;
-
-    if (
-        typeof planImage !==
-        "undefined"
-    ) {
-
-        planImage =
-            null;
-    }
-
-
-    // ==================================================
-    // LOAD IMAGE
-    // ==================================================
-
-    if (
-        activeFloor
-    ) {
-
-        console.error(
-            "🔥 MODE SWITCH LOAD FLOOR IMAGE",
             {
-                mode,
+                id:
+                    "demo-floor-1",
 
-                floorId:
-                    activeFloor.id,
+                name:
+                    "Main Floor",
+
+                rooms: [
+                    {
+                        id:
+                            "demo-room-1",
+
+                        code:
+                            "R01",
+
+                        name:
+                            "Office",
+
+                        type:
+                            "office",
+
+                        image:
+                            "/frontend/assets/demo/rooms/office.png",
+
+                        heatmap:
+                            "/frontend/assets/demo/heatmap/office_heatmap.png",
+
+                        area:
+                            28,
+
+                        coverage:
+                            82,
+
+                        risk:
+                            "medium",
+
+                        sources:
+                            3,
+
+                        recommendations:
+                            2,
+
+                        zones: [],
+                        measurements: [],
+                        gridPoints: []
+                    },
+
+
+                    {
+                        id:
+                            "demo-room-2",
+
+                        code:
+                            "R02",
+
+                        name:
+                            "Meeting Room",
+
+                        type:
+                            "meeting",
+
+                        image:
+                            "/frontend/assets/demo/rooms/meeting-room.png",
+
+                        heatmap:
+                            "/frontend/assets/demo/heatmap/meeting-room-heatmap.png",
+
+                        area:
+                            34,
+
+                        coverage:
+                            91,
+
+                        risk:
+                            "low",
+
+                        sources:
+                            2,
+
+                        recommendations:
+                            1,
+
+                        zones: [],
+                        measurements: [],
+                        gridPoints: []
+                    },
+
+
+                    {
+                        id:
+                            "demo-room-3",
+
+                        code:
+                            "R03",
+
+                        name:
+                            "Open Workspace",
+
+                        type:
+                            "workspace",
+
+                        image:
+                            "/frontend/assets/demo/rooms/open-workspace.png",
+
+                        heatmap:
+                            "/frontend/assets/demo/heatmap/open-workspace-heatmap.png",
+
+                        area:
+                            86,
+
+                        coverage:
+                            76,
+
+                        risk:
+                            "high",
+
+                        sources:
+                            4,
+
+                        recommendations:
+                            3,
+
+                        zones: [],
+                        measurements: [],
+                        gridPoints: []
+                    }
+                ],
+
+                zones: [],
+                sources: [],
+                measurements: [],
+                gridPoints: []
+            },
+
+
+            {
+                id:
+                    "demo-floor-2",
+
+                name:
+                    "Floor 2",
+
+                rooms: [
+
+                    {
+                        id:
+                            "demo-room-4",
+
+                        code:
+                            "R04",
+
+                        name:
+                            "Private Office",
+
+                        type:
+                            "office",
+
+                        image:
+                            "/frontend/assets/demo/rooms/private-office.png",
+
+                        heatmap:
+                            "/frontend/assets/demo/heatmap/private-office-heatmap.png",
+
+                        area:
+                            22,
+
+                        coverage:
+                            88,
+
+                        risk:
+                            "low",
+
+                        sources:
+                            2,
+
+                        recommendations:
+                            1,
+
+                        zones: [],
+                        measurements: [],
+                        gridPoints: []
+                    },
+
+
+                    {
+                        id:
+                            "demo-room-5",
+
+                        code:
+                            "R05",
+
+                        name:
+                            "Break Room",
+
+                        type:
+                            "rest",
+
+                        image:
+                            "/frontend/assets/demo/rooms/break-room.png",
+
+                        heatmap:
+                            "/frontend/assets/demo/heatmap/break-room-heatmap.png",
+
+                        area:
+                            19,
+
+                        coverage:
+                            73,
+
+                        risk:
+                            "medium",
+
+                        sources:
+                            3,
+
+                        recommendations:
+                            2,
+
+                        zones: [],
+                        measurements: [],
+                        gridPoints: []
+                    }
+                ],
+
+                zones: [],
+                sources: [],
+                measurements: [],
+                gridPoints: []
+            }
+        ],
+
+
+        // ----------------------------------------------------
+        // PROPERTY-LEVEL BUSINESS DATA
+        // ----------------------------------------------------
+
+        zones: [],
+
+        sources: [],
+
+        measurements: [],
+
+        gridPoints: [],
+
+        recommendations: []
+    };
+
+
+    // ========================================================
+    // DEMO ANALYSIS
+    // ========================================================
+
+    const demoAnalysis = {
+
+
+        // ----------------------------------------------------
+        // COVERAGE
+        // ----------------------------------------------------
+
+        coverage: {
+
+            measured_points:
+                124,
+
+            total_points:
+                156,
+
+            coverage:
+                79
+        },
+
+
+        // ----------------------------------------------------
+        // ROOM SUMMARY
+        // ----------------------------------------------------
+
+        room_summary: [
+
+            {
+                room_id:
+                    "demo-room-1",
+
+                room_name:
+                    "Office",
+
+                risk:
+                    "medium",
+
+                coverage:
+                    82
+            },
+
+
+            {
+                room_id:
+                    "demo-room-2",
+
+                room_name:
+                    "Meeting Room",
+
+                risk:
+                    "low",
+
+                coverage:
+                    91
+            },
+
+
+            {
+                room_id:
+                    "demo-room-3",
+
+                room_name:
+                    "Open Workspace",
+
+                risk:
+                    "high",
+
+                coverage:
+                    76
+            },
+
+
+            {
+                room_id:
+                    "demo-room-4",
+
+                room_name:
+                    "Private Office",
+
+                risk:
+                    "low",
+
+                coverage:
+                    88
+            },
+
+
+            {
+                room_id:
+                    "demo-room-5",
+
+                room_name:
+                    "Break Room",
+
+                risk:
+                    "medium",
+
+                coverage:
+                    73
+            }
+        ],
+
+
+        // ----------------------------------------------------
+        // FLOOR ANALYSIS
+        // ----------------------------------------------------
+
+        floors: [
+
+            {
+                id:
+                    "demo-floor-1",
+
+                name:
+                    "Main Floor",
 
                 floorName:
-                    activeFloor.name,
+                    "Main Floor",
 
-                hasImage:
-                    !!activeFloor.image,
+                rooms: [
 
-                hasImageData:
-                    !!activeFloor.imageData,
+                    {
+                        id:
+                            "demo-room-1",
 
-                imageFileName:
-                    activeFloor.imageFileName
+                        code:
+                            "R01",
+
+                        name:
+                            "Office",
+
+                        type:
+                            "office",
+
+                        area:
+                            28,
+
+                        risk:
+                            "medium",
+
+                        coverage:
+                            82,
+
+                        zones: [],
+                        sources: [],
+                        measurements: [],
+                        gridPoints: []
+                    },
+
+
+                    {
+                        id:
+                            "demo-room-2",
+
+                        code:
+                            "R02",
+
+                        name:
+                            "Meeting Room",
+
+                        type:
+                            "meeting",
+
+                        area:
+                            34,
+
+                        risk:
+                            "low",
+
+                        coverage:
+                            91,
+
+                        zones: [],
+                        sources: [],
+                        measurements: [],
+                        gridPoints: []
+                    },
+
+
+                    {
+                        id:
+                            "demo-room-3",
+
+                        code:
+                            "R03",
+
+                        name:
+                            "Open Workspace",
+
+                        type:
+                            "workspace",
+
+                        area:
+                            86,
+
+                        risk:
+                            "high",
+
+                        coverage:
+                            76,
+
+                        zones: [],
+                        sources: [],
+                        measurements: [],
+                        gridPoints: []
+                    }
+                ],
+
+                zones: [],
+                sources: [],
+                measurements: [],
+                gridPoints: []
+            },
+
+
+            {
+                id:
+                    "demo-floor-2",
+
+                name:
+                    "Floor 2",
+
+                floorName:
+                    "Floor 2",
+
+                rooms: [
+
+                    {
+                        id:
+                            "demo-room-4",
+
+                        code:
+                            "R04",
+
+                        name:
+                            "Private Office",
+
+                        type:
+                            "office",
+
+                        area:
+                            22,
+
+                        risk:
+                            "low",
+
+                        coverage:
+                            88,
+
+                        zones: [],
+                        sources: [],
+                        measurements: [],
+                        gridPoints: []
+                    },
+
+
+                    {
+                        id:
+                            "demo-room-5",
+
+                        code:
+                            "R05",
+
+                        name:
+                            "Break Room",
+
+                        type:
+                            "rest",
+
+                        area:
+                            19,
+
+                        risk:
+                            "medium",
+
+                        coverage:
+                            73,
+
+                        zones: [],
+                        sources: [],
+                        measurements: [],
+                        gridPoints: []
+                    }
+                ],
+
+                zones: [],
+                sources: [],
+                measurements: [],
+                gridPoints: []
             }
-        );
+        ],
 
 
-        loadFloorImage(
-            activeFloor
-        );
+        // ----------------------------------------------------
+        // BUSINESS SOURCES
+        // ----------------------------------------------------
+
+        sources: [
+
+            {
+                id:
+                    "demo-source-router",
+
+                name:
+                    "Wi-Fi Router",
+
+                type:
+                    "RF",
+
+                room:
+                    "Office",
+
+                room_id:
+                    "demo-room-1"
+            },
 
 
-        // ----------------------------------------------
-        // RESTORE SCALE
-        // ----------------------------------------------
+            {
+                id:
+                    "demo-source-access-point",
 
-        if (
-            mode === "business"
-        ) {
+                name:
+                    "Wireless Access Point",
 
-            window.scaleTool.calibrated =
-                !!activeFloor.scaleConfirmed;
+                type:
+                    "RF",
 
-            window.scaleTool.metersPerPixel =
-                activeFloor.currentScale ||
-                0;
+                room:
+                    "Open Workspace",
+
+                room_id:
+                    "demo-room-3"
+            },
+
+
+            {
+                id:
+                    "demo-source-server",
+
+                name:
+                    "Network Equipment",
+
+                type:
+                    "RF",
+
+                room:
+                    "Office",
+
+                room_id:
+                    "demo-room-1"
+            },
+
+
+            {
+                id:
+                    "demo-source-monitor",
+
+                name:
+                    "Large Display",
+
+                type:
+                    "RF",
+
+                room:
+                    "Meeting Room",
+
+                room_id:
+                    "demo-room-2"
+            },
+
+
+            {
+                id:
+                    "demo-source-laptop",
+
+                name:
+                    "Laptop Workstation",
+
+                type:
+                    "RF",
+
+                room:
+                    "Open Workspace",
+
+                room_id:
+                    "demo-room-3"
+            },
+
+
+            {
+                id:
+                    "demo-source-printer",
+
+                name:
+                    "Office Printer",
+
+                type:
+                    "RF",
+
+                room:
+                    "Private Office",
+
+                room_id:
+                    "demo-room-4"
+            },
+
+
+            {
+                id:
+                    "demo-source-router-2",
+
+                name:
+                    "Wireless Router",
+
+                type:
+                    "RF",
+
+                room:
+                    "Break Room",
+
+                room_id:
+                    "demo-room-5"
+            }
+        ],
+
+
+        // ----------------------------------------------------
+        // BUSINESS RECOMMENDATIONS
+        // ----------------------------------------------------
+
+        recommendations: [
+
+            {
+                id:
+                    "demo-rec-office",
+
+                category:
+                    "RF",
+
+                priority:
+                    "high",
+
+                title:
+                    "Review wireless equipment placement in the Office",
+
+                room_id:
+                    "demo-room-1"
+            },
+
+
+            {
+                id:
+                    "demo-rec-workspace",
+
+                category:
+                    "RF",
+
+                priority:
+                    "high",
+
+                title:
+                    "Review wireless source density in the Open Workspace",
+
+                room_id:
+                    "demo-room-3"
+            },
+
+
+            {
+                id:
+                    "demo-rec-meeting",
+
+                category:
+                    "RF",
+
+                priority:
+                    "medium",
+
+                title:
+                    "Review display and wireless equipment placement",
+
+                room_id:
+                    "demo-room-2"
+            },
+
+
+            {
+                id:
+                    "demo-rec-private",
+
+                category:
+                    "RF",
+
+                priority:
+                    "low",
+
+                title:
+                    "Review wireless device placement in the Private Office",
+
+                room_id:
+                    "demo-room-4"
+            },
+
+
+            {
+                id:
+                    "demo-rec-break",
+
+                category:
+                    "RF",
+
+                priority:
+                    "medium",
+
+                title:
+                    "Review wireless source placement in the Break Room",
+
+                room_id:
+                    "demo-room-5"
+            }
+        ],
+
+
+        // ----------------------------------------------------
+        // INSIGHTS
+        // ----------------------------------------------------
+
+        insights: [
+
+            {
+                id:
+                    "demo-insight-1",
+
+                type:
+                    "risk",
+
+                title:
+                    "Open Workspace",
+
+                description:
+                    "The Open Workspace is the highest-priority area in this example professional assessment."
+            },
+
+
+            {
+                id:
+                    "demo-insight-2",
+
+                type:
+                    "coverage",
+
+                title:
+                    "Measurement Coverage",
+
+                description:
+                    "The example assessment contains 124 measured points out of 156 planned points."
+            },
+
+
+            {
+                id:
+                    "demo-insight-3",
+
+                type:
+                    "sources",
+
+                title:
+                    "EMF Sources",
+
+                description:
+                    "Seven example EMF sources are included to demonstrate professional source analysis."
+            }
+        ],
+
+
+        // ----------------------------------------------------
+        // REPORT STATUS
+        // ----------------------------------------------------
+
+        report_status: {
+
+            valid:
+                true,
+
+            generated:
+                true,
+
+            status:
+                "demo"
         }
+    };
+
+
+    // ========================================================
+    // FRONTEND-ONLY STATE
+    // ========================================================
+
+    AppState.businessDemoProject =
+        demoProject;
+
+    AppState.businessDemoAnalysis =
+        demoAnalysis;
+
+
+    // IMPORTANT:
+    //
+    // This is NOT a real project.
+    //
+    // NEVER:
+    // - create a database project
+    // - save business_project_id
+    // - call createProject()
+    // - call loadProject()
+    //
+    // ========================================================
+
+    AppState.project =
+        demoProject;
+
+    window.project =
+        demoProject;
+
+
+    // ========================================================
+    // DEMO UI STATE
+    // ========================================================
+
+    window.EMFHomeDemo =
+        false;
+
+    window.EMFBusinessDemo =
+        true;
+
+
+    window.EMFWorkspaceExperience = {
+
+        mode:
+            "demo",
+
+        demoType:
+            "business"
+    };
+
+
+    window.WorkspaceAccess =
+        window.WorkspaceAccess || {};
+
+    window.WorkspaceAccess.mode =
+        "business_demo";
+
+
+    // ========================================================
+    // WORKSPACE UI
+    // ========================================================
+
+    if (
+        typeof updateWorkspaceUI ===
+        "function"
+    ) {
+
+        updateWorkspaceUI();
     }
-
-
-    // ==================================================
-    // FLOOR TABS
-    // ==================================================
-
-    const homeFloorTabs =
-        document.getElementById(
-            "homeFloorTabs"
-        );
-
-    const businessFloorTabs =
-        document.getElementById(
-            "businessFloorTabs"
-        );
 
 
     if (
-        homeFloorTabs
+        typeof updateProjectHeader ===
+        "function"
     ) {
 
-        homeFloorTabs.style.display =
-            mode === "home"
-                ? "flex"
-                : "none";
+        updateProjectHeader();
     }
 
+
+    // ========================================================
+    // BUSINESS DEMO UI
+    // ========================================================
 
     if (
-        businessFloorTabs
+        typeof window.renderBusinessDemoWorkspace ===
+        "function"
     ) {
 
-        businessFloorTabs.style.display =
-            mode === "business"
-                ? "flex"
-                : "none";
-    }
-
-
-    // ==================================================
-    // BUSINESS TOGGLES
-    // ==================================================
-
-    const businessProjectToggles =
-        document.getElementById(
-            "businessProjectToggles"
+        window.renderBusinessDemoWorkspace(
+            demoProject,
+            demoAnalysis
         );
 
+    } else {
 
-    if (
-        businessProjectToggles
-    ) {
-
-        businessProjectToggles.style.display =
-            mode === "business"
-                ? "flex"
-                : "none";
-    }
-
-
-    // ==================================================
-    // ROOM PANEL
-    // ==================================================
-
-    const roomProgressTop =
-        document.getElementById(
-            "roomProgressTop"
+        console.warn(
+            "⚠️ renderBusinessDemoWorkspace() not available yet"
         );
-
-
-    if (
-        roomProgressTop
-    ) {
-
-        if (
-            mode === "business"
-        ) {
-
-            roomProgressTop.style.display =
-                "flex";
-        }
-
-        else {
-
-            roomProgressTop.innerHTML =
-                "";
-
-            roomProgressTop.style.display =
-                "none";
-        }
     }
 
 
-    // ==================================================
-    // FLOOR UI
-    // ==================================================
-
-    if (
-        mode === "home"
-    ) {
-
-        renderHomeFloorTabs?.();
-
-    }
-
-    else {
-
-        renderBusinessFloorTabs?.();
-    }
-
-
-    renderFloorTabs?.();
-
-
-    // ==================================================
-    // GENERAL UI
-    // ==================================================
-
-    updateWorkspaceUI?.();
-    updateHomeWorkflow?.();
-    updateHomeLocks?.();
-    updateHomeEmptyPlanState?.();
-    updateHomeProfessionalAssessment?.();
-    updateProjectHeader?.();
-    updateWorkflowUI?.();
-    updateCurrentExposure?.();
-
-    updateEMFProductContext?.();
-
-    // ==================================================
-    // RENDER
-    // ==================================================
-
-    requestRender?.();
-
-
-    // ==================================================
-    // FINAL DEBUG
-    // ==================================================
-
-    console.error(
-        "🔥 PROJECT MODE SWITCH COMPLETE",
-        {
-            mode,
-
-            projectId:
-                project
-                    ?.project_id ??
-                project
-                    ?.id ??
-                null,
-
-            projectType:
-                project
-                    ?.projectType ??
-                project
-                    ?.type ??
-                null,
-
-            floors:
-                project
-                    ?.floors
-                    ?.length ||
-                0,
-
-            currentFloorIndex:
-                project
-                    ?.currentFloorIndex,
-
-            activeFloor:
-                getCurrentFloor?.()
-                    ?.name,
-
-            activeFloorImage:
-                !!getCurrentFloor?.()
-                    ?.image,
-
-            activeFloorImageData:
-                !!getCurrentFloor?.()
-                    ?.imageData
-        }
-    );
-
-
-    requestAnimationFrame(
-        () => {
-
-            const floor =
-                getCurrentFloor?.();
-
-
-            console.error(
-                "🔥🔥 AFTER MODE SWITCH RENDER",
-                {
-                    mode,
-
-                    projectId:
-                        AppState.project
-                            ?.project_id ??
-                        AppState.project
-                            ?.id ??
-                        null,
-
-                    projectType:
-                        AppState.project
-                            ?.projectType ??
-                        AppState.project
-                            ?.type ??
-                        null,
-
-                    floorIndex:
-                        AppState.project
-                            ?.currentFloorIndex,
-
-                    floorId:
-                        floor?.id,
-
-                    floorName:
-                        floor?.name,
-
-                    image:
-                        !!floor?.image,
-
-                    imageData:
-                        !!floor?.imageData,
-
-                    rooms:
-                        floor?.rooms?.length ||
-                        0,
-
-                    zones:
-                        floor?.zones?.length ||
-                        0,
-
-                    sources:
-                        floor?.sources?.length ||
-                        0,
-
-                    canvasWidth:
-                        window.canvas?.width,
-
-                    canvasHeight:
-                        window.canvas?.height,
-
-                    planImageWidth:
-                        window.planImage
-                            ?.naturalWidth ??
-                        window.planImage
-                            ?.width ??
-                        null,
-
-                    planImageHeight:
-                        window.planImage
-                            ?.naturalHeight ??
-                        window.planImage
-                            ?.height ??
-                        null
-                }
-            );
-        }
-    );
-
+    // ========================================================
+    // READY
+    // ========================================================
 
     console.log(
-        "🔥 MODE SWITCH COMPLETE",
+        "🏢 BUSINESS DEMO READY",
         {
-            mode,
 
-            projectId:
-                project
-                    ?.project_id ??
-                project
-                    ?.id ??
-                null,
-
-            projectType:
-                project
-                    ?.projectType ??
-                project
-                    ?.type ??
-                null,
+            project:
+                demoProject.name,
 
             floors:
-                project
-                    ?.floors
-                    ?.length ||
-                0,
+                demoProject.floors.length,
 
-            currentFloorIndex:
-                project
-                    ?.currentFloorIndex
+            rooms:
+                demoAnalysis.room_summary.length,
+
+            measurements:
+                demoAnalysis.coverage.measured_points,
+
+            sources:
+                demoAnalysis.sources.length,
+
+            recommendations:
+                demoAnalysis.recommendations.length
         }
-    );
-
-
-    console.log(
-        "================================="
     );
 }
 
 
+function updateWorkspaceMenuState() {
+
+    const businessItem =
+        document.getElementById("workspaceBusinessItem");
+
+    const homeItem =
+        document.getElementById("workspaceHomeItem");
+
+    const businessCheck =
+        document.getElementById("workspaceBusinessCheck");
+
+    const homeCheck =
+        document.getElementById("workspaceHomeCheck");
+
+    const isBusiness =
+        window.AppMode?.current === "business";
+
+    // --------------------------------------------
+    // ACTIVE ITEM
+    // --------------------------------------------
+
+    if (businessItem) {
+        businessItem.classList.toggle(
+            "workspace-menu-item-active",
+            isBusiness
+        );
+    }
+
+    if (homeItem) {
+        homeItem.classList.toggle(
+            "workspace-menu-item-active",
+            !isBusiness
+        );
+    }
+
+    // --------------------------------------------
+    // CHECKMARKS
+    // EXACTLY ONE MUST BE VISIBLE
+    // --------------------------------------------
+
+    if (businessCheck) {
+        businessCheck.style.display =
+            isBusiness
+                ? "inline-flex"
+                : "none";
+    }
+
+    if (homeCheck) {
+        homeCheck.style.display =
+            isBusiness
+                ? "none"
+                : "inline-flex";
+    }
+}
+
+// ==================================================
+// HOME DEMO EXPERIENCE
+// ==================================================
+async function loadHomeDemoExperience() {
+
+    console.log(
+        "🏠 LOADING HOME DEMO EXPERIENCE"
+    );
+
+
+    // ==================================================
+    // FRONTEND-ONLY DEMO PROPERTY
+    // ==================================================
+
+    const demoProject = {
+
+        id:
+            "demo-home-property",
+
+        project_id:
+            "demo-home-property",
+
+        name:
+            "Example Apartment",
+
+        project_name:
+            "Example Apartment",
+
+        type:
+            "home",
+
+        workspace:
+            "home",
+
+        isDemo:
+            true,
+
+        demo:
+            true,
+
+        demoType:
+            "home",
+
+        propertyId:
+            null,
+
+        assessmentId:
+            null,
+
+        propertyHealthRecordId:
+            "demo-phr",
+
+        currentFloorIndex:
+            0,
+
+
+        // ==================================================
+        // FLOORS
+        // ==================================================
+
+        floors: [
+
+            {
+
+                id:
+                    "demo-home-floor-1",
+
+                name:
+                    "Main Floor",
+
+                floorName:
+                    "Main Floor",
+
+
+                // ------------------------------------------
+                // ROOMS
+                // ------------------------------------------
+
+                rooms: [
+
+                    {
+
+                        id:
+                            "demo-bedroom",
+
+                        code:
+                            "R01",
+
+                        name:
+                            "Bedroom",
+
+                        type:
+                            "sleep",
+
+                        area:
+                            18,
+
+                        coverage:
+                            92,
+
+                        risk:
+                            "low",
+
+
+                        zones:
+                            [],
+
+
+                        sources: [
+
+                            {
+                                id:
+                                    "demo-bedroom-router",
+
+                                type:
+                                    "Wi-Fi Router",
+
+                                level:
+                                    "low"
+                            }
+
+                        ],
+
+
+                        measurements: {
+
+                            rf:
+                                18,
+
+                            electric:
+                                0.7,
+
+                            magnetic:
+                                0.9
+                        },
+
+
+                        gridPoints:
+                            []
+
+                    },
+
+
+                    {
+
+                        id:
+                            "demo-office",
+
+                        code:
+                            "R02",
+
+                        name:
+                            "Home Office",
+
+                        type:
+                            "work",
+
+                        area:
+                            14,
+
+                        coverage:
+                            88,
+
+                        risk:
+                            "moderate",
+
+
+                        zones:
+                            [],
+
+
+                        sources: [
+
+                            {
+                                id:
+                                    "demo-office-wifi",
+
+                                type:
+                                    "Wi-Fi",
+
+                                level:
+                                    "moderate"
+                            },
+
+                            {
+                                id:
+                                    "demo-office-laptop",
+
+                                type:
+                                    "Laptop",
+
+                                level:
+                                    "low"
+                            }
+
+                        ],
+
+
+                        measurements: {
+
+                            rf:
+                                74,
+
+                            electric:
+                                1.2,
+
+                            magnetic:
+                                1.1
+                        },
+
+
+                        gridPoints:
+                            []
+
+                    },
+
+
+                    {
+
+                        id:
+                            "demo-living",
+
+                        code:
+                            "R03",
+
+                        name:
+                            "Living Room",
+
+                        type:
+                            "rest",
+
+                        area:
+                            24,
+
+                        coverage:
+                            94,
+
+                        risk:
+                            "low",
+
+
+                        zones:
+                            [],
+
+
+                        sources: [
+
+                            {
+                                id:
+                                    "demo-living-tv",
+
+                                type:
+                                    "Smart TV",
+
+                                level:
+                                    "low"
+                            }
+
+                        ],
+
+
+                        measurements: {
+
+                            rf:
+                                32,
+
+                            electric:
+                                0.9,
+
+                            magnetic:
+                                0.8
+                        },
+
+
+                        gridPoints:
+                            []
+
+                    }
+
+                ],
+
+
+                // ------------------------------------------
+                // FLOOR-LEVEL ARRAYS
+                // ------------------------------------------
+
+                zones:
+                    [],
+
+                sources:
+                    [],
+
+                measurements:
+                    [],
+
+                gridPoints:
+                    []
+
+            }
+
+        ],
+
+
+        // ==================================================
+        // LIFESTYLE AREAS
+        // ==================================================
+
+        lifestyleAreas: [
+
+            {
+
+                id:
+                    "sleep",
+
+                name:
+                    "Sleep",
+
+                room:
+                    "Bedroom",
+
+                priority:
+                    "high",
+
+                exposure:
+                    "low"
+            },
+
+
+            {
+
+                id:
+                    "work",
+
+                name:
+                    "Work",
+
+                room:
+                    "Home Office",
+
+                priority:
+                    "medium",
+
+                exposure:
+                    "moderate"
+            },
+
+
+            {
+
+                id:
+                    "rest",
+
+                name:
+                    "Rest",
+
+                room:
+                    "Living Room",
+
+                priority:
+                    "medium",
+
+                exposure:
+                    "low"
+            }
+
+        ],
+
+
+        // ==================================================
+        // PROPERTY-LEVEL SOURCES
+        // ==================================================
+
+        sources: [
+
+            {
+
+                id:
+                    "demo-source-router",
+
+                name:
+                    "Wi-Fi Router",
+
+                category:
+                    "RF",
+
+                location:
+                    "Home Office",
+
+                level:
+                    "moderate"
+            },
+
+
+            {
+
+                id:
+                    "demo-source-tv",
+
+                name:
+                    "Smart TV",
+
+                category:
+                    "RF",
+
+                location:
+                    "Living Room",
+
+                level:
+                    "low"
+            },
+
+
+            {
+
+                id:
+                    "demo-source-laptop",
+
+                name:
+                    "Laptop",
+
+                category:
+                    "RF",
+
+                location:
+                    "Home Office",
+
+                level:
+                    "low"
+            }
+
+        ],
+
+
+        // ==================================================
+        // RECOMMENDATIONS
+        // ==================================================
+
+        recommendations: [
+
+            {
+
+                id:
+                    "demo-rec-sleep",
+
+                priority:
+                    "high",
+
+                category:
+                    "sleep",
+
+                title:
+                    "Reduce wireless exposure near the sleeping area",
+
+                text:
+                    "Keep wireless sources away from the bed where practical."
+            },
+
+
+            {
+
+                id:
+                    "demo-rec-work",
+
+                priority:
+                    "medium",
+
+                category:
+                    "work",
+
+                title:
+                    "Review wireless devices in the work area",
+
+                text:
+                    "Consider distance and placement of wireless devices around the workspace."
+            },
+
+
+            {
+
+                id:
+                    "demo-rec-rest",
+
+                priority:
+                    "medium",
+
+                category:
+                    "rest",
+
+                title:
+                    "Maintain distance from active wireless sources",
+
+                text:
+                    "Use practical distance and placement strategies in frequently used areas."
+            }
+
+        ],
+
+
+        // ==================================================
+        // INSIGHTS
+        // ==================================================
+
+        insights: {
+
+            overall:
+                "Low to moderate exposure profile",
+
+            coverage:
+                91,
+
+            measuredAreas:
+                3,
+
+            lifestyleAreas:
+                3,
+
+            sources:
+                3,
+
+            recommendations:
+                3
+        }
+
+    };
+
+
+    // ==================================================
+    // STORE DEMO STATE
+    // ==================================================
+
+    AppState.homeDemoProject =
+        demoProject;
+
+    AppState.homeDemoAnalysis = {
+
+        property:
+            demoProject,
+
+        lifestyleAreas:
+            demoProject.lifestyleAreas,
+
+        sources:
+            demoProject.sources,
+
+        recommendations:
+            demoProject.recommendations,
+
+        insights:
+            demoProject.insights
+
+    };
+
+
+    // ==================================================
+    // IMPORTANT:
+    // FRONTEND-ONLY DEMO
+    // ==================================================
+
+    AppState.project =
+        demoProject;
+
+    window.project =
+        demoProject;
+
+    window.EMFHomeDemo =
+        true;
+
+
+    window.WorkspaceAccess =
+        window.WorkspaceAccess ||
+        {};
+
+    window.WorkspaceAccess.mode =
+        "home_demo";
+
+
+    // ==================================================
+    // UI
+    // ==================================================
+
+    window.updateWorkspaceUI?.();
+
+    window.updateProjectHeader?.();
+
+    window.updateHomeWorkflow?.();
+
+    window.updateHomeLocks?.();
+
+    window.updateHomeEmptyPlanState?.();
+
+    window.updateHomeProfessionalAssessment?.();
+
+    window.updateWorkflowUI?.();
+
+    window.updateCurrentExposure?.();
+
+    window.updateEMFProductContext?.();
+
+    window.renderFloorTabs?.();
+
+    window.renderHomeFloorTabs?.();
+
+    window.requestRender?.();
+
+
+    // ==================================================
+    // DEBUG
+    // ==================================================
+
+    console.log(
+        "🏠 HOME DEMO READY",
+        {
+
+            projectId:
+                demoProject.project_id,
+
+            rooms:
+                demoProject
+                    .floors?.[0]
+                    ?.rooms
+                    ?.length || 0,
+
+            zones:
+                demoProject
+                    .floors?.[0]
+                    ?.zones
+                    ?.length || 0,
+
+            sources:
+                demoProject
+                    .floors?.[0]
+                    ?.sources
+                    ?.length || 0,
+
+            measurements:
+                demoProject
+                    .floors?.[0]
+                    ?.measurements
+                    ?.length || 0,
+
+            gridPoints:
+                demoProject
+                    .floors?.[0]
+                    ?.gridPoints
+                    ?.length || 0,
+
+            lifestyleAreas:
+                demoProject
+                    .lifestyleAreas
+                    ?.length || 0,
+
+            propertySources:
+                demoProject
+                    .sources
+                    ?.length || 0,
+
+            recommendations:
+                demoProject
+                    .recommendations
+                    ?.length || 0
+        }
+    );
+}
+
+window.loadHomeDemoExperience =
+    loadHomeDemoExperience;
+
+function resolveWorkspaceExperience(mode) {
+    const role =
+        window.EMFProductContext?.account?.role ||
+        "user";
+
+    const isAdmin =
+        window.EMFProductContext?.account?.isAdmin === true;
+
+    if (isAdmin) {
+        return {
+            mode: "real"
+        };
+    }
+
+    if (mode === "business") {
+        const businessProjectId =
+            localStorage.getItem("business_project_id") ||
+            window.AppState?.businessProject?.project_id ||
+            window.AppState?.businessProject?.id ||
+            null;
+
+        if (role === "professional" && businessProjectId) {
+            return {
+                mode: "real",
+                projectId: String(businessProjectId)
+            };
+        }
+
+        return {
+            mode: "demo",
+            demoType: "business"
+        };
+    }
+
+    // HOME
+
+    const homeProject =
+        window.AppState?.homeProject ||
+        null;
+    const homeProjectId =
+        (
+            homeProject?.project_id ??
+            homeProject?.id ??
+            localStorage.getItem("home_project_id")
+        ) ||
+        localStorage.getItem("homeProjectId");
+
+    if (homeProjectId) {
+        return {
+            mode: "real",
+            projectId: String(homeProjectId)
+        };
+    }
+
+    if (role === "professional") {
+        return {
+            mode: "demo",
+            demoType: "home"
+        };
+    }
+
+    return {
+        mode: "activation",
+        activationType: "home"
+    };
+}
 
 function updateWorkspaceUI() {
 
@@ -1361,21 +3642,93 @@ function updateWorkspaceUI() {
         window.AppMode?.current ||
         "home";
 
+    // ==================================================
+    // CONTEXTUAL RETURN ACTION
+    // ==================================================
 
+    const returnAction =
+        document.getElementById("contextualReturnAction");
+
+    const returnLabel =
+        document.getElementById("contextualReturnLabel");
+
+    const experience =
+        window.EMFWorkspaceExperience || {};
+
+    const role =
+        window.EMFProductContext?.account?.role || "user";
+
+    const isHome =
+        mode === "home";
+
+    const isBusiness =
+        mode === "business";
+
+    const isBusinessDemo =
+        isBusiness &&
+        experience.mode === "demo" &&
+        experience.demoType === "business";
+
+    const isHomeDemo =
+        isHome &&
+        experience.mode === "demo" &&
+        experience.demoType === "home";
+
+    // Home user exploring Business Demo
+    if (isBusinessDemo && role !== "professional") {
+
+        if (returnAction) {
+            returnAction.style.display = "block";
+        }
+
+        if (returnLabel) {
+            returnLabel.textContent = "My Property";
+        }
+
+    }
+
+    // Professional exploring Home
+    else if (isHomeDemo && role === "professional") {
+
+        if (returnAction) {
+            returnAction.style.display = "block";
+        }
+
+        if (returnLabel) {
+            returnLabel.textContent = "Business Workspace";
+        }
+
+    }
+
+    // Primary workspace / real workspace
+    else {
+
+        if (returnAction) {
+            returnAction.style.display = "none";
+        }
+
+    }
     // ==================================================
     // ACTIVE PROJECT
     // ==================================================
 
     const activeProject =
-    mode === "home"
-        ? (
-            AppState?.homeProject ||
-            AppState?.project ||
-            null
-        )
-        : (
-            AppState?.project ||
-            null
+        mode === "home"
+            ? (
+                AppState?.homeProject ||
+                AppState?.project ||
+                null
+            )
+            : (
+                AppState?.project ||
+                null
+            );
+
+    const isDemo =
+        window.EMFWorkspaceExperience?.mode === "demo" &&
+        (
+            AppState?.project?.isDemo === true ||
+            AppState?.project?.demo === true
         );
 
     const hasActiveProject =
@@ -1667,7 +4020,6 @@ function updateWorkspaceUI() {
         // ==================================================
         // WORKSPACE TITLE
         // ==================================================
-
         if (
             workspaceName
         ) {
@@ -1682,9 +4034,13 @@ function updateWorkspaceUI() {
                     )
 
                     : (
-                        hasActiveProject
-                            ? "🏢 Business Project"
-                            : "🏢 Business Survey"
+                        isDemo
+                            ? "🏢 Professional Assessment"
+                            : (
+                                hasActiveProject
+                                    ? "🏢 Business Project"
+                                    : "🏢 Business Survey"
+                            )
                     );
         }
 
@@ -2020,15 +4376,15 @@ function updateWorkspaceUI() {
     // ==================================================
     // BUSINESS EMPTY PLAN STATE
     // ==================================================
-        if (
-            mode === "business"
-        ) {
+    if (
+        mode === "business"
+    ) {
 
-            updateBusinessEmptyPlanState?.();
+        updateBusinessEmptyPlanState?.();
 
-        }
+    }
 
-        else {
+    else {
 
         const businessEmptyPlanState =
             document.getElementById(
@@ -2351,7 +4707,71 @@ function updateWorkspaceUI() {
     requestRender?.();
 }
 
+// ==================================================
+// CONTEXTUAL RETURN — PRIMARY WORKSPACE
+// ==================================================
+async function returnToPrimaryWorkspace() {
 
+    const mode =
+        window.AppMode?.current || "home";
+
+    const role =
+        window.EMFProductContext?.account?.role ||
+        "user";
+
+    console.log(
+        "↩ RETURN TO PRIMARY WORKSPACE",
+        {
+            mode,
+            role
+        }
+    );
+
+    // Home Demo → Business
+    if (
+        mode === "home" &&
+        role === "professional"
+    ) {
+        localStorage.setItem(
+            "workspaceMode",
+            "business"
+        );
+
+        await setAppMode("business");
+
+        closeWorkspaceMenu?.();
+
+        return;
+    }
+
+    // Business Demo → Home
+    if (
+        mode === "business" &&
+        role !== "professional"
+    ) {
+        localStorage.setItem(
+            "workspaceMode",
+            "home"
+        );
+
+        await setAppMode("home");
+
+        closeWorkspaceMenu?.();
+
+        return;
+    }
+
+    console.log(
+        "↩ RETURN TO PRIMARY WORKSPACE — NO ACTION",
+        {
+            mode,
+            role
+        }
+    );
+}
+
+window.returnToPrimaryWorkspace =
+    returnToPrimaryWorkspace;
 
 function clearBusinessVisuals() {
 
@@ -2698,7 +5118,7 @@ function openPropertyHealthRecord() {
             propertyName;
     }
 
-        // --------------------------------------------------------
+    // --------------------------------------------------------
     // PROPERTY DETAILS
     // --------------------------------------------------------
 
@@ -2718,16 +5138,16 @@ function openPropertyHealthRecord() {
 
         const propertyType =
             propertyTypeLabels[
-                String(
-                    property.propertyType || ""
-                ).toLowerCase()
+            String(
+                property.propertyType || ""
+            ).toLowerCase()
             ] ||
             property.propertyType ||
             "Property";
 
         propertyTypeElement.textContent =
             propertyType;
-            }
+    }
 
 
     const addressElement =
@@ -2746,10 +5166,10 @@ function openPropertyHealthRecord() {
             addressParts.length
                 ? addressParts.join(", ")
                 : "Address not yet added";
-            }
+    }
 
 
-        const cityElement =
+    const cityElement =
         document.getElementById(
             "propertyHealthRecordCity"
         );
@@ -2971,7 +5391,7 @@ function openPropertyHealthRecord() {
         }
     }
 
-        // --------------------------------------------------------
+    // --------------------------------------------------------
     // RECORD HISTORY
     // --------------------------------------------------------
 
@@ -3070,7 +5490,7 @@ function openPropertyHealthRecord() {
             `);
         }
 
-                // ----------------------------------------------------
+        // ----------------------------------------------------
         // FULL EMF INSIGHT REPORT
         // ----------------------------------------------------
 
@@ -3288,7 +5708,7 @@ function populatePropertyHealthDashboard() {
         indoorCount +
         outdoorCount;
 
-       
+
 
     const indoorElement =
         document.getElementById(
@@ -3879,7 +6299,7 @@ window.closeWorkspaceMenu =
     closeWorkspaceMenu;
 
 
-    // =====================
+// =====================
 // 👤 USER ACCOUNT MENU
 // =====================
 
@@ -3973,7 +6393,7 @@ window.toggleUserMenu =
 window.closeUserMenu =
     closeUserMenu;
 
-    // =====================
+// =====================
 // 🖱️ CLOSE MENUS ON OUTSIDE CLICK
 // =====================
 
@@ -4051,4 +6471,7 @@ window.showPremiumModal =
 
 window.toggleAdvancedSources =
     toggleAdvancedSources;
+
+window.loadBusinessDemoExperience =
+    loadBusinessDemoExperience;
 

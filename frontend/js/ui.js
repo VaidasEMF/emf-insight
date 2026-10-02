@@ -230,6 +230,11 @@ setTimeout(() => {
 
 function updateProjectHeader() {
 
+
+    const mode =
+        window.AppMode?.current ||
+        "home";
+
     const project =
         AppState?.project ||
         null;
@@ -476,8 +481,18 @@ function updateProjectHeader() {
         statusEl
     ) {
 
+        const isDemo =
+            mode === "business" &&
+            (
+                project?.isDemo === true ||
+                project?.demo === true ||
+                AppState?.project?.isDemo === true ||
+                AppState?.project?.demo === true
+            );
+
         statusEl.innerText =
-            projectId !== null &&
+            !isDemo &&
+                projectId !== null &&
                 projectId !== undefined &&
                 projectId !== ""
                 ? `${status} • Project #${projectId}`
@@ -607,6 +622,9 @@ function updateProjectHeader() {
     // HEADER CONTROLS
     // ==================================================
 
+    const isHomeWorkspace =
+        window.AppMode?.current === "home";
+
     controls.innerHTML = `
 
         <span class="project-header-divider"></span>
@@ -657,37 +675,42 @@ function updateProjectHeader() {
                </span>
 
 
-        <!-- PROPERTY HEALTH RECORD -->
+               ${isHomeWorkspace
+            ? `
+                    <!-- PROPERTY HEALTH RECORD -->
 
-        <span class="project-header-divider property-health-record-divider"></span>
+                    <span class="project-header-divider property-health-record-divider"></span>
 
-        <span
-            class="project-header-control property-health-record-control"
-            id="propertyHealthRecordHeader"
-            title="View Property Health Record"
-        >
+                    <span
+                        class="project-header-control property-health-record-control"
+                        id="propertyHealthRecordHeader"
+                        title="View Property Health Record"
+                    >
 
-            <span class="property-health-record-header-label">
-                Property Health Record
-            </span>
+                        <span class="property-health-record-header-label">
+                            Property Health Record
+                        </span>
 
-            <span
-                class="property-health-record-status-dot"
-                aria-hidden="true"
-            ></span>
+                        <span
+                            class="property-health-record-status-dot"
+                            aria-hidden="true"
+                        ></span>
 
-            <strong id="propertyHealthRecordHeaderStatus">
-                Initial record created
-            </strong>
+                        <strong id="propertyHealthRecordHeaderStatus">
+                            Initial record created
+                        </strong>
 
-            <span
-                class="property-health-record-chevron"
-                aria-hidden="true"
-            >
-                ▾
-            </span>
+                        <span
+                            class="property-health-record-chevron"
+                            aria-hidden="true"
+                        >
+                            ▾
+                        </span>
 
-        </span>
+                    </span>
+                `
+            : ""
+        }
 
     `;
 
@@ -734,7 +757,7 @@ function updateProjectHeader() {
                 startScaleTool?.();
             };
     }
-    
+
     // ==================================================
     // PROPERTY HEALTH RECORD
     // ==================================================

@@ -314,24 +314,31 @@ function updateEMFProductContext() {
     window.EMFProductContext.workspace.current =
         workspace;
 
-    window.EMFProductContext.property.id =
-        project?.propertyId ??
-        window.AppState?.homeProject?.propertyId ??
-        null;
+    const propertyId =
+    workspace === "home"
+        ? (
+            project?.propertyId ??
+            window.AppState?.homeProject?.propertyId ??
+            null
+        )
+        : null;
 
-    window.EMFProductContext.assessment.id =
-        assessmentId;
+        window.EMFProductContext.property.id =
+            propertyId;
 
-    window.EMFProductContext.assessment.type =
-        assessmentType;
+            window.EMFProductContext.assessment.id =
+                assessmentId;
 
-    return window.EMFProductContext;
-}
+            window.EMFProductContext.assessment.type =
+                assessmentType;
+
+            return window.EMFProductContext;
+        }
 
 window.updateEMFProductContext =
     updateEMFProductContext;
 
-    // ============================================================
+// ============================================================
 // EMF ACCOUNT / PRODUCT HELPERS
 // ============================================================
 

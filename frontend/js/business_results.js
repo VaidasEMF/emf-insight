@@ -25,7 +25,7 @@ function brGetCurrentFloor() {
 
     return (
         AppState?.project?.floors?.[
-            AppState.project.currentFloorIndex || 0
+        AppState.project.currentFloorIndex || 0
         ] ||
         AppState?.project?.floors?.[0] ||
         null
@@ -296,7 +296,7 @@ function brGetSurveyDate(
                             if (
                                 !measurements ||
                                 typeof measurements !==
-                                    "object"
+                                "object"
                             ) {
                                 return;
                             }
@@ -321,9 +321,9 @@ function brGetSurveyDate(
                                         savedAt > 0 &&
                                         (
                                             latestSavedAt ===
-                                                null ||
+                                            null ||
                                             savedAt >
-                                                latestSavedAt
+                                            latestSavedAt
                                         )
                                     ) {
 
@@ -398,9 +398,9 @@ function brGetRecommendations(
                 typeof item === "string"
                     ? item
                     : item.text ||
-                      item.recommendation ||
-                      item.title ||
-                      ""
+                    item.recommendation ||
+                    item.title ||
+                    ""
             )
             .filter(Boolean);
 
@@ -482,6 +482,31 @@ function brRenderHeatmapPreview(
         return;
     }
 
+    // ==========================================================
+    // DEMO — STATIC MAIN FLOOR HEATMAP
+    // ==========================================================
+
+    if (isDemo) {
+
+        container.innerHTML = `
+            <div class="br-heatmap-shell">
+
+                <img
+                    class="br-heatmap-canvas"
+                    src="assets/demo/heatmap/main-floor-demo.png"
+                    alt="Demo Main Floor EMF heatmap"
+                    style="
+                        width:100%;
+                        height:auto;
+                        display:block;
+                    "
+                >
+
+            </div>
+        `;
+
+        return;
+    }
 
     const floors =
         Array.isArray(
@@ -499,7 +524,7 @@ function brRenderHeatmapPreview(
 
     const localFloor =
         AppState?.project?.floors?.[
-            floorIndex
+        floorIndex
         ] ||
         AppState?.project?.floors?.[0] ||
         null;
@@ -896,7 +921,7 @@ async function openBusinessResults() {
         return;
     }
 
-        const workspaceSwitcher =
+    const workspaceSwitcher =
         document.getElementById(
             "workspaceSwitcherBtn"
         );
@@ -1008,11 +1033,11 @@ function renderBusinessResultsPreview(
         {};
 
 
-    const rooms =
+    let rooms =
         Array.isArray(
             analysis?.room_summary
         )
-            ? analysis.room_summary
+            ? [...analysis.room_summary]
             : [];
 
 
@@ -1024,46 +1049,46 @@ function renderBusinessResultsPreview(
             : [];
 
 
-    const sources =
+    let sources =
         Array.isArray(
             analysis?.sources
         )
-            ? analysis.sources
+            ? [...analysis.sources]
             : [];
 
 
-    const measured =
+    let measured =
         Number(
             coverage.measured_points ??
             0
         );
 
 
-    const total =
+    let total =
         Number(
             coverage.total_points ??
             0
         );
 
 
-    const percentage =
+    let percentage =
         Number(
             coverage.coverage ??
             0
         );
 
 
-    const assessmentReady =
+    let assessmentReady =
         analysis?.report_status?.valid === true;
 
 
-    const riskCounts =
+    let riskCounts =
         brCountRisks(
             rooms
         );
 
 
-    const recommendations =
+    let recommendations =
         brGetRecommendations(
             analysis,
             rooms
@@ -1079,28 +1104,127 @@ function renderBusinessResultsPreview(
         brGetUserInfo();
 
 
-    const userName =
+    let userName =
         user?.first_name ||
         userInfo.name ||
         "";
 
 
-    const userEmail =
+    let userEmail =
         user?.email ||
         userInfo.email ||
         "";
 
 
-    const projectName =
+    let projectName =
         project.name ||
         project.project_name ||
         "Business Assessment";
 
 
-    const surveyDate =
-    brGetSurveyDate(
-        project
-    );
+    let surveyDate =
+        brGetSurveyDate(
+            project
+        );
+
+
+    // ==========================================================
+    // DEMO — STATIC BUSINESS RESULTS DATA
+    // ==========================================================
+
+    if (isDemo) {
+
+        // ------------------------------
+        // Assessment KPIs
+        // ------------------------------
+
+        measured = 124;
+        total = 156;
+        percentage = 79;
+        assessmentReady = true;
+
+
+        // ------------------------------
+        // Risk Summary
+        // ------------------------------
+
+        riskCounts = {
+            high: 1,
+            moderate: 1,
+            low: 1,
+            unknown: 0
+        };
+
+
+        // ------------------------------
+        // Rooms
+        // ------------------------------
+
+        rooms = [
+            {
+                room: "Office 1",
+                risk: "moderate",
+                measured_points: 40,
+                point_count: 52
+            },
+            {
+                room: "Office 2",
+                risk: "high",
+                measured_points: 42,
+                point_count: 52
+            },
+            {
+                room: "Office 3",
+                risk: "low",
+                measured_points: 42,
+                point_count: 52
+            }
+        ];
+
+
+        // ------------------------------
+        // Sources
+        // ------------------------------
+
+        sources = [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ];
+
+
+        // ------------------------------
+        // Recommendations
+        // ------------------------------
+
+        recommendations = [
+            "Review Wi-Fi access point placement and reduce transmit power where possible.",
+            "Consider alternative workstation positioning in high-exposure areas.",
+            "Improve cable management and reduce proximity to work areas.",
+            "Full list of personalized recommendations is available in the Expert Report."
+        ];
+
+
+        // ------------------------------
+        // Demo project information
+        // ------------------------------
+
+        projectName =
+            "Demo Assessment · Example Office";
+
+        surveyDate = null;
+
+        userName = "—";
+
+        userEmail = "—";
+    }
 
 
     const overlay =
@@ -1767,22 +1891,61 @@ function renderBusinessResultsPreview(
                     <div class="br-logo">
                         YOUR LOGO
                     </div>
+<div class="br-brand-text">
 
-                    <div class="br-brand-text">
+    <div class="br-brand-name" style="
+    font-size:12px;
+    line-height:16px;
+">
+    EMF Insight
+</div>
 
-                        <div class="br-brand-name">
-                            EMF Insight
-                        </div>
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:10px;
+    ">
 
-                        <h1 class="br-title">
-                            Business Results
-                        </h1>
+        <h1 class="br-title" style="
+    margin:0;
+    font-size:28px;
+    line-height:32px;
+">
+    Business Results
+</h1>
 
-                        <div class="br-subtitle">
-                            Free Preview
-                        </div>
+        ${isDemo ? `
+            <span
+                style="
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    padding:5px 10px;
+                    border:1px solid #f87171;
+                    border-radius:9px;
+                    background:#fff1f2;
+                    color:#dc2626;
+                    font-size:12px;
+                    font-weight:800;
+                    line-height:1;
+                    white-space:nowrap;
+                "
+            >
+                🧪 DEMO
+            </span>
+        ` : ""}
 
-                    </div>
+    </div>
+
+   <div class="br-subtitle" style="
+    margin-top:2px;
+    font-size:13px;
+    line-height:18px;
+">
+    ${isDemo ? "Demo Preview" : "Free Preview"}
+</div>
+
+</div>
 
                 </div>
 
@@ -1796,7 +1959,7 @@ function renderBusinessResultsPreview(
                             closeBusinessResultsPreview()
                         "
                     >
-                        ← Back to Survey
+                        ← Back to Assessment
                     </button>
 
                 </div>
@@ -1818,16 +1981,16 @@ function renderBusinessResultsPreview(
 
                     <div class="br-meta-value">
                         ${brEscape(
-                            projectName
-                        )}
+        projectName
+    )}
                     </div>
 
                     <div class="br-meta-small">
                         Project ID:
                         ${brEscape(
-                            project.id ||
-                            "—"
-                        )}
+        project.id ||
+        "—"
+    )}
                     </div>
 
                 </div>
@@ -1839,40 +2002,84 @@ function renderBusinessResultsPreview(
                         Survey Date
                     </div>
 
-                    <div class="br-meta-value">
-                        ${brFormatDate(
-                            surveyDate
-                        )}
-                    </div>
+                    ${isDemo ? `
+    <div
+        style="
+            margin-top:2px;
+            padding:10px 12px;
+            background:#eff6ff;
+            border-radius:8px;
+            color:#2563eb;
+            font-size:12px;
+            line-height:1.4;
+        "
+    >
+        ℹ️ This is a demonstration assessment.<br>
+        Data is for illustrative purposes only.
+    </div>
+` : `
+    <div class="br-meta-value">
+        ${brFormatDate(surveyDate)}
+    </div>
+`}
 
                 </div>
 
 
-                <div class="br-meta-item">
+               <div class="br-meta-item">
 
-                    <div class="br-meta-label">
-                        Prepared by
-                    </div>
+    <div class="br-meta-label">
+        Prepared by
+    </div>
 
-                    <div class="br-meta-value">
-                        ${
-                            brEscape(
-                                userName ||
-                                "—"
-                            )
-                        }
-                    </div>
+    ${isDemo ? `
+        <div
+            style="
+                margin-top:2px;
+                padding:10px 12px;
+                background:#eff6ff;
+                border-radius:8px;
+            "
+        >
+            <strong
+                style="
+                    display:block;
+                    color:#2563eb;
+                    font-size:11px;
+                    margin-bottom:4px;
+                "
+            >
+                🧪 DEMO PREVIEW
+            </strong>
 
-                    <div class="br-meta-small">
-                        ${
-                            brEscape(
-                                userEmail ||
-                                "—"
-                            )
-                        }
-                    </div>
+            <span
+                style="
+                    color:#64748b;
+                    font-size:11px;
+                    line-height:1.4;
+                "
+            >
+                This is a sample report to show
+                features and format.
+            </span>
+        </div>
+    ` : `
+        <div class="br-meta-value">
+            ${brEscape(
+        userName ||
+        "—"
+    )}
+        </div>
 
-                </div>
+        <div class="br-meta-small">
+            ${brEscape(
+        userEmail ||
+        "—"
+    )}
+        </div>
+    `}
+
+</div>
 
             </section>
 
@@ -1957,17 +2164,15 @@ function renderBusinessResultsPreview(
 
                                 <div class="
                                     br-stat-value
-                                    ${
-                                        assessmentReady
-                                            ? "br-ready"
-                                            : ""
-                                    }
+                                    ${assessmentReady
+            ? "br-ready"
+            : ""
+        }
                                 ">
-                                    ${
-                                        assessmentReady
-                                            ? "Ready"
-                                            : "In Progress"
-                                    }
+                                    ${assessmentReady
+            ? "Ready"
+            : "In Progress"
+        }
                                 </div>
 
                             </div>
@@ -1987,7 +2192,7 @@ function renderBusinessResultsPreview(
                                 color:#64748b;
                                 font-weight:500;
                             ">
-                                (Preview)
+                                (${isDemo ? "Demo Preview" : "Preview"})
                             </span>
                         </h2>
 
@@ -2076,52 +2281,70 @@ function renderBusinessResultsPreview(
 
                             <div class="br-findings">
 
-                                <div class="br-findings-title">
-                                    Key Findings
-                                    <span style="
-                                        color:#64748b;
-                                        font-weight:500;
-                                    ">
-                                        (Preview)
-                                    </span>
-                                </div>
+    <div class="br-findings-title">
+        Key Findings
+
+        <span style="
+            color:#64748b;
+            font-weight:500;
+        ">
+            (${isDemo ? "Demo Preview" : "Preview"})
+        </span>
+    </div>
 
 
-                                <ul>
+    <ul>
 
-                                    ${
-                                        rooms.length
-                                            ? `
-                                                <li>
-                                                    ${
-                                                        riskCounts.high
-                                                            ? "Higher-risk areas are present in the assessment."
-                                                            : "No high-risk room identified in this preview."
-                                                    }
-                                                </li>
+        ${isDemo ? `
+            <li>
+                One room shows elevated EMF levels.
+            </li>
 
-                                                <li>
-                                                    ${
-                                                        percentage < 100
-                                                            ? "Some measurement coverage is still incomplete."
-                                                            : "Measurement coverage is complete."
-                                                    }
-                                                </li>
+            <li>
+                Measurement coverage is 79% of grid points.
+            </li>
 
-                                                <li>
-                                                    Detailed risk drivers and interpretation are available in the Expert Report.
-                                                </li>
-                                            `
-                                            : `
-                                                <li>
-                                                    No room-level findings are currently available.
-                                                </li>
-                                            `
-                                    }
+            <li>
+                Main EMF sources include Wi-Fi access points,
+                computers and electrical installation elements.
+            </li>
 
-                                </ul>
+            <li>
+                Detailed analysis and recommendations are
+                available in the full Expert Report.
+            </li>
+        ` : `
+            ${rooms.length
+            ? `
+                    <li>
+                        ${riskCounts.high
+                ? "Higher-risk areas are present in the assessment."
+                : "No high-risk room identified in this preview."
+            }
+                    </li>
 
-                            </div>
+                    <li>
+                        ${percentage < 100
+                ? "Some measurement coverage is still incomplete."
+                : "Measurement coverage is complete."
+            }
+                    </li>
+
+                    <li>
+                        Detailed risk drivers and interpretation are available in the Expert Report.
+                    </li>
+                `
+            : `
+                    <li>
+                        No room-level findings are currently available.
+                    </li>
+                `
+        }
+        `}
+
+    </ul>
+
+</div>
 
                         </div>
 
@@ -2138,7 +2361,7 @@ function renderBusinessResultsPreview(
                                 color:#64748b;
                                 font-weight:500;
                             ">
-                                (Preview)
+                                (${isDemo ? "Demo Preview" : "Preview"})
                             </span>
                         </h2>
 
@@ -2165,62 +2388,83 @@ function renderBusinessResultsPreview(
                         </div>
 
 
-                        ${
-                            rooms.length
-                                ? rooms.map(
-    room => {
+                        ${rooms.length
+            ? rooms.map(
+                room => {
 
-        const roomFloor =
-            floors.find(
-                floor =>
-                    String(
-                        floor?.name ||
-                        floor?.floorName ||
-                        ""
-                    ) === String(
-                        room?.floor ||
-                        ""
-                    )
-            ) ||
-            floors[0] ||
-            null;
-
-
-        const roomCoverageData =
-            brGetRoomCoverage(
-                room,
-                AppState?.project?.floors?.[
-                    floors.indexOf(
-                        roomFloor
-                    )
-                ] ||
-                AppState?.project?.floors?.[0]
-            );
+                    const roomFloor =
+                        floors.find(
+                            floor =>
+                                String(
+                                    floor?.name ||
+                                    floor?.floorName ||
+                                    ""
+                                ) === String(
+                                    room?.floor ||
+                                    ""
+                                )
+                        ) ||
+                        floors[0] ||
+                        null;
 
 
-        const roomTotal =
-            roomCoverageData.total;
+                    const roomTotal =
+                        isDemo
+                            ? Number(
+                                room.point_count ||
+                                0
+                            )
+                            : brGetRoomCoverage(
+                                room,
+                                AppState?.project?.floors?.[
+                                floors.indexOf(
+                                    roomFloor
+                                )
+                                ] ||
+                                AppState?.project?.floors?.[0]
+                            ).total;
 
-        const roomMeasured =
-            roomCoverageData.measured;
 
-        const roomCoverage =
-            roomCoverageData.coverage;
+                    const roomMeasured =
+                        isDemo
+                            ? Number(
+                                room.measured_points ||
+                                0
+                            )
+                            : brGetRoomCoverage(
+                                room,
+                                AppState?.project?.floors?.[
+                                floors.indexOf(
+                                    roomFloor
+                                )
+                                ] ||
+                                AppState?.project?.floors?.[0]
+                            ).measured;
 
-                                        const risk =
-                                            brRiskClass(
-                                                room.risk
-                                            );
 
-                                        return `
+                    const roomCoverage =
+                        roomTotal > 0
+                            ? Math.round(
+                                roomMeasured /
+                                roomTotal *
+                                100
+                            )
+                            : 0;
+
+                    const risk =
+                        brRiskClass(
+                            room.risk
+                        );
+
+                    return `
                                             <div class="br-room">
 
                                                 <div>
                                                     <strong>
                                                         ${brEscape(
-                                                            room.room ||
-                                                            "Room"
-                                                        )}
+                        room.room ||
+                        "Room"
+                    )}
                                                     </strong>
                                                 </div>
 
@@ -2230,8 +2474,8 @@ function renderBusinessResultsPreview(
                                                         ${risk}
                                                     ">
                                                         ${brRiskLabel(
-                                                            room.risk
-                                                        )}
+                        room.risk
+                    )}
                                                     </span>
                                                 </div>
 
@@ -2247,9 +2491,9 @@ function renderBusinessResultsPreview(
                                                         <span style="
                                                             width:
                                                             ${Math.min(
-                                                                100,
-                                                                roomCoverage
-                                                            )}%;
+                        100,
+                        roomCoverage
+                    )}%;
                                                         "></span>
                                                     </div>
 
@@ -2265,16 +2509,16 @@ function renderBusinessResultsPreview(
 
                                             </div>
                                         `;
-                                    }
-                                ).join("")
-                                : `
+                }
+            ).join("")
+            : `
                                     <div style="
                                         color:#64748b;
                                     ">
                                         No room data available.
                                     </div>
                                 `
-                        }
+        }
 
                     </section>
 
@@ -2289,23 +2533,22 @@ function renderBusinessResultsPreview(
                                 color:#64748b;
                                 font-weight:500;
                             ">
-                                (Preview)
+                                (${isDemo ? "Demo Preview" : "Preview"})
                             </span>
                         </h2>
 
 
                         <ul class="br-recommendations">
 
-                            ${
-                                recommendations.map(
-                                    recommendation =>
-                                        `<li>
+                            ${recommendations.map(
+            recommendation =>
+                `<li>
                                             ${brEscape(
-                                                recommendation
-                                            )}
+                    recommendation
+                )}
                                         </li>`
-                                ).join("")
-                            }
+        ).join("")
+        }
 
                         </ul>
 
@@ -2342,63 +2585,62 @@ function renderBusinessResultsPreview(
                                         color:#64748b;
                                         font-weight:500;
                                     ">
-                                        (Preview)
+                                        (${isDemo ? "Demo Preview" : "Preview"})
                                     </span>
                                 </h2>
 
                                 <div style="
-                                    margin-top:4px;
-                                    color:#64748b;
-                                    font-size:11px;
-                                ">
-                                    Blurred overview of relative measured levels.
-                                </div>
+    margin-top:4px;
+    color:#64748b;
+    font-size:11px;
+">
+    ${isDemo
+            ? "Static overview of measured EMF levels across the main floor."
+            : "Blurred overview of relative measured levels."
+        }
+</div>
 
                             </div>
 
 
-                            ${
-                                floors.length > 1
-                                    ? `
+                            ${floors.length > 1
+            ? `
                                         <select
                                             id="brFloorSelect"
                                             class="
                                                 br-floor-select
                                             "
                                         >
-                                            ${
-                                                floors.map(
-                                                    (
-                                                        floor,
-                                                        index
-                                                    ) =>
-                                                        `<option value="${index}">
-                                                            ${
-                                                                brEscape(
-                                                                    floor?.name ||
-                                                                    floor?.floorName ||
-                                                                    `Floor ${index + 1}`
-                                                                )
-                                                            }
+                                            ${floors.map(
+                (
+                    floor,
+                    index
+                ) =>
+                    `<option value="${index}">
+                                                            ${brEscape(
+                        floor?.name ||
+                        floor?.floorName ||
+                        `Floor ${index + 1}`
+                    )
+                    }
                                                         </option>`
-                                                ).join("")
-                                            }
+            ).join("")
+            }
                                         </select>
                                     `
-                                    : `
+            : `
                                         <div class="
                                             br-floor-select
                                         ">
-                                            ${
-                                                brEscape(
-                                                    floors[0]?.name ||
-                                                    floors[0]?.floorName ||
-                                                    "Floor 1"
-                                                )
-                                            }
+                                            ${brEscape(
+                floors[0]?.name ||
+                floors[0]?.floorName ||
+                "Floor 1"
+            )
+            }
                                         </div>
                                     `
-                            }
+        }
 
                         </div>
 
@@ -2413,73 +2655,101 @@ function renderBusinessResultsPreview(
                     <!-- UNLOCK -->
 
                     <section class="
-                        br-card
-                        br-unlock
-                    ">
+    br-card
+    br-unlock
+">
 
-                        <div class="
-                            br-unlock-title
-                        ">
-                            🔒 Unlock Full Results
-                        </div>
+    <div style="
+        display:flex;
+        align-items:flex-start;
+        gap:12px;
+        margin-bottom:12px;
+    ">
 
-
-                        <div style="
-                            color:#475569;
-                            font-size:13px;
-                        ">
-                            Get the complete professional assessment with:
-                        </div>
-
-
-                        <ul>
-
-                            <li>
-                                Interactive heatmaps for all floors
-                            </li>
-
-                            <li>
-                                Exact measurement values
-                            </li>
-
-                            <li>
-                                Detailed room and zone analysis
-                            </li>
-
-                            <li>
-                                Personalized recommendations
-                            </li>
-
-                            <li>
-                                Professional PDF report
-                            </li>
-
-                            <li>
-                                Source impact assessment
-                            </li>
-
-                        </ul>
+        <div style="
+            width:38px;
+            height:38px;
+            flex:0 0 38px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#eff6ff;
+            border:1px solid #dbeafe;
+            border-radius:10px;
+            font-size:19px;
+        ">
+            👤
+        </div>
 
 
-                        <button
-                            type="button"
-                            class="br-report-btn"
-                            onclick="generateBusinessPdf()"
-                        >
-                            📄 Generate Expert Report →
-                        </button>
+        <div>
+
+            <div class="br-unlock-title">
+                Professional Assessment
+            </div>
+
+            <div style="
+                margin-top:4px;
+                color:#334155;
+                font-size:13px;
+                font-weight:600;
+            ">
+                Need a deeper assessment?
+            </div>
+
+            <div style="
+    margin-top:12px;
+    padding:10px 12px;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:8px;
+    color:#475569;
+    font-size:11px;
+    line-height:1.45;
+">
+    <strong style="color:#334155;">
+        Early Professional Network
+    </strong>
+    <br>
+    Our professional network is growing.
+    Availability may vary by location as new professionals join.
+</div>
+
+        </div>
+
+    </div>
 
 
-                        <div style="
-                            margin-top:8px;
-                            text-align:center;
-                            color:#64748b;
-                            font-size:11px;
-                        ">
-                            Uses 1 credit · Full professional analysis
-                        </div>
+    <div style="
+        color:#475569;
+        font-size:13px;
+        line-height:1.5;
+        margin-bottom:16px;
+    ">
+        Connect with an EMF professional for
+        on-site measurement and professional analysis.
+    </div>
 
-                    </section>
+
+    <button
+    type="button"
+    class="br-report-btn"
+    onclick="openProfessionalAssessmentLocationModal();"
+>
+    Request a Professional Assessment →
+</button>
+
+
+    <div style="
+        margin-top:9px;
+        text-align:center;
+        color:#64748b;
+        font-size:11px;
+    ">
+        Request an on-site professional assessment
+    </div>
+
+</section>
 
                 </div>
 
@@ -2590,6 +2860,10 @@ function closeBusinessResultsPreview() {
     if (workspaceSwitcher) {
         workspaceSwitcher.style.display = "";
     }
+
+
+    // RESTORE CONTEXTUAL RETURN ACTION
+    window.updateWorkspaceUI?.();
 }
 
 
@@ -2602,3 +2876,6 @@ window.openBusinessResults =
 
 window.closeBusinessResultsPreview =
     closeBusinessResultsPreview;
+
+window.renderBusinessResultsPreview =
+    renderBusinessResultsPreview;

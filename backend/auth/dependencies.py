@@ -22,6 +22,7 @@ from auth.jwt import (
     ALGORITHM,
 )
 
+
 # =====================
 # TOKEN SCHEME
 # =====================
@@ -29,6 +30,7 @@ from auth.jwt import (
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="login",
 )
+
 
 # =====================
 # DB
@@ -66,18 +68,7 @@ def get_current_user(
         detail="Invalid authentication",
     )
 
-    print(
-        "\n================================="
-    )
-
-    print(
-        "🔥 GET CURRENT USER"
-    )
-
-    print(
-        "🔥 TOKEN RECEIVED:",
-        bool(token)
-    )
+    
 
     try:
 
@@ -87,26 +78,17 @@ def get_current_user(
             algorithms=[ALGORITHM],
         )
 
-        print(
-            "🔥 JWT PAYLOAD:",
-            payload
-        )
+       
 
         user_id = payload.get(
                 "sub",
             )
 
-        print(
-            "🔥 JWT USER ID:",
-            user_id,
-            type(user_id)
-        )
+       
 
         if user_id is None:
 
-            print(
-                "❌ JWT HAS NO SUB"
-            )
+           
 
             raise credentials_exception
 
@@ -116,10 +98,7 @@ def get_current_user(
 
         except Exception as err:
 
-            print(
-                "❌ USER ID CONVERSION FAILED:",
-                err
-            )
+           
 
             raise credentials_exception
 
@@ -127,31 +106,16 @@ def get_current_user(
                 User.id == user_id
             ).first()
 
-        print(
-            "🔥 USER FOUND:",
-            user
-        )
+       
 
         if not user:
 
-            print(
-                "❌ USER NOT FOUND:",
-                user_id
-            )
+           
 
             raise credentials_exception
 
-        print(
-            "🔥 AUTHENTICATION SUCCESS:",
-            {
-                "user_id":
-                    user.id
-            }
-        )
+       
 
-        print(
-            "=================================\n"
-        )
 
         return user
 
@@ -172,3 +136,18 @@ def get_current_user(
         )
 
         raise credentials_exception
+
+    # =====================
+# ADMIN
+# =====================
+
+def require_admin(
+    current_user: User = Depends(get_current_user),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required",
+        )
+
+    return current_user
