@@ -113,6 +113,16 @@ app.mount(
     name="assets",
 )
 
+app.mount(
+    "/frontend",
+    StaticFiles(
+        directory=str(
+            Path(__file__).resolve().parent.parent / "frontend"
+        )
+    ),
+    name="frontend",
+)
+
 app.include_router(
     reports_router,
 )
