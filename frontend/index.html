@@ -22735,21 +22735,9 @@
                   <!-- HOME -->
 
                   <div id="workspaceHomeItem" class="workspace-menu-item" onclick="
-    localStorage.setItem('workspaceMode', 'home');
-
-    const homeProjectId =
-        localStorage.getItem('home_project_id') ||
-        localStorage.getItem('homeProjectId');
-
-    if (homeProjectId) {
-        localStorage.setItem(
-            'home_project_id',
-            String(homeProjectId)
-        );
-    }
-
-    window.location.reload();
-">
+        setAppMode?.('home');
+        closeWorkspaceMenu?.();
+     ">
                     <span class="workspace-menu-icon">
                       🏠
                     </span>
@@ -22786,10 +22774,8 @@
               <!-- CONTEXTUAL RETURN ACTION -->
               <!-- ================================================== -->
 
-              <button id="contextualReturnButton" type="button" onclick="
-            localStorage.setItem('workspaceMode', 'home');
-            window.location.href = 'index.html';
-        ">
+              <button id="contextualReturnButton" type="button" style="display: none;"
+                onclick="returnToPrimaryWorkspace()">
                 ← <span id="contextualReturnLabel">My Property</span>
               </button>
 
@@ -28550,10 +28536,10 @@
     );
 
 
-  AppState.project.floors = [];
-
-
-  AppState.project.currentFloorIndex = 0;
+  if (AppState.project) {
+    AppState.project.floors = [];
+    AppState.project.currentFloorIndex = 0;
+  }
 
   AppState.ui.mode = "idle";
 
@@ -35194,15 +35180,22 @@
 
     // ==================================================
     // PROFESSIONAL — RESTORE REAL BUSINESS PROJECT
-    // BEFORE STARTUP WORKSPACE
     // ==================================================
 
-    if (
-      window.EMFProductContext?.account?.role ===
-      "professional" &&
-      workspaceMode === "business" &&
-      !localStorage.getItem("business_project_id")
-    ) {
+    window.restoreProfessionalBusinessProject = async function restoreProfessionalBusinessProject() {
+      if (
+        window.EMFProductContext?.account?.role !== "professional"
+      ) {
+        return null;
+      }
+
+      const existingProjectId =
+        localStorage.getItem("business_project_id");
+
+      if (existingProjectId) {
+        return existingProjectId;
+      }
+
       try {
         const res =
           await fetch(
@@ -35214,76 +35207,84 @@
             }
           );
 
-        if (res.ok) {
-          const response =
-            await res.json();
+        if (!res.ok) {
+          return null;
+        }
 
-          const projects =
-            Array.isArray(response)
-              ? response
-              : response.projects ||
-              response.data ||
-              [];
+        const response =
+          await res.json();
 
-          const businessProjects =
-            projects.filter(project => {
-              const type =
-                project?.type ||
-                project?.project_type ||
-                project?.projectType ||
-                project?.data?.type ||
-                project?.data?.project_type ||
-                project?.data?.projectType ||
-                "";
+        const projects =
+          Array.isArray(response)
+            ? response
+            : response.projects ||
+            response.data ||
+            [];
 
-              return (
-                String(type)
-                  .toLowerCase()
-                  .trim() === "business"
-              );
-            });
+        const businessProjects =
+          projects.filter(project => {
+            const type =
+              project?.type ||
+              project?.project_type ||
+              project?.projectType ||
+              project?.data?.type ||
+              project?.data?.project_type ||
+              project?.data?.projectType ||
+              "";
 
-          console.log(
-            "🔥 PROFESSIONAL BUSINESS PROJECTS FOUND",
-            {
-              count:
-                businessProjects.length,
-              projects:
-                businessProjects
-            }
-          );
+            return (
+              String(type)
+                .toLowerCase()
+                .trim() === "business"
+            );
+          });
 
-          if (businessProjects.length === 1) {
-            const project =
-              businessProjects[0];
+        console.log(
+          "🔥 PROFESSIONAL BUSINESS PROJECTS FOUND",
+          {
+            count: businessProjects.length,
+            projects: businessProjects
+          }
+        );
 
-            const projectId =
-              project?.project_id ??
-              project?.id ??
-              null;
+        if (businessProjects.length === 1) {
+          const project =
+            businessProjects[0];
 
-            if (projectId) {
-              localStorage.setItem(
-                "business_project_id",
-                String(projectId)
-              );
+          const projectId =
+            project?.project_id ??
+            project?.id ??
+            null;
 
-              console.log(
-                "🔥 PROFESSIONAL BUSINESS PROJECT RESTORED",
-                {
-                  projectId
-                }
-              );
-            }
+          if (projectId) {
+            localStorage.setItem(
+              "business_project_id",
+              String(projectId)
+            );
+
+            console.log(
+              "🔥 PROFESSIONAL BUSINESS PROJECT RESTORED",
+              {
+                projectId
+              }
+            );
+
+            return String(projectId);
           }
         }
+
+        return null;
+
       } catch (error) {
         console.error(
           "❌ PROFESSIONAL BUSINESS PROJECT RESTORE FAILED:",
           error
         );
+
+        return null;
       }
-    }
+    };
+
 
     // ==================================================
     // 🔥 APPLY STARTUP WORKSPACE MODE
@@ -35333,6 +35334,22 @@
       await setAppMode(
         workspaceMode
       );
+
+      console.log("🔥 AFTER SET APP MODE — BEFORE UI", {
+        mode: window.AppMode?.current,
+        project: window.AppState?.project,
+        workspaceExperience: window.AppState?.workspaceExperience
+      });
+
+      updateWorkspaceUI?.();
+
+      console.log("🔥 AFTER UPDATE WORKSPACE UI", {
+        mode: window.AppMode?.current,
+        project: window.AppState?.project,
+        workspaceExperience: window.AppState?.workspaceExperience
+      });
+
+      updateWorkspaceUI?.();
 
       if (
         workspaceMode ===

@@ -315,25 +315,25 @@ function updateEMFProductContext() {
         workspace;
 
     const propertyId =
-    workspace === "home"
-        ? (
-            project?.propertyId ??
-            window.AppState?.homeProject?.propertyId ??
-            null
-        )
-        : null;
+        workspace === "home"
+            ? (
+                project?.propertyId ??
+                window.AppState?.homeProject?.propertyId ??
+                null
+            )
+            : null;
 
-        window.EMFProductContext.property.id =
-            propertyId;
+    window.EMFProductContext.property.id =
+        propertyId;
 
-            window.EMFProductContext.assessment.id =
-                assessmentId;
+    window.EMFProductContext.assessment.id =
+        assessmentId;
 
-            window.EMFProductContext.assessment.type =
-                assessmentType;
+    window.EMFProductContext.assessment.type =
+        assessmentType;
 
-            return window.EMFProductContext;
-        }
+    return window.EMFProductContext;
+}
 
 window.updateEMFProductContext =
     updateEMFProductContext;
@@ -746,8 +746,12 @@ console.log(
 // without knowing yet about the new architecture.
 // =====================================================
 
-AppState.project =
-    AppState.property;
+// ACTIVE PROJECT POINTER
+// Do not bind the canonical active project
+// to the Home property during global initialization.
+// Workspace-specific startup decides this later.
+
+AppState.project = null;
 
 
 // =====================================================

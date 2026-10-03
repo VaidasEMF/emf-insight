@@ -447,6 +447,28 @@ async function setAppMode(
     );
 
     // ==================================================
+    // BUSINESS — CLEAR HOME DEMO RUNTIME STATE
+    // ==================================================
+
+    if (mode === "business") {
+
+        window.EMFHomeDemo = false;
+
+        window.WorkspaceAccess =
+            window.WorkspaceAccess || {};
+
+        window.WorkspaceAccess.mode = "business";
+
+        if (
+            AppState.project?.project_id ===
+            "demo-home-property"
+        ) {
+            AppState.project = null;
+            window.project = null;
+        }
+    }
+
+    // ==================================================
     // HOME — HIDE BUSINESS DEMO
     // ==================================================
 
@@ -490,7 +512,7 @@ async function setAppMode(
     // TARGET BUSINESS PROJECT ID
     // ==================================================
 
-    const targetProjectId =
+    let targetProjectId =
         mode === "business"
             ? localStorage.getItem("business_project_id")
             : (
@@ -498,6 +520,15 @@ async function setAppMode(
                 localStorage.getItem("homeProjectId")
             );
 
+    if (
+        mode === "business" &&
+        window.EMFProductContext?.account?.role === "professional" &&
+        !targetProjectId &&
+        typeof window.restoreProfessionalBusinessProject === "function"
+    ) {
+        targetProjectId =
+            await window.restoreProfessionalBusinessProject();
+    }
 
     console.error(
         "🔥 TARGET WORKSPACE",
@@ -820,9 +851,6 @@ async function setAppMode(
         // ==================================================
         // BUSINESS
         // ==================================================
-        // ==================================================
-        // BUSINESS
-        // ==================================================
 
         if (
             mode === "business"
@@ -850,7 +878,8 @@ async function setAppMode(
 
             if (
                 experience.mode === "demo" &&
-                experience.demoType === "business"
+                experience.demoType === "business" &&
+                window.EMFProductContext?.account?.role !== "professional"
             ) {
 
                 console.log(
@@ -968,6 +997,7 @@ async function setAppMode(
                     );
 
                     activeProject =
+                        AppState.project ||
                         AppState.businessProject ||
                         null;
                 }
@@ -3469,6 +3499,13 @@ async function loadHomeDemoExperience() {
     window.EMFHomeDemo =
         true;
 
+    window.AppMode =
+        window.AppMode ||
+        {};
+
+    window.AppMode.current =
+        "home";
+
 
     window.WorkspaceAccess =
         window.WorkspaceAccess ||
@@ -3597,17 +3634,32 @@ function resolveWorkspaceExperience(mode) {
             };
         }
 
+        if (role === "professional") {
+            return {
+                mode: "real",
+                workspace: "business"
+            };
+        }
+
         return {
             mode: "demo",
             demoType: "business"
         };
     }
-
     // HOME
+
+    // PROFESSIONAL ALWAYS GETS HOME DEMO
+    if (role === "professional") {
+        return {
+            mode: "demo",
+            demoType: "home"
+        };
+    }
 
     const homeProject =
         window.AppState?.homeProject ||
         null;
+
     const homeProjectId =
         (
             homeProject?.project_id ??
@@ -3622,21 +3674,11 @@ function resolveWorkspaceExperience(mode) {
             projectId: String(homeProjectId)
         };
     }
-
-    if (role === "professional") {
-        return {
-            mode: "demo",
-            demoType: "home"
-        };
-    }
-
-    return {
-        mode: "activation",
-        activationType: "home"
-    };
 }
 
 function updateWorkspaceUI() {
+
+
 
     const mode =
         window.AppMode?.current ||
@@ -3647,7 +3689,7 @@ function updateWorkspaceUI() {
     // ==================================================
 
     const returnAction =
-        document.getElementById("contextualReturnAction");
+        document.getElementById("contextualReturnButton");
 
     const returnLabel =
         document.getElementById("contextualReturnLabel");
@@ -3685,6 +3727,16 @@ function updateWorkspaceUI() {
             returnLabel.textContent = "My Property";
         }
 
+    }
+
+    // Real Business workspace — no contextual return button
+    else if (
+        mode === "business" &&
+        !isHomeDemo
+    ) {
+        if (returnAction) {
+            returnAction.style.display = "none";
+        }
     }
 
     // Professional exploring Home
@@ -4727,40 +4779,34 @@ async function returnToPrimaryWorkspace() {
         }
     );
 
-    // Home Demo → Business
-    if (
-        mode === "home" &&
-        role === "professional"
-    ) {
-        localStorage.setItem(
-            "workspaceMode",
-            "business"
-        );
 
-        await setAppMode("business");
 
-        closeWorkspaceMenu?.();
-
-        return;
-    }
-
-    // Business Demo → Home
+    // ==================================================
+    // HOME USER
+    // Business Demo → Home Workspace
+    // ==================================================
     if (
         mode === "business" &&
         role !== "professional"
     ) {
-        localStorage.setItem(
-            "workspaceMode",
-            "home"
+
+        console.log(
+            "↩ HOME USER — BUSINESS DEMO → HOME"
         );
 
         await setAppMode("home");
+
+        updateProjectHeader?.();
+        updateWorkspaceUI?.();
 
         closeWorkspaceMenu?.();
 
         return;
     }
 
+    // ==================================================
+    // NO CONTEXTUAL RETURN REQUIRED
+    // ==================================================
     console.log(
         "↩ RETURN TO PRIMARY WORKSPACE — NO ACTION",
         {
@@ -6468,9 +6514,6 @@ window.updateWellnessCard =
 
 window.showPremiumModal =
     showPremiumModal;
-
-window.toggleAdvancedSources =
-    toggleAdvancedSources;
 
 window.loadBusinessDemoExperience =
     loadBusinessDemoExperience;

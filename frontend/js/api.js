@@ -6657,6 +6657,7 @@ async function loadProject(
         renderFloorTabs?.();
 
         updateProjectHeader?.();
+        updateWorkspaceUI?.();
 
         updateWorkflowUI?.();
 
@@ -6665,7 +6666,6 @@ async function loadProject(
         updateHomeLocks?.();
 
         updateCurrentExposure?.();
-
         // ==================================================
         // RENDER
         // ==================================================
