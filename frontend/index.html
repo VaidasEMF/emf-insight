@@ -1913,6 +1913,21 @@
         background 0.15s ease;
     }
 
+    #contextualReturnButton {
+      border: none;
+      background: transparent;
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    #contextualReturnButton:hover {
+      color: #334155;
+      background: #f8fafc;
+    }
+
     .workspace-menu-item:hover {
       background: #f8fafc;
     }
@@ -22725,7 +22740,7 @@
 
                     </span>
 
-                    <span id="workspaceBusinessCheck" class="workspace-menu-check">
+                    <span id="workspaceBusinessCheck" class="workspace-menu-check" style="display: none;">
                       ✓
                     </span>
 
@@ -22735,18 +22750,14 @@
                   <!-- HOME -->
 
                   <div id="workspaceHomeItem" class="workspace-menu-item" onclick="
-        setAppMode?.('home');
-        closeWorkspaceMenu?.();
-     ">
+    setAppMode?.('home');
+    closeWorkspaceMenu?.();
+">
                     <span class="workspace-menu-icon">
                       🏠
                     </span>
 
                     <span class="workspace-menu-content">
-
-                      <span id="workspaceHomeCheck" class="workspace-menu-check">
-                        ✓
-                      </span>
 
                       <span class="workspace-menu-title">
                         My Property
@@ -22756,6 +22767,10 @@
                         Property Health Record
                       </span>
 
+                    </span>
+
+                    <span id="workspaceHomeCheck" class="workspace-menu-check">
+                      ✓
                     </span>
 
                   </div>
@@ -35332,7 +35347,12 @@
       );
 
       await setAppMode(
-        workspaceMode
+        workspaceMode,
+        {
+          skipProjectRestore:
+            window.EMFProductContext?.account?.role ===
+            "professional"
+        }
       );
 
       console.log("🔥 AFTER SET APP MODE — BEFORE UI", {

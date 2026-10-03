@@ -1,4 +1,4 @@
-// =====================
+﻿// =====================
 // 🔥 APP MODE
 // =====================
 
@@ -316,7 +316,8 @@ function hideWorkspaceAccessScreen() {
 // =====================================================
 
 async function setAppMode(
-    mode
+    mode,
+    options = {}
 ) {
 
     console.log(
@@ -505,6 +506,48 @@ async function setAppMode(
 
         await window.loadBusinessDemoExperience?.();
 
+        const businessItem =
+            document.getElementById(
+                "workspaceBusinessItem"
+            );
+
+        const homeItem =
+            document.getElementById(
+                "workspaceHomeItem"
+            );
+
+        const businessCheck =
+            document.getElementById(
+                "workspaceBusinessCheck"
+            );
+
+        const homeCheck =
+            document.getElementById(
+                "workspaceHomeCheck"
+            );
+
+        if (businessItem) {
+            businessItem.classList.add(
+                "workspace-menu-item-active"
+            );
+        }
+
+        if (homeItem) {
+            homeItem.classList.remove(
+                "workspace-menu-item-active"
+            );
+        }
+
+        if (businessCheck) {
+            businessCheck.style.display =
+                "inline-flex";
+        }
+
+        if (homeCheck) {
+            homeCheck.style.display =
+                "none";
+        }
+
         return;
     }
 
@@ -514,7 +557,13 @@ async function setAppMode(
 
     let targetProjectId =
         mode === "business"
-            ? localStorage.getItem("business_project_id")
+            ? (
+                options.skipProjectRestore
+                    ? null
+                    : localStorage.getItem(
+                        "business_project_id"
+                    )
+            )
             : (
                 localStorage.getItem("home_project_id") ||
                 localStorage.getItem("homeProjectId")
@@ -523,6 +572,7 @@ async function setAppMode(
     if (
         mode === "business" &&
         window.EMFProductContext?.account?.role === "professional" &&
+        !options.skipProjectRestore &&
         !targetProjectId &&
         typeof window.restoreProfessionalBusinessProject === "function"
     ) {
@@ -552,7 +602,8 @@ async function setAppMode(
     // ==================================================
 
     if (
-        mode === "home"
+        mode === "home" ||
+        mode === "business"
     ) {
 
         // ==================================================
@@ -592,6 +643,48 @@ async function setAppMode(
                 activeProject = null;
 
                 await window.loadHomeDemoExperience?.();
+
+                const businessItem =
+                    document.getElementById(
+                        "workspaceBusinessItem"
+                    );
+
+                const homeItem =
+                    document.getElementById(
+                        "workspaceHomeItem"
+                    );
+
+                const businessCheck =
+                    document.getElementById(
+                        "workspaceBusinessCheck"
+                    );
+
+                const homeCheck =
+                    document.getElementById(
+                        "workspaceHomeCheck"
+                    );
+
+                if (businessCheck) {
+                    businessCheck.style.display =
+                        "none";
+                }
+
+                if (homeCheck) {
+                    homeCheck.style.display =
+                        "inline-flex";
+                }
+
+                if (businessItem) {
+                    businessItem.classList.remove(
+                        "workspace-menu-item-active"
+                    );
+                }
+
+                if (homeItem) {
+                    homeItem.classList.add(
+                        "workspace-menu-item-active"
+                    );
+                }
 
                 return;
             }
@@ -804,7 +897,7 @@ async function setAppMode(
 
 
         const isHome =
-            window.AppMode?.current === "home";
+            mode === "home";
 
 
         if (businessItem) {
@@ -3674,6 +3767,10 @@ function resolveWorkspaceExperience(mode) {
             projectId: String(homeProjectId)
         };
     }
+
+    return {
+        mode: "real"
+    };
 }
 
 function updateWorkspaceUI() {
@@ -4779,7 +4876,27 @@ async function returnToPrimaryWorkspace() {
         }
     );
 
+    // ==================================================
+    // PROFESSIONAL — HOME DEMO → BUSINESS WORKSPACE
+    // ==================================================
+    if (
+        mode === "home" &&
+        role === "professional"
+    ) {
 
+        console.log(
+            "→ PROFESSIONAL — HOME DEMO → BUSINESS"
+        );
+
+        await setAppMode("business");
+
+        updateProjectHeader?.();
+        updateWorkspaceUI?.();
+
+        closeWorkspaceMenu?.();
+
+        return;
+    }
 
     // ==================================================
     // HOME USER
