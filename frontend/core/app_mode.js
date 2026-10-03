@@ -1893,10 +1893,10 @@ async function loadBusinessDemoExperience() {
                             "office",
 
                         image:
-                            "/frontend/assets/demo/rooms/office.png",
+                            "/assets/demo/rooms/office.png",
 
                         heatmap:
-                            "/frontend/assets/demo/heatmap/office_heatmap.png",
+                            "/assets/demo/heatmap/office_heatmap.png",
 
                         area:
                             28,
@@ -1933,10 +1933,10 @@ async function loadBusinessDemoExperience() {
                             "meeting",
 
                         image:
-                            "/frontend/assets/demo/rooms/meeting-room.png",
+                            "/assets/demo/rooms/meeting-room.png",
 
                         heatmap:
-                            "/frontend/assets/demo/heatmap/meeting-room-heatmap.png",
+                            "/assets/demo/heatmap/meeting-room-heatmap.png",
 
                         area:
                             34,
@@ -1973,10 +1973,10 @@ async function loadBusinessDemoExperience() {
                             "workspace",
 
                         image:
-                            "/frontend/assets/demo/rooms/open-workspace.png",
+                            "/assets/demo/rooms/open-workspace.png",
 
                         heatmap:
-                            "/frontend/assets/demo/heatmap/open-workspace-heatmap.png",
+                            "/assets/demo/heatmap/open-workspace-heatmap.png",
 
                         area:
                             86,
@@ -2029,10 +2029,10 @@ async function loadBusinessDemoExperience() {
                             "office",
 
                         image:
-                            "/frontend/assets/demo/rooms/private-office.png",
+                            "/assets/demo/rooms/private-office.png",
 
                         heatmap:
-                            "/frontend/assets/demo/heatmap/private-office-heatmap.png",
+                            "/assets/demo/heatmap/private-office-heatmap.png",
 
                         area:
                             22,
@@ -2069,10 +2069,10 @@ async function loadBusinessDemoExperience() {
                             "rest",
 
                         image:
-                            "/frontend/assets/demo/rooms/break-room.png",
+                            "/assets/demo/rooms/break-room.png",
 
                         heatmap:
-                            "/frontend/assets/demo/heatmap/break-room-heatmap.png",
+                            "/assets/demo/heatmap/break-room-heatmap.png",
 
                         area:
                             19,
