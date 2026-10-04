@@ -447,6 +447,22 @@ async function setAppMode(
         mode
     );
 
+
+    // ==================================================
+    // HOME — EXPORT DATA NOT AVAILABLE
+    // ==================================================
+
+    const businessExportDataButton =
+        document.getElementById(
+            "businessExportDataButton"
+        );
+
+    if (businessExportDataButton) {
+        businessExportDataButton.style.display =
+            mode === "home"
+                ? "none"
+                : "";
+    }
     // ==================================================
     // BUSINESS — CLEAR HOME DEMO RUNTIME STATE
     // ==================================================
@@ -454,6 +470,10 @@ async function setAppMode(
     if (mode === "business") {
 
         window.EMFHomeDemo = false;
+
+        document.body.classList.remove(
+            "home-demo-active"
+        );
 
         window.WorkspaceAccess =
             window.WorkspaceAccess || {};
@@ -3591,6 +3611,10 @@ async function loadHomeDemoExperience() {
 
     window.EMFHomeDemo =
         true;
+
+    document.body.classList.add(
+        "home-demo-active"
+    );
 
     window.AppMode =
         window.AppMode ||

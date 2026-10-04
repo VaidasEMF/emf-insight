@@ -690,6 +690,7 @@ body.business-demo-active
     transform: none !important;
 }
 
+
 body.business-demo-active
 #businessProjectActions .workflow-action-btn:hover,
 body.business-demo-active

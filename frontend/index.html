@@ -7879,6 +7879,75 @@
       filter: grayscale(0.3);
     }
 
+    /* HOME DEMO — BUSINESS-ONLY ACTIONS */
+
+    body.home-demo-active #businessExportDataButton {
+      display: none !important;
+    }
+
+    /* HOME DEMO — INACTIVE PLAN ACTIONS */
+
+    body.home-demo-active #homePlanActions .workflow-action-btn {
+      opacity: 0.45;
+      cursor: default !important;
+      pointer-events: none !important;
+      transform: none !important;
+    }
+
+    /* HOME DEMO — INACTIVE LIFESTYLE & SOURCES */
+
+    body.home-demo-active #homeLifestyleSection,
+    body.home-demo-active #homeSourcesSection {
+      opacity: 0.45;
+      pointer-events: none !important;
+      cursor: default !important;
+    }
+
+    /* HOME DEMO — HIDE PLAN */
+
+    body.home-demo-active #homePlanActions {
+      display: none !important;
+    }
+
+    /* HOME DEMO — INACTIVE PROJECT ACTIONS */
+
+    body.home-demo-active #businessProjectActions .workflow-action-btn {
+      opacity: 0.45;
+      cursor: default !important;
+      pointer-events: none !important;
+      transform: none !important;
+    }
+
+    /* HOME DEMO — HIDE PLAN */
+
+    body.home-demo-active #homePlanActions {
+      display: none !important;
+    }
+
+    /* HOME DEMO — HIDE PROFESSIONAL ASSESSMENT */
+
+    body.home-demo-active #homeProfessionalAssessment {
+      display: none !important;
+    }
+
+    /* HOME DEMO — INACTIVE PROPERTY INSIGHTS */
+
+    body.home-demo-active #homeDemoPropertyInsights {
+      opacity: 0.45;
+      cursor: default !important;
+      pointer-events: none !important;
+      transform: none !important;
+    }
+
+    /* HOME DEMO — INACTIVE EXPERT REPORT */
+
+    body.home-demo-active #homeDemoExpertReport {
+      opacity: 0.45;
+      cursor: default !important;
+      pointer-events: none !important;
+      transform: none !important;
+    }
+
     .workflow-action-btn.active-step {
 
       border: 2px solid #3b82f6;
@@ -21343,73 +21412,7 @@
           <!-- 🔥 WELLNESS CARD -->
           <!-- ===================== -->
 
-          <div id="wellnessCard" class="wellnessCard home-only">
-
-            <div id="wellnessTitle">
-              YOUR PROPERTY HEALTH RECORD
-            </div>
-
-            <div id="wellnessScore">
-              Your Property Health Record has started
-            </div>
-
-            <div id="wellnessSummary">
-              Your property's environmental profile is being built as you explore
-              your home, sources and daily living areas.
-            </div>
-
-            <div class="property-record-grid">
-
-              <div class="property-record-item">
-                <div class="property-record-label">
-                  PROPERTY
-                </div>
-                <div class="property-record-value">
-                  My Property
-                </div>
-              </div>
-
-              <div class="property-record-item">
-                <div class="property-record-label">
-                  ENVIRONMENT
-                </div>
-                <div class="property-record-value">
-                  Environment profile in progress
-                </div>
-              </div>
-
-              <div class="property-record-item">
-                <div class="property-record-label">
-                  LIFESTYLE
-                </div>
-                <div class="property-record-value">
-                  Living areas not yet added
-                </div>
-              </div>
-
-              <div class="property-record-item">
-                <div class="property-record-label">
-                  ASSESSMENT
-                </div>
-                <div class="property-record-value">
-                  Initial Home Assessment
-                </div>
-              </div>
-
-            </div>
-
-            <div class="property-record-status">
-              <span class="property-record-status-label">
-                STATUS
-              </span>
-              <span class="property-record-status-value">
-                Initial record created
-              </span>
-            </div>
-
-
-
-          </div>
+          <div id="wellnessScore"></div>
 
 
         </div>
@@ -22518,7 +22521,8 @@
 
           <!-- VIEW RESULTS -->
 
-          <button class="workflow-action-btn output-locked" type="button" onclick="openResultsDashboard()">
+          <button id="homeDemoPropertyInsights" class="workflow-action-btn output-locked" type="button"
+            onclick="openResultsDashboard()">
 
             <div class="workflow-action-icon">
               👁
@@ -22549,7 +22553,8 @@
 
           <!-- EXPERT REPORT -->
 
-          <button class="workflow-action-btn output-locked" type="button" onclick="generateBusinessPdf()">
+          <button id="homeDemoExpertReport" class="workflow-action-btn output-locked" type="button"
+            onclick="generateBusinessPdf()">
 
             <div class="workflow-action-icon">
               📄
@@ -22580,7 +22585,8 @@
 
           <!-- EXPORT DATA -->
 
-          <button class="workflow-action-btn output-locked" type="button" onclick="exportBusinessCsv()">
+          <button id="businessExportDataButton" class="workflow-action-btn output-locked" type="button"
+            onclick="exportBusinessCsv()">
 
             <div class="workflow-action-icon">
               📊
