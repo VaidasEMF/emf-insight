@@ -671,6 +671,49 @@
             display: none !important;
         }
 
+        body.business-demo-active #businessPlanActions,
+body.business-demo-active #businessAssessmentWorkspace,
+body.business-demo-active #businessWorkflowSection {
+    display: none !important;
+}
+        
+
+       /* Professional Demo — inactive sidebar actions */
+
+body.business-demo-active
+#businessProjectActions .workflow-action-btn,
+body.business-demo-active
+#businessOutputActions .workflow-action-btn {
+    opacity: 0.45;
+    cursor: default !important;
+    pointer-events: none !important;
+    transform: none !important;
+}
+
+body.business-demo-active
+#businessProjectActions .workflow-action-btn:hover,
+body.business-demo-active
+#businessOutputActions .workflow-action-btn:hover {
+    transform: none !important;
+}
+    
+
+        body.business-demo-active
+        #professionalDemoNewProperty:hover,
+        body.business-demo-active
+        #professionalDemoOpenProject:hover,
+        body.business-demo-active
+        #professionalDemoSaveProject:hover,
+        body.business-demo-active
+        #professionalDemoInsights:hover,
+        body.business-demo-active
+        #professionalDemoReport:hover,
+        body.business-demo-active
+        #professionalDemoExport:hover {
+            transform: none !important;
+        }
+
+
         @media (max-width: 700px) {
 
             #businessDemoWorkspace {
@@ -3471,7 +3514,6 @@
 
     window.hideBusinessDemoWorkspace =
         function () {
-
             document.body.classList.remove(
                 "business-demo-active"
             );
@@ -3485,7 +3527,14 @@
                 root.style.display =
                     "none";
             }
-        };
 
+            // RESTORE MAIN CANVAS AREA AFTER BUSINESS DEMO
+            const canvasArea =
+                document.querySelector(".canvas-area");
+
+            if (canvasArea) {
+                canvasArea.style.display = "";
+            }
+        };
 
 })();

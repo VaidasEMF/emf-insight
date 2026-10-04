@@ -3534,6 +3534,8 @@ function openCreateProjectNamePopup(projectType) {
 
     console.log("OPEN CREATE PROJECT POPUP:", projectType);
 
+
+
     if (projectType === "home") {
 
         const homeCountry =
@@ -3756,10 +3758,18 @@ function openCreateProjectNamePopup(projectType) {
 
 
 
+
     const popup =
         document.getElementById(
             "createProjectNamePopup"
         );
+
+    if (
+        popup &&
+        popup.parentElement !== document.body
+    ) {
+        document.body.appendChild(popup);
+    }
 
     const title =
         document.getElementById(
