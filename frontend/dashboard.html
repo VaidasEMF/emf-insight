@@ -13697,6 +13697,76 @@ ${!isTbd
                             </div>
                         </div>
 
+                                                <div class="admin-modal-field">
+
+                            <label>
+                                User Type
+                            </label>
+
+                            <div>
+                                <strong>
+                                    ${user.professional_demo_active === true
+                    ? "🟠 Professional Demo"
+                    : "Standard User"
+                }
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        ${user.professional_demo_active === true
+                    ? `
+                        <div class="admin-modal-field">
+
+                            <label>
+                                Demo Expires
+                            </label>
+
+                            <div>
+
+                                <strong>
+                                    ${user.professional_demo_expires_at
+                        ? new Date(
+                            user.professional_demo_expires_at
+                        ).toLocaleDateString()
+                        : "—"
+                    }
+                                </strong>
+
+                                ${user.professional_demo_expires_at
+                        ? `
+                                    <div
+                                        style="
+                                            margin-top:4px;
+                                            font-size:12px;
+                                            opacity:0.7;
+                                        "
+                                    >
+                                        ${Math.max(
+                            0,
+                            Math.ceil(
+                                (
+                                    new Date(
+                                        user.professional_demo_expires_at
+                                    ) -
+                                    Date.now()
+                                ) /
+                                (1000 * 60 * 60 * 24)
+                            )
+                        )} days remaining
+                                    </div>
+                                    `
+                        : ""
+                    }
+
+                            </div>
+
+                        </div>
+                        `
+                    : ""
+                }
+
 
                         <div class="admin-modal-field">
 
