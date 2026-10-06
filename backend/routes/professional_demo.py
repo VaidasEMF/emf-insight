@@ -535,11 +535,7 @@ def send_professional_demo(
 
     brevo_api_key = os.getenv("BREVO_API_KEY")
 
-    print(
-        "BREVO_API_KEY runtime check:",
-        bool(brevo_api_key)
-    )
-
+   
     if not brevo_api_key:
         raise HTTPException(
             status_code=500,

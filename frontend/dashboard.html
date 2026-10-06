@@ -16213,53 +16213,67 @@ ${!isTbd
                         );
 
                 const copyButton = `
-                            <button
-                                type="button"
-                                class="btn-secondary"
-                                onclick="copyAdminProfessionalDemoLinkById(${demo.id});">
-                                Copy Link
-                            </button>
-                        `;
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="copyAdminProfessionalDemoLinkById(${demo.id});">
+                Copy Link
+            </button>
+        `;
 
                 const sendButton = `
-                            <button
-                                type="button"
-                                class="btn-secondary"
-                                onclick="openAdminProfessionalDemoSend(${demo.id});">
-                                Send
-                            </button>
-                        `;
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="openAdminProfessionalDemoSend(${demo.id});">
+                Send
+            </button>
+        `;
+
+                const editDaysButton =
+                    demo.status === "active" ||
+                        demo.status === "available" ||
+                        demo.status === "expired"
+                        ? `
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="editAdminProfessionalDemoDuration(${demo.id});">
+                Edit Days
+            </button>
+        `
+                        : "";
 
                 const statusAction =
                     demo.status === "available"
                         ? `
-                                    <button
-                                        type="button"
-                                        class="btn-secondary"
-                                        onclick="deleteAdminProfessionalDemo(${demo.id});">
-                                        Delete
-                                    </button>
-                                `
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        onclick="deleteAdminProfessionalDemo(${demo.id});">
+                        Delete
+                    </button>
+                `
                         : (
                             demo.status === "active"
                                 ? `
-                                            <button
-                                                type="button"
-                                                class="btn-secondary"
-                                                onclick="revokeAdminProfessionalDemo(${demo.id});">
-                                                Revoke
-                                            </button>
-                                        `
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                onclick="revokeAdminProfessionalDemo(${demo.id});">
+                                Revoke
+                            </button>
+                        `
                                 : (
                                     demo.status === "revoked"
                                         ? `
-                                            <button
-                                                type="button"
-                                                class="btn-secondary"
-                                                onclick="reactivateAdminProfessionalDemo(${demo.id});">
-                                                Reactivate
-                                            </button>
-                                        `
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                onclick="reactivateAdminProfessionalDemo(${demo.id});">
+                                Reactivate
+                            </button>
+                        `
                                         : ""
                                 )
                         );
@@ -16333,6 +16347,7 @@ ${!isTbd
                                     <div style="display:flex; flex-wrap:wrap; gap:6px;">
                                         ${copyButton}
                                         ${sendButton}
+                                        ${editDaysButton}
                                         ${statusAction}
                                         ${feedbackButton}
                                     </div>
@@ -25130,6 +25145,184 @@ ${request.contact_expires_at
             contactSupport.style.display = "none";
             helpHub.style.display = "block";
         }
+        async function editAdminProfessionalDemoDuration(demoId) {
+
+            const demo =
+                adminProfessionalDemoEntries.find(
+                    item =>
+                        Number(item.id) ===
+                        Number(demoId)
+                );
+
+            if (!demo) {
+                return;
+            }
+
+            const modal =
+                document.getElementById(
+                    "adminProfessionalDemoDurationModal"
+                );
+
+            const currentDays =
+                document.getElementById(
+                    "adminProfessionalDemoCurrentDays"
+                );
+
+            const input =
+                document.getElementById(
+                    "adminProfessionalDemoDaysInput"
+                );
+
+            const status =
+                document.getElementById(
+                    "adminProfessionalDemoDurationStatus"
+                );
+
+            if (
+                !modal ||
+                !currentDays ||
+                !input ||
+                !status
+            ) {
+                console.error(
+                    "Professional Demo duration modal not found."
+                );
+                return;
+            }
+
+            const duration =
+                Number(demo.duration_days);
+
+            currentDays.textContent =
+                Number.isFinite(duration)
+                    ? `${duration} days`
+                    : "—";
+
+            input.value = "30";
+
+            status.textContent = "";
+
+            window.adminProfessionalDemoDurationId =
+                Number(demoId);
+
+            modal.classList.add("open");
+        }
+
+        function closeAdminProfessionalDemoDuration() {
+
+            const modal =
+                document.getElementById(
+                    "adminProfessionalDemoDurationModal"
+                );
+
+            if (modal) {
+                modal.classList.remove("open");
+            }
+
+            window.adminProfessionalDemoDurationId = null;
+        }
+
+
+        async function saveAdminProfessionalDemoDuration() {
+
+            const demoId =
+                window.adminProfessionalDemoDurationId ||
+                null;
+
+            const input =
+                document.getElementById(
+                    "adminProfessionalDemoDaysInput"
+                );
+
+            const status =
+                document.getElementById(
+                    "adminProfessionalDemoDurationStatus"
+                );
+
+            const button =
+                document.getElementById(
+                    "adminProfessionalDemoDurationSaveButton"
+                );
+
+            if (!demoId || !input || !status || !button) {
+                return;
+            }
+
+            const days = Number(input.value);
+
+            if (
+                !Number.isInteger(days) ||
+                days < 1 ||
+                days > 365
+            ) {
+                status.textContent =
+                    "Please enter a whole number between 1 and 365.";
+
+                return;
+            }
+
+            button.disabled = true;
+
+            status.textContent =
+                "Saving...";
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API}/professional-demo/admin/${demoId}`,
+                        {
+                            method: "PATCH",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                ...authHeaders()
+                            },
+
+                            body: JSON.stringify({
+                                action: "extend",
+                                days: days
+                            })
+                        }
+                    );
+
+                const result =
+                    await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result?.detail ||
+                        "Failed to update Demo duration."
+                    );
+                }
+
+                status.textContent =
+                    `Professional Demo extended by ${days} day${days === 1 ? "" : "s"}.`;
+
+                await loadAdminProfessionalDemos();
+
+                setTimeout(() => {
+                    closeAdminProfessionalDemoDuration();
+                }, 700);
+
+            } catch (error) {
+
+                console.error(
+                    "Failed to update Professional Demo duration:",
+                    error
+                );
+
+                status.textContent =
+                    error.message ||
+                    "Failed to update Demo duration.";
+
+            } finally {
+
+                button.disabled = false;
+            }
+        }
 
         window.closeHelpContactSupport =
             closeHelpContactSupport;
@@ -27365,6 +27558,76 @@ ${request.contact_expires_at
                 </button>
 
             </div>
+
+        </div>
+    </div>
+
+    <!-- =========================
+     ADMIN PROFESSIONAL DEMO DURATION MODAL
+========================= -->
+
+    <div class="admin-modal-backdrop" id="adminProfessionalDemoDurationModal" role="dialog" aria-modal="true"
+        aria-labelledby="adminProfessionalDemoDurationModalTitle">
+
+        <div class="admin-modal">
+
+            <div class="admin-modal-header">
+
+                <h3 id="adminProfessionalDemoDurationModalTitle">
+                    Edit Professional Demo Duration
+                </h3>
+
+                <p>
+                    Adjust the access period for this Professional Demo.
+                </p>
+
+            </div>
+
+            <div class="admin-modal-body">
+
+                <div class="admin-professionals-status" id="adminProfessionalDemoDurationStatus">
+                </div>
+
+                <div class="admin-modal-field">
+
+                    <label>
+                        Current Duration
+                    </label>
+
+                    <div id="adminProfessionalDemoCurrentDays" style="font-weight:600;">
+                        —
+                    </div>
+
+                </div>
+
+                <div class="admin-modal-field">
+
+                    <label for="adminProfessionalDemoDaysInput">
+                        Add Days
+                    </label>
+
+                    <input type="number" id="adminProfessionalDemoDaysInput" min="1" max="365" value="30"
+                        style="width:100%; box-sizing:border-box;">
+
+                </div>
+
+            </div>
+
+            <div class="admin-modal-actions">
+
+                <button type="button" class="btn-secondary" onclick="closeAdminProfessionalDemoDuration();">
+                    Cancel
+                </button>
+
+                <button type="button" class="btn-primary" id="adminProfessionalDemoDurationSaveButton"
+                    onclick="saveAdminProfessionalDemoDuration();">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </div>
+    </div>
 </body>
 
 </html>
