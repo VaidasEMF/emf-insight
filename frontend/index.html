@@ -27760,7 +27760,7 @@
                 <strong>Overall experience <span class="professional-demo-required">*</span></strong>
               </label>
               <p class="mutedText">
-                How would you rate your overall experience with EMF Maps Professional Demo?
+                How would you rate your overall experience with EMF Insight Professional Demo?
               </p>
               <select name="overall_rating" required>
                 <option value="">Select rating</option>
@@ -27812,7 +27812,7 @@
                 <strong>Results / Insights <span class="professional-demo-required">*</span></strong>
               </label>
               <p class="mutedText">
-                How clear and useful were the results, heatmaps, risk information, and insights provided by EMF Maps?
+                How clear and useful were the results, heatmaps, risk information, and insights provided by EMF Insight?
               </p>
               <select name="results_rating" required>
                 <option value="">Select rating</option>
@@ -27846,7 +27846,7 @@
             <h3 style="margin: 0 0 6px;">About your experience</h3>
 
             <p class="mutedText" style="margin-top: 0;">
-              This helps us understand who is testing EMF Maps and how we can improve it.
+              This helps us understand who is testing EMF Insight and how we can improve it.
             </p>
 
             <div style="margin-top: 18px;">
@@ -28056,6 +28056,7 @@
       <script src="js/export.js"></script>
       <script src="js/business_results.js"></script>
       <script src="js/business_demo.js"></script>
+      <script src="js/home_demo.js"></script>
 
       <!-- ===================== -->
       <!-- 🔥 RENDER HELPERS -->
@@ -28883,27 +28884,38 @@
   }
 
   async function confirmDeleteAccount() {
-    const modal =
-      document.getElementById("deleteAccountModal");
 
-    try {
-      const response = await fetch(
-        `${API}/me`,
-        {
-          method: "DELETE",
-          headers: getAuthHeaders()
-        }
+    const modal =
+      document.getElementById(
+        "deleteAccountModal"
       );
 
+    try {
+
+      const response =
+        await fetch(
+          `${API}/me`,
+          {
+            method: "DELETE",
+            headers: getAuthHeaders()
+          }
+        );
+
       if (!response.ok) {
-        let message = "Failed to delete account.";
+
+        let message =
+          "Failed to delete account.";
 
         try {
-          const data = await response.json();
+
+          const data =
+            await response.json();
 
           if (data.detail) {
-            message = data.detail;
+            message =
+              data.detail;
           }
+
         } catch (_) {
           // Ignore invalid error response
         }
@@ -28911,27 +28923,85 @@
         throw new Error(message);
       }
 
+
       // =========================
       // CLEAR LOCAL SESSION
       // =========================
 
-      localStorage.removeItem("token");
-      localStorage.removeItem("user_id");
+      // Resolve current user BEFORE removing token
+      const token =
+        localStorage.getItem("token");
 
-      localStorage.removeItem("project_id");
-      localStorage.removeItem("home_project_id");
-      localStorage.removeItem("business_project_id");
+      let userId = null;
 
-      localStorage.removeItem("workspaceMode");
-      localStorage.removeItem("requestedWorkspace");
+      try {
+
+        userId =
+          token
+            ? JSON.parse(
+              atob(
+                token.split(".")[1]
+              )
+            ).sub
+            : null;
+
+      } catch (e) {
+
+        console.warn(
+          "⚠️ Could not resolve user ID while clearing Home project",
+          e
+        );
+      }
+
+
+      // Remove current user's Home project
+      if (userId) {
+
+        localStorage.removeItem(
+          `home_project_id_${userId}`
+        );
+
+        localStorage.removeItem(
+          `home_workspace_active_${userId}`
+        );
+      }
+
+
+      // Clear session
+      localStorage.removeItem(
+        "token"
+      );
+
+      localStorage.removeItem(
+        "user_id"
+      );
+
+      localStorage.removeItem(
+        "project_id"
+      );
+
+      localStorage.removeItem(
+        "business_project_id"
+      );
+
+      localStorage.removeItem(
+        "workspaceMode"
+      );
+
+      localStorage.removeItem(
+        "requestedWorkspace"
+      );
+
 
       // =========================
       // LOGIN
       // =========================
 
-      window.location.href = "login.html";
+      window.location.href =
+        "login.html";
 
     } catch (error) {
+
       console.error(
         "DELETE ACCOUNT FAILED",
         error
@@ -28943,6 +29013,7 @@
       );
     }
   }
+
 
   function getOccupancy(
     hours
@@ -32088,10 +32159,39 @@
       "home"
     );
 
-    localStorage.setItem(
-      "home_project_id",
-      String(projectId)
-    );
+    // Resolve current user
+    const token =
+      localStorage.getItem("token");
+
+    let userId = null;
+
+    try {
+      userId =
+        token
+          ? JSON.parse(
+            atob(
+              token.split(".")[1]
+            )
+          ).sub
+          : null;
+    } catch (e) {
+      console.warn(
+        "⚠️ Could not resolve user ID for Home project"
+      );
+    }
+
+    // Store Home project for current user
+    if (userId) {
+      localStorage.setItem(
+        `home_project_id_${userId}`,
+        String(projectId)
+      );
+
+      localStorage.setItem(
+        `home_workspace_active_${userId}`,
+        "true"
+      );
+    }
 
     localStorage.removeItem(
       "project_id"
@@ -32102,8 +32202,6 @@
     window.location.href =
       "index.html";
   }
-
-
   window.openMyProperty =
     openMyProperty;
 
@@ -33172,43 +33270,81 @@
     }
   }
 
-
   async function loadProfessionalAssessmentRequest() {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
 
-    if (!token || window.AppMode?.current !== "home") {
+    if (
+      !token ||
+      window.AppMode?.current !== "home"
+    ) {
       return;
     }
 
+    // ================================================
+    // USER-SPECIFIC HOME PROJECT
+    // ================================================
+
+    let userId = null;
+
+    try {
+      userId =
+        JSON.parse(
+          atob(
+            token.split(".")[1]
+          )
+        ).sub;
+    } catch (e) {
+      console.warn(
+        "⚠️ Could not resolve user ID for Home project"
+      );
+    }
+
     const projectId =
-      localStorage.getItem("home_project_id") ||
-      localStorage.getItem("homeProjectId");
+      userId
+        ? (
+          localStorage.getItem(
+            `home_project_id_${userId}`
+          ) ||
+          localStorage.getItem(
+            "homeProjectId"
+          )
+        )
+        : localStorage.getItem(
+          "homeProjectId"
+        );
 
     if (!projectId) {
       window.homeProfessionalRequest = null;
+
       updateHomeProfessionalAssessment();
+
       return;
     }
 
     try {
-      const response = await fetch(
-        `${API}/professional-requests?project_id=${encodeURIComponent(projectId)}`,
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`
+      const response =
+        await fetch(
+          `${API}/professional-requests?project_id=${encodeURIComponent(projectId)}`,
+          {
+            headers: {
+              "Authorization":
+                `Bearer ${token}`
+            }
           }
-        }
-      );
+        );
 
       if (!response.ok) {
         console.error(
           "Professional request status check failed:",
           response.status
         );
+
         return;
       }
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       window.homeProfessionalRequest =
         data.request || null;
@@ -33216,6 +33352,7 @@
       updateHomeProfessionalAssessment();
 
     } catch (error) {
+
       console.error(
         "Professional request status check failed:",
         error
@@ -33499,20 +33636,82 @@
   }
 
   function signOut() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user_id");
 
-    localStorage.removeItem("project_id");
-    localStorage.removeItem("home_project_id");
-    localStorage.removeItem("homeProjectId");
-    localStorage.removeItem("business_project_id");
-    localStorage.removeItem("businessProjectId");
+    // Resolve current user BEFORE removing token
+    const token =
+      localStorage.getItem("token");
 
-    localStorage.removeItem("workspaceMode");
+    let userId = null;
 
-    sessionStorage.removeItem("requestedWorkspace");
+    try {
 
-    window.location.href = "login.html";
+      userId =
+        token
+          ? JSON.parse(
+            atob(
+              token.split(".")[1]
+            )
+          ).sub
+          : null;
+
+    } catch (e) {
+
+      console.warn(
+        "⚠️ Could not resolve user ID during sign out",
+        e
+      );
+    }
+
+
+    // Remove current user's Home project
+    if (userId) {
+
+      localStorage.removeItem(
+        `home_project_id_${userId}`
+      );
+
+      localStorage.removeItem(
+        `home_workspace_active_${userId}`
+      );
+    }
+
+
+    // Clear session
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "user_id"
+    );
+
+    localStorage.removeItem(
+      "project_id"
+    );
+
+    localStorage.removeItem(
+      "homeProjectId"
+    );
+
+    localStorage.removeItem(
+      "business_project_id"
+    );
+
+    localStorage.removeItem(
+      "businessProjectId"
+    );
+
+    localStorage.removeItem(
+      "workspaceMode"
+    );
+
+    sessionStorage.removeItem(
+      "requestedWorkspace"
+    );
+
+
+    window.location.href =
+      "login.html";
   }
 
   window.signOut = signOut;
@@ -33719,9 +33918,39 @@
 
     button.onclick = function () {
 
+      const token =
+        localStorage.getItem("token");
+
+      let userId = null;
+
+      try {
+        userId =
+          token
+            ? JSON.parse(
+              atob(
+                token.split(".")[1]
+              )
+            ).sub
+            : null;
+      } catch (e) {
+        console.warn(
+          "⚠️ Could not resolve user ID for Home project"
+        );
+      }
+
       const homeProjectId =
-        localStorage.getItem("home_project_id") ||
-        localStorage.getItem("homeProjectId");
+        userId
+          ? (
+            localStorage.getItem(
+              `home_project_id_${userId}`
+            ) ||
+            localStorage.getItem(
+              "homeProjectId"
+            )
+          )
+          : localStorage.getItem(
+            "homeProjectId"
+          );
 
       if (!homeProjectId) {
         console.error(
@@ -33745,10 +33974,13 @@
         "home"
       );
 
-      localStorage.setItem(
-        "home_project_id",
-        String(homeProjectId)
-      );
+      // USER-SPECIFIC HOME PROJECT
+      if (userId) {
+        localStorage.setItem(
+          `home_project_id_${userId}`,
+          String(homeProjectId)
+        );
+      }
 
       window.location.href = "index.html";
     };
@@ -34258,10 +34490,40 @@
       return;
     }
 
-    // Get current Home project
+    // ================================================
+    // GET CURRENT USER HOME PROJECT
+    // ================================================
+
+    let userId = null;
+
+    try {
+      userId =
+        token
+          ? JSON.parse(
+            atob(
+              token.split(".")[1]
+            )
+          ).sub
+          : null;
+    } catch (e) {
+      console.warn(
+        "⚠️ Could not resolve user ID for Home project"
+      );
+    }
+
     const projectId =
-      localStorage.getItem("home_project_id") ||
-      localStorage.getItem("homeProjectId");
+      userId
+        ? (
+          localStorage.getItem(
+            `home_project_id_${userId}`
+          ) ||
+          localStorage.getItem(
+            "homeProjectId"
+          )
+        )
+        : localStorage.getItem(
+          "homeProjectId"
+        );
 
     if (!projectId) {
       alert(
@@ -34495,23 +34757,52 @@
 
   window.onload = async () => {
 
+    // Resolve current user for startup diagnostics
+    const startupToken =
+      localStorage.getItem("token");
+
+    let startupUserId = null;
+
+    try {
+      startupUserId =
+        startupToken
+          ? JSON.parse(
+            atob(
+              startupToken.split(".")[1]
+            )
+          ).sub
+          : null;
+    } catch (e) {
+      console.warn(
+        "⚠️ Could not resolve user ID for startup diagnostics",
+        e
+      );
+    }
+
     console.error(
       "🔥🔥🔥🔥 WINDOW ONLOAD START 🔥🔥🔥🔥",
       {
         time: Date.now(),
         workspaceMode:
           localStorage.getItem("workspaceMode"),
-        homeProjectId:
-          localStorage.getItem("home_project_id"),
-        businessProjectId:
-          localStorage.getItem("business_project_id"),
-        legacyProjectId:
-          localStorage.getItem("project_id")
-      }
-    );
 
-    console.log(
-      "WINDOW ONLOAD START"
+        homeProjectId:
+          startupUserId
+            ? localStorage.getItem(
+              `home_project_id_${startupUserId}`
+            )
+            : null,
+
+        businessProjectId:
+          localStorage.getItem(
+            "business_project_id"
+          ),
+
+        legacyProjectId:
+          localStorage.getItem(
+            "project_id"
+          )
+      }
     );
 
     initializeProjects();
@@ -34567,10 +34858,32 @@
         "business_project_id"
       );
 
-    const homeProjectId =
-      localStorage.getItem(
-        "home_project_id"
+    const token =
+      localStorage.getItem("token");
+
+    let userId = null;
+
+    try {
+      userId =
+        token
+          ? JSON.parse(
+            atob(
+              token.split(".")[1]
+            )
+          ).sub
+          : null;
+    } catch (e) {
+      console.warn(
+        "⚠️ Could not resolve user ID for Home project startup"
       );
+    }
+
+    const homeProjectId =
+      userId
+        ? localStorage.getItem(
+          `home_project_id_${userId}`
+        )
+        : null;
 
     // ==================================================
     // LEGACY PROJECT ID
@@ -34648,9 +34961,11 @@
           ),
 
         homeProjectId:
-          localStorage.getItem(
-            "home_project_id"
-          ),
+          userId
+            ? localStorage.getItem(
+              `home_project_id_${userId}`
+            )
+            : null,
 
         legacyProjectId:
           localStorage.getItem(

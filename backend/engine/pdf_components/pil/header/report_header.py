@@ -50,7 +50,7 @@ def draw_report_header(
 
     meta = project.get("meta", {})
 
-    company = meta.get("company", "EMF Maps")
+    company = meta.get("company", "EMF Insight")
     report_id = meta.get("report_id", "")
     generated_at = meta.get("generated_at", "")
 

@@ -740,14 +740,6 @@ body.business-demo-active
         BUSINESS DEMO — MAIN CONTENT SCROLL
         ========================================================== */
 
-        body.business-demo-active .main-content {
-            height: 100%;
-            min-height: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            box-sizing: border-box;
-            overscroll-behavior: contain;
-        }
 
         body.business-demo-active .workspace {
             min-height: 0;

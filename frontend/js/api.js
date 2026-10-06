@@ -550,6 +550,27 @@ async function createProject(options = {}) {
         AppState.homeProject =
             newProject;
 
+        window.EMFWorkspaceExperience = {
+            mode: "real",
+            workspace: "home",
+            projectId: String(projectId)
+        };
+
+        AppState.workspaceExperience =
+            window.EMFWorkspaceExperience;
+
+        window.EMFHomeDemo = false;
+
+        document.body.classList.remove(
+            "home-demo-active"
+        );
+
+        window.WorkspaceAccess =
+            window.WorkspaceAccess || {};
+
+        window.WorkspaceAccess.mode =
+            "home";
+
     }
     else {
 
@@ -585,21 +606,46 @@ async function createProject(options = {}) {
         "home"
     ) {
 
-        localStorage.setItem(
-            "home_project_id",
-            String(
-                projectId
-            )
-        );
+        const token =
+            localStorage.getItem("token");
+
+        let userId = null;
+
+        try {
+            userId =
+                token
+                    ? JSON.parse(
+                        atob(
+                            token.split(".")[1]
+                        )
+                    ).sub
+                    : null;
+        } catch (e) {
+            console.warn(
+                "⚠️ Could not resolve user ID for Home project storage"
+            );
+        }
+
+        if (userId) {
+
+            localStorage.setItem(
+                `home_project_id_${userId}`,
+                String(projectId)
+            );
+
+            localStorage.setItem(
+                `home_workspace_active_${userId}`,
+                "true"
+            );
+
+        }
 
     }
     else {
 
         localStorage.setItem(
             "business_project_id",
-            String(
-                projectId
-            )
+            String(projectId)
         );
     }
 
@@ -950,6 +996,25 @@ async function createProject(options = {}) {
 
     requestRender?.();
 
+
+    // ==================================================
+    // HOME → REAL WORKSPACE AFTER PROJECT CREATION
+    // ==================================================
+
+    if (
+        projectType === "home" &&
+        typeof window.setAppMode === "function"
+    ) {
+
+        console.log(
+            "🏠 HOME PROJECT CREATED → OPEN REAL HOME",
+            {
+                projectId
+            }
+        );
+
+        await window.setAppMode("home");
+    }
 
     // ==================================================
     // FINAL DEBUG
@@ -2436,12 +2501,38 @@ async function openExistingProject(
             // HOME PROJECT ID
             // ------------------------------------------------
 
-            localStorage.setItem(
-                "home_project_id",
-                String(
-                    loadedProjectId
-                )
-            );
+            // ------------------------------------------------
+            // HOME PROJECT ID
+            // ------------------------------------------------
+
+            const token =
+                localStorage.getItem("token");
+
+            let userId = null;
+
+            try {
+                userId =
+                    token
+                        ? JSON.parse(
+                            atob(
+                                token.split(".")[1]
+                            )
+                        ).sub
+                        : null;
+            } catch (e) {
+                console.warn(
+                    "⚠️ Could not resolve user ID for Home project restore"
+                );
+            }
+
+            if (userId) {
+
+                localStorage.setItem(
+                    `home_project_id_${userId}`,
+                    String(loadedProjectId)
+                );
+
+            }
 
 
             // ------------------------------------------------
@@ -5125,9 +5216,40 @@ async function performProjectDelete(
             );
 
 
-            localStorage.removeItem(
-                "home_project_id"
-            );
+            // ------------------------------------------------
+            // REMOVE CURRENT USER'S HOME PROJECT ID
+            // ------------------------------------------------
+
+            const token =
+                localStorage.getItem("token");
+
+            let userId = null;
+
+            try {
+                userId =
+                    token
+                        ? JSON.parse(
+                            atob(
+                                token.split(".")[1]
+                            )
+                        ).sub
+                        : null;
+            } catch (e) {
+                console.warn(
+                    "⚠️ Could not resolve user ID while clearing Home project"
+                );
+            }
+
+            if (userId) {
+
+                localStorage.removeItem(
+                    `home_project_id_${userId}`
+                );
+
+                localStorage.removeItem(
+                    `home_workspace_active_${userId}`
+                );
+            }
 
 
             localStorage.removeItem(
@@ -5868,16 +5990,54 @@ async function loadProject(
         localStorage.getItem("workspaceMode") ||
         "business";
 
+    let resolvedHomeProjectId = null;
+
+    if (currentWorkspace === "home") {
+
+        const token =
+            localStorage.getItem("token");
+
+        let userId = null;
+
+        try {
+            userId =
+                token
+                    ? JSON.parse(
+                        atob(
+                            token.split(".")[1]
+                        )
+                    ).sub
+                    : null;
+        } catch (e) {
+            console.warn(
+                "⚠️ Could not resolve user ID for Home project"
+            );
+        }
+
+        resolvedHomeProjectId =
+            userId
+                ? (
+                    localStorage.getItem(
+                        `home_project_id_${userId}`
+                    ) ||
+                    localStorage.getItem(
+                        "homeProjectId"
+                    )
+                )
+                : localStorage.getItem(
+                    "homeProjectId"
+                );
+    }
+
     const resolvedProjectId =
         projectId ??
         currentProjectId ??
         (
             currentWorkspace === "home"
-                ? (
-                    localStorage.getItem("home_project_id") ||
-                    localStorage.getItem("homeProjectId")
+                ? resolvedHomeProjectId
+                : localStorage.getItem(
+                    "business_project_id"
                 )
-                : localStorage.getItem("business_project_id")
         );
 
     if (
@@ -6288,6 +6448,35 @@ async function loadProject(
                 project;
 
             // ==================================================
+            // REAL HOME PROJECT — CLEAR DEMO WORKSPACE EXPERIENCE
+            // ==================================================
+
+            const realExperience = {
+                mode: "real",
+                workspace: "home",
+                projectId: String(loadedProjectId)
+            };
+
+            AppState.workspaceExperience =
+                realExperience;
+
+            window.EMFWorkspaceExperience =
+                realExperience;
+
+            window.EMFHomeDemo =
+                false;
+
+            if (window.WorkspaceAccess) {
+                window.WorkspaceAccess.mode =
+                    "home";
+            }
+
+            console.log(
+                "🏠 REAL HOME PROJECT EXPERIENCE",
+                realExperience
+            );
+
+            // ==================================================
             // RESTORE CANONICAL PROPERTY FROM HOME PROJECT
             // ==================================================
 
@@ -6454,12 +6643,43 @@ async function loadProject(
 
         if (currentWorkspace === "home") {
 
-            localStorage.setItem(
-                "home_project_id",
-                String(
-                    loadedProjectId
-                )
-            );
+            // ------------------------------------------------
+            // USER-SPECIFIC HOME PROJECT ID
+            // ------------------------------------------------
+
+            const token =
+                localStorage.getItem("token");
+
+            let userId = null;
+
+            try {
+                userId =
+                    token
+                        ? JSON.parse(
+                            atob(
+                                token.split(".")[1]
+                            )
+                        ).sub
+                        : null;
+            } catch (e) {
+                console.warn(
+                    "⚠️ Could not resolve user ID for Home project ID"
+                );
+            }
+
+            if (userId) {
+
+                localStorage.setItem(
+                    `home_project_id_${userId}`,
+                    String(loadedProjectId)
+                );
+
+            }
+
+            // ------------------------------------------------
+            // LEGACY HOME PROJECT ID
+            // Keep temporarily for compatibility
+            // ------------------------------------------------
 
             localStorage.setItem(
                 "homeProjectId",

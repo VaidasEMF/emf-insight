@@ -84,39 +84,39 @@
   }
 
   function showProfessionalDemoFeedbackSubmittedPopup() {
-  if (document.getElementById("professionalDemoFeedbackSubmittedPopup")) {
-    return;
+    if (document.getElementById("professionalDemoFeedbackSubmittedPopup")) {
+      return;
+    }
+
+    const popup = document.createElement("div");
+
+    popup.id = "professionalDemoFeedbackSubmittedPopup";
+
+    popup.style.position = "fixed";
+    popup.style.inset = "0";
+    popup.style.display = "flex";
+    popup.style.alignItems = "center";
+    popup.style.justifyContent = "center";
+    popup.style.background = "rgba(15, 23, 42, 0.42)";
+    popup.style.zIndex = "10000";
+    popup.style.padding = "20px";
+    popup.style.boxSizing = "border-box";
+
+    popup.innerHTML =
+      "<div style=\"width:min(480px, 92vw); background:#fff; border-radius:14px; padding:30px; box-shadow:0 20px 50px rgba(0,0,0,.18); text-align:center;\">" +
+      "<h2 style=\"margin:0 0 12px;\">Thank you for your feedback!</h2>" +
+      "<p style=\"margin:0 0 24px; color:#64748b; line-height:1.5;\">Your feedback has been successfully submitted.</p>" +
+      "<button type=\"button\" id=\"professionalDemoFeedbackSubmittedPopupButton\" style=\"padding:11px 22px; border:0; border-radius:8px; background:#17202a; color:#fff; font-weight:600; cursor:pointer;\">Done</button>" +
+      "</div>";
+
+    document.body.appendChild(popup);
+
+    document
+      .getElementById("professionalDemoFeedbackSubmittedPopupButton")
+      ?.addEventListener("click", function () {
+        popup.remove();
+      });
   }
-
-  const popup = document.createElement("div");
-
-  popup.id = "professionalDemoFeedbackSubmittedPopup";
-
-  popup.style.position = "fixed";
-  popup.style.inset = "0";
-  popup.style.display = "flex";
-  popup.style.alignItems = "center";
-  popup.style.justifyContent = "center";
-  popup.style.background = "rgba(15, 23, 42, 0.42)";
-  popup.style.zIndex = "10000";
-  popup.style.padding = "20px";
-  popup.style.boxSizing = "border-box";
-
-  popup.innerHTML =
-    "<div style=\"width:min(480px, 92vw); background:#fff; border-radius:14px; padding:30px; box-shadow:0 20px 50px rgba(0,0,0,.18); text-align:center;\">" +
-    "<h2 style=\"margin:0 0 12px;\">Thank you for your feedback!</h2>" +
-    "<p style=\"margin:0 0 24px; color:#64748b; line-height:1.5;\">Your feedback has been successfully submitted.</p>" +
-    "<button type=\"button\" id=\"professionalDemoFeedbackSubmittedPopupButton\" style=\"padding:11px 22px; border:0; border-radius:8px; background:#17202a; color:#fff; font-weight:600; cursor:pointer;\">Done</button>" +
-    "</div>";
-
-  document.body.appendChild(popup);
-
-  document
-    .getElementById("professionalDemoFeedbackSubmittedPopupButton")
-    ?.addEventListener("click", function () {
-      popup.remove();
-    });
-}
 
   window.openProfessionalDemoFeedback = function () {
     if (feedbackSubmitted) return;
@@ -155,7 +155,7 @@
       background_text: form.background_text.value.trim() || null,
       home_projects_clarity: form.home_projects_clarity.value || null,
       home_projects_clarity_text:
-      form.home_projects_clarity_text.value.trim() || null,
+        form.home_projects_clarity_text.value.trim() || null,
       work_type: form.work_type.value || null,
       confusing_text: form.confusing_text.value.trim() || null,
       missing_features: form.missing_features.value.trim() || null,
@@ -235,8 +235,8 @@
     }
   };
 
-    window.maybePromptProfessionalDemoFeedback = function () {
-      const token = getFeedbackToken();
+  window.maybePromptProfessionalDemoFeedback = function () {
+    const token = getFeedbackToken();
 
     if (!token || feedbackSubmitted) return;
 
@@ -275,7 +275,7 @@
 
     prompt.innerHTML =
       "<div style=\"width:min(520px, 92vw); background:#fff; border-radius:14px; padding:30px; box-shadow:0 20px 50px rgba(0,0,0,.18); text-align:center;\">" +
-      "<h2 style=\"margin:0 0 12px;\">Help us improve EMF Maps</h2>" +
+      "<h2 style=\"margin:0 0 12px;\">Help us improve EMF Insight</h2>" +
       "<p style=\"margin:0 0 24px; color:#64748b; line-height:1.5;\">You've completed the main Professional Demo workflow. We'd really appreciate your feedback - it takes about 2 minutes.</p>" +
       "<div style=\"display:flex; justify-content:center; gap:12px; align-items:center;\">" +
       "<button type=\"button\" id=\"professionalDemoFeedbackPromptButton\" style=\"padding:11px 18px; border:0; border-radius:8px; background:#17202a; color:#fff; font-weight:600; cursor:pointer;\">Give Feedback</button>" +

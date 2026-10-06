@@ -10,7 +10,7 @@ ASSESSMENT_DATE = "Assessment Date"
 CONSULTANT = "Consultant"
 REPORT_ID = "Report ID"
 
-FOOTER_COMPANY = "EMF Maps"
+FOOTER_COMPANY = "EMF Insight"
 FOOTER_LINE1 = "Professional EMF Diagnostics"
 FOOTER_LINE2 = "Premium Consultant Report"
 
@@ -102,11 +102,11 @@ ABOUT_TEXT = (
 
 KEY_INFORMATION_TITLE = "KEY INFORMATION"
 
-FOOTER_COMPANY = "EMF Maps"
+FOOTER_COMPANY = "EMF Insight"
 
 FOOTER_TAGLINE = "Professional EMF Diagnostics"
 
-FOOTER_WEBSITE = "www.emfmaps.com"
+FOOTER_WEBSITE = "www.emfinsight.com"
 
-FOOTER_EMAIL = "info@emfmaps.com"
+FOOTER_EMAIL = "info@emfinsight.com"
 

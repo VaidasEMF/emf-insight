@@ -135,10 +135,32 @@ function initializeProjects() {
         ) || "home";
 
 
-    const homeProjectId =
-        localStorage.getItem(
-            "home_project_id"
+    const token =
+        localStorage.getItem("token");
+
+    let userId = null;
+
+    try {
+        userId =
+            token
+                ? JSON.parse(
+                    atob(
+                        token.split(".")[1]
+                    )
+                ).sub
+                : null;
+    } catch (e) {
+        console.warn(
+            "⚠️ Could not resolve user ID in bootstrap"
         );
+    }
+
+    const homeProjectId =
+        userId
+            ? localStorage.getItem(
+                `home_project_id_${userId}`
+            )
+            : null;
 
 
     const businessProjectId =

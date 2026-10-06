@@ -386,6 +386,18 @@ async function setAppMode(
         window.AppMode?.current ||
         null;
 
+    const wasHomeDemo =
+        previousMode === "home" &&
+        (
+            window.EMFHomeDemo === true ||
+            (
+                window.EMFWorkspaceExperience?.mode === "demo" &&
+                window.EMFWorkspaceExperience?.demoType === "home"
+            )
+        );
+
+    const leavingHomeDemo = wasHomeDemo;
+
     const previousProject =
         AppState.project ||
         null;
@@ -404,16 +416,8 @@ async function setAppMode(
             previousMode,
             targetMode: mode,
             previousProjectId,
-
             homeProjectId:
-                localStorage.getItem(
-                    "home_project_id"
-                ),
-
-            businessProjectId:
-                localStorage.getItem(
-                    "business_project_id"
-                )
+                null,
         }
     );
 
@@ -474,6 +478,13 @@ async function setAppMode(
         document.body.classList.remove(
             "home-demo-active"
         );
+
+        const homeDemoWorkspace =
+            document.getElementById("homeDemoWorkspace");
+
+        if (homeDemoWorkspace) {
+            homeDemoWorkspace.style.display = "none";
+        }
 
         window.WorkspaceAccess =
             window.WorkspaceAccess || {};
@@ -574,25 +585,67 @@ async function setAppMode(
     // ==================================================
     // TARGET BUSINESS PROJECT ID
     // ==================================================
+    console.error(
+        "🔥 LEAVING HOME DEMO CHECK",
+        {
+            previousMode,
+            leavingHomeDemo,
+            homeDemoExperience:
+                window.EMFWorkspaceExperience,
+            homeDemoFlag:
+                window.EMFHomeDemo,
+            businessProjectId:
+                localStorage.getItem("business_project_id")
+        }
+    );
+
+    let homeUserId = null;
+
+    try {
+        const token =
+            localStorage.getItem("token");
+
+        homeUserId =
+            token
+                ? JSON.parse(
+                    atob(
+                        token.split(".")[1]
+                    )
+                ).sub
+                : null;
+
+    } catch (e) {
+        console.warn(
+            "⚠️ Could not resolve user ID for Home project restore",
+            e
+        );
+    }
+
 
     let targetProjectId =
         mode === "business"
             ? (
-                options.skipProjectRestore
+                options.skipProjectRestore ||
+                    leavingHomeDemo
                     ? null
                     : localStorage.getItem(
                         "business_project_id"
                     )
             )
             : (
-                localStorage.getItem("home_project_id") ||
-                localStorage.getItem("homeProjectId")
+                localStorage.getItem(
+                    `home_project_id_${homeUserId}`
+                ) ||
+                localStorage.getItem(
+                    "homeProjectId"
+                )
             );
 
     if (
         mode === "business" &&
         window.EMFProductContext?.account?.role === "professional" &&
         !options.skipProjectRestore &&
+        !leavingHomeDemo &&
         !targetProjectId &&
         typeof window.restoreProfessionalBusinessProject === "function"
     ) {
@@ -707,6 +760,27 @@ async function setAppMode(
                 }
 
                 return;
+            }
+
+            // REAL HOME — hide Home Demo
+            if (
+                mode === "home" &&
+                experience.mode === "real"
+            ) {
+                const homeDemo =
+                    document.getElementById("homeDemoWorkspace");
+
+                if (homeDemo) {
+                    homeDemo.style.display = "none";
+                }
+
+                document.body.classList.remove(
+                    "home-demo-active"
+                );
+
+                console.log(
+                    "🏠 REAL HOME UI — Home Demo hidden"
+                );
             }
 
             // ------------------------------------------------
@@ -1037,6 +1111,11 @@ async function setAppMode(
             if (
                 targetProjectId
             ) {
+
+                console.trace(
+                    "🔥🔥 BUSINESS PROJECT RESTORE TRACE",
+                    targetProjectId
+                );
 
                 console.error(
                     "🔥 LOADING BUSINESS PROJECT",
@@ -2898,6 +2977,8 @@ async function loadBusinessDemoExperience() {
     window.EMFBusinessDemo =
         true;
 
+    document.body.classList.remove("home-demo-active");
+    document.body.classList.add("business-demo-active");
 
     window.EMFWorkspaceExperience = {
 
@@ -2914,6 +2995,8 @@ async function loadBusinessDemoExperience() {
 
     window.WorkspaceAccess.mode =
         "business_demo";
+
+    AppMode.current = "business";
 
 
     // ========================================================
@@ -2988,6 +3071,7 @@ async function loadBusinessDemoExperience() {
         }
     );
 }
+
 
 
 function updateWorkspaceMenuState() {
@@ -3439,40 +3523,18 @@ async function loadHomeDemoExperience() {
 
 
             {
-
-                id:
-                    "demo-source-tv",
-
-                name:
-                    "Smart TV",
-
-                category:
-                    "RF",
-
-                location:
-                    "Living Room",
-
-                level:
-                    "low"
+                id: "demo-source-mobile-tower",
+                name: "Mobile Tower",
+                category: "RF",
+                location: "Outside Property",
+                level: "moderate"
             },
-
-
             {
-
-                id:
-                    "demo-source-laptop",
-
-                name:
-                    "Laptop",
-
-                category:
-                    "RF",
-
-                location:
-                    "Home Office",
-
-                level:
-                    "low"
+                id: "demo-source-power-grid",
+                name: "Power Grid",
+                category: "Electrical",
+                location: "Outside Property",
+                level: "low"
             }
 
         ],
@@ -3660,6 +3722,11 @@ async function loadHomeDemoExperience() {
 
     window.requestRender?.();
 
+    window.renderHomeDemo?.(
+        AppState.homeDemoProject,
+        AppState.homeDemoAnalysis
+    );
+
 
     // ==================================================
     // DEBUG
@@ -3724,6 +3791,20 @@ window.loadHomeDemoExperience =
     loadHomeDemoExperience;
 
 function resolveWorkspaceExperience(mode) {
+
+    console.log("🔥 RESOLVE BUSINESS", {
+        mode,
+        currentMode: window.AppMode?.current,
+        homeDemo: window.EMFHomeDemo,
+        businessProjectId:
+            localStorage.getItem("business_project_id")
+    });
+
+    const leavingHomeDemo =
+        mode === "business" &&
+        window.AppMode?.current === "home" &&
+        window.EMFHomeDemo === true;
+
     const role =
         window.EMFProductContext?.account?.role ||
         "user";
@@ -3737,14 +3818,23 @@ function resolveWorkspaceExperience(mode) {
         };
     }
 
+    // ==================================================
+    // BUSINESS
+    // ==================================================
+
     if (mode === "business") {
+
         const businessProjectId =
             localStorage.getItem("business_project_id") ||
             window.AppState?.businessProject?.project_id ||
             window.AppState?.businessProject?.id ||
             null;
 
-        if (role === "professional" && businessProjectId) {
+        if (
+            role === "professional" &&
+            businessProjectId &&
+            !leavingHomeDemo
+        ) {
             return {
                 mode: "real",
                 projectId: String(businessProjectId)
@@ -3763,37 +3853,122 @@ function resolveWorkspaceExperience(mode) {
             demoType: "business"
         };
     }
-    // HOME
 
-    // PROFESSIONAL ALWAYS GETS HOME DEMO
+    // ==================================================
+    // HOME
+    // ==================================================
+
+    let userId = null;
+
+    try {
+
+        const token =
+            localStorage.getItem("token");
+
+        if (token) {
+
+            const payload =
+                JSON.parse(
+                    atob(
+                        token.split(".")[1]
+                    )
+                );
+
+            userId =
+                payload?.sub
+                    ? String(payload.sub)
+                    : null;
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "⚠️ Could not resolve current user ID",
+            error
+        );
+    }
+
+    // ==================================================
+    // CURRENT HOME PROJECT
+    // ==================================================
+
+    const homeProject =
+        window.AppState?.homeProject ||
+        null;
+
+    const activeHomeProjectId =
+        homeProject?.project_id ??
+        homeProject?.id ??
+        null;
+
+    // ==================================================
+    // USER-SPECIFIC HOME PROJECT ID
+    // ==================================================
+
+    const userHomeProjectId =
+        userId
+            ? localStorage.getItem(
+                `home_project_id_${userId}`
+            )
+            : null;
+
+    const homeProjectId =
+        activeHomeProjectId ||
+        userHomeProjectId ||
+        null;
+
+    // ==================================================
+    // PROFESSIONAL → REAL HOME
+    // ONLY AFTER EXPLICIT HOME ACTIVATION
+    // ==================================================
+
     if (role === "professional") {
+
+        const homeWorkspaceActive =
+            userId
+                ? localStorage.getItem(
+                    `home_workspace_active_${userId}`
+                ) === "true"
+                : false;
+
+        if (
+            homeWorkspaceActive &&
+            homeProjectId
+        ) {
+
+            return {
+                mode: "real",
+                workspace: "home",
+                projectId: String(homeProjectId)
+            };
+        }
+
         return {
             mode: "demo",
             demoType: "home"
         };
     }
 
-    const homeProject =
-        window.AppState?.homeProject ||
-        null;
-
-    const homeProjectId =
-        (
-            homeProject?.project_id ??
-            homeProject?.id ??
-            localStorage.getItem("home_project_id")
-        ) ||
-        localStorage.getItem("homeProjectId");
+    // ==================================================
+    // REGULAR HOME USER
+    // ==================================================
 
     if (homeProjectId) {
+
         return {
             mode: "real",
+            workspace: "home",
             projectId: String(homeProjectId)
         };
     }
 
+    // ==================================================
+    // NO HOME PROJECT
+    // ==================================================
+
     return {
-        mode: "real"
+        mode: "real",
+        workspace: "home"
     };
 }
 
@@ -4878,6 +5053,10 @@ function updateWorkspaceUI() {
 
 
     requestRender?.();
+
+    if (typeof updateWorkspaceMenuState === "function") {
+        updateWorkspaceMenuState();
+    }
 }
 
 // ==================================================

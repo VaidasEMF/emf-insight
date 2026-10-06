@@ -62,7 +62,7 @@ def draw_cover_footer(
         draw,
         FOOTER_X,
         FOOTER_Y,
-        company or "EMF Maps",
+        company or "EMF Insight",
         company_font,
         fill=TEXT_WHITE,
     )
@@ -79,7 +79,7 @@ def draw_cover_footer(
         draw,
         FOOTER_X,
         FOOTER_Y + 92,
-        "www.emfmaps.com",
+        "www.emfinsight.com",
         body_font,
     )
 
@@ -87,7 +87,7 @@ def draw_cover_footer(
         draw,
         FOOTER_X,
         FOOTER_Y + 122,
-        "info@emfmaps.com",
+        "info@emfinsight.com",
         body_font,
     )
 
@@ -113,7 +113,7 @@ def draw_report_footer(
             LEFT_MARGIN,
             footer_y,
         ),
-        "© 2026 EMF Maps",
+        "© 2026 EMF Insight",
         fill=TEXT_SECONDARY,
         font=fonts["caption"],
     )
@@ -127,7 +127,7 @@ def draw_report_footer(
             PAGE_WIDTH / 2,
             footer_y,
         ),
-        "www.emfmaps.com",
+        "www.emfinsight.com",
         fill=TEXT_SECONDARY,
         font=fonts["caption"],
         anchor="ma",

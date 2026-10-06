@@ -1,7 +1,7 @@
-# EMF Maps — Current State
+# EMF Insight — Current State
 ## 25 September 2026
 
-This document is the handoff state for the EMF Maps / EMF Insight Home Wellness work.
+This document is the handoff state for the EMF Insight Home Wellness work.
 
 ## Current scope
 

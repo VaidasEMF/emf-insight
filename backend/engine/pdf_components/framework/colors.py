@@ -2,7 +2,7 @@
 Premium PDF Color Palette
 
 Centralized color definitions used across
-the PHI / EMF Maps PDF Design System.
+the PHI / EMF Insight PDF Design System.
 """
 
 # ==========================================================

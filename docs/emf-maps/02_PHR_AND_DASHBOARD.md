@@ -1,4 +1,4 @@
-# EMF Maps — Property Health Record & Dashboard
+# EMF Insight — Property Health Record & Dashboard
 
 ## Home information hierarchy
 

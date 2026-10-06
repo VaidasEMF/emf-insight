@@ -2,7 +2,7 @@
 Premium PDF Helpers
 
 Reusable drawing helpers used across
-the PHI / EMF Maps PDF Design System.
+the PHI / EMF Insight PDF Design System.
 """
 
 from PIL import ImageDraw

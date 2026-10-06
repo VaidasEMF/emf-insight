@@ -3,12 +3,12 @@
 # =====================
 
 DEFAULT_BRAND = {
-    "company": "EMF Maps",
+    "company": "EMF Insight",
     "primary": "#1E3A8A",
     "secondary": "#0F172A",
     "accent": "#2563EB",
     "logo": "assets/logo.png",
-    "website": "www.emfmaps.com",
+    "website": "www.emfinsight.com",
     "footer": ("Confidential environmental " "diagnostics report."),
     "theme": "light",
 }

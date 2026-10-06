@@ -1696,7 +1696,7 @@ def generate_pdf(
             workspace = "home"
 
         project["meta"] = {
-            "company": "EMF Maps",
+            "company": "EMF Insight",
             "report_id": project.get("project_id"),
             "generated_at": datetime.now().strftime("%Y-%m-%d"),
             "version": "PHI Premium v1.0",

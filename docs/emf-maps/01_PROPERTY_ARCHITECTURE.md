@@ -1,4 +1,4 @@
-# EMF Maps — Property Architecture
+# EMF Insight — Property Architecture
 
 ## Canonical model
 
