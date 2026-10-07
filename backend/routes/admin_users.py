@@ -162,12 +162,46 @@ def get_admin_user(
         },
     ).mappings().all()
 
+        # -----------------------------------------------------
+    # PROFESSIONAL DEMO
+    # -----------------------------------------------------
+
+    professional_demo = db.execute(
+        text("""
+            SELECT
+                status,
+                expires_at
+            FROM professional_demo_links
+            WHERE CAST(user_id AS VARCHAR) = CAST(:user_id AS VARCHAR)
+              AND status = 'active'
+              AND expires_at IS NOT NULL
+              AND expires_at > CURRENT_TIMESTAMP
+            ORDER BY expires_at DESC
+            LIMIT 1
+        """),
+        {
+            "user_id": user_id,
+        },
+    ).mappings().first()
+
+    professional_demo_active = (
+        professional_demo is not None
+    )
+
+    professional_demo_expires_at = (
+        professional_demo["expires_at"]
+        if professional_demo
+        else None
+    )
+
     return {
         "user": {
             "id": user.id,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
+            "professional_demo_active": professional_demo_active,
+            "professional_demo_expires_at": professional_demo_expires_at,
             "country": getattr(user, "country", None),
             "city": getattr(user, "city", None),    
             "company_name": user.company_name,
