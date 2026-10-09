@@ -21151,6 +21151,778 @@
     .professional-assessment-modal .secondary-btn {
       border-radius: 10px;
     }
+
+
+
+    .phr-lifestyle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .phr-lifestyle-card {
+      min-height: 52px;
+      padding: 8px 10px;
+      box-sizing: border-box;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      border: 1px solid #dbe5f2;
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    .phr-lifestyle-card span {
+      font-size: 13px;
+      font-weight: 600;
+      color: #102a56;
+    }
+
+    .phr-lifestyle-card .phr-simple-icon {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      font-size: 17px;
+    }
+
+    .phr-lifestyle-grid {
+      margin-top: 8px;
+      gap: 8px;
+    }
+
+    .phr-lifestyle-subtitle {
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #64748b;
+    }
+
+    .phr-lifestyle-note {
+      margin-top: 10px;
+      padding: 10px 12px;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      border: 1px solid #dbe5f2;
+      border-radius: 12px;
+      background: #f8fbff;
+      box-sizing: border-box;
+    }
+
+    .phr-lifestyle-note .phr-simple-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+    }
+
+    .phr-lifestyle-note>div:last-child {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .phr-lifestyle-note strong {
+      font-size: 12px;
+      color: #102a56;
+    }
+
+    .phr-lifestyle-note span {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #64748b;
+    }
+
+
+    .phr-assessment-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .phr-assessment-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .phr-assessment-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: #102a56;
+    }
+
+    .phr-assessment-subtitle {
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #64748b;
+    }
+
+    .phr-assessment-status {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #eef6ff;
+      color: #1769d2;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+
+    .phr-full-insights {
+      overflow: hidden;
+    }
+
+    .phr-full-insights-header {
+      padding: 0 0 16px;
+    }
+
+    .phr-full-insights-header h2 {
+      margin: 6px 0 6px;
+      font-size: 24px;
+      line-height: 1.2;
+      color: #102a56;
+    }
+
+    .phr-full-insights-header p {
+      margin: 0;
+      max-width: 760px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #64748b;
+    }
+
+    .phr-full-insights-visual {
+      width: 100%;
+      max-height: 430px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #dbe5f2;
+      background: #f8fbff;
+    }
+
+    .phr-full-insights-visual img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .phr-full-insights-action {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .phr-full-insights-button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 18px;
+      background: #2878dc;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .phr-full-insights-button:hover {
+      background: #1769c2;
+    }
+
+
+    .phr-full-insights {
+      overflow: hidden;
+    }
+
+    .phr-full-insights-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+      gap: 24px;
+      margin-top: 14px;
+      align-items: stretch;
+    }
+
+
+    /* =========================================
+   ILLUSTRATIVE PROPERTY VISUAL
+   ========================================= */
+
+    .phr-full-insights-visual {
+      position: relative;
+      min-height: 450px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #dbe5f2;
+      background: #f8fbff;
+    }
+
+    .phr-full-insights-visual img {
+      display: block;
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      min-height: 450px;
+      object-fit: cover;
+      object-position: right center;
+    }
+
+
+    /* =========================================
+   EXAMPLE BADGE
+   ========================================= */
+
+    .phr-example-badge {
+      position: absolute;
+
+      left: 50%;
+      bottom: 14px;
+
+      transform: translateX(-50%);
+
+      padding: 6px 12px;
+
+      border-radius: 999px;
+
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid #dbe5f2;
+
+      color: #475569;
+
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+
+      z-index: 5;
+      white-space: nowrap;
+    }
+
+
+    /* =========================================
+   RIGHT INFORMATION PANEL
+   ========================================= */
+
+    .phr-full-insights-info {
+      display: flex;
+      flex-direction: column;
+      padding: 4px 4px 4px 0;
+    }
+
+    .phr-full-insights-info h2 {
+      margin: 0 0 8px;
+
+      font-size: 24px;
+      line-height: 1.2;
+
+      color: #102a56;
+    }
+
+    .phr-full-insights-intro {
+      margin: 0 0 18px;
+
+      font-size: 13px;
+      line-height: 1.5;
+
+      color: #64748b;
+    }
+
+
+    /* =========================================
+   INSIGHT ITEMS
+   ========================================= */
+
+    .phr-insight-item {
+      display: flex;
+      align-items: flex-start;
+
+      gap: 11px;
+
+      margin-bottom: 13px;
+    }
+
+    .phr-insight-icon {
+      width: 38px;
+      height: 38px;
+
+      flex: 0 0 38px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 11px;
+
+      font-size: 18px;
+
+      background: #f1f6ff;
+    }
+
+    .phr-insight-item>div:last-child {
+      display: flex;
+      flex-direction: column;
+
+      gap: 2px;
+
+      padding-top: 2px;
+    }
+
+    .phr-insight-item strong {
+      font-size: 13px;
+      line-height: 1.2;
+
+      color: #102a56;
+    }
+
+    .phr-insight-item span {
+      font-size: 11px;
+      line-height: 1.4;
+
+      color: #64748b;
+    }
+
+
+    /* =========================================
+   EXAMPLE NOTE
+   ========================================= */
+
+    .phr-full-insights-note {
+      margin-top: auto;
+      margin-bottom: 14px;
+
+      padding: 10px 12px;
+
+      border-radius: 10px;
+
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .phr-full-insights-note strong {
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .phr-full-insights-note span {
+      font-size: 10px;
+      line-height: 1.4;
+      color: #64748b;
+    }
+
+
+    /* =========================================
+   UNLOCK
+   ========================================= */
+
+    .phr-full-insights-button {
+      width: 100%;
+
+      border: 0;
+      border-radius: 9px;
+
+      padding: 12px 16px;
+
+      background: #2878dc;
+      color: #ffffff;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    .phr-full-insights-button:hover {
+      background: #1769c2;
+    }
+
+
+    .property-health-dashboard-next-card {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+
+      gap: 12px;
+
+      min-height: 92px;
+
+      padding: 14px 16px;
+
+      text-align: left;
+
+      border: 1px solid #dbe5f2;
+      border-radius: 12px;
+
+      background: #f8fbff;
+
+      color: #102a56;
+
+      cursor: pointer;
+    }
+
+    .property-health-dashboard-next-card:hover {
+      border-color: #b9d3f3;
+      background: #f5f9ff;
+    }
+
+    .phr-next-icon {
+      width: 42px;
+      height: 42px;
+
+      flex: 0 0 42px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 12px;
+
+      background: #eaf3ff;
+
+      font-size: 20px;
+    }
+
+    .phr-next-icon-professional {
+      background: #f0ebff;
+    }
+
+    .phr-next-icon-muted {
+      background: #f1f5f9;
+      opacity: .7;
+    }
+
+    .phr-next-content {
+      min-width: 0;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 4px;
+    }
+
+    .phr-next-content strong {
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .phr-next-content span {
+      font-size: 11px;
+      line-height: 1.4;
+      color: #64748b;
+    }
+
+    .phr-next-arrow {
+      margin-left: auto;
+
+      font-size: 18px;
+      color: #2878dc;
+    }
+
+    .property-health-dashboard-next-card.is-locked {
+      cursor: default;
+      opacity: .72;
+    }
+
+    .property-health-dashboard-next-card.is-locked:hover {
+      border-color: #dbe5f2;
+      background: #f8fbff;
+    }
+
+    .phr-history {
+      position: relative;
+      margin-top: 8px;
+      padding-left: 8px;
+    }
+
+    .phr-history-item {
+      position: relative;
+
+      display: flex;
+      gap: 16px;
+
+      padding: 8px 0 10px;
+    }
+
+    .phr-history-marker {
+      position: relative;
+
+      width: 18px;
+      flex: 0 0 18px;
+
+      display: flex;
+      justify-content: center;
+    }
+
+    .phr-history-marker::after {
+      content: "";
+
+      position: absolute;
+
+      top: 18px;
+      bottom: -18px;
+
+      width: 1px;
+
+      background: #dbe5f2;
+    }
+
+    .phr-history-dot {
+      width: 10px;
+      height: 10px;
+
+      margin-top: 4px;
+
+      border-radius: 50%;
+
+      background: #2878dc;
+
+      box-shadow: 0 0 0 4px #eaf3ff;
+    }
+
+    .phr-history-content {
+      flex: 1;
+
+      padding-bottom: 8px;
+    }
+
+    .phr-history-top {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .phr-history-top strong {
+      font-size: 14px;
+      color: #102a56;
+    }
+
+    .phr-history-date {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .phr-history-subtitle {
+      margin-top: 4px;
+
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .phr-history-description {
+      margin-top: 4px;
+
+      font-size: 11px;
+      line-height: 1.45;
+
+      color: #94a3b8;
+    }
+
+
+    .home-professional-meta-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .home-professional-meta-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #102a56;
+    }
+
+    .home-professional-benefit {
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      background: #ffffff;
+      font-size: 13px;
+      color: #334155;
+    }
+
+
+
+    /* ==========================================
+   PROFESSIONAL ASSESSMENT — SIDEBAR
+   ========================================== */
+
+    .professional-assessment-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+      margin-top: 24px;
+    }
+
+
+
+    .pa-sidebar {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px 12px;
+      min-width: 0;
+
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    .pa-sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .pa-sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .pa-sidebar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 6px;
+    }
+
+
+
+    .pa-sidebar-property {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .pa-sidebar-property-icon {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #2563eb;
+      font-size: 27px;
+    }
+
+    .pa-sidebar-property strong {
+      display: block;
+      color: #0f172a;
+      font-size: 14px;
+    }
+
+    .pa-sidebar-subtitle {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .pa-access-active {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 11px;
+    }
+
+    .pa-sidebar-section-title {
+      padding: 0 10px;
+      margin: 18px 0 10px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    .pa-navigation {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .pa-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #1e293b;
+      text-align: left;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .pa-nav-item>span:first-child {
+      width: 22px;
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 19px;
+    }
+
+    .pa-nav-item:hover {
+      background: #f1f5f9;
+    }
+
+    .pa-nav-item.active {
+      background: #e8f0ff;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    .pa-sidebar-divider {
+      height: 1px;
+      margin: 20px 10px;
+      background: #e2e8f0;
+    }
+
+    .pa-lock {
+      margin-left: auto;
+      font-size: 12px;
+    }
+
+    .pa-main-content {
+      min-width: 0;
+    }
+
+    @media (max-width: 900px) {
+      .professional-assessment-layout {
+        grid-template-columns: 210px minmax(0, 1fr);
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .professional-assessment-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .pa-navigation {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
   </style>
 </head>
 
@@ -21923,81 +22695,192 @@
           <div class="professional-assessment-dialog" role="dialog" aria-modal="true"
             aria-labelledby="professionalAssessmentTitle">
 
+            <!-- CLOSE -->
             <button type="button" class="professional-assessment-close" aria-label="Close"
               onclick="closeProfessionalAssessmentLocationModal();">
               ×
             </button>
+
+
+            <!-- TITLE -->
             <div class="professional-assessment-title" id="professionalAssessmentTitle">
               Request a Professional Assessment
             </div>
+
+
+            <!-- SUBTITLE -->
             <div class="professional-assessment-subtitle">
               Submit a request to the EMF Insight professional network.
             </div>
 
+
+            <!-- ========================================== -->
+            <!-- CURRENT PROPERTY CONTEXT -->
+            <!-- ========================================== -->
+
+            <div id="professionalAssessmentPropertyContext" style="
+        margin-top:16px;
+        margin-bottom:20px;
+        padding:13px 15px;
+        border:1px solid #dbe5f1;
+        border-radius:10px;
+        background:#f8fbff;
+      ">
+
+              <div style="
+          font-size:11px;
+          font-weight:700;
+          letter-spacing:.07em;
+          text-transform:uppercase;
+          color:#64748b;
+          margin-bottom:5px;
+        ">
+                PROPERTY FOR THIS REQUEST
+              </div>
+
+
+              <div id="professionalAssessmentPropertyName" style="
+          font-size:15px;
+          font-weight:700;
+          color:#102a56;
+          line-height:1.35;
+        ">
+                My Property
+              </div>
+
+
+              <div id="professionalAssessmentProjectId" style="
+          margin-top:4px;
+          font-size:12px;
+          color:#64748b;
+        ">
+                Project ID: —
+              </div>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- HOW IT WORKS -->
+            <!-- ========================================== -->
+
             <div class="professional-assessment-how-it-works">
+
               <div class="professional-assessment-how-title">
                 How it works
               </div>
 
+
               <div class="professional-assessment-how-step">
-                <strong>1. Submit your request</strong>
+
+                <strong>
+                  1. Submit your request
+                </strong>
+
                 <span>
                   Enter your location and tell us where you need professional support.
                 </span>
+
               </div>
 
+
               <div class="professional-assessment-how-step">
-                <strong>2. Your request enters the network</strong>
+
+                <strong>
+                  2. Your request enters the network
+                </strong>
+
                 <span>
                   Your request becomes available to matching professionals in your area.
                 </span>
+
               </div>
 
+
               <div class="professional-assessment-how-step">
-                <strong>3. Connect with a professional</strong>
+
+                <strong>
+                  3. Connect with a professional
+                </strong>
+
                 <span>
                   When a suitable professional becomes available, you can continue directly with them.
                 </span>
+
               </div>
+
 
               <div class="professional-assessment-how-note">
                 Professional coverage varies by location and is growing as more professionals join EMF Insight.
               </div>
+
             </div>
 
+
+            <!-- ========================================== -->
+            <!-- COUNTRY -->
+            <!-- ========================================== -->
+
             <div class="form-group">
+
               <label for="professionalAssessmentCountry">
                 Country *
               </label>
 
               <select id="professionalAssessmentCountry" autocomplete="country"
                 onchange="checkProfessionalAvailability();">
-                <option value="">Select country</option>
+                <option value="">
+                  Select country
+                </option>
               </select>
+
             </div>
 
+
+            <!-- ========================================== -->
+            <!-- CITY -->
+            <!-- ========================================== -->
+
             <div class="form-group">
+
               <label for="professionalAssessmentCity">
                 City / Town *
               </label>
 
               <input type="text" id="professionalAssessmentCity" placeholder="City or town"
                 autocomplete="address-level2" onblur="checkProfessionalAvailability();">
+
             </div>
 
+
+            <!-- ========================================== -->
+            <!-- POSTAL CODE -->
+            <!-- ========================================== -->
+
             <div class="form-group">
+
               <label for="professionalAssessmentPostalCode">
                 Postal Code
               </label>
 
               <input type="text" id="professionalAssessmentPostalCode" placeholder="Optional"
                 autocomplete="postal-code">
+
             </div>
+
+
+            <!-- ========================================== -->
+            <!-- PROFESSIONAL AVAILABILITY -->
+            <!-- ========================================== -->
 
             <div id="professionalAssessmentAvailability" class="professional-assessment-availability">
               Enter country and city to check professional availability.
             </div>
 
+
+            <!-- ========================================== -->
+            <!-- LOCATION SHARING CONSENT -->
+            <!-- ========================================== -->
 
             <div class="professional-assessment-consent-section">
 
@@ -22005,26 +22888,37 @@
                 Location Sharing
               </div>
 
+
               <label class="professional-assessment-consent">
+
                 <input type="checkbox" id="professionalAssessmentLocationConsent"
                   onchange="updateProfessionalAssessmentSubmitState();">
 
                 <span>
+
                   I agree to share this location information for professional matching.
 
                   <button type="button" class="read-more-link" onclick="openProfessionalAssessmentTerms(event);">
                     Read more...
                   </button>
+
                 </span>
+
               </label>
 
             </div>
+
+
+            <!-- ========================================== -->
+            <!-- ACTIONS -->
+            <!-- ========================================== -->
 
             <div class="professional-assessment-actions">
 
               <button type="button" class="secondary-btn" onclick="closeProfessionalAssessmentLocationModal();">
                 Cancel
               </button>
+
 
               <button type="button" id="professionalAssessmentLocationSubmit" class="primary-btn"
                 onclick="createProfessionalRequest();" disabled>
@@ -22218,8 +23112,6 @@
             <!-- ===================== -->
 
             <button class="workflow-action-btn workflow-business-tools" data-step="grid" id="btnGenerateGrid" onclick="
-              
-              
 
                 window.generateGrid?.();
 
@@ -22635,10 +23527,6 @@
         </div>
         <!-- GUIDE -->
 
-        <div id="guideText" class="mutedText">
-        </div>
-
-
 
 
       </div>
@@ -22950,6 +23838,41 @@
 
                     </span>
                   </div>
+                  <div class="user-menu-item" id="userProfessionalRequestsItem" onclick="openMyProfessionalRequests()">
+
+                    <span class="user-menu-icon">
+                      📋
+                    </span>
+
+                    <span class="user-menu-text">
+                      <span class="user-menu-title">
+                        My Professional Requests
+                      </span>
+
+                      <span class="user-menu-subtitle">
+                        Track your professional assessment requests
+                      </span>
+                    </span>
+
+                    </span>
+
+                  </div>
+
+
+                  <!-- PROFESSIONAL CONTACTS -->
+
+                  <div class="user-menu-item" id="userProfessionalContactsItem" style="display:none;"
+                    onclick="window.location.href='dashboard.html#my-contacts'">
+                    <span class="user-menu-icon">👥</span>
+                    <span class="user-menu-content">
+                      <span class="user-menu-title">My Contacts</span>
+                      <span class="user-menu-subtitle">
+                        Reopen authorized client assessments
+                      </span>
+                    </span>
+                  </div>
+
+
 
 
                   <!-- BILLING -->
@@ -23509,15 +24432,15 @@
 
                 <div>
                   <div class="property-health-dashboard-eyebrow">
-                    PROPERTY HEALTH DASHBOARD
+                    PROPERTY HEALTH RECORD
                   </div>
 
-                  <h3 id="propertyHealthDashboardTitle">
+                  <h2 id="propertyHealthDashboardViewTitle">
                     My Property
-                  </h3>
+                  </h2>
 
-                  <div class="property-health-dashboard-subtitle">
-                    Your property's current environmental profile
+                  <div id="propertyHealthDashboardViewSubtitle" class="property-health-dashboard-subtitle">
+                    Your property's personal health record
                   </div>
                 </div>
 
@@ -23614,25 +24537,35 @@
 
                       <div class="property-health-dashboard-metric">
                         <span>Indoor Sources</span>
-                        <strong id="propertyHealthDashboardIndoorSources">
-                          0
-                        </strong>
+                        <strong id="propertyHealthDashboardIndoorSources">0</strong>
                       </div>
 
                       <div class="property-health-dashboard-metric">
                         <span>Outdoor Sources</span>
-                        <strong id="propertyHealthDashboardOutdoorSources">
-                          0
-                        </strong>
+                        <strong id="propertyHealthDashboardOutdoorSources">0</strong>
                       </div>
 
                       <div class="property-health-dashboard-metric">
                         <span>Total Sources</span>
-                        <strong id="propertyHealthDashboardTotalSources">
-                          0
-                        </strong>
+                        <strong id="propertyHealthDashboardTotalSources">0</strong>
                       </div>
 
+                    </div>
+
+                    <div class="property-health-dashboard-note">
+                      <strong>Identified environmental sources</strong>
+                      <span>
+                        Sources identified from your property information and assessment context.
+                        Professional measurements are required to validate actual exposure levels.
+                      </span>
+                    </div>
+
+                    <div class="property-health-dashboard-note">
+                      <strong>Identified environmental sources</strong>
+                      <span>
+                        Sources identified from your property information and assessment context.
+                        Professional measurements are required to validate actual exposure levels.
+                      </span>
                     </div>
 
                   </div>
@@ -23649,6 +24582,10 @@
 
                       <div class="property-health-dashboard-card-title">
                         LIFESTYLE
+                      </div>
+
+                      <div class="property-health-dashboard-note">
+                        Areas where your daily activities take place.
                       </div>
 
                     </div>
@@ -23725,76 +24662,276 @@
 
 
                 <!-- WHAT CAN YOU DO NEXT? -->
-                <div class="property-health-dashboard-card">
 
-                  <div class="property-health-dashboard-card-title">
+                <section class="property-health-dashboard-section">
+
+                  <div class="property-health-dashboard-section-title">
                     WHAT CAN YOU DO NEXT?
                   </div>
 
                   <div class="property-health-dashboard-next-grid">
 
-                    <button type="button" class="property-health-dashboard-next-item" onclick="openResultsDashboard()">
-                      <strong>Understand More</strong>
-                      <span>Explore your current property insights.</span>
+                    <!-- UNDERSTAND -->
+                    <button type="button" class="property-health-dashboard-next-card" onclick="openResultsDashboard()">
+                      <div class="phr-next-icon">
+                        📖
+                      </div>
+
+                      <div class="phr-next-content">
+                        <strong>Understand More</strong>
+                        <span>
+                          Explore your current property insights
+                        </span>
+                      </div>
+
+                      <span class="phr-next-arrow">→</span>
                     </button>
 
-                    <button type="button" class="property-health-dashboard-next-item"
-                      onclick="openHomeProfessionalAssessment?.()">
-                      <strong>Get Professional Assessment</strong>
-                      <span>Connect with an EMF professional.</span>
-                    </button>
 
-                    <button type="button" class="property-health-dashboard-next-item is-disabled" disabled>
-                      <strong>Improve Your Environment</strong>
-                      <span>Coming soon</span>
-                    </button>
 
-                    <button type="button" class="property-health-dashboard-next-item is-disabled" disabled>
-                      <strong>Track Changes</strong>
-                      <span>Property Health History</span>
-                    </button>
+
+                    <!-- IMPROVE -->
+                    <div class="property-health-dashboard-next-card is-locked">
+
+                      <div class="phr-next-icon phr-next-icon-muted">
+                        🌿
+                      </div>
+
+                      <div class="phr-next-content">
+                        <strong>Improve Your Environment</strong>
+                        <span>
+                          Coming soon
+                        </span>
+                      </div>
+
+                    </div>
+
+
+                    <!-- TRACK -->
+                    <div class="property-health-dashboard-next-card is-locked">
+
+                      <div class="phr-next-icon phr-next-icon-muted">
+                        ◷
+                      </div>
+
+                      <div class="phr-next-content">
+                        <strong>Track Changes</strong>
+                        <span>
+                          Your Property Health History will grow over time
+                        </span>
+                      </div>
+
+                    </div>
 
                   </div>
+
+                </section>
+
+
+                <section class="property-health-dashboard-section">
+
+                  <div class="property-health-dashboard-section-title">
+                    PROPERTY HEALTH HISTORY
+                  </div>
+
+                  <div class="phr-history">
+
+                    <div class="phr-history-item">
+
+                      <div class="phr-history-marker">
+                        <div class="phr-history-dot"></div>
+                      </div>
+
+                      <div class="phr-history-content">
+
+                        <div class="phr-history-top">
+
+                          <strong>
+                            Property Health Record created
+                          </strong>
+
+                          <span id="dashboardPropertyCreatedDate" class="phr-history-date">
+                            —
+                          </span>
+
+                        </div>
+
+                        <div class="phr-history-subtitle">
+                          Your property's health record has started.
+                        </div>
+
+                        <div class="phr-history-description">
+                          Property information, lifestyle areas and environmental
+                          context are now part of your property's record.
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </section>
+
+              </div>
+
+            </div>
+
+
+            <!-- =========================================================
+     HOME — MY PROFESSIONAL REQUEST
+     ========================================================= -->
+            <section id="homeProfessionalRequestPage" style="
+  display:none;
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  width:100%;
+  box-sizing:border-box;
+" aria-labelledby="homeProfessionalRequestPageTitle">
+
+              <div class="property-health-dashboard-card" style="
+  width:100%;
+  max-width:none;
+  flex:1;
+  min-height:0;
+  box-sizing:border-box;
+  border-radius:0;
+  border:none;
+  box-shadow:none;
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+">
+
+                <div class="property-health-dashboard-card-header">
+
+                  <div>
+                    <div class="property-health-dashboard-card-title">
+                      MY PROFESSIONAL REQUEST
+                    </div>
+
+                    <h2 id="homeProfessionalRequestPageTitle" style="
+            margin:6px 0 0;
+            font-size:28px;
+            line-height:1.15;
+          ">
+                      Get Professional Assessment
+                    </h2>
+
+                    <p id="homeProfessionalRequestPageIntro" style="
+            margin:8px 0 0;
+            color:#64748b;
+            max-width:720px;
+          ">
+                      Connect your property with a qualified EMF professional
+                      for an on-site assessment and professional measurement.
+                    </p>
+                  </div>
+
+                  <button type="button" class="btn-secondary" onclick="closeHomeProfessionalRequestPage()">
+                    ← Back to My Property
+                  </button>
 
                 </div>
 
 
-                <!-- PROPERTY HEALTH HISTORY -->
-                <div class="property-health-dashboard-card">
+                <!-- REQUEST CONTENT -->
 
-                  <div class="property-health-dashboard-card-header">
+                <div id="homeProfessionalRequestPageContent" style="
+  margin-top:24px;
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right:8px;
+">
 
-                    <div class="phr-icon phr-icon-dashboard">
-                      ◷
-                    </div>
+                  <div style="
+          padding:24px;
+          border:1px solid #dbe5f1;
+          border-radius:14px;
+          background:#f8fbff;
+        ">
 
-                    <div class="property-health-dashboard-card-title">
-                      PROPERTY HEALTH HISTORY
-                    </div>
+                    <h3 style="margin:0 0 8px;">
+                      Why request a professional assessment?
+                    </h3>
 
-                  </div>
+                    <p style="
+            margin:0;
+            color:#64748b;
+            max-width:760px;
+            line-height:1.6;
+          ">
+                      Your Property Health Record helps you understand your
+                      property's environmental context. A professional assessment
+                      adds actual EMF measurements and professional interpretation.
+                    </p>
 
-                  <div id="propertyHealthDashboardHistory" class="property-health-dashboard-history">
+                    <div style="
+            display:grid;
+            grid-template-columns:
+              repeat(auto-fit,minmax(210px,1fr));
+            gap:12px;
+            margin-top:20px;
+          ">
 
-                    <div class="property-health-dashboard-history-item">
+                      <div class="home-professional-benefit">
+                        ✓ Actual EMF measurements
+                      </div>
 
-                      <div class="property-health-dashboard-history-dot"></div>
+                      <div class="home-professional-benefit">
+                        ✓ On-site assessment
+                      </div>
 
-                      <div>
-                        <div class="property-health-dashboard-history-title">
-                          Initial record created
-                        </div>
+                      <div class="home-professional-benefit">
+                        ✓ Professional interpretation
+                      </div>
 
-                        <div id="propertyHealthDashboardCreatedDate" class="property-health-dashboard-history-date">
-                          —
-                        </div>
-
-                        <div class="property-health-dashboard-history-subtitle">
-                          Your Property Health Record has started.
-                        </div>
+                      <div class="home-professional-benefit">
+                        ✓ Practical recommendations
                       </div>
 
                     </div>
+
+                    <button type="button" id="homeProfessionalRequestSubmitButton"
+                      class="property-health-dashboard-primary-btn" style="margin-top:24px;"
+                      onclick="openHomeProfessionalRequestPage()">
+                      Submit Professional Request →
+                    </button>
+
+                  </div>
+
+
+                  <!-- REQUEST STATUS -->
+                  <div id="homeProfessionalRequestStatus" style="margin-top:20px;"></div>
+
+
+                  <!-- EARLY NETWORK -->
+                  <div style="
+          margin-top:20px;
+          padding:18px 20px;
+          border-radius:12px;
+          background:#f8fafc;
+          border:1px solid #e2e8f0;
+        ">
+
+                    <strong>
+                      Early Professional Network
+                    </strong>
+
+                    <p style="
+            margin:6px 0 0;
+            color:#64748b;
+            line-height:1.5;
+          ">
+                      Our professional network is growing.
+                      By submitting a request, you help us understand
+                      where Home users are looking for professional EMF assessment.
+                    </p>
 
                   </div>
 
@@ -23802,7 +24939,7 @@
 
               </div>
 
-            </div>
+            </section>
 
           </div>
 
@@ -23830,6 +24967,85 @@
 
         </div>
 
+
+        <!-- PROFESSIONAL ASSESSMENT — SEPARATE CLIENT CONTEXT -->
+        <section id="professionalAssessmentWorkspace" style="display:none; padding:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:20px;">
+
+            <div>
+              <h2 style="margin:0;">Property Assessment</h2>
+              <p style="margin:6px 0 0; color:#64748b;">
+                Authorized client property assessment
+              </p>
+            </div>
+
+            <button type="button" id="professionalAssessmentReturnButton" class="btn-secondary"
+              onclick="closeProfessionalAssessmentWorkspace()">
+              Back to My Workspace
+            </button>
+          </div>
+
+
+          <div class="professional-assessment-layout">
+
+            <aside class="pa-sidebar">
+              <div class="pa-sidebar-property">
+                <div class="pa-sidebar-property-icon">⌂</div>
+                <div>
+                  <strong>Client Property</strong>
+                  <div class="pa-sidebar-subtitle">Professional assessment</div>
+                  <span class="pa-access-active">Access active</span>
+                </div>
+              </div>
+
+              <div class="pa-sidebar-section-title">ASSESSMENT</div>
+
+              <nav class="pa-navigation" aria-label="Property assessment">
+                <button type="button" class="pa-nav-item active" data-pa-tab="overview">
+                  <span>▦</span> Overview
+                </button>
+                <button type="button" class="pa-nav-item" data-pa-tab="floor-plan">
+                  <span>◫</span> Floor Plan
+                </button>
+                <button type="button" class="pa-nav-item" data-pa-tab="measurements">
+                  <span>∿</span> Measurements
+                </button>
+                <button type="button" class="pa-nav-item" data-pa-tab="sources">
+                  <span>⌁</span> EMF Sources
+                </button>
+                <button type="button" class="pa-nav-item" data-pa-tab="analysis">
+                  <span>◇</span> Analysis
+                </button>
+                <button type="button" class="pa-nav-item" data-pa-tab="recommendations">
+                  <span>☷</span> Recommendations
+                </button>
+              </nav>
+
+              <div class="pa-sidebar-divider"></div>
+              <div class="pa-sidebar-section-title">OUTPUT</div>
+
+              <nav class="pa-navigation" aria-label="Assessment outputs">
+                <button type="button" class="pa-nav-item" data-pa-tab="insights">
+                  <span>◉</span> Property Insights
+                </button>
+                <button type="button" class="pa-nav-item" data-pa-tab="report">
+                  <span>▤</span> Expert Report <span class="pa-lock">🔒</span>
+                </button>
+                <button type="button" class="pa-nav-item" data-pa-tab="export">
+                  <span>▥</span> Export Data <span class="pa-lock">🔒</span>
+                </button>
+              </nav>
+            </aside>
+
+            <main class="pa-main-content">
+              <div id="professionalAssessmentContent">
+                <p>Loading authorized property assessment…</p>
+              </div>
+            </main>
+
+          </div>
+
+        </section>
 
 
         <!-- ================================================== -->
@@ -23894,9 +25110,7 @@
 
               </div>
 
-
               <!-- AREAS & ZONES -->
-
               <div class="workflow-item" data-step="rooms">
 
                 <div class="workflow-dot">3</div>
@@ -24344,7 +25558,7 @@
 
                 <div>
                   <div class="property-health-dashboard-eyebrow">
-                    PROPERTY HEALTH DASHBOARD
+                    PROPERTY HEALTH RECORD
                   </div>
 
                   <h2 id="propertyHealthDashboardViewTitle">
@@ -24352,7 +25566,7 @@
                   </h2>
 
                   <div id="propertyHealthDashboardViewSubtitle" class="property-health-dashboard-subtitle">
-                    Your property's current environmental profile
+                    Your property's personal health record
                   </div>
                 </div>
 
@@ -24394,67 +25608,52 @@
                     <strong id="dashboardPropertyId">—</strong>
                   </div>
 
+
                 </div>
 
               </section>
 
 
+
+
+
               <!-- ENVIRONMENT + LIFESTYLE -->
+              <section class="property-health-dashboard-section property-health-dashboard-lifestyle">
 
-              <div class="property-health-dashboard-two-column">
+                <div class="property-health-dashboard-section-title">
+                  LIFESTYLE
+                </div>
 
-                <section class="property-health-dashboard-section">
+                <div class="phr-lifestyle-subtitle">
+                  Areas where your daily activities take place
+                </div>
 
-                  <div class="property-health-dashboard-section-title">
-                    ENVIRONMENT
+                <div class="phr-lifestyle-grid">
+
+                  <div class="phr-lifestyle-card">
+                    <div class="phr-simple-icon phr-icon-sleep">🛏</div>
+                    <span>Sleep</span>
                   </div>
 
-                  <div class="property-health-dashboard-metrics">
-
-                    <div>
-                      <span>Indoor Sources</span>
-                      <strong id="dashboardIndoorSources">0</strong>
-                    </div>
-
-                    <div>
-                      <span>Outdoor Sources</span>
-                      <strong id="dashboardOutdoorSources">0</strong>
-                    </div>
-
-                    <div>
-                      <span>Total Sources</span>
-                      <strong id="dashboardTotalSources">0</strong>
-                    </div>
-
+                  <div class="phr-lifestyle-card">
+                    <div class="phr-simple-icon phr-icon-work">💻</div>
+                    <span>Work</span>
                   </div>
 
-                </section>
-
-                <section class="property-health-dashboard-section">
-
-                  <div class="property-health-dashboard-section-title">
-                    LIFESTYLE
+                  <div class="phr-lifestyle-card">
+                    <div class="phr-simple-icon phr-icon-rest">🛋</div>
+                    <span>Rest</span>
                   </div>
 
-                  <div class="property-health-dashboard-metrics">
-
-                    <div class="property-health-dashboard-metric">
-
-                      <span>
-                        Living Areas
-                      </span>
-
-                      <strong id="dashboardLifestyle">
-                        Living areas not yet added
-                      </strong>
-
-                    </div>
-
+                  <div class="phr-lifestyle-card">
+                    <div class="phr-simple-icon phr-icon-child">👶</div>
+                    <span>Child</span>
                   </div>
 
-                </section>
+                </div>
 
-              </div>
+
+              </section>
 
 
               <!-- CURRENT ASSESSMENT -->
@@ -24467,14 +25666,26 @@
 
                 <div class="property-health-dashboard-assessment">
 
-                  <div>
-                    <strong id="dashboardAssessmentName">
-                      Initial Home Assessment
-                    </strong>
+                  <div class="phr-assessment-content">
 
-                    <div class="property-health-dashboard-assessment-subtitle">
-                      Current property assessment
+                    <div class="phr-simple-icon phr-icon-assessment">
+                      📄
                     </div>
+
+                    <div class="phr-assessment-main">
+
+                      <div class="phr-assessment-title">
+                        Initial Home Assessment
+                      </div>
+
+                      <div class="phr-assessment-subtitle">
+                        Your initial assessment of the environmental
+                        conditions associated with your property.
+                      </div>
+
+                    </div>
+
+
                   </div>
 
                   <div id="dashboardAssessmentStatus" class="property-health-dashboard-status">
@@ -24486,25 +25697,125 @@
               </section>
 
 
-              <!-- PROPERTY INSIGHTS -->
+              <!-- FULL PROPERTY INSIGHTS -->
+              <section class="property-health-dashboard-section phr-full-insights">
 
-              <section class="property-health-dashboard-section property-health-dashboard-insights">
+                <div class="property-health-dashboard-section-title">
+                  FULL PROPERTY INSIGHTS
+                </div>
 
-                <div>
+                <div class="phr-full-insights-layout">
 
-                  <div class="property-health-dashboard-section-title">
-                    PROPERTY INSIGHTS
+                  <!-- ILLUSTRATIVE PROPERTY VISUAL -->
+                  <div class="phr-full-insights-visual">
+
+                    <img src="assets/phr/house_infographic.png" alt="Illustrative property environment example" />
+
+                    <div class="phr-example-badge">
+                      Illustrative Example
+                    </div>
+
                   </div>
 
-                  <div class="property-health-dashboard-value">
-                    Understand what we currently know about this property.
+
+                  <!-- EXPLANATION -->
+                  <div class="phr-full-insights-info">
+
+                    <h2>
+                      How Property Insights Work
+                    </h2>
+
+                    <p class="phr-full-insights-intro">
+                      See how EMF Insights connects environmental sources,
+                      your surroundings and the areas of your home that
+                      matter to you.
+                    </p>
+
+
+                    <div class="phr-insight-item">
+
+                      <div class="phr-insight-icon phr-icon-sources">
+                        📡
+                      </div>
+
+                      <div>
+                        <strong>Sources</strong>
+                        <span>
+                          Indoor and outdoor environmental sources.
+                        </span>
+                      </div>
+
+                    </div>
+
+
+                    <div class="phr-insight-item">
+
+                      <div class="phr-insight-icon phr-icon-context">
+                        📍
+                      </div>
+
+                      <div>
+                        <strong>Context</strong>
+                        <span>
+                          Property location and surrounding environment.
+                        </span>
+                      </div>
+
+                    </div>
+
+
+                    <div class="phr-insight-item">
+
+                      <div class="phr-insight-icon phr-icon-lifestyle">
+                        🏠
+                      </div>
+
+                      <div>
+                        <strong>Lifestyle</strong>
+                        <span>
+                          How your daily life connects with your environment.
+                        </span>
+                      </div>
+
+                    </div>
+
+
+                    <div class="phr-insight-item">
+
+                      <div class="phr-insight-icon phr-icon-assessment">
+                        📄
+                      </div>
+
+                      <div>
+                        <strong>Assessment</strong>
+                        <span>
+                          Insights, priorities and recommendations.
+                        </span>
+                      </div>
+
+                    </div>
+
+
+                    <div class="phr-full-insights-note">
+                      <strong>Illustrative example</strong>
+
+                      <span>
+                        The property shown is a demonstration example and
+                        does not represent your actual home. Your Full Property
+                        Insights are generated from information associated
+                        with your property.
+                      </span>
+                    </div>
+
+
+                    <button type="button" class="phr-full-insights-button"
+                      onclick="window.location.href='/dashboard.html#billing';">
+                      🔒 Unlock Full Property Insights →
+                    </button>
+
                   </div>
 
                 </div>
-
-                <button type="button" class="property-health-dashboard-primary-btn" onclick="openResultsDashboard()">
-                  View Property Insights →
-                </button>
 
               </section>
 
@@ -24519,25 +25830,52 @@
 
                 <div class="property-health-dashboard-next-grid">
 
-                  <button type="button" class="property-health-dashboard-next-card" onclick="openResultsDashboard()">
-                    <strong>Understand More</strong>
-                    <span>Explore your current property insights</span>
+
+
+                  <button type="button" id="phrProfessionalRequestCard" class="property-health-dashboard-next-card">
+                    <div class="phr-next-icon phr-next-icon-professional">
+                      👥
+                    </div>
+
+                    <div class="phr-next-content">
+                      <strong id="phrProfessionalRequestTitle">
+                        Get Professional Assessment
+                      </strong>
+
+                      <span id="phrProfessionalRequestSubtitle">
+                        Connect with a qualified EMF professional
+                      </span>
+                    </div>
+
+                    <span class="phr-next-arrow">→</span>
                   </button>
 
-                  <button type="button" class="property-health-dashboard-next-card"
-                    onclick="openHomeProfessionalAssessment?.()">
-                    <strong>Get Professional Assessment</strong>
-                    <span>Connect with an EMF professional</span>
-                  </button>
 
                   <div class="property-health-dashboard-next-card is-locked">
-                    <strong>Improve Your Environment</strong>
-                    <span>Coming soon</span>
+
+                    <div class="phr-next-icon phr-next-icon-muted">
+                      🌿
+                    </div>
+
+                    <div class="phr-next-content">
+                      <strong>Improve Your Environment</strong>
+                      <span>Coming soon</span>
+                    </div>
+
                   </div>
 
+
                   <div class="property-health-dashboard-next-card is-locked">
-                    <strong>Track Changes</strong>
-                    <span>Property Health History will grow over time</span>
+
+                    <div class="phr-next-icon phr-next-icon-muted">
+                      ◷
+                    </div>
+
+                    <div class="phr-next-content">
+                      <strong>Track Changes</strong>
+                      <span>Property Health History will grow over time</span>
+                    </div>
+
                   </div>
 
                 </div>
@@ -24553,20 +25891,39 @@
                   PROPERTY HEALTH HISTORY
                 </div>
 
-                <div class="property-health-dashboard-history-item">
+                <div class="phr-history">
 
-                  <div class="property-health-dashboard-history-dot"></div>
+                  <div class="phr-history-item">
 
-                  <div>
-                    <strong>Initial record created</strong>
-
-                    <div id="dashboardPropertyCreatedDate">
-                      —
+                    <div class="phr-history-marker">
+                      <div class="phr-history-dot"></div>
                     </div>
 
-                    <span>
-                      Your Property Health Record has started.
-                    </span>
+                    <div class="phr-history-content">
+
+                      <div class="phr-history-top">
+
+                        <strong>
+                          Property Health Record created
+                        </strong>
+
+                        <span id="dashboardPropertyCreatedDate" class="phr-history-date">
+                          —
+                        </span>
+
+                      </div>
+
+                      <div class="phr-history-subtitle">
+                        Your property's health record has started.
+                      </div>
+
+                      <div class="phr-history-description">
+                        Property information, lifestyle areas and environmental
+                        context are now part of your property's record.
+                      </div>
+
+                    </div>
+
                   </div>
 
                 </div>
@@ -27777,7 +29134,8 @@
                 <strong>Business Survey <span class="professional-demo-required">*</span></strong>
               </label>
               <p class="mutedText">
-                How easy was it to create a Business Survey, add rooms and zones, take measurements, and work with the
+                How easy was it to create a Business Survey, add rooms and zones, take measurements, and work with
+                the
                 project?
               </p>
               <select name="business_survey_rating" required>
@@ -27812,7 +29170,8 @@
                 <strong>Results / Insights <span class="professional-demo-required">*</span></strong>
               </label>
               <p class="mutedText">
-                How clear and useful were the results, heatmaps, risk information, and insights provided by EMF Insight?
+                How clear and useful were the results, heatmaps, risk information, and insights provided by EMF
+                Insight?
               </p>
               <select name="results_rating" required>
                 <option value="">Select rating</option>
@@ -27925,7 +29284,8 @@
             <h3 style="margin: 0 0 6px;">About Home Requests</h3>
 
             <div style="margin-top: 18px;">
-              <label><strong>How clear was the “Want to join the Early Professional Network?” section?</strong></label>
+              <label><strong>How clear was the “Want to join the Early Professional Network?”
+                  section?</strong></label>
               <select name="home_projects_clarity">
                 <option value="">Select one</option>
                 <option value="Very clear">Very clear</option>
@@ -30329,6 +31689,95 @@
     return "premium";
   }
 
+
+  function updatePHRProfessionalRequestCard() {
+
+    const card =
+      document.getElementById(
+        "phrProfessionalRequestCard"
+      );
+
+    const title =
+      document.getElementById(
+        "phrProfessionalRequestTitle"
+      );
+
+    const subtitle =
+      document.getElementById(
+        "phrProfessionalRequestSubtitle"
+      );
+
+    if (!card || !title || !subtitle) {
+
+      console.warn(
+        "⚠️ PHR Professional Request card elements not found."
+      );
+
+      return;
+    }
+
+    const request =
+      window.homeProfessionalRequest || null;
+
+    // ======================================================
+    // REQUEST EXISTS
+    // ======================================================
+
+    if (request) {
+
+      title.textContent =
+        "My Professional Request";
+
+      subtitle.textContent =
+        "Track your professional assessment request";
+
+      card.onclick = function () {
+
+        console.log(
+          "🏠 Opening My Professional Request page",
+          {
+            requestId: request.id || null,
+            projectId: request.project_id || null
+          }
+        );
+
+        openHomeProfessionalRequestPage();
+
+      };
+
+      card.setAttribute(
+        "aria-label",
+        "My Professional Request"
+      );
+
+      return;
+    }
+
+    // ======================================================
+    // NO REQUEST
+    // ======================================================
+
+    title.textContent =
+      "Get Professional Assessment";
+
+    subtitle.textContent =
+      "Connect with a qualified EMF professional";
+
+    card.onclick = function () {
+
+      console.log(
+        "🏠 Opening Professional Assessment request modal"
+      );
+
+      openProfessionalAssessmentLocationModal();
+
+    };
+
+    card.setAttribute(
+      "aria-label",
+      "Get Professional Assessment"
+    );
+  }
   function getOutdoorSourceState(source) {
 
     const hasLocation =
@@ -30916,6 +32365,22 @@
 
     );
   }
+
+
+  function updateProfessionalContactsMenu() {
+    const contactsItem = document.getElementById(
+      "userProfessionalContactsItem"
+    );
+
+    if (!contactsItem) return;
+
+    const role = window.EMFProductContext?.account?.role;
+
+    contactsItem.style.display =
+      role === "professional" ? "flex" : "none";
+  }
+
+
   // =====================
   // 🔥 LOCAL SOURCE CHECK
   // =====================
@@ -32151,6 +33616,90 @@
     openMyProperty();
   }
 
+  // =========================================================
+  // HOME — CURRENT PROJECT ID
+  // =========================================================
+  // Single source of truth for the currently selected
+  // Home property.
+  //
+  // All Home-specific actions should use this helper.
+  // =========================================================
+
+  function getCurrentHomeProjectId() {
+
+    const token =
+      localStorage.getItem("token");
+
+    let userId = null;
+
+    try {
+
+      userId =
+        token
+          ? JSON.parse(
+            atob(
+              token.split(".")[1]
+            )
+          ).sub
+          : null;
+
+    } catch (error) {
+
+      console.warn(
+        "Could not resolve Home user ID.",
+        error
+      );
+
+    }
+
+    // -------------------------------------------------------
+    // USER-SPECIFIC CURRENT HOME PROJECT
+    // -------------------------------------------------------
+
+    if (userId) {
+
+      const userProjectId =
+        localStorage.getItem(
+          `home_project_id_${userId}`
+        );
+
+      if (userProjectId) {
+        return userProjectId;
+      }
+    }
+
+    // -------------------------------------------------------
+    // CURRENT GENERIC HOME PROJECT
+    // -------------------------------------------------------
+
+    const projectId =
+      localStorage.getItem(
+        "home_project_id"
+      ) ||
+      localStorage.getItem(
+        "homeProjectId"
+      );
+
+    if (projectId) {
+      return projectId;
+    }
+
+    // -------------------------------------------------------
+    // APP STATE FALLBACK
+    // -------------------------------------------------------
+
+    const stateProjectId =
+      window.AppState?.homeProject?.project_id ??
+      window.AppState?.homeProject?.id ??
+      null;
+
+    if (stateProjectId) {
+      return String(stateProjectId);
+    }
+
+    return null;
+  }
+
 
   function openMyPropertyProject(projectId) {
 
@@ -32202,6 +33751,7 @@
     window.location.href =
       "index.html";
   }
+
   window.openMyProperty =
     openMyProperty;
 
@@ -33271,6 +34821,7 @@
   }
 
   async function loadProfessionalAssessmentRequest() {
+
     const token =
       localStorage.getItem("token");
 
@@ -33281,51 +34832,11 @@
       return;
     }
 
-    // ================================================
-    // USER-SPECIFIC HOME PROJECT
-    // ================================================
-
-    let userId = null;
-
     try {
-      userId =
-        JSON.parse(
-          atob(
-            token.split(".")[1]
-          )
-        ).sub;
-    } catch (e) {
-      console.warn(
-        "⚠️ Could not resolve user ID for Home project"
-      );
-    }
 
-    const projectId =
-      userId
-        ? (
-          localStorage.getItem(
-            `home_project_id_${userId}`
-          ) ||
-          localStorage.getItem(
-            "homeProjectId"
-          )
-        )
-        : localStorage.getItem(
-          "homeProjectId"
-        );
-
-    if (!projectId) {
-      window.homeProfessionalRequest = null;
-
-      updateHomeProfessionalAssessment();
-
-      return;
-    }
-
-    try {
       const response =
         await fetch(
-          `${API}/professional-requests?project_id=${encodeURIComponent(projectId)}`,
+          `${API}/professional-requests/mine`,
           {
             headers: {
               "Authorization":
@@ -33335,6 +34846,7 @@
         );
 
       if (!response.ok) {
+
         console.error(
           "Professional request status check failed:",
           response.status
@@ -33346,10 +34858,50 @@
       const data =
         await response.json();
 
+      const requests =
+        Array.isArray(data?.requests)
+          ? data.requests
+          : [];
+
+      // ==================================================
+      // CURRENT HOME PROPERTY
+      // ==================================================
+
+      const currentProjectId =
+        String(
+          window.AppState?.homeProject?.id ??
+          window.AppState?.project?.id ??
+          window.AppState?.property?.project_id ??
+          ""
+        );
+
+      // ==================================================
+      // FIND REQUEST FOR CURRENT PROPERTY
+      // ==================================================
+
+      const currentRequest =
+        requests.find(
+          request =>
+            String(
+              request?.project_id
+            ) === currentProjectId
+        ) || null;
+
       window.homeProfessionalRequest =
-        data.request || null;
+        currentRequest;
+
+      console.log(
+        "🏠 Professional request state",
+        {
+          currentProjectId,
+          request: currentRequest,
+          totalRequests: requests.length
+        }
+      );
 
       updateHomeProfessionalAssessment();
+
+      updatePHRProfessionalRequestCard();
 
     } catch (error) {
 
@@ -33511,6 +35063,64 @@
       );
       return;
     }
+
+    // =======================================================
+    // CURRENT HOME PROPERTY CONTEXT
+    // =======================================================
+
+    const currentProjectId =
+      getCurrentHomeProjectId();
+
+    const currentProperty =
+      window.AppState?.property ||
+      window.AppState?.homeProject ||
+      window.AppState?.project ||
+      {};
+
+    const rawPropertyName =
+      currentProperty?.name ||
+      "My Property";
+
+    const propertyName =
+      typeof rawPropertyName === "string"
+        ? rawPropertyName.trim()
+        : "My Property";
+
+
+    const propertyNameElement =
+      document.getElementById(
+        "professionalAssessmentPropertyName"
+      );
+
+    const projectIdElement =
+      document.getElementById(
+        "professionalAssessmentProjectId"
+      );
+
+
+    if (propertyNameElement) {
+
+      propertyNameElement.textContent =
+        propertyName;
+    }
+
+
+    if (projectIdElement) {
+
+      projectIdElement.textContent =
+        currentProjectId
+          ? `Project ID: ${currentProjectId}`
+          : "Project ID: —";
+    }
+
+
+    console.log(
+      "🏠 PROFESSIONAL ASSESSMENT POPUP CONTEXT",
+      {
+        projectId: currentProjectId,
+        propertyName: propertyName
+      }
+    );
 
     if (modal.parentElement !== document.body) {
       document.body.appendChild(modal);
@@ -33716,6 +35326,2504 @@
 
   window.signOut = signOut;
 
+
+  // =========================================================
+  // HOME — PROFESSIONAL REQUEST PROJECT GATE
+  // =========================================================
+  // Checks whether the CURRENT Home project already has
+  // a professional assessment request.
+  //
+  // NO REQUEST  → open existing assessment popup
+  // HAS REQUEST → open My Professional Request page
+  // =========================================================
+
+  async function handleHomeProfessionalAssessmentClick() {
+
+    const token =
+      localStorage.getItem("token");
+
+    if (!token) {
+      console.warn(
+        "Professional assessment: no authentication token."
+      );
+      return;
+    }
+
+    // -------------------------------------------------------
+    // Resolve current Home user
+    // -------------------------------------------------------
+
+    let userId = null;
+
+    try {
+
+      userId =
+        JSON.parse(
+          atob(
+            token.split(".")[1]
+          )
+        ).sub;
+
+    } catch (error) {
+
+      console.warn(
+        "Could not resolve user ID for Home project.",
+        error
+      );
+
+    }
+
+    // -------------------------------------------------------
+    // Resolve CURRENT Home project
+    // -------------------------------------------------------
+
+    const projectId =
+      userId
+        ? (
+          localStorage.getItem(
+            `home_project_id_${userId}`
+          ) ||
+          localStorage.getItem(
+            "homeProjectId"
+          )
+        )
+        : localStorage.getItem(
+          "homeProjectId"
+        );
+
+    if (!projectId) {
+
+      console.error(
+        "Professional assessment: no current Home project ID."
+      );
+
+      alert(
+        "Please open a Home property before requesting a professional assessment."
+      );
+
+      return;
+    }
+
+    console.log(
+      "Checking professional request for Home project:",
+      projectId
+    );
+
+    // -------------------------------------------------------
+    // Check request for THIS project
+    // -------------------------------------------------------
+
+    try {
+
+      const response =
+        await fetch(
+          `${API}/professional-requests?project_id=${encodeURIComponent(projectId)}`,
+          {
+            headers: {
+              "Authorization":
+                `Bearer ${token}`
+            }
+          }
+        );
+
+      if (!response.ok) {
+
+        console.error(
+          "Professional request project check failed:",
+          response.status
+        );
+
+        alert(
+          "Unable to check the professional assessment request. Please try again."
+        );
+
+        return;
+      }
+
+      const data =
+        await response.json();
+
+      const request =
+        data?.request || null;
+
+      // -----------------------------------------------------
+      // REQUEST ALREADY EXISTS
+      // -----------------------------------------------------
+
+      if (request) {
+
+        console.log(
+          "Professional request already exists for project:",
+          projectId,
+          request
+        );
+
+        window.homeProfessionalRequest =
+          request;
+
+        // Open our new Home Professional Request page.
+        openHomeProfessionalRequestPage();
+
+        return;
+      }
+
+      // -----------------------------------------------------
+      // NO REQUEST FOR THIS PROJECT
+      // -----------------------------------------------------
+
+      console.log(
+        "No professional request exists for project:",
+        projectId
+      );
+
+      // Use the EXISTING popup/workflow.
+      if (
+        typeof openHomeProfessionalAssessment ===
+        "function"
+      ) {
+
+        openHomeProfessionalAssessment();
+
+        return;
+      }
+
+      console.error(
+        "openHomeProfessionalAssessment() is not available."
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Professional request project check failed:",
+        error
+      );
+
+      alert(
+        "Unable to check your professional assessment request. Please try again."
+      );
+    }
+  }
+
+  // =========================================================
+  // HOME — MY PROFESSIONAL REQUEST PAGE
+  function openHomeProfessionalRequestPage() {
+
+    const workspaceSwitcher =
+      document.getElementById("workspaceSwitcherBtn");
+
+    if (workspaceSwitcher) {
+      workspaceSwitcher.style.display = "none";
+    }
+
+    const page =
+      document.getElementById(
+        "homeProfessionalRequestPage"
+      );
+
+    const modal =
+      document.getElementById(
+        "propertyHealthDashboardModal"
+      );
+
+    const wrapper =
+      modal?.querySelector(
+        ".property-health-dashboard-modal"
+      );
+
+    if (!page || !modal || !wrapper) {
+
+      console.error(
+        "❌ My Professional Request modal structure not found.",
+        {
+          page: !!page,
+          modal: !!modal,
+          wrapper: !!wrapper
+        }
+      );
+
+      return;
+    }
+
+    // Keep the PHR modal overlay open
+    modal.style.display = "flex";
+
+    // Hide the original PHR modal content
+    wrapper.style.display = "flex";
+
+    Array.from(
+      wrapper.children
+    ).forEach(child => {
+
+      child.dataset.homeProfessionalHidden =
+        child.style.display || "";
+
+      child.style.display = "none";
+
+    });
+
+    // Move the request page into the real modal container
+    if (page.parentElement !== wrapper) {
+      wrapper.appendChild(page);
+    }
+
+    // Show My Professional Request
+    page.style.display = "";
+
+    renderHomeProfessionalRequestPage();
+
+    console.log(
+      "🏠 My Professional Request page opened",
+      {
+        wrapperWidth:
+          wrapper.getBoundingClientRect().width,
+        wrapperHeight:
+          wrapper.getBoundingClientRect().height
+      }
+    );
+  }
+
+
+  function closeHomeProfessionalRequestPage() {
+
+    const workspaceSwitcher =
+      document.getElementById("workspaceSwitcherBtn");
+
+    if (workspaceSwitcher) {
+      workspaceSwitcher.style.display = "";
+    }
+
+    const page =
+      document.getElementById(
+        "homeProfessionalRequestPage"
+      );
+
+    const modal =
+      document.getElementById(
+        "propertyHealthDashboardModal"
+      );
+
+    const wrapper =
+      modal?.querySelector(
+        ".property-health-dashboard-modal"
+      );
+
+    if (!page || !modal || !wrapper) {
+
+      console.error(
+        "❌ Cannot close My Professional Request page.",
+        {
+          page: !!page,
+          modal: !!modal,
+          wrapper: !!wrapper
+        }
+      );
+
+      return;
+    }
+
+    // -----------------------------------------
+    // 1. Hide My Professional Request page
+    // -----------------------------------------
+
+    page.style.display = "none";
+
+    // -----------------------------------------
+    // 2. Move the page back outside the
+    //    real PHR modal container
+    // -----------------------------------------
+
+    if (page.parentElement === wrapper) {
+      modal.appendChild(page);
+    }
+
+    // -----------------------------------------
+    // 3. Restore original PHR modal children
+    // -----------------------------------------
+
+    Array.from(
+      wrapper.children
+    ).forEach(child => {
+
+      if (
+        child.dataset.homeProfessionalHidden !==
+        undefined
+      ) {
+
+        child.style.display =
+          child.dataset.homeProfessionalHidden;
+
+        delete child.dataset
+          .homeProfessionalHidden;
+      }
+
+    });
+
+    // -----------------------------------------
+    // 4. Restore normal PHR modal
+    // -----------------------------------------
+
+    wrapper.style.display = "";
+
+    // -----------------------------------------
+    // 5. Close the overlay
+    // -----------------------------------------
+
+    modal.style.display = "none";
+
+    console.log(
+      "🏠 Returned to Property Health Record"
+    );
+  }
+
+  const page =
+    document.getElementById(
+      "homeProfessionalRequestPage"
+    );
+
+  const dashboard =
+    document.getElementById(
+      "propertyHealthDashboard"
+    );
+
+  if (page) {
+    page.style.display = "none";
+  }
+
+  if (dashboard) {
+
+    Array.from(
+      dashboard.children
+    ).forEach(child => {
+
+      if (
+        child !== page &&
+        child.dataset.homeProfessionalHidden !==
+        undefined
+      ) {
+
+        child.style.display =
+          child.dataset.homeProfessionalHidden;
+
+        delete child.dataset.homeProfessionalHidden;
+      }
+
+    });
+
+  }
+
+  const overview =
+    document.getElementById(
+      "propertyHealthDashboard"
+    );
+
+  overview?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function renderHomeProfessionalRequestPage() {
+
+    const title =
+      document.getElementById(
+        "homeProfessionalRequestPageTitle"
+      );
+
+    const intro =
+      document.getElementById(
+        "homeProfessionalRequestPageIntro"
+      );
+
+    const submitButton =
+      document.getElementById(
+        "homeProfessionalRequestSubmitButton"
+      );
+
+    const statusContainer =
+      document.getElementById(
+        "homeProfessionalRequestStatus"
+      );
+
+    const request =
+      window.homeProfessionalRequest || null;
+
+    const contactStatusLabels = {
+      null: "Awaiting professional contact",
+      "": "Awaiting professional contact",
+
+      unknown: "Awaiting professional contact",
+
+      not_yet: "Professional has not contacted you yet",
+
+      connected: "Professional has contacted you"
+    };
+
+    const contactStatusLabel =
+      contactStatusLabels[
+      request?.contact_status
+      ] ||
+      (
+        request?.status === "contact_unlocked"
+          ? "Awaiting professional contact"
+          : "Not yet available"
+      );
+    // =======================================================
+    // ICON HELPER
+    // =======================================================
+
+    const icon = (
+      path,
+      size = 20
+    ) => `
+        <svg
+            width="${size}"
+            height="${size}"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+        >
+            ${path}
+        </svg>
+    `;
+
+
+    const icons = {
+
+      home: icon(`
+            <path
+                d="M3 10.5L12 3l9 7.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+            <path
+                d="M5.5 9.5V21h13V9.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+            />
+            <path
+                d="M9 21v-6h6v6"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+        `),
+
+      location: icon(`
+            <path
+                d="M20 10.5c0 5.2-8 10.5-8 10.5S4 15.7 4 10.5a8 8 0 1 1 16 0Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <circle
+                cx="12"
+                cy="10.5"
+                r="2.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+        `),
+
+      calendar: icon(`
+            <rect
+                x="4"
+                y="5"
+                width="16"
+                height="15"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <path
+                d="M8 3v4M16 3v4M4 10h16"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+            />
+        `),
+
+      clock: icon(`
+            <circle
+                cx="12"
+                cy="12"
+                r="8.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <path
+                d="M12 7v5l3.5 2"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        `),
+
+      people: icon(`
+            <circle
+                cx="9"
+                cy="8"
+                r="3"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <path
+                d="M3.5 20c.5-4 2.4-6 5.5-6s5 2 5.5 6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+            />
+            <path
+                d="M15 5.5a3 3 0 0 1 0 5.5M16 14c2.5.5 3.8 2.2 4.3 4.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+            />
+        `),
+
+      check: icon(`
+            <path
+                d="m6 12 4 4 8-9"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        `),
+
+      network: icon(`
+            <circle
+                cx="6"
+                cy="12"
+                r="2.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <circle
+                cx="18"
+                cy="6"
+                r="2.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <circle
+                cx="18"
+                cy="18"
+                r="2.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <path
+                d="M8.3 10.8 15.7 7.2M8.3 13.2l7.4 3.6"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+        `),
+
+      message: icon(`
+            <path
+                d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-4.5 3v-3H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+            />
+        `),
+
+      arrow: icon(`
+            <path
+                d="M5 12h13M13 7l5 5-5 5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        `),
+
+      info: icon(`
+            <circle
+                cx="12"
+                cy="12"
+                r="9"
+                stroke="currentColor"
+                stroke-width="1.8"
+            />
+            <path
+                d="M12 10.5v5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+            />
+            <circle
+                cx="12"
+                cy="7.5"
+                r="1"
+                fill="currentColor"
+            />
+        `),
+
+      spark: icon(`
+            <path
+                d="M12 3l1.4 5.6L19 10l-5.6 1.4L12 17l-1.4-5.6L5 10l5.6-1.4L12 3Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+            />
+            <path
+                d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linejoin="round"
+            />
+        `)
+    };
+
+
+    // =======================================================
+    // NO REQUEST YET
+    // =======================================================
+
+    if (!request) {
+
+      if (title) {
+        title.textContent =
+          "Get Professional Assessment";
+      }
+
+      if (intro) {
+        intro.textContent =
+          "Connect your property with a qualified EMF professional and help us build professional coverage where Home users need it most.";
+      }
+
+      if (submitButton) {
+        submitButton.style.display = "";
+        submitButton.textContent =
+          "Submit Professional Request →";
+      }
+
+      if (statusContainer) {
+
+        statusContainer.innerHTML = `
+
+                <div
+                    style="
+                        display:flex;
+                        flex-direction:column;
+                        gap:22px;
+                    "
+                >
+
+                    <!-- INTRO CARD -->
+
+                    <div
+                        style="
+                            padding:28px;
+                            border:1px solid #d7e4f3;
+                            border-radius:18px;
+                            background:
+                                linear-gradient(
+                                    135deg,
+                                    #f7fbff 0%,
+                                    #ffffff 100%
+                                );
+                        "
+                    >
+
+                        <div
+                            style="
+                                display:flex;
+                                gap:16px;
+                                align-items:flex-start;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    width:48px;
+                                    height:48px;
+                                    flex:0 0 48px;
+                                    border-radius:14px;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    background:#eaf3ff;
+                                    color:#1769d1;
+                                "
+                            >
+                                ${icons.people}
+                            </div>
+
+                            <div>
+
+                                <div
+                                    style="
+                                        font-size:12px;
+                                        font-weight:800;
+                                        letter-spacing:.08em;
+                                        text-transform:uppercase;
+                                        color:#42658c;
+                                        margin-bottom:6px;
+                                    "
+                                >
+                                    PROFESSIONAL ASSESSMENT
+                                </div>
+
+                                <h3
+                                    style="
+                                        margin:0 0 8px;
+                                        font-size:24px;
+                                        line-height:1.2;
+                                        color:#10243e;
+                                    "
+                                >
+                                    Measure and validate your property
+                                </h3>
+
+                                <p
+                                    style="
+                                        margin:0;
+                                        font-size:15px;
+                                        line-height:1.6;
+                                        color:#5c7390;
+                                        max-width:760px;
+                                    "
+                                >
+                                    A professional assessment adds
+                                    actual EMF measurements and
+                                    professional interpretation to your
+                                    Property Health Record.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EARLY NETWORK -->
+
+                    <div
+                        style="
+                            padding:28px;
+                            border:1px solid #cfe8dc;
+                            border-radius:18px;
+                            background:
+                                linear-gradient(
+                                    135deg,
+                                    #f1fbf6 0%,
+                                    #ffffff 100%
+                                );
+                        "
+                    >
+
+                        <div
+                            style="
+                                display:flex;
+                                align-items:flex-start;
+                                gap:18px;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    width:48px;
+                                    height:48px;
+                                    flex:0 0 48px;
+                                    border-radius:14px;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    background:#e4f7ed;
+                                    color:#168253;
+                                "
+                            >
+                                ${icons.network}
+                            </div>
+
+                            <div style="flex:1;">
+
+                                <div
+                                    style="
+                                        font-size:12px;
+                                        font-weight:800;
+                                        letter-spacing:.08em;
+                                        text-transform:uppercase;
+                                        color:#277052;
+                                        margin-bottom:6px;
+                                    "
+                                >
+                                    EARLY PROFESSIONAL NETWORK
+                                </div>
+
+                                <h3
+                                    style="
+                                        margin:0 0 8px;
+                                        font-size:22px;
+                                        color:#123c2b;
+                                    "
+                                >
+                                    Your request helps build
+                                    professional coverage
+                                </h3>
+
+                                <p
+                                    style="
+                                        margin:0;
+                                        color:#527565;
+                                        font-size:14px;
+                                        line-height:1.65;
+                                        max-width:760px;
+                                    "
+                                >
+                                    Every request helps us understand
+                                    where Home users are looking for
+                                    professional EMF assessment.
+                                    This helps qualified professionals
+                                    see where demand is emerging and
+                                    decide where to offer their services.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            style="
+                                margin-top:22px;
+                                padding:16px 18px;
+                                border-radius:12px;
+                                background:#ffffff;
+                                border:1px solid #d9eee2;
+                                display:flex;
+                                align-items:center;
+                                gap:12px;
+                            "
+                        >
+
+                            <span
+                                style="
+                                    width:10px;
+                                    height:10px;
+                                    border-radius:50%;
+                                    background:#f0a72b;
+                                    box-shadow:0 0 0 5px #fff3d8;
+                                    flex:0 0 10px;
+                                "
+                            ></span>
+
+                            <div>
+
+                                <strong
+                                    style="
+                                        display:block;
+                                        font-size:14px;
+                                        color:#214735;
+                                    "
+                                >
+                                    Professional coverage is growing
+                                </strong>
+
+                                <span
+                                    style="
+                                        display:block;
+                                        margin-top:3px;
+                                        font-size:13px;
+                                        color:#668273;
+                                    "
+                                >
+                                    Your request helps us identify
+                                    where coverage is needed next.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- WHAT HAPPENS NEXT -->
+
+                    <div
+                        style="
+                            padding:26px 24px;
+                            border:1px solid #dbe5f1;
+                            border-radius:18px;
+                            background:#ffffff;
+                        "
+                    >
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:800;
+                                letter-spacing:.08em;
+                                text-transform:uppercase;
+                                color:#647b98;
+                                margin-bottom:18px;
+                            "
+                        >
+                            WHAT HAPPENS NEXT?
+                        </div>
+
+                        <div
+                            style="
+                                display:grid;
+                                grid-template-columns:
+                                    repeat(auto-fit,minmax(180px,1fr));
+                                gap:18px;
+                            "
+                        >
+
+                            <div>
+                                <div
+                                    style="
+                                        color:#1769d1;
+                                        margin-bottom:9px;
+                                    "
+                                >
+                                    ${icons.network}
+                                </div>
+
+                                <strong
+                                    style="
+                                        display:block;
+                                        font-size:14px;
+                                        color:#18314d;
+                                    "
+                                >
+                                    1. Shared with network
+                                </strong>
+
+                                <p
+                                    style="
+                                        margin:5px 0 0;
+                                        font-size:13px;
+                                        line-height:1.5;
+                                        color:#71849b;
+                                    "
+                                >
+                                    Your request becomes available
+                                    to relevant professionals.
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <div
+                                    style="
+                                        color:#1769d1;
+                                        margin-bottom:9px;
+                                    "
+                                >
+                                    ${icons.people}
+                                </div>
+
+                                <strong
+                                    style="
+                                        display:block;
+                                        font-size:14px;
+                                        color:#18314d;
+                                    "
+                                >
+                                    2. Professionals can respond
+                                </strong>
+
+                                <p
+                                    style="
+                                        margin:5px 0 0;
+                                        font-size:13px;
+                                        line-height:1.5;
+                                        color:#71849b;
+                                    "
+                                >
+                                    Qualified professionals can
+                                    express interest.
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <div
+                                    style="
+                                        color:#1769d1;
+                                        margin-bottom:9px;
+                                    "
+                                >
+                                    ${icons.message}
+                                </div>
+
+                                <strong
+                                    style="
+                                        display:block;
+                                        font-size:14px;
+                                        color:#18314d;
+                                    "
+                                >
+                                    3. Connect
+                                </strong>
+
+                                <p
+                                    style="
+                                        margin:5px 0 0;
+                                        font-size:13px;
+                                        line-height:1.5;
+                                        color:#71849b;
+                                    "
+                                >
+                                    Once contact is unlocked,
+                                    communication can begin.
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <div
+                                    style="
+                                        color:#1769d1;
+                                        margin-bottom:9px;
+                                    "
+                                >
+                                    ${icons.calendar}
+                                </div>
+
+                                <strong
+                                    style="
+                                        display:block;
+                                        font-size:14px;
+                                        color:#18314d;
+                                    "
+                                >
+                                    4. Arrange assessment
+                                </strong>
+
+                                <p
+                                    style="
+                                        margin:5px 0 0;
+                                        font-size:13px;
+                                        line-height:1.5;
+                                        color:#71849b;
+                                    "
+                                >
+                                    You and the professional
+                                    agree on timing and details.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+      }
+
+      return;
+    }
+
+
+    // =======================================================
+    // REQUEST EXISTS
+    // =======================================================
+
+    if (title) {
+      title.textContent =
+        "My Professional Request";
+    }
+
+    if (intro) {
+      intro.textContent =
+        "Track your professional assessment request and help build professional coverage where Home users need it most.";
+    }
+
+    if (submitButton) {
+      submitButton.style.display = "none";
+    }
+
+
+    // =======================================================
+    // REQUEST DATA
+    // =======================================================
+
+    const statusLabels = {
+      submitted: "Request Submitted",
+      available: "Available to Professionals",
+      contact_unlocked: "Professional Contact Unlocked"
+    };
+
+    const statusLabel =
+      statusLabels[request.status] ||
+      "Request Submitted";
+
+    const statusExplanations = {
+      submitted: {
+        title: "Your request has been submitted.",
+        text: "Your request is being prepared for professional matching. We will keep you updated as it progresses."
+      },
+
+      available: {
+        title: "Your request is now available to professionals.",
+        text: "Qualified professionals can now review your request and decide whether to connect with you."
+      },
+
+      contact_unlocked: {
+        title: "A professional has unlocked your request.",
+        text: "The professional can now contact you using your preferred contact method. No action is required from you at this stage."
+      },
+
+      scheduled: {
+        title: "Your professional assessment is scheduled.",
+        text: "Your assessment has been arranged with the professional. You can now prepare for the visit and measurement."
+      },
+
+      completed: {
+        title: "Your professional assessment has been completed.",
+        text: "The assessment is complete. Professional measurement results can now become part of your Property Health Record."
+      }
+    };
+
+    const statusExplanation =
+      statusExplanations[request.status] ||
+      statusExplanations.submitted;
+
+    const location =
+      [
+        request.city,
+        request.region,
+        request.country
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+    const submitted =
+      request.created_at
+        ? new Date(
+          request.created_at
+        ).toLocaleDateString(
+          undefined,
+          {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+          }
+        )
+        : "—";
+
+    const activeUnlock =
+      request.has_active_unlock === true;
+
+    const contactExpires =
+      request.contact_expires_at
+        ? new Date(
+          request.contact_expires_at
+        ).toLocaleDateString(
+          undefined,
+          {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+          }
+        )
+        : "";
+
+
+    // =======================================================
+    // STATUS → TIMELINE
+    // =======================================================
+
+    const rawStatus =
+      String(
+        request.status || ""
+      ).toLowerCase();
+
+    let currentStep = 2;
+
+    if (
+      rawStatus === "open" ||
+      rawStatus === "available" ||
+      rawStatus === "submitted"
+    ) {
+      currentStep = 2;
+    }
+
+    if (
+      rawStatus === "contact_unlocked"
+    ) {
+      currentStep = 3;
+    }
+
+    if (
+      rawStatus === "scheduled" ||
+      rawStatus === "assessment_scheduled"
+    ) {
+      currentStep = 4;
+    }
+
+    if (
+      rawStatus === "completed" ||
+      rawStatus === "closed"
+    ) {
+      currentStep = 5;
+    }
+
+
+    const steps = [
+      {
+        number: 1,
+        label: "Submitted",
+        icon: icons.check
+      },
+      {
+        number: 2,
+        label: "Available to Professionals",
+        icon: icons.network
+      },
+      {
+        number: 3,
+        label: "Contact Unlocked",
+        icon: icons.people
+      },
+      {
+        number: 4,
+        label: "Assessment Scheduled",
+        icon: icons.calendar
+      },
+      {
+        number: 5,
+        label: "Completed",
+        icon: icons.check
+      }
+    ];
+
+
+    // =======================================================
+    // TIMELINE HTML
+    // =======================================================
+
+    const timelineHtml =
+      steps
+        .map(
+          (step, index) => {
+
+            const completed =
+              step.number <
+              currentStep;
+
+            const active =
+              step.number ===
+              currentStep;
+
+            const circleClass =
+              completed
+                ? "completed"
+                : active
+                  ? "active"
+                  : "pending";
+
+            return `
+
+                        <div
+                            style="
+                                flex:1;
+                                min-width:105px;
+                                position:relative;
+                                text-align:center;
+                            "
+                        >
+
+                            ${index < steps.length - 1
+                ? `
+                                        <div
+                                            style="
+                                                position:absolute;
+                                                top:16px;
+                                                left:50%;
+                                                width:100%;
+                                                height:2px;
+                                                background:${completed
+                  ? "#4dbb82"
+                  : "#d9e2ec"
+                };
+                                                z-index:0;
+                                            "
+                                        ></div>
+                                    `
+                : ""
+              }
+
+                            <div
+                                style="
+                                    position:relative;
+                                    z-index:1;
+                                    width:34px;
+                                    height:34px;
+                                    margin:0 auto 9px;
+                                    border-radius:50%;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    ${circleClass === "completed"
+                ? `
+                                                background:#e7f7ee;
+                                                color:#188153;
+                                                border:2px solid #55bd87;
+                                            `
+                : circleClass === "active"
+                  ? `
+                                                    background:#eaf3ff;
+                                                    color:#1769d1;
+                                                    border:2px solid #2e80e5;
+                                                    box-shadow:
+                                                        0 0 0 5px #edf5ff;
+                                                `
+                  : `
+                                                    background:#f1f5f9;
+                                                    color:#a2afbd;
+                                                    border:2px solid #d9e2ec;
+                                                `
+              }
+                                "
+                            >
+                                ${completed
+                ? icons.check
+                : step.number
+              }
+                            </div>
+
+                            <div
+                                style="
+                                    font-size:12px;
+                                    line-height:1.35;
+                                    font-weight:${active
+                ? "800"
+                : "600"
+              };
+                                    color:${active
+                ? "#183b63"
+                : completed
+                  ? "#37634f"
+                  : "#8392a4"
+              };
+                                "
+                            >
+                                ${escapeHtml(step.label)}
+                            </div>
+
+                        </div>
+                    `;
+          }
+        )
+        .join("");
+
+
+    // =======================================================
+    // CONTACT CONTROLS
+    // =======================================================
+
+    const contactControls =
+      activeUnlock
+        ? `
+
+                <div
+                    style="
+                        margin-top:24px;
+                        padding-top:22px;
+                        border-top:1px solid #e5ebf2;
+                    "
+                >
+
+                    <!-- =========================================
+                         STATUS EXPLANATION — FULL WIDTH
+                         ========================================= -->
+
+                    <div
+                        style="
+                            width:100%;
+                            box-sizing:border-box;
+                            padding:14px 16px;
+                            border:1px solid #dbeafe;
+                            border-radius:10px;
+                            background:#f8fbff;
+                        "
+                    >
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:700;
+                                color:#1e40af;
+                                margin-bottom:5px;
+                            "
+                        >
+                            ${statusExplanation.title}
+                        </div>
+
+                        <div
+                            style="
+                                font-size:12px;
+                                line-height:1.5;
+                                color:#64748b;
+                            "
+                        >
+                            ${statusExplanation.text}
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         CONTACT DETAILS — TWO COLUMNS
+                         ========================================= -->
+
+                    <div
+                        style="
+                            display:grid;
+                            grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+                            gap:18px;
+                            margin-top:18px;
+                            align-items:start;
+                        "
+                    >
+
+                        <!-- =====================================
+                             LEFT — CONTACT PREFERENCE
+                             ===================================== -->
+
+                        <div>
+
+                            <div
+                                style="
+                                    font-size:12px;
+                                    font-weight:800;
+                                    color:#627995;
+                                    margin-bottom:8px;
+                                    text-transform:uppercase;
+                                    letter-spacing:.06em;
+                                "
+                            >
+                                CONTACT PREFERENCE
+                            </div>
+
+                            <select
+                                class="home-contact-preference"
+                                data-request-id="${escapeHtml(request.id)}"
+                                onchange="
+                                    updateHomeContactFeedback(
+                                        ${request.id},
+                                        'contact_preference',
+                                        this.value
+                                    )
+                                "
+                                style="
+                                    width:100%;
+                                    box-sizing:border-box;
+                                    font-size:13px;
+                                    padding:10px 12px;
+                                    border-radius:9px;
+                                    border:1px solid #d6e0eb;
+                                    background:#fff;
+                                    color:#243b53;
+                                "
+                            >
+
+                                <option
+                                    value=""
+                                    ${!request.contact_preference
+          ? "selected"
+          : ""
+        }
+                                >
+                                    No preference
+                                </option>
+
+                                <option
+                                    value="as_soon_as_possible"
+                                    ${request.contact_preference ===
+          "as_soon_as_possible"
+          ? "selected"
+          : ""
+        }
+                                >
+                                    As soon as possible
+                                </option>
+
+                                <option
+                                    value="within_3_days"
+                                    ${request.contact_preference ===
+          "within_3_days"
+          ? "selected"
+          : ""
+        }
+                                >
+                                    Within 3 days
+                                </option>
+
+                                <option
+                                    value="within_7_days"
+                                    ${request.contact_preference ===
+          "within_7_days"
+          ? "selected"
+          : ""
+        }
+                                >
+                                    Within 7 days
+                                </option>
+
+                            </select>
+
+
+                            <!-- CONTACT EXPIRY -->
+
+                            ${contactExpires
+          ? `
+                                    <div
+                                        style="
+                                            margin-top:14px;
+                                            font-size:12px;
+                                            color:#6d8097;
+                                        "
+                                    >
+                                        Contact access available until
+                                        <strong>
+                                            ${escapeHtml(contactExpires)}
+                                        </strong>
+                                    </div>
+                                `
+          : ""
+        }
+
+                        </div>
+
+
+                        <!-- =====================================
+                             RIGHT — CONTACT STATUS
+                             ===================================== -->
+
+                        <div>
+
+                            <div
+                                style="
+                                    padding:14px 16px;
+                                    border:1px solid #dbeafe;
+                                    border-radius:10px;
+                                    background:#f8fbff;
+                                    box-sizing:border-box;
+                                    width:100%;
+                                "
+                            >
+
+                                <div
+                                    style="
+                                        font-size:12px;
+                                        font-weight:800;
+                                        color:#627995;
+                                        margin-bottom:8px;
+                                        text-transform:uppercase;
+                                        letter-spacing:.06em;
+                                    "
+                                >
+                                    CONTACT STATUS
+                                </div>
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        align-items:center;
+                                        gap:8px;
+                                        font-size:13px;
+                                        font-weight:700;
+                                        color:#1e40af;
+                                    "
+                                >
+
+                                    <span
+                                        style="
+                                            width:8px;
+                                            height:8px;
+                                            border-radius:50%;
+                                            background:#3b82f6;
+                                            display:inline-block;
+                                            flex:none;
+                                        "
+                                    ></span>
+
+                                    ${contactStatusLabel}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `
+        : "";
+    // =======================================================
+    // MAIN REQUEST PAGE
+    // =======================================================
+
+    if (!statusContainer) {
+      return;
+    }
+
+
+
+    statusContainer.innerHTML = `
+
+        <div
+            style="
+                display:flex;
+                flex-direction:column;
+                gap:20px;
+            "
+        >
+
+
+            <!-- =================================================
+                 REQUEST CARD
+            ================================================== -->
+
+            <div
+                style="
+                    padding:26px;
+                    border:1px solid #d7e4f3;
+                    border-radius:18px;
+                    background:#ffffff;
+                    box-shadow:
+                        0 5px 18px rgba(33,73,117,.05);
+                "
+            >
+
+                <!-- HEADER -->
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:18px;
+                        flex-wrap:wrap;
+                    "
+                >
+
+                    <div>
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:800;
+                                letter-spacing:.08em;
+                                text-transform:uppercase;
+                                color:#52708f;
+                                margin-bottom:7px;
+                            "
+                        >
+                            PROFESSIONAL ASSESSMENT REQUEST
+                        </div>
+
+                        <h3
+                            style="
+                                margin:0 0 7px;
+                                font-size:24px;
+                                line-height:1.2;
+                                color:#10243e;
+                            "
+                        >
+                            ${escapeHtml(location || "Your property")}
+                        </h3>
+
+                        <div
+                            style="
+                                font-size:13px;
+                                color:#71849b;
+                            "
+                        >
+                            Request #${escapeHtml(request.id)}
+                            · Project #${escapeHtml(
+      request.project_id || "—"
+    )}
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            display:inline-flex;
+                            align-items:center;
+                            gap:8px;
+                            padding:9px 13px;
+                            border-radius:999px;
+                            background:${activeUnlock
+        ? "#e9f8f0"
+        : "#eef5ff"
+      };
+                            color:${activeUnlock
+        ? "#177548"
+        : "#1d5fa8"
+      };
+                            font-size:12px;
+                            font-weight:800;
+                            white-space:nowrap;
+                        "
+                    >
+
+                        <span
+                            style="
+                                width:8px;
+                                height:8px;
+                                border-radius:50%;
+                                background:currentColor;
+                            "
+                        ></span>
+
+                        ${escapeHtml(statusLabel)}
+
+                    </div>
+
+                </div>
+
+
+                <!-- META -->
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:
+                            repeat(auto-fit,minmax(170px,1fr));
+                        gap:14px;
+                        margin-top:24px;
+                    "
+                >
+
+                    <div
+                        style="
+                            padding:14px;
+                            border-radius:12px;
+                            background:#f7faff;
+                            border:1px solid #e5edf6;
+                        "
+                    >
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:7px;
+                            "
+                        >
+                            ${icons.location}
+                        </div>
+
+                        <div
+                            style="
+                                font-size:11px;
+                                font-weight:800;
+                                color:#71849b;
+                                text-transform:uppercase;
+                                letter-spacing:.05em;
+                            "
+                        >
+                            LOCATION
+                        </div>
+
+                        <div
+                            style="
+                                margin-top:3px;
+                                font-size:14px;
+                                font-weight:700;
+                                color:#213b58;
+                            "
+                        >
+                            ${escapeHtml(location || "—")}
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:14px;
+                            border-radius:12px;
+                            background:#f7faff;
+                            border:1px solid #e5edf6;
+                        "
+                    >
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:7px;
+                            "
+                        >
+                            ${icons.home}
+                        </div>
+
+                        <div
+                            style="
+                                font-size:11px;
+                                font-weight:800;
+                                color:#71849b;
+                                text-transform:uppercase;
+                                letter-spacing:.05em;
+                            "
+                        >
+                            PROPERTY
+                        </div>
+
+                        <div
+                            style="
+                                margin-top:3px;
+                                font-size:14px;
+                                font-weight:700;
+                                color:#213b58;
+                            "
+                        >
+                            Residential Property
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:14px;
+                            border-radius:12px;
+                            background:#f7faff;
+                            border:1px solid #e5edf6;
+                        "
+                    >
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:7px;
+                            "
+                        >
+                            ${icons.calendar}
+                        </div>
+
+                        <div
+                            style="
+                                font-size:11px;
+                                font-weight:800;
+                                color:#71849b;
+                                text-transform:uppercase;
+                                letter-spacing:.05em;
+                            "
+                        >
+                            SUBMITTED
+                        </div>
+
+                        <div
+                            style="
+                                margin-top:3px;
+                                font-size:14px;
+                                font-weight:700;
+                                color:#213b58;
+                            "
+                        >
+                            ${escapeHtml(submitted)}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TIMELINE -->
+
+                <div
+                    style="
+                        margin-top:30px;
+                        padding:22px 8px 4px;
+                        border-top:1px solid #e7edf4;
+                    "
+                >
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:8px;
+                            align-items:flex-start;
+                        "
+                    >
+
+                        ${timelineHtml}
+
+                    </div>
+
+                </div>
+
+
+                ${contactControls}
+
+            </div>
+
+
+            <!-- =================================================
+                 EARLY PROFESSIONAL NETWORK
+            ================================================== -->
+
+            <div
+                style="
+                    padding:26px;
+                    border:1px solid #cfe8dc;
+                    border-radius:18px;
+                    background:
+                        linear-gradient(
+                            135deg,
+                            #f0fbf5 0%,
+                            #ffffff 100%
+                        );
+                "
+            >
+
+                <div
+                    style="
+                        display:flex;
+                        gap:16px;
+                        align-items:flex-start;
+                    "
+                >
+
+                    <div
+                        style="
+                            width:46px;
+                            height:46px;
+                            flex:0 0 46px;
+                            border-radius:13px;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            background:#e3f7ec;
+                            color:#168253;
+                        "
+                    >
+                        ${icons.network}
+                    </div>
+
+                    <div>
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:800;
+                                letter-spacing:.08em;
+                                text-transform:uppercase;
+                                color:#2d7253;
+                                margin-bottom:5px;
+                            "
+                        >
+                            BUILDING THE EARLY PROFESSIONAL NETWORK
+                        </div>
+
+                        <h3
+                            style="
+                                margin:0 0 8px;
+                                font-size:21px;
+                                color:#123c2b;
+                            "
+                        >
+                            Your request helps build
+                            professional coverage
+                        </h3>
+
+                        <p
+                            style="
+                                margin:0;
+                                max-width:800px;
+                                font-size:14px;
+                                line-height:1.65;
+                                color:#587666;
+                            "
+                        >
+                            Your request helps us understand where
+                            Home users are actively looking for
+                            professional EMF assessment. As demand
+                            emerges, qualified professionals can see
+                            where their services may be needed and
+                            decide where to expand their coverage.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:
+                            repeat(auto-fit,minmax(240px,1fr));
+                        gap:14px;
+                        margin-top:20px;
+                    "
+                >
+
+                    <div
+                        style="
+                            padding:17px;
+                            border-radius:13px;
+                            background:#ffffff;
+                            border:1px solid #d7eee1;
+                        "
+                    >
+
+                        <div
+                            style="
+                                display:flex;
+                                align-items:center;
+                                gap:9px;
+                                color:#a56b00;
+                                font-size:13px;
+                                font-weight:800;
+                            "
+                        >
+
+                            <span
+                                style="
+                                    width:9px;
+                                    height:9px;
+                                    border-radius:50%;
+                                    background:#f0a72b;
+                                "
+                            ></span>
+
+                            Limited professional coverage
+
+                        </div>
+
+                        <p
+                            style="
+                                margin:8px 0 0;
+                                font-size:12px;
+                                line-height:1.55;
+                                color:#6d8176;
+                            "
+                        >
+                            Professional coverage in this area
+                            is currently growing.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:17px;
+                            border-radius:13px;
+                            background:#ffffff;
+                            border:1px solid #d7eee1;
+                        "
+                    >
+
+                        <div
+                            style="
+                                display:flex;
+                                align-items:center;
+                                gap:8px;
+                                color:#267653;
+                                font-size:13px;
+                                font-weight:800;
+                            "
+                        >
+
+                            ${icons.people}
+
+                            Professionals can see emerging demand
+
+                        </div>
+
+                        <p
+                            style="
+                                margin:8px 0 0;
+                                font-size:12px;
+                                line-height:1.55;
+                                color:#6d8176;
+                            "
+                        >
+                            Your request contributes to the demand
+                            signals used to grow the network.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 WHAT HAPPENS NEXT
+            ================================================== -->
+
+            <div
+                style="
+                    padding:26px 24px;
+                    border:1px solid #dbe5f1;
+                    border-radius:18px;
+                    background:#ffffff;
+                "
+            >
+
+                <div
+                    style="
+                        font-size:12px;
+                        font-weight:800;
+                        letter-spacing:.08em;
+                        text-transform:uppercase;
+                        color:#647b98;
+                        margin-bottom:20px;
+                    "
+                >
+                    WHAT HAPPENS NEXT?
+                </div>
+
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:
+                            repeat(auto-fit,minmax(190px,1fr));
+                        gap:20px;
+                    "
+                >
+
+                    <div>
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:9px;
+                            "
+                        >
+                            ${icons.network}
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                font-size:14px;
+                                color:#18314d;
+                            "
+                        >
+                            1. Shared with the network
+                        </strong>
+
+                        <p
+                            style="
+                                margin:6px 0 0;
+                                font-size:13px;
+                                line-height:1.55;
+                                color:#71849b;
+                            "
+                        >
+                            Your request helps identify demand
+                            for professional assessment.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:9px;
+                            "
+                        >
+                            ${icons.people}
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                font-size:14px;
+                                color:#18314d;
+                            "
+                        >
+                            2. Professionals can respond
+                        </strong>
+
+                        <p
+                            style="
+                                margin:6px 0 0;
+                                font-size:13px;
+                                line-height:1.55;
+                                color:#71849b;
+                            "
+                        >
+                            Relevant professionals can review
+                            requests in areas they cover.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:9px;
+                            "
+                        >
+                            ${icons.message}
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                font-size:14px;
+                                color:#18314d;
+                            "
+                        >
+                            3. You can connect
+                        </strong>
+
+                        <p
+                            style="
+                                margin:6px 0 0;
+                                font-size:13px;
+                                line-height:1.55;
+                                color:#71849b;
+                            "
+                        >
+                            Once contact is unlocked,
+                            communication can begin.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:9px;
+                            "
+                        >
+                            ${icons.calendar}
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                font-size:14px;
+                                color:#18314d;
+                            "
+                        >
+                            4. Arrange the assessment
+                        </strong>
+
+                        <p
+                            style="
+                                margin:6px 0 0;
+                                font-size:13px;
+                                line-height:1.55;
+                                color:#71849b;
+                            "
+                        >
+                            You and the professional agree
+                            on timing and assessment details.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 WHY YOUR REQUEST MATTERS
+            ================================================== -->
+
+            <div
+                style="
+                    padding:25px 24px;
+                    border:1px solid #dbe5f1;
+                    border-radius:18px;
+                    background:#f8fbff;
+                "
+            >
+
+                <div
+                    style="
+                        font-size:12px;
+                        font-weight:800;
+                        letter-spacing:.08em;
+                        text-transform:uppercase;
+                        color:#647b98;
+                        margin-bottom:18px;
+                    "
+                >
+                    WHY YOUR REQUEST MATTERS
+                </div>
+
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:
+                            repeat(auto-fit,minmax(220px,1fr));
+                        gap:1px;
+                        background:#dce6f1;
+                        border:1px solid #dce6f1;
+                        border-radius:14px;
+                        overflow:hidden;
+                    "
+                >
+
+                    <div
+                        style="
+                            padding:20px;
+                            background:#ffffff;
+                        "
+                    >
+
+                        <div
+                            style="
+                                color:#1769d1;
+                                margin-bottom:10px;
+                            "
+                        >
+                            ${icons.home}
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                color:#18314d;
+                                font-size:14px;
+                            "
+                        >
+                            For you
+                        </strong>
+
+                        <p
+                            style="
+                                margin:6px 0 0;
+                                color:#71849b;
+                                font-size:12px;
+                                line-height:1.55;
+                            "
+                        >
+                            A clearer path from property context
+                            to professional measurement and validation.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:20px;
+                            background:#ffffff;
+                        "
+                    >
+
+                        <div
+                            style="
+                                color:#6f51c7;
+                                margin-bottom:10px;
+                            "
+                        >
+                            ${icons.people}
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                color:#18314d;
+                                font-size:14px;
+                            "
+                        >
+                            For professionals
+                        </strong>
+
+                        <p
+                            style="
+                                margin:6px 0 0;
+                                color:#71849b;
+                                font-size:12px;
+                                line-height:1.55;
+                            "
+                        >
+                            Real Home user demand helps professionals
+                            identify where services may be needed.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:20px;
+                            background:#ffffff;
+                        "
+                    >
+
+                        <div
+                            style="
+                                color:#168253;
+                                margin-bottom:10px;
+                            "
+                        >
+                            ${icons.spark}
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                color:#18314d;
+                                font-size:14px;
+                            "
+                        >
+                            For EMF Insight
+                        </strong>
+
+                        <p
+                            style="
+                                margin:6px 0 0;
+                                color:#71849b;
+                                font-size:12px;
+                                line-height:1.55;
+                            "
+                        >
+                            Demand helps us build a stronger
+                            professional network where it is actually needed.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+  }
+
   function updateHomeProfessionalAssessment() {
 
     const lockedMessage =
@@ -33774,24 +37882,67 @@
     <span class="request-status-label">
       ✓ Request Submitted
     </span>
+
     <span class="request-status-copy">
-      Your professional assessment request has been submitted successfully.
+      Your professional assessment request has been submitted for this property.
     </span>
-    <a
-      href="dashboard.html#home-professional-requests"
-      style="
-        display:inline-block;
-        margin-top:7px;
-        color:#166534;
-        font-weight:750;
-        text-decoration:underline;
-      "
-    >
-      View Request Status →
-    </a>
   `;
 
-      button.style.display = "none";
+      // ------------------------------------------------------
+      // KEEP BUTTON VISIBLE
+      // ------------------------------------------------------
+
+      button.style.display = "";
+
+      // ------------------------------------------------------
+      // OPEN MY PROFESSIONAL REQUEST PAGE
+      // ------------------------------------------------------
+
+      button.onclick = function () {
+
+        openHomeProfessionalRequestPage();
+
+      };
+
+      // ------------------------------------------------------
+      // UPDATE BUTTON CONTENT
+      // ------------------------------------------------------
+
+      const title =
+        button.querySelector(
+          ".workflow-action-title"
+        );
+
+      const subtitle =
+        button.querySelector(
+          ".workflow-action-subtitle"
+        );
+
+      const icon =
+        button.querySelector(
+          ".workflow-action-icon"
+        );
+
+      if (title) {
+
+        title.textContent =
+          "My Professional Request";
+
+      }
+
+      if (subtitle) {
+
+        subtitle.textContent =
+          "Track your professional assessment request";
+
+      }
+
+      if (icon) {
+
+        icon.textContent =
+          "👥";
+
+      }
 
       return;
     }
@@ -33892,7 +38043,8 @@
 
       if (title) {
         title.textContent =
-          "Request a Professional Assessment";
+          "Get a Professional Assessment";
+
       }
 
       if (subtitle) {
@@ -34014,6 +38166,9 @@
       icon.textContent = "🔒";
     }
   }
+
+  window.updateHomeProfessionalAssessment =
+    updateHomeProfessionalAssessment;
 
   function openProfessionalAssessmentTerms(event) {
     if (event) {
@@ -34453,17 +38608,9 @@
     font-size: 14px;
     font-weight: 600;
   "
-  onclick="
-    sessionStorage.setItem(
-      'professionalAssessmentReturnAfterUnlock',
-      'true'
-    );
-
-    closeProfessionalAssessmentResultModal();
-    closeProfessionalAssessmentLocationModal();
-
-    scrollToUnlockReport();
-  "
+ onclick="
+    window.location.href = '/dashboard.html#billing';
+"
 >
   Unlock Full Report →
 </button>
@@ -34637,19 +38784,46 @@
       }
 
       // -----------------------------------------
-      // REQUEST SUCCESS
+      // REQUEST SUCCESS / ALREADY EXISTS
+      // -----------------------------------------
+
+      if (data.already_exists) {
+
+        window.homeProfessionalRequest =
+          data.request || data;
+
+        updateHomeProfessionalAssessment();
+        updatePHRProfessionalRequestCard();
+
+        closeProfessionalAssessmentLocationModal();
+
+        showProfessionalAssessmentResult(
+          "success",
+          "Request Already Submitted",
+          "A professional assessment request already exists for this property."
+        );
+
+        console.log(
+          "Professional request already exists:",
+          data
+        );
+
+        return;
+      }
+
+
+      // -----------------------------------------
+      // NEW REQUEST CREATED
       // -----------------------------------------
 
       window.homeProfessionalRequest =
         data.request || data;
 
-      // Update Home sidebar.
       updateHomeProfessionalAssessment();
+      updatePHRProfessionalRequestCard();
 
-      // Close location form.
       closeProfessionalAssessmentLocationModal();
 
-      // Show styled success dialog.
       showProfessionalAssessmentResult(
         "success",
         "Request Submitted",
@@ -34681,23 +38855,49 @@
         );
 
         lockedMessage.innerHTML = `
-        <span class="request-status-label">
-            ✓ Request Submitted
-        </span>
+    <span class="request-status-label">
+      ✓ Request Submitted
+    </span>
 
-        <span class="request-status-copy">
-            Your professional assessment request has been submitted successfully.
-        </span>
+    <span class="request-status-copy">
+      Your professional assessment request has been submitted.
+    </span>
+  `;
 
-        <a
-            href="dashboard.html#home-professional-requests"
-            class="home-request-status-link"
-        >
-            View Request Status →
-        </a>
-    `;
+        button.style.display = "";
 
-        button.style.display = "none";
+        button.onclick = function () {
+          openHomeProfessionalRequestPage();
+        };
+
+        const title =
+          button.querySelector(
+            ".workflow-action-title"
+          );
+
+        const subtitle =
+          button.querySelector(
+            ".workflow-action-subtitle"
+          );
+
+        const icon =
+          button.querySelector(
+            ".workflow-action-icon"
+          );
+
+        if (title) {
+          title.textContent =
+            "My Professional Request";
+        }
+
+        if (subtitle) {
+          subtitle.textContent =
+            "Track your professional assessment request";
+        }
+
+        if (icon) {
+          icon.textContent = "👥";
+        }
 
         return;
       }
@@ -35623,11 +39823,31 @@
 
 
     // ==================================================
-    // 🔥 APPLY STARTUP WORKSPACE MODE
+    // APPLY STARTUP WORKSPACE MODE
     // ==================================================
+
+    const requestedWorkspace =
+      sessionStorage.getItem("requestedWorkspace");
+
+    const isProfessionalAssessment =
+
+      requestedWorkspace === "professional-assessment" &&
+      !!sessionStorage.getItem("professionalAssessmentContext");
+
+
+    console.log(
+      "🔐 PROFESSIONAL ASSESSMENT STARTUP CHECK",
+      {
+        requestedWorkspace,
+        hasContext: !!sessionStorage.getItem(
+          "professionalAssessmentContext"
+        ),
+        isProfessionalAssessment
+      }
+    );
+
     if (
-      window.EMFProductContext?.account?.role ===
-      "professional"
+      window.EMFProductContext?.account?.role === "professional"
     ) {
       workspaceMode = "business";
 
@@ -35640,41 +39860,873 @@
         "🔥 PROFESSIONAL STARTUP → BUSINESS",
         {
           workspaceMode,
+          isProfessionalAssessment,
           businessProjectId:
-            localStorage.getItem(
-              "business_project_id"
-            )
+            localStorage.getItem("business_project_id")
         }
       );
     }
 
 
-    if (
-      typeof setAppMode ===
-      "function"
-    ) {
+    // ==================================================
+    // PROFESSIONAL ASSESSMENT — SEPARATE CLIENT VIEW
+    // ==================================================
 
+    async function openProfessionalAssessmentWorkspace() {
+      const context = JSON.parse(
+        sessionStorage.getItem("professionalAssessmentContext") || "null"
+      );
+
+      const requestId = Number(context?.requestId);
+      const expectedProjectId = Number(context?.projectId);
+      const token = localStorage.getItem("token");
+
+      const workspace = document.getElementById(
+        "professionalAssessmentWorkspace"
+      );
+      const content = document.getElementById(
+        "professionalAssessmentContent"
+      );
+
+      content.style.overflowY = "auto";
+      content.style.overflowX = "hidden";
+      content.style.minHeight = "0";
+      content.style.flex = "1 1 auto";
+      content.style.maxHeight = "calc(100vh - 100px)";
+
+      content.style.scrollbarWidth = "thin";
+      content.style.scrollbarColor = "#cbd5e1 transparent";
+
+      if (!workspace || !content) {
+        throw new Error("Professional Assessment workspace container is missing.");
+      }
+
+      if (
+        !Number.isInteger(requestId) ||
+        requestId <= 0 ||
+        !Number.isInteger(expectedProjectId) ||
+        expectedProjectId <= 0 ||
+        !token
+      ) {
+        throw new Error("Professional Assessment context is invalid.");
+      }
+
+      content.innerHTML = "<p>Loading authorized property assessment…</p>";
+
+      const response = await fetch(
+        `${API}/professional-requests/${requestId}/project`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || "Unable to load the authorized property assessment."
+        );
+      }
+
+      const project = data.project?.data;
+
+
+      console.log(
+        "🔎 FULL FIRST FLOOR",
+        JSON.stringify(project?.floors?.[0], null, 2)
+      );
+
+
+      console.log("🔎 PROFESSIONAL ASSESSMENT API", {
+        requestId: data.request_id,
+        projectId: data.project_id,
+        projectKeys: Object.keys(data.project || {}),
+        projectDataKeys: Object.keys(data.project?.data || {}),
+        floorsIsArray: Array.isArray(project?.floors),
+        floorsCount: project?.floors?.length,
+        floors: project?.floors?.map(floor => ({
+          id: floor?.id,
+          name: floor?.name,
+          keys: Object.keys(floor || {}),
+          imageExists: !!floor?.image,
+          imageDataExists: !!floor?.imageData,
+          roomsCount: floor?.rooms?.length,
+          zonesCount: floor?.zones?.length,
+          sourcesCount: floor?.sources?.length
+        }))
+      });
+
+
+      if (
+        !data.success ||
+        !project ||
+        project.type !== "home" ||
+        Number(data.project_id) !== expectedProjectId
+      ) {
+        throw new Error("The authorized Home project could not be verified.");
+      }
+
+      // Keep the customer's project separate from AppState.project.
+      window.professionalAssessmentClientContext = {
+        requestId: data.request_id,
+        projectId: data.project_id,
+        expiresAt: data.unlock?.expires_at,
+        project
+      };
+
+
+      const floors = Array.isArray(project.floors) ? project.floors : [];
+
+      const escapeHTML = (value) =>
+        String(value ?? "").replace(/[&<>"']/g, char => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        })[char]);
+
+      const getLifestyleAreas = (floor) => {
+        const zones = Array.isArray(floor?.zones)
+          ? floor.zones
+          : [];
+
+        return zones.filter((zone) =>
+          zone &&
+          (
+            zone.placementType === "zone" ||
+            zone.placementMode === "zone" ||
+            ["sleep", "work", "relax", "child"].includes(zone.zoneType)
+          )
+        );
+      };
+
+      const getObjectConfig = (object) => {
+        const configs = window.OBJECT_CONFIGS || {};
+        const type = object?.objectType || object?.type;
+
+        if (type && configs[type]) {
+          return configs[type];
+        }
+
+        const zoneType = object?.zoneType;
+
+        const zoneTypeMap = {
+          sleep: "bed",
+          work: "work_area",
+          relax: "sofa",
+          child: "child_area"
+        };
+
+        return configs[zoneTypeMap[zoneType]] || null;
+      };
+
+      const getObjectLabel = (object) => {
+        const config = getObjectConfig(object);
+
+        return object?.name ||
+          object?.label ||
+          config?.label ||
+          object?.type ||
+          "Object";
+      };
+
+      const getFloorSources = (floor) => {
+        const indoor = Array.isArray(floor.indoorSources)
+          ? floor.indoorSources
+          : [];
+        const outdoor = Array.isArray(floor.outdoorSources)
+          ? floor.outdoorSources
+          : [];
+        const general = Array.isArray(floor.sources)
+          ? floor.sources
+          : [];
+
+        // Prefer the explicit indoor/outdoor collections when available.
+        return indoor.length || outdoor.length
+          ? [...indoor, ...outdoor]
+          : general;
+      };
+
+      const renderFloorPlan = (floor, index) => {
+
+        console.log("PA RENDER FLOOR PLAN EXECUTED");
+        const floorName = escapeHTML(
+          floor.name || `Floor ${index + 1}`
+        );
+
+        const imageData =
+          typeof floor.imageData === "string" &&
+            floor.imageData.startsWith("data:image/")
+            ? floor.imageData
+            : "";
+
+        const lifestyleAreas = getLifestyleAreas(floor);
+        const sources = getFloorSources(floor);
+
+        const objects = [
+          ...lifestyleAreas,
+          ...sources
+        ].filter(object =>
+          Number.isFinite(Number(object.x)) &&
+          Number.isFinite(Number(object.y))
+        );
+
+        console.log("PA FLOOR PLAN MARKERS", {
+          floor: floor.name,
+          objects: objects.map(o => ({
+            type: o.type,
+            x: o.x,
+            y: o.y,
+            icon: getObjectConfig(o)?.image
+          }))
+        });
+
+        const renderMarker = object => {
+          const config = getObjectConfig(object);
+          const label = getObjectLabel(object);
+
+          const icon = config?.image
+            ? `<img
+          src="${escapeHTML(config.image)}"
+          alt="${escapeHTML(label)}"
+          style="width:100%;height:100%;object-fit:contain;"
+        >`
+            : `<span>${escapeHTML(label)}</span>`;
+
+          const size = Math.max(
+            24,
+            Math.min(42, Number(config?.width) || 32)
+          );
+
+          return `
+      <div
+        title="${escapeHTML(label)}"
+        style="
+          position:absolute;
+          left:${Number(object.x)}px;
+          top:${Number(object.y)}px;
+          width:${size}px;
+          height:${size}px;
+          transform:translate(-50%,-50%);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:white;
+          border:1px solid #cbd5e1;
+          border-radius:8px;
+          padding:3px;
+          box-sizing:border-box;
+          z-index:2;
+        "
+      >${icon}</div>
+    `;
+        };
+
+        return `
+    <section style="padding:16px;margin-bottom:24px;border:1px solid #e2e8f0;border-radius:12px;">
+      <h4 style="margin:0 0 12px;">${floorName}</h4>
+
+      ${imageData
+            ? `
+            <div style="position:relative;width:fit-content;max-width:100%;line-height:0;overflow:hidden;border-radius:8px;">
+              <img
+                src="${imageData}"
+                alt="${floorName} floor plan"
+                style="display:block;max-width:100%;max-height:560px;width:auto;height:auto;object-fit:contain;border-radius:8px;"
+              >
+              <div style="position:absolute;inset:0;pointer-events:none;">
+                ${objects.map(renderMarker).join("")}
+              </div>
+            </div>
+          `
+            : `<p style="color:#64748b;">No floor plan image is available.</p>`
+          }
+    </section>
+  `;
+      };
+      const renderSource = (source, index) => `
+  <div style="padding:12px; border:1px solid #e2e8f0; border-radius:10px;">
+    <strong>${escapeHTML(
+        source.name || source.label || source.type || `Source ${index + 1}`
+      )}</strong>
+    ${source.description
+          ? `<p style="margin:6px 0 0; color:#64748b;">${escapeHTML(source.description)}</p>`
+          : ""}
+  </div>
+`;
+
+      content.innerHTML = `
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:24px;">
+    <div style="padding:16px; border:1px solid #e2e8f0; border-radius:12px;">
+      <div style="color:#64748b; font-size:13px;">Project ID</div>
+      <strong>${Number(data.project_id)}</strong>
+    </div>
+    <div style="padding:16px; border:1px solid #e2e8f0; border-radius:12px;">
+      <div style="color:#64748b; font-size:13px;">Floors</div>
+      <strong>${floors.length}</strong>
+    </div>
+    <div style="padding:16px; border:1px solid #e2e8f0; border-radius:12px;">
+      <div style="color:#64748b; font-size:13px;">Access expires</div>
+      <strong>${data.unlock?.expires_at
+          ? escapeHTML(new Date(data.unlock.expires_at).toLocaleString())
+          : "Not provided"}</strong>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom:12px;">Floor Plan</h3>
+${floors.length
+          ? floors.map((floor, index) => {
+            const floorName = escapeHTML(
+              floor.name || `Floor ${index + 1}`
+            );
+
+            const imageData =
+              typeof floor.imageData === "string" &&
+                floor.imageData.startsWith("data:image/")
+                ? floor.imageData
+                : "";
+
+            const lifestyleAreas = getLifestyleAreas(floor);
+
+            const sources = getFloorSources(floor);
+
+            return `
+        <section style="padding:16px; margin-bottom:24px; border:1px solid #e2e8f0; border-radius:12px;">
+          <h4 style="margin:0 0 12px;">${floorName}</h4>
+${imageData
+                ? `
+  <div
+    data-pa-floor-plan
+    style="position:relative; display:flex; align-items:flex-start; gap:24px; width:100%; max-width:100%; overflow:visible; flex-wrap:wrap;"
+  >
+    <div
+      data-pa-floor-image-wrap
+      style="position:relative; display:inline-block; max-width:100%; line-height:0; overflow:hidden; border-radius:8px; flex:0 1 auto;"
+    >
+      <img
+        data-pa-floor-image
+        src="${imageData}"
+        alt="${floorName} floor plan"
+        style="display:block; max-width:100%; max-height:560px; width:auto; height:auto; object-fit:contain; border-radius:8px;"
+      >
+      <div
+        data-pa-floor-markers
+        style="position:absolute; inset:0; pointer-events:none;"
+      ></div>
+    </div>
+
+    <div
+      data-pa-outdoor-markers
+      style="position:relative; flex:1 1 140px; min-width:140px; min-height:300px; overflow:visible;"
+    ></div>
+  </div>
+`
+                : `<p style="color:#64748b;">No floor plan image is available.</p>`
+              }
+
+
+
+          ${lifestyleAreas.length
+                ? `
+                <div style="margin-top:16px;">
+                  <h5 style="margin:0 0 10px;">Lifestyle Areas</h5>
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;">
+                    ${lifestyleAreas.map((area, areaIndex) => {
+                  const config = getObjectConfig(area);
+                  const label = getObjectLabel(area);
+
+                  return `
+                        <div style="display:flex; align-items:center; gap:10px; padding:12px; border:1px solid #e2e8f0; border-radius:10px;">
+                          ${config?.image
+                      ? `<img src="${escapeHTML(config.image)}" alt="" style="width:32px;height:32px;object-fit:contain;flex-shrink:0;">`
+                      : ""
+                    }
+                          <strong>${escapeHTML(label || `Lifestyle Area ${areaIndex + 1}`)}</strong>
+                        </div>
+                      `;
+                }).join("")}
+                  </div>
+                </div>
+              `
+                : `
+                <p style="margin:12px 0 0;color:#64748b;">
+                  No Lifestyle Areas are recorded on this floor.
+                </p>
+              `
+              }
+
+          <div style="margin-top:16px;">
+            <h5 style="margin:0 0 10px;">Sources</h5>
+            ${sources.length
+                ? `
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px;">
+                    ${sources.map(renderSource).join("")}
+                  </div>
+                `
+                : `<p style="color:#64748b;">No sources recorded on this floor.</p>`
+              }
+          </div>
+        </section>
+      `;
+          }).join("")
+          : "<p>No floor plans are available for this property.</p>"
+        }
+
+
+
+
+  <section>
+    <h3 style="margin-bottom:12px;">Sources</h3>
+
+    ${floors.map((floor, index) => {
+          const sources = getFloorSources(floor);
+          const floorName = escapeHTML(floor.name || `Floor ${index + 1}`);
+
+          return `
+        <div style="margin-bottom:20px;">
+          <h4 style="margin-bottom:10px;">${floorName}</h4>
+          ${sources.length
+              ? `<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
+                ${sources.map(renderSource).join("")}
+              </div>`
+              : `<p style="color:#64748b;">No sources recorded on this floor.</p>`
+            }
+        </div>
+      `;
+        }).join("")}
+
+    ${(Array.isArray(project.outdoorSources) ? project.outdoorSources : []).length
+          ? `<h4 style="margin:16px 0 10px;">Property Outdoor Sources</h4>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
+            ${project.outdoorSources.map(renderSource).join("")}
+          </div>`
+          : ""
+        }
+  </section>
+`;
+
+
+      content.querySelectorAll("[data-pa-floor-plan]").forEach((planEl) => {
+        const image = planEl.querySelector("[data-pa-floor-image]");
+        const markersEl = planEl.querySelector("[data-pa-floor-markers]");
+
+        if (!image || !markersEl) return;
+
+        const floor = floors.find((item) =>
+          item.imageData === image.getAttribute("src")
+        );
+
+        if (!floor) return;
+
+        console.log(
+          "PA OUTDOOR SOURCES:",
+          project?.outdoorSources
+        );
+
+
+        const markers = [
+          ...(Array.isArray(floor.zones) ? floor.zones : []),
+          ...getFloorSources(floor)
+        ].filter((item) =>
+          Number.isFinite(Number(item.x)) &&
+          Number.isFinite(Number(item.y))
+        );
+
+        const outdoorMarkers = (
+          Array.isArray(project?.outdoorSources)
+            ? project.outdoorSources
+            : []
+        ).filter((item) =>
+          Number.isFinite(Number(item.x)) &&
+          Number.isFinite(Number(item.y))
+        );
+
+
+
+
+        const drawMarkers = () => {
+          const naturalWidth = image.naturalWidth;
+          const naturalHeight = image.naturalHeight;
+
+          if (!naturalWidth || !naturalHeight) return;
+
+          markersEl.innerHTML = markers.map((item) => {
+            const config = getObjectConfig(item);
+            const icon = config?.image;
+            if (!icon) return "";
+
+            const x = (Number(item.x) / naturalWidth) * 100;
+            const y = (Number(item.y) / naturalHeight) * 100;
+            const label = getObjectLabel(item);
+
+            return `
+      <div
+        title="${escapeHTML(label)}"
+        style="
+          position:absolute;
+          left:${x}%;
+          top:${y}%;
+          transform:translate(-50%,-50%);
+          width:34px;
+          height:34px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:white;
+          border:1px solid #cbd5e1;
+          border-radius:50%;
+          box-shadow:0 1px 4px rgba(0,0,0,0.18);
+        "
+      >
+        <img
+          src="${escapeHTML(icon)}"
+          alt="${escapeHTML(label)}"
+          style="width:25px;height:25px;object-fit:contain;"
+        >
+      </div>
+    `;
+          }).join("");
+
+          const outdoorEl = planEl.querySelector("[data-pa-outdoor-markers]");
+          if (!outdoorEl) return;
+
+          outdoorEl.innerHTML = outdoorMarkers.map((item) => {
+            const config = getObjectConfig(item);
+            const icon = config?.image;
+            if (!icon) return "";
+
+            const label = getObjectLabel(item);
+
+            return `
+      <div
+        title="${escapeHTML(label)}"
+        style="
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          gap:6px;
+          padding:16px 8px;
+          margin:24px auto;
+        "
+      >
+        <div
+          style="
+            width:44px;
+            height:44px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:white;
+            border:1px solid #cbd5e1;
+            border-radius:50%;
+            box-shadow:0 1px 4px rgba(0,0,0,0.18);
+          "
+        >
+          <img
+            src="${escapeHTML(icon)}"
+            alt="${escapeHTML(label)}"
+            style="width:32px;height:32px;object-fit:contain;"
+          >
+        </div>
+        <span style="font-size:12px;color:#334155;font-weight:600;">
+          ${escapeHTML(label)}
+        </span>
+        <span style="font-size:11px;color:#64748b;">OUTDOOR</span>
+      </div>
+    `;
+          }).join("");
+        };
+
+
+        const scheduleDraw = () => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(drawMarkers);
+          });
+        };
+
+        if (image.complete && image.naturalWidth) {
+          scheduleDraw();
+        } else {
+          image.addEventListener("load", scheduleDraw, { once: true });
+        }
+      });
+
+
+      workspace.style.display = "block";
+
+      // Reset Professional Assessment sidebar scroll to top.
+      const professionalSidebar = workspace.querySelector(".pa-sidebar");
+
+      if (professionalSidebar) {
+        professionalSidebar.scrollTop = 0;
+      }
+
+      // Hide the standard canvas workspace without changing its project state.
+      const header = document.getElementById("projectHeader");
+      const floorTabs = document.getElementById("businessFloorTabsBar");
+      const canvasWrap = document.getElementById("canvasWrap");
+
+
+      const projectStartScreen = document.getElementById("projectStartScreen");
+      const myPropertyHubModal = document.getElementById("myPropertyHubModal");
+
+
+      if (header) header.style.display = "none";
+      if (floorTabs) floorTabs.style.display = "none";
+      if (canvasWrap) canvasWrap.style.display = "none";
+
+
+      const businessProjectActions =
+        document.getElementById("businessProjectActions");
+
+      if (businessProjectActions) {
+        businessProjectActions.style.display = "none";
+      }
+
+
+      const businessOutputActions =
+        document.getElementById("businessOutputActions");
+
+      if (businessOutputActions) {
+        businessOutputActions.style.display = "none";
+      }
+
+
+      const professionalDemoFeedbackSection =
+        document.getElementById("professionalDemoFeedbackSection");
+
+      if (professionalDemoFeedbackSection) {
+        professionalDemoFeedbackSection.style.display = "none";
+      }
+
+
+      const legacySidebar = document.getElementById("panel");
+
+      if (legacySidebar) {
+        legacySidebar.style.display = "none";
+      }
+
+
+      if (projectStartScreen) projectStartScreen.style.display = "none";
+      if (myPropertyHubModal) myPropertyHubModal.style.display = "none";
+
+
+      console.log("🔎 PROFESSIONAL ASSESSMENT SIDEBAR CHECK", {
+        projectHeader: !!document.getElementById("projectHeader"),
+        businessFloorTabsBar: !!document.getElementById("businessFloorTabsBar"),
+        canvasWrap: !!document.getElementById("canvasWrap"),
+        professionalAssessmentWorkspace: !!document.getElementById("professionalAssessmentWorkspace"),
+        projectStartScreen: !!document.getElementById("projectStartScreen"),
+        bodyClasses: document.body.className
+      });
+
+
+      console.log("🔐 PROFESSIONAL ASSESSMENT VIEW OPEN", {
+        requestId: data.request_id,
+        projectId: data.project_id,
+        floors: floors.length
+      });
+    }
+
+
+    function closeProfessionalAssessmentWorkspace() {
+      const workspace = document.getElementById(
+        "professionalAssessmentWorkspace"
+      );
+
+      if (workspace) workspace.style.display = "none";
+
+      // Restore the legacy sidebar.
+      const legacySidebar = document.getElementById("panel");
+      if (legacySidebar) legacySidebar.style.display = "";
+
+      // Restore legacy sidebar sections in case they were hidden.
+      const businessProjectActions =
+        document.getElementById("businessProjectActions");
+      if (businessProjectActions) businessProjectActions.style.display = "";
+
+      const businessOutputActions =
+        document.getElementById("businessOutputActions");
+      if (businessOutputActions) businessOutputActions.style.display = "";
+
+      const professionalDemoFeedbackSection =
+        document.getElementById("professionalDemoFeedbackSection");
+      if (professionalDemoFeedbackSection) {
+        professionalDemoFeedbackSection.style.display = "";
+      }
+
+      const header = document.getElementById("projectHeader");
+      const floorTabs = document.getElementById("businessFloorTabsBar");
+      const canvasWrap = document.getElementById("canvasWrap");
+
+      if (header) header.style.display = "";
+      if (floorTabs) floorTabs.style.display = "";
+      if (canvasWrap) canvasWrap.style.display = "";
+
+      window.professionalAssessmentClientContext = null;
+
+      sessionStorage.removeItem("professionalAssessmentContext");
+      sessionStorage.removeItem("requestedWorkspace");
+
+      console.log("🔙 RETURN DEBUG", {
+        requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),
+        hasContext: !!sessionStorage.getItem("professionalAssessmentContext"),
+        panelDisplay: document.getElementById("panel")?.style.display,
+        assessmentDisplay: document.getElementById("professionalAssessmentWorkspace")?.style.display
+      });
+
+      // Restore the normal Business workspace after leaving assessment.
+      sessionStorage.setItem("workspaceMode", "business");
+      sessionStorage.setItem("requestedWorkspace", "business");
+
+      // Reload to restore the professional's normal Business workspace.
+      window.location.reload();
+    }
+
+
+    window.closeProfessionalAssessmentWorkspace =
+      closeProfessionalAssessmentWorkspace;
+
+    // ==================================================
+    // PROFESSIONAL ASSESSMENT — STARTUP ROUTING
+    // ==================================================
+
+    if (isProfessionalAssessment) {
+      try {
+        const storedContext = JSON.parse(
+          sessionStorage.getItem("professionalAssessmentContext") || "null"
+        );
+
+        const requestId = Number(storedContext?.requestId);
+        const storedProjectId = Number(storedContext?.projectId);
+        const token = localStorage.getItem("token");
+
+        if (!Number.isInteger(requestId) || requestId <= 0) {
+          throw new Error("Invalid Professional Assessment request.");
+        }
+
+        if (!Number.isInteger(storedProjectId) || storedProjectId <= 0) {
+          throw new Error("Invalid Property Assessment project.");
+        }
+
+        if (!token) {
+          throw new Error("Please sign in again.");
+        }
+
+        const response = await fetch(
+          `${API}/professional-requests/${requestId}/project`,
+          {
+            method: "GET",
+            cache: "no-store",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.detail ||
+            "Professional Assessment access is no longer available."
+          );
+        }
+
+        if (
+          !data.success ||
+          !data.project?.data ||
+          data.project.data.type !== "home" ||
+          Number(data.project_id) !== storedProjectId
+        ) {
+          throw new Error(
+            "The authorized Home project could not be verified."
+          );
+        }
+
+        // Keep only the verified reference in session storage.
+        sessionStorage.setItem(
+          "professionalAssessmentContext",
+          JSON.stringify({
+            requestId: data.request_id,
+            projectId: data.project_id,
+            expiresAt: data.unlock?.expires_at
+          })
+        );
+
+        console.log(
+          "🔐 PROFESSIONAL ASSESSMENT ACCESS VERIFIED",
+          {
+            requestId: data.request_id,
+            projectId: data.project_id,
+            expiresAt: data.unlock?.expires_at
+          }
+        );
+
+      } catch (error) {
+        console.error(
+          "❌ PROFESSIONAL ASSESSMENT STARTUP FAILED",
+          error
+        );
+
+        sessionStorage.removeItem("professionalAssessmentContext");
+        sessionStorage.removeItem("requestedWorkspace");
+
+        alert(
+          error.message ||
+          "Unable to open Professional Assessment."
+        );
+
+        // Do not restore the ordinary Business project on a failed
+        // Professional Assessment startup attempt.
+        return;
+      }
+    }
+
+
+    // ==================================================
+    // APPLY THE NORMAL WORKSPACE STARTUP
+    // ==================================================
+
+    if (
+      typeof setAppMode === "function"
+    ) {
       console.log(
         "🔥 BEFORE STARTUP SET APP MODE",
         {
-          role:
-            window.EMFProductContext?.account?.role,
+          role: window.EMFProductContext?.account?.role,
           workspaceMode,
+          isProfessionalAssessment,
           businessProjectId:
-            localStorage.getItem(
-              "business_project_id"
-            )
+            localStorage.getItem("business_project_id")
         }
       );
+
 
       await setAppMode(
         workspaceMode,
         {
-          skipProjectRestore:
-            window.EMFProductContext?.account?.role ===
-            "professional"
+          skipProjectRestore: false
         }
       );
+
+      console.log("🔎 INDEX AFTER setAppMode", {
+        requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),
+        hasContext: !!sessionStorage.getItem("professionalAssessmentContext"),
+        currentMode: window.AppMode?.current,
+        currentProjectId: window.currentProjectId
+      });
+
+      if (isProfessionalAssessment) {
+        await openProfessionalAssessmentWorkspace();
+        return;
+      }
 
       console.log("🔥 AFTER SET APP MODE — BEFORE UI", {
         mode: window.AppMode?.current,
@@ -35684,21 +40736,12 @@
 
       updateWorkspaceUI?.();
 
-      console.log("🔥 AFTER UPDATE WORKSPACE UI", {
-        mode: window.AppMode?.current,
-        project: window.AppState?.project,
-        workspaceExperience: window.AppState?.workspaceExperience
-      });
 
-      updateWorkspaceUI?.();
-
-      if (
-        workspaceMode ===
-        "home"
-      ) {
+      if (workspaceMode === "home") {
         renderHomeFloorTabs?.();
       }
     }
+
 
     // ==================================================
     // HOME — FULL REPORT ENTITLEMENT
@@ -36435,6 +41478,7 @@
     }
   });
 </script>
+
 </body>
 
 </html>

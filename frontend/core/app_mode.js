@@ -1105,50 +1105,201 @@ async function setAppMode(
 
 
             // ------------------------------------------------
-            // EXISTING PERSISTED BUSINESS PROJECT
+            // PROFESSIONAL ASSESSMENT — SKIP BUSINESS RESTORE
             // ------------------------------------------------
 
-            if (
+            const isProfessionalAssessment =
+                sessionStorage.getItem("requestedWorkspace") ===
+                "professional-assessment" &&
+                !!sessionStorage.getItem("professionalAssessmentContext");
+
+            console.log("🔎 PA RESTORE GUARD CHECK", {
+                requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),
+                hasContext: !!sessionStorage.getItem("professionalAssessmentContext"),
+                isProfessionalAssessment,
                 targetProjectId
-            ) {
+            });
 
-                console.trace(
-                    "🔥🔥 BUSINESS PROJECT RESTORE TRACE",
-                    targetProjectId
-                );
 
-                console.error(
-                    "🔥 LOADING BUSINESS PROJECT",
+            if (isProfessionalAssessment) {
+                console.log(
+                    "🔐 Professional Assessment active — skipping Business project restore.",
                     {
-                        projectId:
-                            targetProjectId
+                        requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),
+                        hasContext: !!sessionStorage.getItem("professionalAssessmentContext")
                     }
                 );
 
+                activeProject = null;
+                AppState.project = null;
+                window.project = null;
+                currentProjectId = null;
 
-                currentProjectId =
-                    String(
-                        targetProjectId
-                    );
+            } else {
 
 
-                const loaded =
-                    await window.loadProject(
-                        targetProjectId
-                    );
 
+                // ------------------------------------------------
+                // EXISTING PERSISTED BUSINESS PROJECT
+                // ------------------------------------------------
 
                 if (
-                    !loaded
+                    targetProjectId
                 ) {
 
+                    console.trace(
+                        "🔥🔥 BUSINESS PROJECT RESTORE TRACE",
+                        targetProjectId
+                    );
+
                     console.error(
-                        "❌ BUSINESS PROJECT LOAD FAILED",
+                        "🔥 LOADING BUSINESS PROJECT",
                         {
-                            targetProjectId
+                            projectId:
+                                targetProjectId
                         }
                     );
 
+
+                    currentProjectId =
+                        String(
+                            targetProjectId
+                        );
+
+
+                    const loaded =
+                        await window.loadProject(
+                            targetProjectId
+                        );
+
+
+                    if (
+                        !loaded
+                    ) {
+
+                        console.error(
+                            "❌ BUSINESS PROJECT LOAD FAILED",
+                            {
+                                targetProjectId
+                            }
+                        );
+
+
+                        AppState.project =
+                            null;
+
+                        window.project =
+                            null;
+
+                        currentProjectId =
+                            null;
+
+                        activeProject =
+                            null;
+                    }
+
+                    else {
+
+                        console.error(
+                            "🔥 BUSINESS STATE AFTER LOAD",
+                            {
+                                businessProjectId:
+                                    AppState.businessProject?.id ??
+                                    AppState.businessProject?.project_id ??
+                                    null,
+
+                                businessProjectType:
+                                    AppState.businessProject?.type ??
+                                    null,
+
+                                stateProjectId:
+                                    AppState.project?.id ??
+                                    AppState.project?.project_id ??
+                                    null,
+
+                                stateProjectType:
+                                    AppState.project?.type ??
+                                    null
+                            }
+                        );
+
+                        activeProject =
+                            AppState.project ||
+                            AppState.businessProject ||
+                            null;
+                    }
+                }
+
+
+
+                // ------------------------------------------------
+                // BUSINESS PROJECT ALREADY CREATED IN MEMORY
+                // ------------------------------------------------
+                //
+                // This is the New Project path.
+                //
+                // New Project creates AppState.businessProject
+                // and then switches to Business.
+                //
+                // ------------------------------------------------
+
+                else if (
+                    AppState.businessProject
+                ) {
+
+                    activeProject =
+                        AppState.businessProject;
+
+
+                    AppState.project =
+                        activeProject;
+
+                    window.project =
+                        activeProject;
+
+
+                    currentProjectId =
+                        activeProject
+                            ?.project_id ??
+                        activeProject
+                            ?.id ??
+                        null;
+
+
+                    console.error(
+                        "🔥 NEW BUSINESS PROJECT ACTIVE",
+                        {
+                            projectId:
+                                currentProjectId,
+
+                            floors:
+                                activeProject
+                                    ?.floors
+                                    ?.length ||
+                                0
+                        }
+                    );
+                }
+
+
+                // ------------------------------------------------
+                // NO BUSINESS PROJECT
+                // ------------------------------------------------
+
+                else {
+
+                    // --------------------------------------------
+                    // IMPORTANT:
+                    //
+                    // DO NOT create a Business project here.
+                    //
+                    // New Project creates it.
+                    // Open Project loads it.
+                    //
+                    // --------------------------------------------
+
+                    activeProject =
+                        null;
 
                     AppState.project =
                         null;
@@ -1159,125 +1310,12 @@ async function setAppMode(
                     currentProjectId =
                         null;
 
-                    activeProject =
-                        null;
-                }
-
-                else {
 
                     console.error(
-                        "🔥 BUSINESS STATE AFTER LOAD",
-                        {
-                            businessProjectId:
-                                AppState.businessProject?.id ??
-                                AppState.businessProject?.project_id ??
-                                null,
-
-                            businessProjectType:
-                                AppState.businessProject?.type ??
-                                null,
-
-                            stateProjectId:
-                                AppState.project?.id ??
-                                AppState.project?.project_id ??
-                                null,
-
-                            stateProjectType:
-                                AppState.project?.type ??
-                                null
-                        }
+                        "🔥 BUSINESS HAS NO ACTIVE PROJECT"
                     );
-
-                    activeProject =
-                        AppState.project ||
-                        AppState.businessProject ||
-                        null;
                 }
-            }
 
-
-            // ------------------------------------------------
-            // BUSINESS PROJECT ALREADY CREATED IN MEMORY
-            // ------------------------------------------------
-            //
-            // This is the New Project path.
-            //
-            // New Project creates AppState.businessProject
-            // and then switches to Business.
-            //
-            // ------------------------------------------------
-
-            else if (
-                AppState.businessProject
-            ) {
-
-                activeProject =
-                    AppState.businessProject;
-
-
-                AppState.project =
-                    activeProject;
-
-                window.project =
-                    activeProject;
-
-
-                currentProjectId =
-                    activeProject
-                        ?.project_id ??
-                    activeProject
-                        ?.id ??
-                    null;
-
-
-                console.error(
-                    "🔥 NEW BUSINESS PROJECT ACTIVE",
-                    {
-                        projectId:
-                            currentProjectId,
-
-                        floors:
-                            activeProject
-                                ?.floors
-                                ?.length ||
-                            0
-                    }
-                );
-            }
-
-
-            // ------------------------------------------------
-            // NO BUSINESS PROJECT
-            // ------------------------------------------------
-
-            else {
-
-                // --------------------------------------------
-                // IMPORTANT:
-                //
-                // DO NOT create a Business project here.
-                //
-                // New Project creates it.
-                // Open Project loads it.
-                //
-                // --------------------------------------------
-
-                activeProject =
-                    null;
-
-                AppState.project =
-                    null;
-
-                window.project =
-                    null;
-
-                currentProjectId =
-                    null;
-
-
-                console.error(
-                    "🔥 BUSINESS HAS NO ACTIVE PROJECT"
-                );
             }
         }
 
@@ -3896,10 +3934,27 @@ function resolveWorkspaceExperience(mode) {
         window.AppState?.homeProject ||
         null;
 
+    // ==================================================
+    // HOME — PERSIST ACTIVE PROJECT ID
+    // ==================================================
+
     const activeHomeProjectId =
         homeProject?.project_id ??
         homeProject?.id ??
         null;
+
+    if (activeHomeProjectId) {
+        localStorage.setItem(
+            "home_project_id",
+            String(activeHomeProjectId)
+        );
+
+        console.log(
+            "🏠 HOME PROJECT ID PERSISTED:",
+            activeHomeProjectId
+        );
+    }
+
 
     // ==================================================
     // USER-SPECIFIC HOME PROJECT ID
@@ -5057,6 +5112,8 @@ function updateWorkspaceUI() {
     if (typeof updateWorkspaceMenuState === "function") {
         updateWorkspaceMenuState();
     }
+
+    updateProfessionalContactsMenu();
 }
 
 // ==================================================
@@ -5779,10 +5836,14 @@ function openPropertyHealthRecord() {
         // ----------------------------------------------------
 
         const propertyCreatedAt =
-            window.AppState?.property?.createdAt ||
+            property?.createdAt ||
+            property?.created_at ||
             window.AppState?.homeProject?.createdAt ||
+            window.AppState?.homeProject?.created_at ||
             window.AppState?.project?.createdAt ||
+            window.AppState?.project?.created_at ||
             assessment?.createdAt ||
+            assessment?.created_at ||
             null;
 
         let propertyCreatedDateText = "Date not available";
@@ -5973,6 +6034,8 @@ function closePropertyHealthRecord() {
 
 function populatePropertyHealthDashboard() {
 
+    console.log("🏠 PHR DASHBOARD POPULATE START");
+
     const property =
         window.AppState?.property ||
         {};
@@ -6083,7 +6146,7 @@ function populatePropertyHealthDashboard() {
 
     if (indoorElement) {
         indoorElement.textContent =
-            indoorCount;
+            `${indoorCount} identified`;
     }
 
     const outdoorElement =
@@ -6093,7 +6156,7 @@ function populatePropertyHealthDashboard() {
 
     if (outdoorElement) {
         outdoorElement.textContent =
-            outdoorCount;
+            `${outdoorCount} identified`;
     }
 
     const totalElement =
@@ -6103,7 +6166,7 @@ function populatePropertyHealthDashboard() {
 
     if (totalElement) {
         totalElement.textContent =
-            totalSourceCount;
+            `${totalSourceCount} identified`;
     }
 
 
@@ -6139,15 +6202,18 @@ function populatePropertyHealthDashboard() {
                 lifestyleElement.textContent =
                     "Living areas not yet added";
 
-            } else if (lifestyleCount === 1) {
-
-                lifestyleElement.textContent =
-                    "1 living area added";
-
             } else {
 
+                const lifestyleNames =
+                    lifestyleAreas
+                        .map(area => area?.name)
+                        .filter(Boolean);
+
                 lifestyleElement.textContent =
-                    `${lifestyleCount} living areas added`;
+                    lifestyleNames.length
+                        ? lifestyleNames.join(" · ")
+                        : `${lifestyleCount} living area${lifestyleCount === 1 ? "" : "s"} added`;
+
             }
         }
     );
@@ -6185,7 +6251,14 @@ function populatePropertyHealthDashboard() {
     // --------------------------------------------------------
 
     const propertyCreatedAt =
-        property.createdAt ||
+        property?.createdAt ||
+        property?.created_at ||
+        window.AppState?.homeProject?.createdAt ||
+        window.AppState?.homeProject?.created_at ||
+        window.AppState?.project?.createdAt ||
+        window.AppState?.project?.created_at ||
+        assessment?.createdAt ||
+        assessment?.created_at ||
         null;
 
     let propertyCreatedDateText =
@@ -6216,22 +6289,56 @@ function populatePropertyHealthDashboard() {
         }
     }
 
+    console.log(
+        "🏠 PHR CREATED DATE DEBUG:",
+        {
+            propertyCreatedDateText,
+            resolvedPropertyCreatedAt: propertyCreatedAt,
+
+            propertyCreatedAt:
+                property?.createdAt ?? null,
+
+            propertyCreated_at:
+                property?.created_at ?? null,
+
+            homeProjectCreatedAt:
+                window.AppState?.homeProject?.createdAt ?? null,
+
+            homeProjectCreated_at:
+                window.AppState?.homeProject?.created_at ?? null,
+
+            projectCreatedAt:
+                window.AppState?.project?.createdAt ?? null,
+
+            projectCreated_at:
+                window.AppState?.project?.created_at ?? null,
+
+            assessmentCreatedAt:
+                assessment?.createdAt ?? null,
+
+            assessmentCreated_at:
+                assessment?.created_at ?? null,
+
+            property
+        }
+    );
+
     const createdDateElements = [
         document.getElementById(
             "propertyHealthDashboardCreatedDate"
         ),
-        document.getElementById(
-            "dashboardPropertyCreatedDate"
+        ...document.querySelectorAll(
+            '[id="dashboardPropertyCreatedDate"]'
         )
     ].filter(Boolean);
 
-    createdDateElements.forEach(
-        createdDateElement => {
-
-            createdDateElement.textContent =
-                propertyCreatedDateText;
-        }
-    );
+    createdDateElements.forEach(createdDateElement => {
+        createdDateElement.textContent =
+            propertyCreatedDateText ||
+            property?.created_at ||
+            property?.createdAt ||
+            "";
+    });
 }
 
 function openPropertyHealthDashboard() {
@@ -6380,7 +6487,7 @@ function openPropertyHealthDashboard() {
 
     if (subtitle) {
         subtitle.textContent =
-            "Your property's current environmental profile";
+            "Your property's personal health record";
     }
 
 

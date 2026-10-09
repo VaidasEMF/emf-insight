@@ -929,6 +929,135 @@ def unlock_professional_request_contact(
         },
     }
 
+# =========================================================
+# GET UNLOCKED HOME PROJECT
+# =========================================================
+
+@router.get("/professional-requests/{request_id}/project")
+def get_unlocked_home_project(
+    request_id: int,
+    current_user=Depends(
+        get_current_user,
+    ),
+    db: Session = Depends(
+        get_db,
+    ),
+):
+
+    # -----------------------------------------------------
+    # PROFESSIONAL ACCOUNT REQUIRED
+    # -----------------------------------------------------
+
+    if getattr(current_user, "role", None) != "professional":
+        raise HTTPException(
+            status_code=403,
+            detail="Professional account required.",
+        )
+
+    # -----------------------------------------------------
+    # FIND REQUEST
+    # -----------------------------------------------------
+
+    request = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                project_id,
+                status
+            FROM professional_requests
+            WHERE id = :request_id
+            LIMIT 1
+        """),
+        {
+            "request_id": request_id,
+        },
+    ).mappings().first()
+
+    if not request:
+        raise HTTPException(
+            status_code=404,
+            detail="Professional assessment request not found.",
+        )
+
+    # -----------------------------------------------------
+    # VERIFY ACTIVE CONTACT UNLOCK
+    # -----------------------------------------------------
+
+    unlock = db.execute(
+        text("""
+            SELECT
+                id,
+                unlocked_at,
+                expires_at,
+                duration_days
+            FROM professional_request_contacts
+            WHERE request_id = :request_id
+              AND professional_user_id = :professional_user_id
+              AND expires_at > CURRENT_TIMESTAMP
+            ORDER BY expires_at DESC
+            LIMIT 1
+        """),
+        {
+            "request_id": request_id,
+            "professional_user_id": str(current_user.id),
+        },
+    ).mappings().first()
+
+    if not unlock:
+        raise HTTPException(
+            status_code=403,
+            detail="Active contact unlock required to access this Home project.",
+        )
+
+    # -----------------------------------------------------
+    # LOAD THE ORIGINAL HOME PROJECT
+    # -----------------------------------------------------
+
+    project = db.execute(
+        text("""
+            SELECT
+                id,
+                user_id,
+                data
+            FROM projects
+            WHERE id = :project_id
+              AND user_id = :user_id
+            LIMIT 1
+        """),
+        {
+            "project_id": request["project_id"],
+            "user_id": str(request["user_id"]),
+        },
+    ).mappings().first()
+
+    if not project:
+        raise HTTPException(
+            status_code=404,
+            detail="Home project not found.",
+        )
+
+    # -----------------------------------------------------
+    # RETURN ORIGINAL HOME PROJECT
+    # -----------------------------------------------------
+
+    return {
+        "success": True,
+        "request_id": request["id"],
+        "project_id": project["id"],
+        "project_owner_id": project["user_id"],
+        "request_status": request["status"],
+        "unlock": {
+            "unlocked_at": unlock["unlocked_at"],
+            "expires_at": unlock["expires_at"],
+            "duration_days": unlock["duration_days"],
+        },
+        "project": {
+            "id": project["id"],
+            "data": project["data"],
+        },
+    }
+
 @router.get("/professional-requests/contact-points")
 def get_professional_contact_opportunities(
     current_user=Depends(get_current_user),
@@ -1178,15 +1307,12 @@ def update_home_contact_feedback(
 # GET CURRENT PROFESSIONAL REQUEST
 # =====================
 
+
 @router.get("/professional-requests")
 def get_professional_request(
     project_id: str | None = None,
-    current_user=Depends(
-        get_current_user,
-    ),
-    db: Session = Depends(
-        get_db,
-    ),
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
 
     request = db.execute(
@@ -1199,18 +1325,24 @@ def get_professional_request(
                 region,
                 city,
                 postal_code,
-                requested_service,
                 status,
                 created_at
             FROM professional_requests
             WHERE user_id = :user_id
-              AND project_id = :project_id
+            AND (
+                :project_id IS NULL
+                OR project_id = :project_id
+            )
             ORDER BY created_at DESC
             LIMIT 1
         """),
         {
             "user_id": str(current_user.id),
-            "project_id": project_id,
+            "project_id": (
+                str(project_id)
+                if project_id
+                else None
+            ),
         },
     ).mappings().first()
 

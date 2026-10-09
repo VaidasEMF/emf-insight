@@ -218,7 +218,7 @@ async function openHomeUnlockCta() {
     const price =
         pricing
             ?.regions
-            ?. [region]
+            ?.[region]
             ?.products
             ?.HOME_FULL_REPORT
             ?.price ?? null;
@@ -287,11 +287,10 @@ async function openHomeUnlockCta() {
                     font-weight: 700;
                 "
             >
-                ${
-                    priceText
-                        ? `${priceText} one-time · This Home Project`
-                        : `One-time purchase · This Home Project`
-                }
+                ${priceText
+            ? `${priceText} one-time · This Home Project`
+            : `One-time purchase · This Home Project`
+        }
             </div>
 
 
@@ -356,27 +355,8 @@ async function openHomeUnlockCta() {
         )
         ?.addEventListener(
             "click",
-            async () => {
-
-                close();
-
-                if (
-                    typeof buyPlan ===
-                    "function"
-                ) {
-
-                    await buyPlan(
-                        "home_full_report"
-                    );
-
-                    return;
-                }
-
-
-                console.warn(
-                    "buyPlan() is not available."
-                );
-
+            () => {
+                window.location.href = "/dashboard.html#billing";
             }
         );
 
@@ -448,27 +428,27 @@ function openResultsDashboard() {
         window.AppMode?.current === "home"
     ) {
 
-        updateCurrentExposure?.();
+        if (
+            window.AppMode?.current === "home"
+        ) {
 
-        const panel =
-            document.getElementById(
-                "liveAnalysisPanel"
-            );
+            if (
+                typeof openPropertyHealthDashboard ===
+                "function"
+            ) {
 
-        if (panel) {
+                openPropertyHealthDashboard();
 
-            panel.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+            }
+            else {
 
-        }
-        else {
+                console.warn(
+                    "Property Health Dashboard function unavailable."
+                );
 
-            console.warn(
-                "Home Results panel not found."
-            );
+            }
 
+            return;
         }
 
         return;
@@ -493,6 +473,12 @@ function openResultsDashboard() {
         "Business Results function unavailable."
     );
 }
+
+window.openHomeFullInsightsUnlock = function () {
+    console.log("🔓 HOME FULL PROPERTY INSIGHTS UNLOCK");
+
+    window.location.href = "/dashboard.html#billing";
+};
 
 
 // =====================

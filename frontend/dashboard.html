@@ -216,6 +216,14 @@
             justify-content: space-between;
             gap: 24px;
             margin-bottom: 28px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            padding: 14px 0 18px;
+
+            background: var(--bg);
         }
 
         .eyebrow {
@@ -3581,6 +3589,41 @@
             background: #b91c1c !important;
             border-color: #b91c1c !important;
         }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .dashboard-title h1 {
+            margin: 0;
+            font-size: 30px;
+            line-height: 1.15;
+        }
+
+        .dashboard-back-btn {
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .dashboard-back-btn:hover {
+            background: #f8fafc;
+        }
+
+        .dashboard-subtitle {
+            margin: 4px 0 0;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.4;
+        }
     </style>
 </head>
 
@@ -3845,12 +3888,20 @@
             <div class="main-inner">
 
                 <header class="topbar" id="overview">
-                    <div>
-                        <div class="eyebrow">EMF Insight ┬╖ Account</div>
-                        <h1>Account Dashboard</h1>
-                        <p class="lead" id="dashboardLead">
-                            Manage your current workspace, projects, reports and account settings.
-                        </p>
+
+                    <div class="topbar-left">
+
+                        <button type="button" class="dashboard-back-btn" id="dashboardBackBtn">
+                            ← Back to Business Survey
+                        </button>
+
+                        <div class="dashboard-title">
+                            <h1>Account Dashboard</h1>
+                            <p class="dashboard-subtitle">
+                                Manage your workspace, projects, reports, billing and account settings.
+                            </p>
+                        </div>
+
                     </div>
 
                     <div class="user-pill">
@@ -11527,6 +11578,20 @@ ADMIN PAYMENTS
                         : "Manage your Business Survey projects, reports, billing and professional account settings.";
             }
 
+            // =========================================================
+            // DASHBOARD BACK BUTTON
+            // =========================================================
+
+            const dashboardBackBtn =
+                document.getElementById("dashboardBackBtn");
+
+            if (dashboardBackBtn) {
+                dashboardBackBtn.textContent =
+                    isHome
+                        ? "← Back to My Property"
+                        : "← Back to Business Survey";
+            }
+
 
             // =========================================================
             // PROJECT NAVIGATION
@@ -18755,6 +18820,8 @@ ${!isTbd
                         : "Save Pricing";
             }
         }
+
+
         async function loadHomeProfessionalRequests() {
 
             const container =
@@ -19073,6 +19140,7 @@ ${request.has_active_unlock
         `;
             }
         }
+
 
         function formatHomeProfessionalRequestStatus(status) {
 
@@ -21670,6 +21738,39 @@ ${request.has_active_unlock
             });
         }
 
+
+        function openProfessionalContacts() {
+            navigateProfessionalDashboardSection("my-contacts");
+
+            if (typeof updateProfessionalMyContacts === "function") {
+                updateProfessionalMyContacts();
+            }
+        }
+
+        function openDashboardSectionFromHash() {
+            const sectionId = window.location.hash.slice(1);
+
+            if (sectionId === "my-contacts") {
+                openProfessionalContacts();
+            }
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener(
+                "DOMContentLoaded",
+                openDashboardSectionFromHash,
+                { once: true }
+            );
+        } else {
+            openDashboardSectionFromHash();
+        }
+
+        function openProfessionalContacts() {
+            // Navigate to the existing Professional Dashboard contacts section.
+            window.location.href = "dashboard.html#my-contacts";
+        }
+
+
         async function unlockProfessionalContact(requestId) {
             const token = localStorage.getItem("token");
 
@@ -21852,7 +21953,10 @@ ${request.has_active_unlock
                     request => request.unlocked_by_me
                 );
 
-                if (!availableRequests.length) {
+                if (
+                    !availableRequests.length &&
+                    !myContactRequests.length
+                ) {
                     container.innerHTML = `
                 <div class="empty-state">
     <div class="empty-icon">⌂</div>
@@ -21872,7 +21976,7 @@ ${request.has_active_unlock
 
                 container.innerHTML = `
             <div class="professional-home-projects-list">
-                ${availableRequests.map((request) => `
+                ${[...myContactRequests, ...availableRequests].map((request) => `
                     <div class="workspace-card professional-home-project-card">
     <div class="content-body">
         <div class="section-title">
@@ -22261,7 +22365,8 @@ ${request.contact_expires_at
                         <th>Contact</th>
                         <th>Timing</th>
                         <th>Status</th>
-                        <th>Access until</th>
+<th>Access until</th>
+<th>Assessment</th>
                     </tr>
                 </thead>
 
@@ -22362,10 +22467,22 @@ ${request.contact_expires_at
                 </div>
             `
                     : "—"
+
                 }
 </td>
+
+                            <td>
+                                <button
+                                    type="button"
+                                    class="btn-primary"
+                                    onclick="openProfessionalHomeAssessment(${Number(request.request_id)})"
+                                >
+                                    Open Property Assessment
+                                </button>
+                            </td>
                         </tr>
                     `).join("")}
+
                 </tbody>
             </table>
         </div>
@@ -22511,7 +22628,8 @@ ${request.contact_expires_at
                             <th>Timing</th>
                             <th>Status</th>
                             <th>Access until</th>
-                        </tr>
+                            <th>Assessment</th>
+                            </tr>
                     </thead>
 
                     <tbody>
@@ -22587,6 +22705,16 @@ ${request.contact_expires_at
                         : "—"
                     }
                                 </td>
+
+                                <td>
+    <button
+        type="button"
+        class="btn-primary"
+        onclick="openProfessionalHomeAssessment(${Number(request.request_id)})"
+    >
+        Open Property Assessment
+    </button>
+</td>
                             </tr>
                         `).join("")}
                     </tbody>
@@ -22616,6 +22744,115 @@ ${request.contact_expires_at
         `;
             }
         }
+
+        async function openProfessionalHomeAssessment(requestId) {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("Please sign in again.");
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API}/professional-requests/${Number(requestId)}/project`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail ||
+                        "Unable to open Property Assessment."
+                    );
+                }
+
+                if (
+                    !data.success ||
+                    !data.project ||
+                    !data.project.data
+                ) {
+                    throw new Error(
+                        "The Home project data is unavailable."
+                    );
+                }
+
+
+                const homeProject = data.project.data;
+
+                if (
+                    homeProject.type !== "home" ||
+                    Number(homeProject.project_id ?? data.project_id) !==
+                    Number(data.project_id)
+                ) {
+                    throw new Error(
+                        "The requested project is not a valid Home project."
+                    );
+                }
+
+                sessionStorage.setItem(
+                    "professionalAssessmentContext",
+                    JSON.stringify({
+                        requestId: data.request_id,
+                        projectId: data.project_id,
+                        expiresAt: data.unlock?.expires_at
+                    })
+                );
+
+                console.log(
+                    "Professional Assessment context stored",
+                    {
+                        requestId: data.request_id,
+                        projectId: data.project_id,
+                        expiresAt: data.unlock?.expires_at
+                    }
+                );
+
+
+                console.log(
+                    "Unlocked Home Property Assessment loaded",
+                    {
+                        requestId: data.request_id,
+                        projectId: data.project_id,
+                        expiresAt: data.unlock?.expires_at,
+                        project: homeProject
+                    }
+                );
+
+
+                localStorage.setItem(
+                    "workspaceMode",
+                    "business"
+                );
+
+                sessionStorage.setItem(
+                    "requestedWorkspace",
+                    "professional-assessment"
+                );
+
+                window.location.href = "index.html";
+
+
+            } catch (error) {
+                console.error(
+                    "Open Professional Home Assessment error:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to open Property Assessment."
+                );
+            }
+        }
+
+
 
         function initializeProfessionalDashboardSubnav() {
             const sections = [
@@ -26790,6 +27027,52 @@ ${request.contact_expires_at
             sections.forEach(section => observer.observe(section));
         }
 
+
+        function goBackToWorkspace() {
+
+            const workspaceMode =
+                localStorage.getItem("workspaceMode") || "business";
+
+            if (workspaceMode === "business") {
+
+                const projectId =
+                    localStorage.getItem("business_project_id");
+
+                console.log(
+                    "↩️ RETURN TO BUSINESS",
+                    {
+                        workspaceMode,
+                        projectId
+                    }
+                );
+
+                if (projectId) {
+                    localStorage.setItem(
+                        "workspaceMode",
+                        "business"
+                    );
+                }
+            }
+
+            window.location.href = "index.html";
+        }
+
+        function updateDashboardBackButton() {
+
+            const button =
+                document.getElementById("dashboardBackBtn");
+
+            if (!button) return;
+
+            const workspaceMode =
+                localStorage.getItem("workspaceMode") || "business";
+
+            button.textContent =
+                workspaceMode === "home"
+                    ? "← Back to My Property"
+                    : "← Back to Business Survey";
+        }
+
         async function initDashboard() {
             if (!token) return;
 
@@ -26815,6 +27098,29 @@ ${request.contact_expires_at
         initDashboard().then(() => {
             initializeDashboardScrollSpy();
         });
+
+        document
+            .getElementById("dashboardBackBtn")
+            ?.addEventListener(
+                "click",
+                goBackToWorkspace
+            );
+
+        updateDashboardBackButton();
+
+        // Set Dashboard Back button label based on workspace
+        const dashboardBackBtn =
+            document.getElementById("dashboardBackBtn");
+
+        if (dashboardBackBtn) {
+            const workspaceMode =
+                localStorage.getItem("workspaceMode") || "business";
+
+            dashboardBackBtn.textContent =
+                workspaceMode === "home"
+                    ? "← Back to My Property"
+                    : "← Back to Business Survey";
+        }
 
 
         function openAdminProfessionalDemoSend(demoId) {
