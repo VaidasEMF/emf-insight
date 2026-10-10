@@ -4544,6 +4544,8 @@ function closeCreateProjectNamePopup() {
 
     popup.style.display = "none";
 
+    document.body.classList.remove("delete-project-modal-open");
+
     popup.setAttribute(
         "aria-hidden",
         "true"
@@ -4922,6 +4924,8 @@ function openDeleteProjectConfirm(
     // ==================================================
     // SHOW
     // ==================================================
+
+    document.body.classList.add("delete-project-modal-open");
 
     popup.style.display =
         "flex";

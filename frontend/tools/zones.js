@@ -3282,6 +3282,9 @@ function showZoneCreationHelp(
     room
 ) {
 
+    // Hide background workspace controls while Zone Creation popup is open
+    document.body.classList.add("zone-creation-modal-open");
+
     console.error(
         "🔥 SHOW ZONE CREATION START",
         room
@@ -3823,6 +3826,8 @@ margin: 0;
 
     const cancelZoneCreation =
         () => {
+
+            document.body.classList.remove("zone-creation-modal-open");
 
             AppState.ui.mode =
                 "idle";

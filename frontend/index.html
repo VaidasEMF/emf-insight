@@ -16776,10 +16776,21 @@
    ===================================================== */
 
     body.project-popup-open #businessWorkflowBar,
-    body.project-popup-open #homeWorkflowBar {
-      visibility: hidden !important;
+    body.project-popup-open #homeWorkflowBar,
+    body.delete-project-modal-open #businessWorkflowBar,
+    body.delete-project-modal-open #homeWorkflowBar,
+    body.delete-project-modal-open .workspace-switcher {
+      display: none !important;
     }
 
+
+    /* Hide workspace UI behind Zone Creation popup */
+    body.zone-creation-modal-open #businessWorkflowBar,
+    body.zone-creation-modal-open #homeWorkflowBar,
+    body.zone-creation-modal-open #workspaceSwitcherBtn,
+    body.zone-creation-modal-open .room-info-card {
+      display: none !important;
+    }
 
     /* =====================================================
    NEW PROJECT — PRIMARY ACTION
