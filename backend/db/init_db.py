@@ -20,6 +20,22 @@ def init_db():
         bind=engine,
     )
 
+
+    if engine.dialect.name == "postgresql":
+        with engine.begin() as connection:
+            connection.execute(text("""
+                ALTER TABLE reports
+                ADD COLUMN IF NOT EXISTS created_at TIMESTAMP
+                NOT NULL DEFAULT CURRENT_TIMESTAMP
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE reports
+                ADD COLUMN IF NOT EXISTS workspace VARCHAR(20)
+                NOT NULL DEFAULT 'business'
+            """))
+
+
      # ==================================================
     # PROFESSIONAL REQUESTS
     # ==================================================

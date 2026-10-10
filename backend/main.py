@@ -2022,7 +2022,9 @@ def generate_pdf(
             pdf_path=pdf_path,
             preview=1 if is_preview else 0,
             project_id=project_row.id,
+            workspace=workspace,
         )
+
 
         db.add(report)
 

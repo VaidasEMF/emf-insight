@@ -4965,6 +4965,8 @@ function openDeleteProjectConfirm(
     );
 }
 
+window.openDeleteProjectConfirm = openDeleteProjectConfirm;
+
 
 // ==================================================
 // DELETE LOCK

@@ -39130,12 +39130,19 @@
       );
     }
 
+
     const homeProjectId =
-      userId
-        ? localStorage.getItem(
-          `home_project_id_${userId}`
-        )
-        : null;
+      (
+        userId
+          ? localStorage.getItem(
+            `home_project_id_${userId}`
+          )
+          : null
+      ) ||
+      localStorage.getItem("home_project_id") ||
+      localStorage.getItem("homeProjectId") ||
+      null;
+
 
     // ==================================================
     // LEGACY PROJECT ID
@@ -40448,22 +40455,6 @@ ${lifestyleAreas.map((area, areaIndex) => {
 
         if (!floor) return;
 
-        console.log(
-          "PA OUTDOOR SOURCES:",
-          project?.outdoorSources
-        );
-
-        console.log("PA OUTDOOR DEBUG", {
-          outdoorCount: outdoorMarkers.length,
-          naturalWidth,
-          naturalHeight,
-          displayedWidth: image.getBoundingClientRect().width,
-          displayedHeight: image.getBoundingClientRect().height,
-          planRect: planEl.getBoundingClientRect().toJSON(),
-          outdoorRect: planEl.querySelector("[data-pa-outdoor-markers]")
-            ?.getBoundingClientRect().toJSON()
-        });
-
 
         const markers = [
           ...(Array.isArray(floor.zones) ? floor.zones : []),
@@ -40483,6 +40474,21 @@ ${lifestyleAreas.map((area, areaIndex) => {
         );
 
 
+        console.log(
+          "PA OUTDOOR SOURCES:",
+          project?.outdoorSources
+        );
+
+        console.log("PA OUTDOOR DEBUG", {
+          outdoorCount: outdoorMarkers.length,
+          naturalWidth: image.naturalWidth,
+          naturalHeight: image.naturalHeight,
+          displayedWidth: image.getBoundingClientRect().width,
+          displayedHeight: image.getBoundingClientRect().height,
+          planRect: planEl.getBoundingClientRect().toJSON(),
+          outdoorRect: planEl.querySelector("[data-pa-outdoor-markers]")
+            ?.getBoundingClientRect().toJSON()
+        });
 
 
         const drawMarkers = () => {
@@ -40931,7 +40937,7 @@ z-index:2;
       await setAppMode(
         workspaceMode,
         {
-          skipProjectRestore: !isProfessionalAssessment
+          skipProjectRestore: false
         }
       );
 

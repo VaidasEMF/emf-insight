@@ -1,7 +1,12 @@
+
+from datetime import datetime
+
 from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
+    DateTime,
+    func,
 )
 
 from sqlalchemy.orm import (
@@ -14,12 +19,7 @@ from db.base import Base
 
 
 class Report(Base):
-
     __tablename__ = "reports"
-
-    # =====================
-    # PRIMARY KEY
-    # =====================
 
     id: Mapped[int] = mapped_column(
         Integer,
@@ -27,31 +27,32 @@ class Report(Base):
         index=True,
     )
 
-    # =====================
-    # PDF FILE
-    # =====================
-
     pdf_path: Mapped[str] = mapped_column(
         String,
         nullable=False,
     )
-
-    # =====================
-    # PREVIEW
-    # =====================
 
     preview: Mapped[int] = mapped_column(
         Integer,
         default=1,
     )
 
-    # =====================
-    # PROJECT
-    # =====================
-
     project_id: Mapped[int] = mapped_column(
         ForeignKey("projects.id"),
         nullable=False,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+    )
+
+    workspace: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="business",
+        server_default="business",
     )
 
     project = relationship(

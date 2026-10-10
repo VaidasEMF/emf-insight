@@ -320,6 +320,12 @@ async function setAppMode(
     options = {}
 ) {
 
+    console.error("🚩 SET APP MODE ENTERED", {
+        mode,
+        options,
+        url: window.location.href
+    });
+
     console.log(
         "🔥 SET APP MODE START",
         {
@@ -622,6 +628,7 @@ async function setAppMode(
     }
 
 
+
     let targetProjectId =
         mode === "business"
             ? (
@@ -637,9 +644,13 @@ async function setAppMode(
                     `home_project_id_${homeUserId}`
                 ) ||
                 localStorage.getItem(
+                    "home_project_id"
+                ) ||
+                localStorage.getItem(
                     "homeProjectId"
                 )
             );
+
 
     if (
         mode === "business" &&
@@ -1167,10 +1178,48 @@ async function setAppMode(
                         );
 
 
+
+
+                    console.error("🚨 BUSINESS LOAD START", {
+                        mode,
+                        targetProjectId,
+                        skipProjectRestore: options.skipProjectRestore,
+                        leavingHomeDemo
+                    });
+
+
+                    console.error("🚨 BUSINESS LOAD START", {
+                        mode,
+                        targetProjectId
+                    });
+
                     const loaded =
-                        await window.loadProject(
-                            targetProjectId
-                        );
+                        await window.loadProject(targetProjectId);
+
+                    console.error("🚨 BUSINESS LOAD FINISHED", {
+                        mode,
+                        targetProjectId,
+                        loaded
+                    });
+
+                    console.log("🔎 OPEN PROJECT LOAD RESULT", {
+                        mode,
+                        targetProjectId,
+                        loaded,
+                        currentProjectId: window.currentProjectId,
+                        appProjectId:
+                            window.AppState?.project?.project_id ??
+                            window.AppState?.project?.id ??
+                            null,
+                        homeProjectId:
+                            window.AppState?.homeProject?.project_id ??
+                            window.AppState?.homeProject?.id ??
+                            null,
+                        businessProjectId:
+                            window.AppState?.businessProject?.project_id ??
+                            window.AppState?.businessProject?.id ??
+                            null
+                    });
 
 
                     if (
