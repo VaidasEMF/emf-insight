@@ -982,9 +982,14 @@ function confirmScalePopup() {
         }
 
 
-        alert(
+        showScaleMessage(
+            scaleWarning.type === "large"
+                ? "Floor appears unusually large"
+                : scaleWarning.type === "small"
+                    ? "Floor appears unusually small"
+                    : "Scale validation warning",
             scaleWarning.message ||
-            "The selected scale is not realistic for this floor plan."
+            "Please verify the reference measurement."
         );
 
 
@@ -3485,7 +3490,7 @@ function validateFloorScale(
         return {
             type: "small",
             message:
-                "⚠️ This floor appears unusually small. Please verify the reference measurement."
+                "This floor appears unusually small. Please verify the reference measurement."
         };
     }
 
@@ -3496,7 +3501,7 @@ function validateFloorScale(
         return {
             type: "large",
             message:
-                "⚠️ This floor appears unusually large. Please verify the reference measurement."
+                "This floor appears unusually large. Please verify the reference measurement."
         };
     }
 
