@@ -8539,18 +8539,12 @@
    ================================================== */
 
     #scaleModal {
-
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
-      padding:
-        20px;
-
-      box-sizing:
-        border-box;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      padding-top: 90px;
+      box-sizing: border-box;
+      overflow-y: auto;
     }
 
 
@@ -21923,6 +21917,30 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
+
+
+    .scale-reference-tip {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+
+    .scale-reference-tip-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #334155;
+      font-size: 12px;
+    }
+
+    .scale-reference-tip p {
+      margin: 5px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 
@@ -28221,26 +28239,49 @@
                       the two selected points.
                     </div>
 
+                    <div class="scale-reference-tip">
+                      <div class="scale-reference-tip-title">
+                        <span>📏</span>
+                        <strong>Need a reference measurement?</strong>
+                      </div>
+                      <p>
+                        Measure the width of a doorway. A typical interior
+                        door is approximately 0.9 m (3 ft) wide.
+                      </p>
+                    </div>
 
-                    <!-- ==================================================
-         DISTANCE
-         ================================================== -->
+                    <!-- DISTANCE -->
+                    <div style="margin-top: 20px;">
+                      <label class="scale-distance-label" for="scaleDistanceInput"
+                        style="display:block; margin-bottom:8px;">
+                        Reference distance
+                      </label>
 
-                    <label class="scale-distance-label" for="scaleDistanceInput">
-                      Distance
-                    </label>
+                      <div class="scale-input-row" style="
+      display:flex;
+      align-items:center;
+      gap:10px;
+      width:max-content;
+      max-width:100%;
+    ">
+                        <input id="scaleDistanceInput" type="number" step="0.01" min="0.01" placeholder="1.20"
+                          autocomplete="off" style="
+        width:130px;
+        max-width:130px;
+        box-sizing:border-box;
+        flex:0 0 130px;
+      ">
 
+                        <span id="scaleDistanceUnit" class="scale-distance-unit" style="
+        min-width:24px;
+        font-weight:600;
+        text-align:left;
+      ">m</span>
+                      </div>
 
-                    <div class="scale-input-row">
-
-                      <input id="scaleDistanceInput" type="number" step="0.01" min="0.01" placeholder="1.20"
-                        autocomplete="off">
-
-                      <span id="scaleDistanceUnit" class="scale-distance-unit">
-                        m
-                      </span>
 
                     </div>
+
 
 
                     <!-- ==================================================
@@ -40149,16 +40190,75 @@
     </section>
   `;
       };
-      const renderSource = (source, index) => `
-  <div style="padding:12px; border:1px solid #e2e8f0; border-radius:10px;">
-    <strong>${escapeHTML(
-        source.name || source.label || source.type || `Source ${index + 1}`
-      )}</strong>
-    ${source.description
-          ? `<p style="margin:6px 0 0; color:#64748b;">${escapeHTML(source.description)}</p>`
-          : ""}
-  </div>
-`;
+
+
+
+      const renderSource = (source, index, scope = "") => {
+        const config = getObjectConfig(source);
+        const label = getObjectLabel(source);
+        const icon = config?.image;
+        const isOutdoor =
+          scope === "outdoor" ||
+          String(source?.placementType || source?.placementMode || "").toLowerCase() === "outdoor";
+
+        return `
+          <div style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+            min-width:0;
+            padding:14px;
+            border:1px solid #e2e8f0;
+            border-radius:12px;
+            background:#ffffff;
+            box-shadow:0 1px 3px rgba(15,23,42,0.04);
+          ">
+            <div style="
+              width:44px;
+              height:44px;
+              flex:0 0 44px;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              border:1px solid #e2e8f0;
+              border-radius:10px;
+              background:#f8fafc;
+            ">
+              ${icon
+            ? `<img src="${escapeHTML(icon)}" alt="" style="width:32px;height:32px;object-fit:contain;">`
+            : `<span style="font-size:20px;color:#64748b;">◇</span>`
+          }
+            </div>
+
+            <div style="min-width:0;flex:1;">
+              <div style="
+                font-size:13px;
+                font-weight:700;
+                color:#172033;
+                overflow-wrap:anywhere;
+              ">
+                ${escapeHTML(label || `Source ${index + 1}`)}
+              </div>
+
+              <div style="
+                margin-top:5px;
+                font-size:10px;
+                font-weight:600;
+                letter-spacing:0.04em;
+                color:#64748b;
+              ">
+                ${isOutdoor ? "OUTDOOR SOURCE" : "INDOOR SOURCE"}
+              </div>
+
+              ${source.description
+            ? `<p style="margin:6px 0 0;font-size:12px;line-height:1.4;color:#64748b;">${escapeHTML(source.description)}</p>`
+            : ""
+          }
+            </div>
+          </div>
+        `;
+      };
+
 
       content.innerHTML = `
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:24px;">
@@ -40236,20 +40336,45 @@ ${imageData
                 <div style="margin-top:16px;">
                   <h5 style="margin:0 0 10px;">Lifestyle Areas</h5>
                   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;">
-                    ${lifestyleAreas.map((area, areaIndex) => {
+${lifestyleAreas.map((area, areaIndex) => {
                   const config = getObjectConfig(area);
                   const label = getObjectLabel(area);
 
                   return `
-                        <div style="display:flex; align-items:center; gap:10px; padding:12px; border:1px solid #e2e8f0; border-radius:10px;">
-                          ${config?.image
-                      ? `<img src="${escapeHTML(config.image)}" alt="" style="width:32px;height:32px;object-fit:contain;flex-shrink:0;">`
-                      : ""
+    <div style="
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+      padding:14px;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      background:#ffffff;
+      box-shadow:0 1px 3px rgba(15,23,42,0.04);
+    ">
+      <div style="
+        width:44px;
+        height:44px;
+        flex:0 0 44px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        background:#f8fafc;
+      ">
+        ${config?.image
+                      ? `<img src="${escapeHTML(config.image)}" alt="" style="width:32px;height:32px;object-fit:contain;">`
+                      : `<span style="font-size:20px;color:#64748b;">◇</span>`
                     }
-                          <strong>${escapeHTML(label || `Lifestyle Area ${areaIndex + 1}`)}</strong>
-                        </div>
-                      `;
+      </div>
+      <strong style="font-size:13px;color:#172033;">
+        ${escapeHTML(label || `Lifestyle Area ${areaIndex + 1}`)}
+      </strong>
+    </div>
+  `;
                 }).join("")}
+
                   </div>
                 </div>
               `
@@ -40260,17 +40385,6 @@ ${imageData
               `
               }
 
-          <div style="margin-top:16px;">
-            <h5 style="margin:0 0 10px;">Sources</h5>
-            ${sources.length
-                ? `
-                  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px;">
-                    ${sources.map(renderSource).join("")}
-                  </div>
-                `
-                : `<p style="color:#64748b;">No sources recorded on this floor.</p>`
-              }
-          </div>
         </section>
       `;
           }).join("")
@@ -40281,7 +40395,7 @@ ${imageData
 
 
   <section>
-    <h3 style="margin-bottom:12px;">Sources</h3>
+    <section style="padding-bottom:48px; margin-bottom:24px;">
 
     ${floors.map((floor, index) => {
           const sources = getFloorSources(floor);
@@ -40303,7 +40417,7 @@ ${imageData
     ${(Array.isArray(project.outdoorSources) ? project.outdoorSources : []).length
           ? `<h4 style="margin:16px 0 10px;">Property Outdoor Sources</h4>
           <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
-            ${project.outdoorSources.map(renderSource).join("")}
+           ${project.outdoorSources.map((source, index) => renderSource(source, index, "outdoor")).join("")}
           </div>`
           : ""
         }
@@ -40328,6 +40442,17 @@ ${imageData
           project?.outdoorSources
         );
 
+        console.log("PA OUTDOOR DEBUG", {
+          outdoorCount: outdoorMarkers.length,
+          naturalWidth,
+          naturalHeight,
+          displayedWidth: image.getBoundingClientRect().width,
+          displayedHeight: image.getBoundingClientRect().height,
+          planRect: planEl.getBoundingClientRect().toJSON(),
+          outdoorRect: planEl.querySelector("[data-pa-outdoor-markers]")
+            ?.getBoundingClientRect().toJSON()
+        });
+
 
         const markers = [
           ...(Array.isArray(floor.zones) ? floor.zones : []),
@@ -40350,6 +40475,8 @@ ${imageData
 
 
         const drawMarkers = () => {
+
+          console.log("PA DRAW MARKERS RUNNING");
           const naturalWidth = image.naturalWidth;
           const naturalHeight = image.naturalHeight;
 
@@ -40447,11 +40574,11 @@ z-index:2;
 
           const padding = 64;
 
+
           const minX = Math.min(0, ...outdoorMarkers.map(item => Number(item.x)));
           const minY = Math.min(0, ...outdoorMarkers.map(item => Number(item.y)));
           const maxX = Math.max(naturalWidth, ...outdoorMarkers.map(item => Number(item.x)));
           const maxY = Math.max(naturalHeight, ...outdoorMarkers.map(item => Number(item.y)));
-
           const offsetX = padding - minX * scaleX;
           const offsetY = padding - minY * scaleY;
 
@@ -40793,7 +40920,7 @@ z-index:2;
       await setAppMode(
         workspaceMode,
         {
-          skipProjectRestore: false
+          skipProjectRestore: !isProfessionalAssessment
         }
       );
 

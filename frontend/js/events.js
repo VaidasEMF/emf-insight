@@ -19,6 +19,36 @@ function handleMouseDown(evt) {
     // Dispatch immediately.
     //
 
+
+    // SCALE POPUP — SPACE + DRAG PAN
+    if (
+        AppState.ui?.mode === "scale" &&
+        spacePressed
+    ) {
+        evt.preventDefault();
+
+        isPanning = true;
+
+        if (S?.interaction) {
+            S.interaction.isPanning = true;
+        }
+
+        panStartX =
+            evt.clientX -
+            (EMFViewport?.panX || 0);
+
+        panStartY =
+            evt.clientY -
+            (EMFViewport?.panY || 0);
+
+        if (window.canvas) {
+            window.canvas.style.cursor = "grabbing";
+        }
+
+        return;
+    }
+
+
     if (
         AppState.ui.mode ===
         "scale"
@@ -2116,7 +2146,7 @@ function handleMouseDown(evt) {
             }, 0);
 
             return;
-                    }
+        }
 
 
         // ==================================================
@@ -2954,10 +2984,17 @@ function handleMouseDown(evt) {
     // PAN PERMISSION
     // --------------------------------------------------
 
+
+    const scalePopupOpen =
+        document.getElementById("scaleModal")?.style.display !== "none" &&
+        !!document.getElementById("scaleModal");
+
     const canPan =
-        spacePressed ||
+        spacePressed &&
+        !hasActiveObjectPlacement ||
         (
             !hasActiveObjectPlacement &&
+            !scalePopupOpen &&
             (
                 !activeMode ||
                 activeMode === "idle" ||
@@ -2965,6 +3002,7 @@ function handleMouseDown(evt) {
                 activeMode === "sources"
             )
         );
+
 
 
     if (

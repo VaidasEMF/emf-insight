@@ -43,116 +43,362 @@ window.scaleTool = {
 };
 
 
+
+
 function openScalePopup() {
+    const input = document.getElementById("scaleDistanceInput");
+    if (input) input.value = "";
 
-    const input =
-        document.getElementById(
-            "scaleDistanceInput"
-        );
+    const units = getProjectUnits?.();
+    const label = document.getElementById("scaleDistanceUnit");
+    if (label) label.innerText = units === "ft" ? "ft" : "m";
 
-
-    if (input) {
-
-        input.value =
-            "";
-    }
-
-
-    // ==================================================
-    // CURRENT UNITS
-    // ==================================================
-
-    const units =
-        getProjectUnits?.();
-
-
-    const label =
-        document.getElementById(
-            "scaleDistanceUnit"
-        );
-
-
-    if (label) {
-
-        label.innerText =
-            units === "ft"
-                ? "ft"
-                : "m";
-    }
-
-
-    // ==================================================
-    // POPUP
-    // ==================================================
-
-    const modal =
-        document.getElementById(
-            "scaleModal"
-        );
-
-
+    const modal = document.getElementById("scaleModal");
     if (!modal) {
-
-        console.error(
-            "❌ SCALE MODAL NOT FOUND"
-        );
-
+        console.error("SCALE MODAL NOT FOUND");
         return;
     }
 
+    const scaleCard = modal.querySelector(".room-modal-card");
+    if (!scaleCard) {
+        console.error("SCALE POPUP CARD NOT FOUND");
+        return;
+    }
 
-    // ==================================================
-    // UPDATE INSTRUCTIONS
-    // ==================================================
+    // Keep the modal outside other layout containers.
+    if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
 
-    const instructions =
-        modal.querySelector(
-            ".scale-modal-instructions"
-        );
+    // Create the interaction backdrop once.
+    let scaleBackdrop = document.getElementById("scaleInteractionBackdrop");
+
+    if (!scaleBackdrop) {
+        scaleBackdrop = document.createElement("div");
+        scaleBackdrop.id = "scaleInteractionBackdrop";
+        document.body.appendChild(scaleBackdrop);
+    }
+
+    Object.assign(scaleBackdrop.style, {
+        position: "fixed",
+        inset: "0",
+        zIndex: "2147482998",
+        background: "rgba(245, 248, 252, 0.02)",
+        backdropFilter: "blur(0.5px)",
+        WebkitBackdropFilter: "blur(0.5px)",
+        pointerEvents: "auto",
+        display: "block"
+    });
+
+    // Full-screen modal layer. The card itself receives interaction.
+    Object.assign(modal.style, {
+        display: "block",
+        visibility: "visible",
+        position: "fixed",
+        inset: "0",
+        width: "100vw",
+        height: "100vh",
+        padding: "0",
+        margin: "0",
+        background: "transparent",
+        zIndex: "2147483000",
+        pointerEvents: "none",
+        backdropFilter: "none",
+        WebkitBackdropFilter: "none"
+    });
+
+    Object.assign(scaleCard.style, {
+        position: "fixed",
+        zIndex: "2147483001",
+        pointerEvents: "auto",
+        visibility: "visible",
+        filter: "none",
+        backdropFilter: "none",
+        WebkitBackdropFilter: "none",
+        margin: "0",
+        transform: "none"
+    });
 
 
-    if (instructions) {
+    // DRAG SCALE POPUP CARD
+    if (!scaleCard.dataset.dragBound) {
+        scaleCard.dataset.dragBound = "true";
 
-        instructions.innerHTML = `
+        let dragging = false;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
 
-            <div
-                style="
-                    margin-bottom:10px;
-                    font-weight:700;
-                    color:#16a34a;
-                "
-            >
-                ✓ Two points selected
-            </div>
+        scaleCard.style.cursor = "grab";
 
-            <div>
-                Enter the real-world distance
-                between those two points.
-            </div>
+        scaleCard.addEventListener("pointerdown", event => {
+            if (event.button !== 0) return;
 
-        `;
+            if (
+                event.target.closest(
+                    "input, button, select, textarea, label, a, .room-skip-btn"
+                )
+            ) {
+                return;
+            }
+
+            const rect = scaleCard.getBoundingClientRect();
+
+            dragging = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            startLeft = rect.left;
+            startTop = rect.top;
+
+            scaleCard.style.cursor = "grabbing";
+
+            event.preventDefault();
+            event.stopPropagation();
+        });
+
+        document.addEventListener("pointermove", event => {
+            if (!dragging) return;
+
+            const margin = 8;
+            const maxLeft = window.innerWidth - scaleCard.offsetWidth - margin;
+            const maxTop = window.innerHeight - scaleCard.offsetHeight - margin;
+
+            const left = Math.max(
+                margin,
+                Math.min(maxLeft, startLeft + event.clientX - startX)
+            );
+
+            const top = Math.max(
+                margin,
+                Math.min(maxTop, startTop + event.clientY - startY)
+            );
+
+            scaleCard.style.left = `${left}px`;
+            scaleCard.style.top = `${top}px`;
+            scaleCard.style.right = "auto";
+            scaleCard.style.bottom = "auto";
+        });
+
+        const stopDragging = () => {
+            if (!dragging) return;
+
+            dragging = false;
+            scaleCard.style.cursor = "grab";
+        };
+
+        document.addEventListener("pointerup", stopDragging);
+        document.addEventListener("pointercancel", stopDragging);
     }
 
 
-    modal.style.display =
-        "flex";
+    // Stop canvas interactions originating inside the popup.
+    if (!scaleCard.dataset.scaleEventsBound) {
+        ["pointerdown", "mousedown", "click", "dblclick", "wheel"].forEach(type => {
+            scaleCard.addEventListener(type, event => {
+                event.stopPropagation();
+            });
+        });
 
+        scaleCard.dataset.scaleEventsBound = "true";
+    }
 
-    // ==================================================
-    // FOCUS
-    // ==================================================
+    const points = pendingScalePoints;
+    const canvas = window.canvas;
+    const rect = canvas?.getBoundingClientRect();
 
-    setTimeout(
-        () => {
+    if (rect && points?.length >= 2) {
+        const p1 = points[0];
+        const p2 = points[1];
 
-            input?.focus();
+        // Convert canvas coordinates to viewport coordinates.
+        const scaleX = rect.width / (canvas.width || rect.width);
+        const scaleY = rect.height / (canvas.height || rect.height);
 
-            input?.select();
+        const x1 = rect.left + p1.x * scaleX;
+        const y1 = rect.top + p1.y * scaleY;
+        const x2 = rect.left + p2.x * scaleX;
+        const y2 = rect.top + p2.y * scaleY;
 
-        },
-        50
-    );
+        const margin = 16;
+        const gap = 10;
+        const cardWidth = scaleCard.offsetWidth || 360;
+        const cardHeight = scaleCard.offsetHeight || 400;
+
+        // Prefer the right side of the selected line.
+        let left = Math.max(x1, x2) + gap;
+
+        if (left + cardWidth > window.innerWidth - margin) {
+            left = Math.min(x1, x2) - cardWidth - gap;
+        }
+
+        left = Math.max(
+            margin,
+            Math.min(left, window.innerWidth - cardWidth - margin)
+        );
+
+        const top = Math.max(
+            270,
+            Math.min(
+                Math.min(y1, y2),
+                window.innerHeight - cardHeight - margin
+            )
+        );
+
+        scaleCard.style.left = `${left}px`;
+        scaleCard.style.top = `${top}px`;
+        scaleCard.style.right = "auto";
+        scaleCard.style.bottom = "auto";
+    }
+
+    setTimeout(() => {
+        input?.focus();
+        input?.select();
+    }, 50);
 }
+
+
+function showScaleMessage(title, message, buttonText = "OK") {
+    let modal = document.getElementById("scaleMessageModal");
+
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "scaleMessageModal";
+
+        modal.innerHTML = `
+            <div class="scale-message-backdrop"></div>
+            <div class="scale-message-card" role="alertdialog"
+                 aria-modal="true" aria-labelledby="scaleMessageTitle">
+                <h3 id="scaleMessageTitle"></h3>
+                <p id="scaleMessageText"></p>
+                <button type="button" id="scaleMessageButton"></button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const style = document.createElement("style");
+        style.id = "scaleMessageModalStyles";
+        style.textContent = `
+            #scaleMessageModal {
+                position: fixed;
+                inset: 0;
+                z-index: 2147483640;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: inherit;
+            }
+
+            #scaleMessageModal .scale-message-backdrop {
+                position: absolute;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.38);
+                backdrop-filter: blur(3px);
+            }
+
+            #scaleMessageModal .scale-message-card {
+                position: relative;
+                width: min(440px, calc(100vw - 32px));
+                padding: 26px;
+                border: 1px solid #e2e8f0;
+                border-radius: 16px;
+                background: #ffffff;
+                box-shadow: 0 20px 60px rgba(15, 23, 42, 0.22);
+                color: #0f172a;
+            }
+
+            #scaleMessageModal h3 {
+                margin: 0 0 12px;
+                font-size: 19px;
+                font-weight: 650;
+                line-height: 1.35;
+            }
+
+            #scaleMessageModal p {
+                margin: 0 0 24px;
+                color: #475569;
+                font-size: 14px;
+                line-height: 1.65;
+                white-space: pre-line;
+            }
+
+            #scaleMessageModal #scaleMessageButton {
+                display: block;
+                min-width: 88px;
+                margin-left: auto;
+                padding: 10px 22px;
+                border: 0;
+                border-radius: 9px;
+                background: #4353d8;
+                color: #ffffff;
+                font: inherit;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+            #scaleMessageModal #scaleMessageButton:hover {
+                background: #3545c4;
+            }
+        `;
+        document.head.appendChild(style);
+
+        modal.querySelector("#scaleMessageButton").addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        modal.querySelector(".scale-message-backdrop").addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+
+    modal.querySelector("#scaleMessageTitle").textContent = title;
+    modal.querySelector("#scaleMessageText").textContent = message;
+    modal.querySelector("#scaleMessageButton").textContent = buttonText;
+    modal.style.display = "flex";
+
+    modal.querySelector("#scaleMessageButton").focus();
+}
+
+
+if (!window.scalePopupKeyboardBound) {
+    window.scalePopupKeyboardBound = true;
+
+    document.addEventListener("keydown", function (event) {
+        const modal = document.getElementById("scaleModal");
+
+        if (!modal || getComputedStyle(modal).display === "none") {
+            return;
+        }
+
+        if (event.key === "Escape") {
+            event.preventDefault();
+            event.stopPropagation();
+            closeScalePopup();
+            return;
+        }
+
+        if (event.key === "Enter") {
+            const input = document.getElementById("scaleDistanceInput");
+
+            if (!input || !input.value.trim()) return;
+
+            const distance = Number(input.value);
+
+            if (!Number.isFinite(distance) || distance <= 0) {
+                event.preventDefault();
+                input.focus();
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            confirmScalePopup();
+        }
+    }, true);
+}
+
+
 
 function closeScalePopup() {
 
@@ -168,6 +414,12 @@ function closeScalePopup() {
             "none";
     }
 
+
+    const backdrop = document.getElementById("scaleInteractionBackdrop");
+    if (backdrop) backdrop.style.display = "none";
+
+    document.getElementById("scaleInteractionBackdrop")?.style.setProperty("display", "none");
+    document.getElementById("scaleModal")?.style.setProperty("display", "none");
 
     // ==================================================
     // SCALE GUIDANCE
@@ -497,11 +749,12 @@ function confirmScalePopup() {
         MIN_REFERENCE_METERS
     ) {
 
-        alert(
-            "The reference distance is too small.\n\n" +
-            "Please enter a realistic real-world distance " +
-            "between the selected points."
+
+        showScaleMessage(
+            "Reference distance is too small",
+            "Please enter a realistic real-world distance between the selected points."
         );
+
 
         console.warn(
             "❌ SCALE REJECTED — REFERENCE TOO SMALL",
@@ -523,8 +776,8 @@ function confirmScalePopup() {
         MAX_REFERENCE_METERS
     ) {
 
-        alert(
-            "The reference distance is too large.\n\n" +
+        showScaleMessage(
+            "Reference distance is too large",
             "Please verify the selected points and distance."
         );
 
