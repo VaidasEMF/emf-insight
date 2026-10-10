@@ -237,6 +237,139 @@ def me(
         ),
     }
 
+
+# =====================
+# MY PAYMENT HISTORY
+# =====================
+
+@router.get("/me/payments")
+def get_my_payments(
+    current_user=Depends(get_current_user),
+):
+    import stripe
+
+    payments = []
+
+    try:
+        sessions = stripe.checkout.Session.list(
+            limit=100,
+            expand=["data.payment_intent"],
+        )
+
+        for session in sessions.data:
+            
+            
+            metadata = (
+                session.metadata.to_dict()
+                if session.metadata is not None
+                else {}
+            )
+
+            metadata_user_id = metadata.get("user_id")
+
+            if str(metadata_user_id or "") != str(current_user.id):
+                continue
+
+            plan = metadata.get("plan") or ""
+            project_id = metadata.get("project_id")
+
+            if plan == "home_full_report":
+                product = "Full EMF Insight Report"
+                workspace = "Home"
+            elif plan == "single":
+                product = "Business Single Report"
+                workspace = "Business"
+            elif plan == "pro":
+                product = "Business Pro"
+                workspace = "Business"
+            elif plan == "professional":
+                product = "Business Professional"
+                workspace = "Business"
+            else:
+                product = plan or "Payment"
+                workspace = "Business"
+
+            amount_total = session.amount_total
+
+            
+            receipt_url = None
+
+            payment_intent = session.payment_intent
+
+            if payment_intent:
+                if isinstance(payment_intent, str):
+                    payment_intent = stripe.PaymentIntent.retrieve(
+                        payment_intent,
+                        expand=["latest_charge"],
+                    )
+
+                charge = payment_intent.latest_charge
+
+                if charge:
+                    if isinstance(charge, str):
+                        charge = stripe.Charge.retrieve(charge)
+
+                    receipt_url = charge.receipt_url
+
+
+            payments.append({
+                "date": (
+                    datetime.fromtimestamp(
+                        session.created
+                    ).isoformat()
+                    if session.created
+                    else None
+                ),
+                "product": product,
+                "workspace": workspace,
+                "project_id": project_id,
+                "amount": (
+                    amount_total / 100
+                    if amount_total is not None
+                    else None
+                ),
+                "currency": (
+                    session.currency.upper()
+                    if session.currency
+                    else None
+                ),
+                                
+                "status": (
+                    "paid"
+                    if session.payment_status == "paid"
+                    else "expired"
+                    if session.status == "expired"
+                    else "pending"
+                    if session.status == "open"
+                    else "unpaid"
+                    if session.status == "complete"
+                    and session.payment_status != "paid"
+                    else session.payment_status or session.status or "unknown"
+                ),
+
+                "payment_status": session.payment_status,
+                "stripe_session_id": session.id,
+                "receipt_url": receipt_url,
+            })
+
+        payments.sort(
+            key=lambda item: item.get("date") or "",
+            reverse=True,
+        )
+
+        return {"payments": payments}
+
+    
+    except Exception as exc:
+        import traceback
+        traceback.print_exc()
+        print("USER PAYMENT HISTORY ERROR:", repr(exc))
+        raise HTTPException(
+            status_code=502,
+            detail="Unable to load payment history.",
+        )
+
+
 @router.get("/me/notifications")
 def get_my_notifications(
     current_user=Depends(get_current_user),

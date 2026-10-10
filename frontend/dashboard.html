@@ -4922,6 +4922,54 @@
                                 Business plans include Professional Assessments, reports and Contact Points.
                                 Home Wellness purchases are separate.
                             </div>
+
+
+                            <div style="height: 28px;"></div>
+
+                            <div class="section-heading" style="margin-bottom: 12px;">
+                                <div>
+                                    <h3 class="section-title" style="font-size: 16px;">
+                                        Payment History
+                                    </h3>
+                                    <p class="section-description">
+                                        Your Home Wellness and Business Survey payments and receipts.
+                                    </p>
+                                </div>
+
+                                <button type="button" class="btn-secondary" onclick="loadPaymentHistory()">
+                                    Refresh
+                                </button>
+                            </div>
+
+                            <div class="content-card" style="overflow-x:auto;">
+                                <div class="content-body">
+                                    <div id="paymentHistoryMessage"
+                                        style="color:var(--muted);font-size:12px;margin-bottom:10px;">
+                                        Loading payment history...
+                                    </div>
+
+                                    <table style="width:100%;border-collapse:collapse;min-width:700px;">
+                                        <thead>
+                                            <tr style="text-align:left;border-bottom:1px solid var(--line);">
+                                                <th style="padding:12px 8px;">Date</th>
+                                                <th style="padding:12px 8px;">Product</th>
+                                                <th style="padding:12px 8px;">Project</th>
+                                                <th style="padding:12px 8px;">Amount</th>
+                                                <th style="padding:12px 8px;">Status</th>
+                                                <th style="padding:12px 8px;">Receipt</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="paymentHistoryTableBody">
+                                            <tr>
+                                                <td colspan="6" style="padding:14px 8px;">
+                                                    Loading...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </section>
@@ -24371,22 +24419,213 @@ ${request.contact_expires_at
         }
 
 
+        async function loadPaymentHistory() {
+            const message = document.getElementById("paymentHistoryMessage");
+            const tbody = document.getElementById("paymentHistoryTableBody");
+
+            if (!message || !tbody) return;
+
+            message.textContent = "Loading payment history...";
+            tbody.innerHTML = "";
+
+            try {
+                const apiBase =
+                    typeof API !== "undefined"
+                        ? String(API).trim().replace(/\/+$/, "")
+                        : "http://127.0.0.1:8000";
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    message.textContent = "Please sign in to view your payments.";
+                    return;
+                }
+
+                const response = await fetch(`${apiBase}/me/payments`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Payment history request failed (${response.status})`);
+                }
+
+                const data = await response.json();
+                const payments = Array.isArray(data.payments) ? data.payments : [];
+
+                if (!payments.length) {
+                    message.textContent = "No payments found.";
+                    tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="padding:14px 8px;">
+                        No payment history is available yet.
+                    </td>
+                </tr>
+            `;
+                    return;
+                }
+
+                const escapeHtml = value =>
+                    String(value ?? "").replace(/[&<>"']/g, char => ({
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        '"': "&quot;",
+                        "'": "&#39;"
+                    })[char]);
+
+                const formatDate = value => {
+                    if (!value) return "—";
+
+                    const date = new Date(value);
+                    if (Number.isNaN(date.getTime())) return "—";
+
+                    return date.toLocaleDateString(undefined, {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    });
+                };
+
+                const formatAmount = payment => {
+                    if (payment.amount == null || !payment.currency) return "—";
+
+                    try {
+                        return new Intl.NumberFormat(undefined, {
+                            style: "currency",
+                            currency: payment.currency
+                        }).format(payment.amount);
+                    } catch {
+                        return `${payment.amount} ${payment.currency}`;
+                    }
+                };
+
+                const statusLabel = status => ({
+                    paid: "Paid",
+                    pending: "Pending",
+                    unpaid: "Unpaid",
+                    expired: "Expired",
+                    complete: "Complete",
+                    unknown: "Unknown"
+                }[String(status || "").toLowerCase()] || String(status || "Unknown"));
+
+                tbody.innerHTML = payments.map(payment => {
+                    const receiptUrl = payment.receipt_url || "";
+                    const safeReceiptUrl =
+                        /^https:\/\/pay\.stripe\.com\/receipts\/payment\//i.test(receiptUrl)
+                            ? receiptUrl
+                            : "";
+
+                    return `
+                <tr style="border-bottom:1px solid var(--line);">
+                    <td style="padding:12px 8px;white-space:nowrap;">
+                        ${escapeHtml(formatDate(payment.date))}
+                    </td>
+                    <td style="padding:12px 8px;">
+                        ${escapeHtml(payment.product || "Payment")}
+                        <div style="font-size:10px;color:var(--muted);">
+                            ${escapeHtml(payment.workspace || "")}
+                        </div>
+                    </td>
+                    <td style="padding:12px 8px;">
+                        ${payment.project_id
+                            ? "#" + escapeHtml(payment.project_id)
+                            : "—"}
+                    </td>
+                    <td style="padding:12px 8px;white-space:nowrap;">
+                        ${escapeHtml(formatAmount(payment))}
+                    </td>
+                    <td style="padding:12px 8px;">
+                        ${escapeHtml(statusLabel(payment.status))}
+                    </td>
+                    <td style="padding:12px 8px;white-space:nowrap;">
+                        ${safeReceiptUrl
+                            ? `<a href="${escapeHtml(safeReceiptUrl)}"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style="color:var(--primary);font-weight:600;">
+                                  View receipt ↗
+                               </a>`
+                            : "—"}
+                    </td>
+                </tr>
+            `;
+                }).join("");
+
+                message.textContent = `${payments.length} payment(s) found.`;
+
+            } catch (error) {
+                console.error("Payment history error:", error);
+                message.textContent = "Unable to load payment history. Please try again.";
+                tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="padding:14px 8px;">
+                    Could not load payment history.
+                </td>
+            </tr>
+        `;
+            }
+        }
+
+        window.loadPaymentHistory = loadPaymentHistory;
 
 
         // Kept for compatibility with the existing billing/report workflow.
         // Pricing is intentionally not rendered here; it will come from the future pricing configuration.
+
         async function buyPlan(plan) {
             try {
+
+                console.log("HOME CHECKOUT DIAGNOSTICS", {
+                    currentUser: window.currentUser,
+                    userId: window.currentUser?.id,
+                    homeProject: window.AppState?.homeProject,
+                    homeProjectId: localStorage.getItem("home_project_id"),
+                    userHomeProjectId: window.currentUser?.id
+                        ? localStorage.getItem(
+                            `home_project_id_${window.currentUser.id}`
+                        )
+                        : null,
+                    workspaceMode: localStorage.getItem("workspaceMode")
+                });
+                const body = {
+                    plan,
+                    currency: pricingCurrency
+                };
+
+                if (plan === "home_full_report") {
+                    const userId =
+                        window.currentUser?.id ||
+                        window.currentUser?.user_id ||
+                        window.AppState?.user?.id ||
+                        window.AppState?.user?.user_id;
+
+                    const homeProjectId =
+                        window.AppState?.homeProject?.project_id ||
+                        window.AppState?.homeProject?.id ||
+                        (userId
+                            ? localStorage.getItem(`home_project_id_${userId}`)
+                            : null) ||
+                        localStorage.getItem("home_project_id") ||
+                        localStorage.getItem("homeProjectId");
+
+                    if (!homeProjectId) {
+                        throw new Error(
+                            "Home project ID is missing. Open your Home project and try again."
+                        );
+                    }
+
+                    body.project_id = homeProjectId;
+                }
+
                 const res = await fetch(`${API}/create-checkout-session`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        plan,
-                        currency: pricingCurrency
-                    })
+                    body: JSON.stringify(body)
                 });
 
                 const data = await res.json();
@@ -24544,8 +24783,16 @@ ${request.contact_expires_at
                 activeLink.classList.add("active");
             }
 
+
             if (!section) return;
+
+            // Automatically load payment history when Billing & Plan opens.
+            if (sectionId === "billing" &&
+                typeof window.loadPaymentHistory === "function") {
+                window.loadPaymentHistory();
+            }
         }
+
 
         function openHelpGettingStarted() {
             const helpHub = document.getElementById("helpHub");
