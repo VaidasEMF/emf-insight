@@ -1286,6 +1286,10 @@ function loadFloorImage(floor) {
 
         window.updateBusinessEmptyPlanState?.();
 
+        if (window.AppMode?.current === "business") {
+            window.updateNextStepCard?.();
+        }
+
 
         console.error(
             "🔥🔥🔥 FLOOR IMAGE RENDER REQUESTED",

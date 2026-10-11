@@ -7657,9 +7657,13 @@
     #measureInfo {
       display: none;
 
+
       position: absolute;
-      top: 8px;
-      left: 8px;
+      top: auto;
+      right: 10px;
+      bottom: 12px;
+      left: auto;
+
 
       z-index: 50;
 
@@ -12282,16 +12286,13 @@
    BUSINESS — REMOVE LEGACY ACTIVE BACKGROUND
    ========================================================= */
 
+
     #businessWorkflowSection .workflow-action-btn.active-step {
-
-      background: #ffffff !important;
-
-      border-color: #dbe3ef !important;
-
-      box-shadow: none !important;
-
-      animation: none !important;
+      background: #eff6ff !important;
+      border: 2px solid #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
     }
+
 
 
     /* =========================================================
@@ -16784,13 +16785,24 @@
     }
 
 
+    /* Hide workspace switcher while Room Zones list is open */
+    body.room-zones-list-open #workspaceSwitcherBtn {
+      display: none !important;
+    }
+
+
     /* Hide workspace UI behind Zone Creation popup */
     body.zone-creation-modal-open #businessWorkflowBar,
     body.zone-creation-modal-open #homeWorkflowBar,
     body.zone-creation-modal-open #workspaceSwitcherBtn,
-    body.zone-creation-modal-open .room-info-card {
+    body.zone-creation-modal-open .room-info-card,
+
+    body.zone-creation-modal-open .room-progress-item {
       display: none !important;
     }
+
+
+
 
     /* =====================================================
    NEW PROJECT — PRIMARY ACTION
@@ -21953,6 +21965,417 @@
       line-height: 1.5;
     }
   </style>
+
+  <style>
+    /* BUSINESS NEXT STEP CARD V2 */
+    #businessWorkflowSection #workflowNextStep.workflow-next-floating {
+      box-sizing: border-box;
+      width: 100%;
+      margin: 0 0 12px;
+      padding: 14px;
+      border: 1px solid #cbdcf4;
+      border-radius: 12px;
+      background: #f5f9ff;
+      color: #1e293b;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-heading {
+      margin-bottom: 12px;
+      color: #172554;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-recommended-label,
+    #businessWorkflowSection #workflowNextStep .workflow-next-alternatives-label {
+      margin: 10px 0 6px;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.07em;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-choice {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0 0 7px;
+      padding: 10px 11px;
+      border: 1px solid #dbe4f0;
+      border-radius: 9px;
+      background: #fff;
+      color: #1e293b;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+
+    #businessWorkflowSection #workflowNextStep button.workflow-next-choice {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      justify-content: center !important;
+      gap: 3px !important;
+      min-height: 0 !important;
+      height: auto !important;
+      white-space: normal !important;
+      text-align: left !important;
+      font-family: inherit;
+      line-height: 1.35;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-choice-title {
+      display: block !important;
+      width: 100%;
+      text-align: left !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-choice-desc {
+      display: block !important;
+      width: 100%;
+      text-align: left !important;
+      font-size: 11px !important;
+      font-weight: 400 !important;
+      line-height: 1.4 !important;
+    }
+
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-choice:hover {
+      border-color: #93b4e8;
+      background: #f8fbff;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-choice.is-recommended {
+      border-color: #8db4f0;
+      background: #e7f1ff;
+      box-shadow: inset 3px 0 0 #3b82f6;
+      animation: businessNextStepPulse 2.4s ease-in-out infinite;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-choice-title {
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-choice-desc {
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px;
+      border-radius: 9px;
+      background: #e7f1ff;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-guide-link {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 5px 0;
+      border: 0;
+      background: transparent;
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: left;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-guide {
+      margin-top: 8px;
+      padding: 11px;
+      border: 1px solid #dbe4f0;
+      border-radius: 9px;
+      background: #fff;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-guide[hidden] {
+      display: none !important;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-guide ol {
+      padding-left: 18px;
+      margin: 8px 0;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-guide li {
+      margin: 0 0 6px;
+    }
+
+    #businessWorkflowSection #workflowNextStep .workflow-next-guide-close {
+      padding: 5px 9px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #fff;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    @keyframes businessNextStepPulse {
+
+      0%,
+      100% {
+        box-shadow: inset 3px 0 0 #3b82f6, 0 0 0 0 rgba(59, 130, 246, 0);
+      }
+
+      50% {
+        box-shadow: inset 3px 0 0 #3b82f6, 0 0 0 3px rgba(59, 130, 246, 0.10);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #businessWorkflowSection #workflowNextStep .workflow-next-choice.is-recommended {
+        animation: none;
+      }
+    }
+
+
+
+
+    /* BUSINESS NEXT STEP — FLOATING GLASS PANEL */
+
+    #workflowNextStep.workflow-next-floating {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 30;
+
+      box-sizing: border-box;
+      width: 290px;
+      max-width: calc(100% - 32px);
+      max-height: calc(100% - 32px);
+      overflow-y: auto;
+
+      margin: 0;
+      padding: 14px;
+
+      color: #1e293b;
+      background: rgba(239, 246, 255, 0.78);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+
+      border: 1px solid rgba(191, 211, 239, 0.85);
+      border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.13);
+    }
+
+
+
+    /* Collapsible alternative actions */
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives {
+      margin-top: 12px;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      padding-top: 9px;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 750;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives summary::-webkit-details-marker {
+      display: none;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives summary::after {
+      content: "＋";
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives[open] summary::after {
+      content: "−";
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives-count {
+      margin-left: auto;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives .workflow-next-choices {
+      margin-top: 10px;
+    }
+
+
+    /* Keep the panel anchored to the canvas */
+    .canvas-area {
+      position: relative;
+    }
+
+    /* Heading */
+    #workflowNextStep.workflow-next-floating .workflow-next-heading {
+      margin-bottom: 12px;
+      color: #172554;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    /* Section labels */
+    #workflowNextStep.workflow-next-floating .workflow-next-recommended-label,
+    #workflowNextStep.workflow-next-floating .workflow-next-alternatives-label {
+      margin: 10px 0 6px;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.07em;
+    }
+
+    /* Action cards — restore proper button layout */
+    #workflowNextStep.workflow-next-floating button.workflow-next-choice {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      justify-content: center !important;
+      gap: 4px !important;
+
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 0 !important;
+      height: auto !important;
+
+      margin: 0 0 7px;
+      padding: 10px 11px;
+
+      white-space: normal !important;
+      text-align: left !important;
+      font-family: inherit;
+      line-height: 1.35;
+
+      color: #1e293b;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      border-radius: 9px;
+
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-choice-title {
+      display: block !important;
+      width: 100%;
+      color: #1e293b;
+      font-size: 13px !important;
+      font-weight: 750 !important;
+      text-align: left !important;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-choice-desc {
+      display: block !important;
+      width: 100%;
+      color: #64748b;
+      font-size: 11px !important;
+      font-weight: 400 !important;
+      line-height: 1.4 !important;
+      text-align: left !important;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-choice:hover {
+      background: rgba(248, 251, 255, 0.96);
+      border-color: #93b4e8;
+    }
+
+    /* One highlighted recommendation */
+    #workflowNextStep.workflow-next-floating .workflow-next-choice.is-recommended {
+      background: rgba(219, 234, 254, 0.92);
+      border-color: #8db4f0;
+      box-shadow: inset 3px 0 0 #3b82f6;
+      animation: businessNextStepPulse 2.4s ease-in-out infinite;
+    }
+
+    /* Summary when there is no recommended action */
+    #workflowNextStep.workflow-next-floating .workflow-next-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px;
+      color: #1e293b;
+      background: rgba(231, 241, 255, 0.88);
+      border-radius: 9px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    /* Step-by-step guide link */
+    #workflowNextStep.workflow-next-floating .workflow-next-guide-link {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 5px 0;
+
+      color: #1d4ed8;
+      background: transparent;
+      border: 0;
+
+      font-size: 11px;
+      font-weight: 700;
+      text-align: left;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Guide content */
+    #workflowNextStep.workflow-next-floating .workflow-next-guide {
+      margin-top: 8px;
+      padding: 11px;
+
+      color: #1e293b;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(219, 228, 240, 0.95);
+      border-radius: 9px;
+
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-guide[hidden] {
+      display: none !important;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-guide ol {
+      margin: 8px 0;
+      padding-left: 18px;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-guide li {
+      margin: 0 0 6px;
+    }
+
+    #workflowNextStep.workflow-next-floating .workflow-next-guide-close {
+      padding: 5px 9px;
+      color: #334155;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+
 </head>
 
 

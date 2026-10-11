@@ -4,6 +4,14 @@ function openRoomZonesPopup(
     roomId
 ) {
 
+    console.log(
+        "ROOM ZONES OPEN CALLED",
+        roomId,
+        new Error().stack
+    );
+
+    document.body.classList.add("room-zones-list-open");
+
     console.error(
         "🔥 OPEN ROOM ZONES POPUP — NEW",
         roomId
@@ -305,9 +313,12 @@ function openRoomZonesPopup(
         "important"
     );
 
+    document.body.classList.add("room-zones-list-open");
+
+
     popup.style.setProperty(
         "align-items",
-        "flex-start",
+        "center",
         "important"
     );
 
@@ -316,6 +327,7 @@ function openRoomZonesPopup(
         "center",
         "important"
     );
+
 
     popup.style.setProperty(
         "background",
@@ -2314,6 +2326,7 @@ function closeRoomZonesPopup() {
         return;
     }
 
+    document.body.classList.remove("room-zones-list-open");
 
     // ==================================================
     // 🔥 MOVE OUT OF CANVAS / TRANSFORMED CONTAINER
@@ -3355,26 +3368,25 @@ function showZoneCreationHelp(
     }
 
 
-    popup.style.position =
-        "fixed";
 
-    popup.style.top =
-        "0";
+    popup.style.setProperty("position", "fixed", "important");
+    popup.style.setProperty("inset", "0", "important");
+    popup.style.setProperty("top", "0", "important");
+    popup.style.setProperty("right", "0", "important");
+    popup.style.setProperty("bottom", "0", "important");
+    popup.style.setProperty("left", "0", "important");
+    popup.style.setProperty("width", "100vw", "important");
+    popup.style.setProperty("height", "100vh", "important");
+    popup.style.setProperty("min-width", "100vw", "important");
+    popup.style.setProperty("min-height", "100vh", "important");
+    popup.style.setProperty("max-width", "none", "important");
+    popup.style.setProperty("max-height", "none", "important");
+    popup.style.setProperty("margin", "0", "important");
+    popup.style.setProperty("transform", "none", "important");
+    popup.style.setProperty("background", "rgba(15, 23, 42, 0.28)", "important");
+    popup.style.setProperty("backdrop-filter", "blur(6px)", "important");
+    popup.style.setProperty("-webkit-backdrop-filter", "blur(6px)", "important");
 
-    popup.style.left =
-        "0";
-
-    popup.style.right =
-        "0";
-
-    popup.style.bottom =
-        "0";
-
-    popup.style.width =
-        "100vw";
-
-    popup.style.height =
-        "100vh";
 
     popup.style.setProperty(
         "pointer-events",
@@ -5829,50 +5841,7 @@ function drawZonesLayer(floor) {
 
     (floor.zones || []).forEach(zone => {
 
-        console.error(
-            "ZONE COORDINATE DEBUG",
-            {
-                floorId: floor.id,
-                floorName: floor.name,
 
-                zoneId: zone.id,
-                zoneType: zone.type,
-
-                polygonCount:
-                    zone.polygon?.length || 0,
-
-                polygon:
-                    zone.polygon || [],
-
-                polygonScreen:
-                    EMFViewport.worldPoints(
-                        zone.polygon || []
-                    ),
-
-                viewport: {
-                    imageWidth:
-                        EMFViewport.imageWidth,
-
-                    imageHeight:
-                        EMFViewport.imageHeight,
-
-                    scale:
-                        EMFViewport.scale,
-
-                    drawWidth:
-                        EMFViewport.drawWidth,
-
-                    drawHeight:
-                        EMFViewport.drawHeight,
-
-                    offsetX:
-                        EMFViewport.offsetX,
-
-                    offsetY:
-                        EMFViewport.offsetY
-                }
-            }
-        );
 
         if (
             !zone.polygon ||

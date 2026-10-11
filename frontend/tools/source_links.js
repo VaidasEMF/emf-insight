@@ -169,20 +169,6 @@ function getDistanceCategory(
 
 function drawSourceLinks() {
 
-    console.log(
-        "DRAW LINKS START"
-    );
-
-    console.log(
-        "ALL SOURCES:",
-        getCurrentFloor()?.sources
-    );
-
-    console.log(
-        "DISTANCE TYPES:",
-        window.DISTANCE_SOURCE_TYPES
-    );
-
     const floor =
         getCurrentFloor?.();
 
@@ -205,32 +191,7 @@ function drawSourceLinks() {
             hoveredId ===
             source.id;
 
-        console.log(
-            "CHECKING:",
-            source.type
-        );
 
-        console.log(
-            "IS INDOOR:",
-            source.type,
-            window.INDOOR_SOURCE_TYPES?.includes(
-                source.type
-            )
-        );
-
-        console.log(
-            "IS OUTDOOR:",
-            source.type,
-            window.DISTANCE_SOURCE_TYPES?.includes(
-                source.type
-            )
-        );
-
-        console.log(
-            "LINKED IDS:",
-            source.type,
-            source.linkedZoneIds
-        );
 
         const isOutdoor =
 
@@ -278,10 +239,6 @@ function drawSourceLinks() {
                 ?.selectedObjectId ===
             source.id;
 
-        console.log(
-            "SOURCE:",
-            source
-        );
 
         const sourceP =
             EMFViewport.worldPoint(
@@ -304,10 +261,6 @@ function drawSourceLinks() {
                     return;
                 }
 
-                console.log(
-                    "FOUND ZONE:",
-                    zone
-                );
 
                 const zoneP =
                     EMFViewport.worldPoint(
