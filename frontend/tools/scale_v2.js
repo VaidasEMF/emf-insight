@@ -3137,13 +3137,62 @@ function showScaleGuidance(
         `;
     }
 
-
     // ==================================================
-    // SHOW
+    // SHOW — POSITION BELOW TO DO
     // ==================================================
 
-    guidance.style.display =
-        "block";
+    const todoHeading = Array.from(
+        document.querySelectorAll("body *")
+    ).find(el =>
+        el.children.length === 0 &&
+        el.textContent.trim() ===
+        "What would you like to do next?"
+    );
+
+    guidance.style.position = "fixed";
+    guidance.style.zIndex = "1000";
+    guidance.style.display = "block";
+    guidance.style.width = "";
+    guidance.style.maxWidth = "";
+
+    if (todoHeading) {
+        const card =
+            todoHeading.closest(
+                ".next-step-card, .next-step-panel, .todo-card"
+            ) || todoHeading.parentElement;
+
+        const rect = card.getBoundingClientRect();
+
+        const sidebar = document.querySelector(
+            "#businessPlanActions"
+        );
+
+        const sidebarRight = sidebar
+            ? sidebar.getBoundingClientRect().right
+            : 308;
+
+        const gap = 12;
+        const popupWidth = guidance.offsetWidth;
+        const popupHeight = guidance.offsetHeight;
+
+        // Never place the popup over the left sidebar.
+        const minLeft = sidebarRight + gap;
+        const maxLeft = window.innerWidth - popupWidth - gap;
+
+        // Align with the To Do card, clamped to workspace.
+        const left = Math.max(
+            minLeft,
+            Math.min(rect.left, maxLeft)
+        );
+
+        const top = Math.min(
+            rect.bottom + gap,
+            window.innerHeight - popupHeight - gap
+        );
+
+        guidance.style.left = `${left}px`;
+        guidance.style.top = `${Math.max(gap, top)}px`;
+    }
 }
 
 function hideScaleGuidance() {
@@ -3260,34 +3309,31 @@ function startScaleTool() {
 
 
     // ==================================================
-    // BUTTON
+    // BUTTON — PRESERVE FULL CONTENT
     // ==================================================
 
     const btn =
-        document.getElementById(
-            "btnScale"
-        );
+        document.getElementById("btnScale");
 
     if (btn) {
+        if (!btn.querySelector(".workflow-action-icon")) {
+            btn.innerHTML = `
+              <div class="workflow-action-icon">📏</div>
+              <div class="workflow-action-content">
+                  <div class="workflow-action-title">Set Scale</div>
+                  <div class="workflow-action-subtitle">
+                      Calibrate the floor plan scale
+                  </div>
+              </div>
+          `;
+        }
 
-        btn.innerText =
-            "Set Scale";
+        btn.style.outline = "none";
+        btn.style.outlineOffset = "";
+        btn.style.background = "";
+        btn.style.color = "";
 
-        btn.style.outline =
-            "";
-
-        btn.style.outlineOffset =
-            "";
-
-        btn.style.background =
-            "";
-
-        btn.style.color =
-            "";
-
-        btn.classList.add(
-            "workflow-next-action"
-        );
+        btn.classList.add("workflow-next-action");
     }
 
 

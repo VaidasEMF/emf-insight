@@ -2026,6 +2026,7 @@ async function setAppMode(
                 const floor =
                     getCurrentFloor?.();
 
+                window.updateWorkflowUI?.();
 
                 console.error(
                     "🔥🔥 AFTER MODE SWITCH RENDER",

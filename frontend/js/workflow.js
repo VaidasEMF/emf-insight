@@ -636,23 +636,38 @@ function getNextWorkflowStep() {
 }
 
 function updateNextStepCard() {
+
     const el = document.getElementById("workflowNextStep");
     if (!el) return;
 
 
-    // Keep the Next Step panel inside the canvas workspace.
+    // --------------------------------------------------
+    // TO DO CARD — COLLAPSE STATE
+    // --------------------------------------------------
+    const collapsedKey = "emf_workflow_next_step_collapsed";
+
+    if (el.dataset.collapseInitialized !== "true") {
+        el.dataset.collapseInitialized = "true";
+        el.dataset.collapsed =
+            localStorage.getItem(collapsedKey) === "true"
+                ? "true"
+                : "false";
+    }
+
+
+    // Keep the panel inside the canvas workspace.
     const canvasArea = document.querySelector(".canvas-area");
 
     if (canvasArea && el.parentElement !== canvasArea) {
         canvasArea.appendChild(el);
     }
 
-    // Position the panel over the floor-plan workspace.
     el.classList.add("workflow-next-floating");
-
 
     const floor = getCurrentFloor?.();
 
+    // The initial floor-plan upload is already available elsewhere.
+    // Do not duplicate it in the Do Next card.
     if (!floor || !floor.image) {
         el.innerHTML = "";
         el.style.display = "none";
@@ -660,244 +675,697 @@ function updateNextStepCard() {
     }
 
     const step = getNextWorkflowStep?.();
+
     if (!step) {
         el.innerHTML = "";
         el.style.display = "none";
         return;
     }
 
+    // --------------------------------------------------
+    // GUIDE PREFERENCE
+    // --------------------------------------------------
+
     let userId = localStorage.getItem("user_id") || "local";
+
     try {
         const token = localStorage.getItem("token");
+
         if (token) {
             const payload = JSON.parse(
-                atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+                atob(
+                    token.split(".")[1]
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/")
+                )
             );
-            userId = String(payload.user_id || payload.userId || payload.sub || userId);
+
+            userId = String(
+                payload.user_id ||
+                payload.userId ||
+                payload.sub ||
+                userId
+            );
         }
     } catch (error) {
-        console.warn("Could not resolve workflow guide user ID.", error);
+        console.warn(
+            "Could not resolve workflow guide user ID.",
+            error
+        );
     }
 
     const guideKey = `emf_business_workflow_guide_seen_${userId}`;
     const guideSeen = localStorage.getItem(guideKey) === "true";
 
-    const actions = [
+    // --------------------------------------------------
+    // ACTUAL FLOOR STATE
+    // --------------------------------------------------
 
+    const hasScale = floor.scaleConfirmed === true;
+
+    const rooms = Array.isArray(floor.rooms)
+        ? floor.rooms
+        : [];
+
+    const zones = Array.isArray(floor.zones)
+        ? floor.zones
+        : [];
+
+    const sources = Array.isArray(floor.sources)
+        ? floor.sources
+        : [];
+
+    const hasRooms = rooms.length > 0;
+
+    const roomWithoutGrid = rooms.find(room =>
+        !Array.isArray(room.grid) ||
+        room.grid.length === 0
+    );
+
+    const hasAllRoomGrids =
+        hasRooms && !roomWithoutGrid;
+
+    const roomToMeasure = rooms.find(room =>
+        !getRoomMeasurementStats(room).canComplete
+    );
+
+    const hasZones = zones.length > 0;
+
+    // Zone grids are generated automatically in the current workflow.
+    const zonesWithGrid = zones.filter(zone =>
+        Array.isArray(zone.grid) &&
+        zone.grid.length > 0
+    );
+
+    const zoneToMeasure = zonesWithGrid.find(zone => {
+        if (typeof getZoneMeasurementStats === "function") {
+            return !getZoneMeasurementStats(zone).canComplete;
+        }
+
+        return zone.grid.some(point => !point.completed);
+    });
+
+    const hasSources = sources.length > 0;
+
+    // --------------------------------------------------
+    // ACTION DEFINITIONS
+    // --------------------------------------------------
+
+    const actions = [
         {
-            id: "btnStartMeasure",
-            title: "Room Measuring",
-            description: "Measure remaining room points."
+            id: "btnScale",
+            title: "Set Scale",
+            description: "Calibrate the floor plan scale."
+        },
+        {
+            id: "btnDrawRooms",
+            title: "Draw Room",
+            description: "Outline rooms on the floor plan."
         },
         {
             id: "btnGenerateGrid",
             title: "Generate Room Grid",
-            description: "Create room measurement grids."
+            description: roomWithoutGrid?.code
+                ? `Create measurement points for ${roomWithoutGrid.code}.`
+                : "Create room measurement points."
+        },
+        {
+            id: "btnStartMeasure",
+            title: "Room Measuring",
+            description: roomToMeasure
+                ? (() => {
+                    const stats = getRoomMeasurementStats(roomToMeasure);
+                    const remaining = Math.max(
+                        0,
+                        stats.required - stats.measured
+                    );
+
+                    return `Room ${roomToMeasure.code}: ${remaining} measurements remaining.`;
+                })()
+                : "Room measurements are complete."
+        },
+        {
+            id: "btnAddZone",
+            title: "Draw / Manage Zones",
+            description: "Add or manage lifestyle zones."
         },
         {
             id: "btnStartZoneMeasure",
             title: "Zone Measuring",
-            description: "Measure lifestyle zones."
-        },
-        {
-            id: "btnDrawRooms",
-            title: "Draw Another Room",
-            description: "Add a room to the floor plan."
-        },
-        {
-            id: "add-floor",
-            title: "Add Floor",
-            description: "Create another floor."
+            description: "Measure lifestyle zone points."
         },
         {
             id: "btnAddSources",
             title: "Add Sources",
-            description: "Record EMF sources."
+            description: "Record EMF sources to improve analysis and reporting."
         }
-
     ];
 
+    // --------------------------------------------------
+    // CHECK THE REAL SIDEBAR ACTION STATE
+    // --------------------------------------------------
 
-    const recommendedByTitle = {
-        "Upload Floor Plan": null,
-        "Set Scale": null,
-        "Draw Rooms": "btnDrawRooms",
-        "Generate Room Grid": "btnGenerateGrid",
-        "Continue Measuring": "btnStartMeasure",
-        "Add Sources": "btnAddSources",
-        "Review Results": null
-    };
-
-    const zoneMeasureButton = document.getElementById("btnStartZoneMeasure");
-
-    const zoneMeasurementAvailable =
-        !!zoneMeasureButton &&
-        !zoneMeasureButton.disabled &&
-        getComputedStyle(zoneMeasureButton).display !== "none";
-
-    const recommendedId =
-        zoneMeasurementAvailable &&
-            step.title === "Continue Measuring"
-            ? "btnStartMeasure"
-            : recommendedByTitle[step.title] || null;
-
-    const recommended = actions.find(
-        action => action.id === recommendedId
-    );
-
-    const availableActions = actions.filter(action => {
-        if (action.id === "add-floor") return true;
-
+    function isActionAvailable(action) {
         const button = document.getElementById(action.id);
 
-        return !!button &&
-            !button.disabled &&
-            getComputedStyle(button).display !== "none";
-    });
+        if (!button || !button.isConnected) return false;
+        if (button.disabled) return false;
+
+        // Respect the workflow lock class used by the sidebar.
+        if (button.classList.contains("workflow-locked")) return false;
+
+        const style = getComputedStyle(button);
+
+        if (
+            style.display === "none" ||
+            style.visibility === "hidden"
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // --------------------------------------------------
+    // CONTEXTUAL RECOMMENDATIONS
+    // --------------------------------------------------
+
+    let relevantIds = [];
+    let recommendedId = null;
+
+    if (!hasScale) {
+        relevantIds = ["btnScale"];
+        recommendedId = "btnScale";
+    } else if (!hasRooms) {
+        relevantIds = ["btnDrawRooms"];
+        recommendedId = "btnDrawRooms";
+    } else if (roomWithoutGrid) {
+        relevantIds = ["btnGenerateGrid"];
+        recommendedId = "btnGenerateGrid";
+    } else {
+        // Room measurement is relevant until all room requirements
+        // are complete.
+        if (roomToMeasure) {
+            relevantIds.push("btnStartMeasure");
+        }
+
+        // Zones can be added once room grids are ready.
+        if (hasAllRoomGrids) {
+            relevantIds.push("btnAddZone");
+        }
+
+        // Zone measuring is relevant only if a zone still needs work.
+        if (hasZones && zoneToMeasure) {
+            relevantIds.push("btnStartZoneMeasure");
+        }
+
+        // Sources are the next core task after room measurements.
+        if (!roomToMeasure && !hasSources) {
+            relevantIds.push("btnAddSources");
+        }
+
+        if (step.title === "Continue Measuring") {
+            recommendedId = "btnStartMeasure";
+        } else if (step.title === "Add Sources") {
+            recommendedId = "btnAddSources";
+        } else if (step.title === "Review Results") {
+            recommendedId = null;
+        }
+    }
+
+    const availableActions = actions.filter(action =>
+        relevantIds.includes(action.id) &&
+        isActionAvailable(action)
+    );
 
     const mainAction =
-        recommended &&
-            availableActions.some(action => action.id === recommended.id)
-            ? recommended
-            : null;
+        availableActions.find(action => action.id === recommendedId) ||
+        availableActions[0] ||
+        null;
 
+    const otherActions = availableActions.filter(
+        action => action.id !== mainAction?.id
+    );
 
-    const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    })[char]);
+    // --------------------------------------------------
+    // SAFE HTML HELPERS
+    // --------------------------------------------------
+
+    const escapeHtml = value =>
+        String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
 
     const actionButton = (action, isRecommended) => `
-        <button type="button"
+        <button
+            type="button"
             class="workflow-next-choice${isRecommended ? " is-recommended" : ""}"
-            data-workflow-action="${escapeHtml(action.id)}">
-            <span class="workflow-next-choice-title">${escapeHtml(action.title)}</span>
-            <span class="workflow-next-choice-desc">${escapeHtml(action.description)}</span>
+            data-workflow-action="${escapeHtml(action.id)}"
+        >
+            <span class="workflow-next-choice-title">
+                ${escapeHtml(action.title)} →
+            </span>
+            <span class="workflow-next-choice-desc">
+                ${escapeHtml(action.description)}
+            </span>
         </button>
     `;
 
+    // --------------------------------------------------
+    // CARD CONTENT
+    // --------------------------------------------------
+
+    const showSummary = !mainAction;
+
     el.innerHTML = `
-        <div class="workflow-next-heading">What would you like to do next?</div>
+<div class="workflow-next-heading">
+    <span>What would you like to do next?</span>
+    <div class="workflow-next-controls">
+        <button
+            type="button"
+            class="workflow-next-collapse"
+            aria-label="Collapse recommended next step"
+            title="Collapse"
+        >−</button>
+        <button
+            type="button"
+            class="workflow-next-close"
+            aria-label="Close recommended next step"
+            title="Close"
+        >×</button>
+    </div>
+</div>
+
+
         ${mainAction ? `
-            <div class="workflow-next-recommended-label">RECOMMENDED NEXT STEP</div>
-            ${actionButton(mainAction, true)}
+            <div class="workflow-next-recommended-label">
+                RECOMMENDED NEXT STEP
+            </div>
+
+            <div class="workflow-next-actions">
+                ${actionButton(mainAction, true)}
+                ${otherActions.map(action =>
+        actionButton(action, false)
+    ).join("")}
+            </div>
         ` : `
             <div class="workflow-next-summary">
-                <strong>${escapeHtml(step.title || "Continue your assessment")}</strong>
-                <span>${escapeHtml(step.description || "")}</span>
+                <strong>
+                    ${escapeHtml(
+        step.title === "Review Results"
+            ? "Review Results"
+            : step.title || "Continue your assessment"
+    )}
+                </strong>
+                <span>
+                    ${escapeHtml(step.description || "")}
+                </span>
             </div>
         `}
-        
-        
 
         <button type="button" class="workflow-next-guide-link">
             View step-by-step guide
         </button>
 
-        <div class="workflow-next-guide" ${guideSeen ? "hidden" : ""}>
+        <div class="workflow-next-guide" hidden>
             <strong>Business assessment — step by step</strong>
             <ol>
                 <li>Upload the floor plan.</li>
                 <li>Set and confirm the floor plan scale.</li>
-                <li>Draw the rooms and generate each room's measurement grid.</li>
-                <li>Review the available zones. Their grids are generated automatically.</li>
-                <li>Open Measurement Profile to choose the measurement modalities.</li>
-                <li>Measure room grid points and, where relevant, zone grid points.</li>
+                <li>Draw rooms and generate each room's measurement grid.</li>
+                <li>Review the available lifestyle zones.</li>
+                <li>Choose measurement modalities in Measurement Profile.</li>
+                <li>Measure room and relevant zone grid points.</li>
                 <li>Add EMF sources and review the results.</li>
             </ol>
             <button type="button" class="workflow-next-guide-close">
                 Close guide
             </button>
         </div>
-
     `;
 
+    // --------------------------------------------------
+    // TO DO CARD — COLLAPSE / CLOSE / REOPEN
+    // --------------------------------------------------
+    const collapsed = el.dataset.collapsed === "true";
+
+
+    console.log("[ToDo collapse]", {
+        collapsed,
+        dataset: el.dataset.collapsed,
+        compactBarExists: !!el.querySelector(".workflow-next-compact")
+    });
+
+
+
+    let compactBar = el.querySelector(".workflow-next-compact");
+
+    if (!compactBar) {
+        compactBar = document.createElement("button");
+        compactBar.type = "button";
+        compactBar.className = "workflow-next-compact";
+
+
+        compactBar.innerHTML = `
+    <span class="workflow-next-compact-label">
+        RECOMMENDED NEXT STEP
+    </span>
+    <span class="workflow-next-compact-arrow" aria-hidden="true">
+        <svg viewBox="0 0 20 20" width="16" height="16">
+            <path d="M5 7.5l5 5 5-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+        </svg>
+    </span>
+`;
+
+        compactBar.title = "Click to expand recommended next step";
+
+        compactBar.setAttribute("aria-label", "Reopen recommended next step");
+        compactBar.title = "Reopen recommended next step";
+
+
+        compactBar.style.cssText = `
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: fit-content;
+    min-width: 0;
+    max-width: 340px;
+    min-height: 44px;
+    padding: 0 8px 0 14px;
+    border: 1px solid #456b9b;
+    border-radius: 11px;
+    background: #355783;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(25, 48, 78, 0.2);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+    cursor: pointer;
+`;
+
+
+        el.prepend(compactBar);
+    }
+
+    compactBar.onclick = () => {
+        el.dataset.collapsed = "false";
+        localStorage.setItem(collapsedKey, "false");
+        updateNextStepCard();
+    };
+
+
+
+
+
+    compactBar.hidden = !collapsed;
+
+    // The compact bar is only for the collapsed state.
+    // Never show it above the expanded card.
+    compactBar.style.display = collapsed ? "flex" : "none";
+
+
+    // --------------------------------------------------
+    // PAN — DRAG THE TO DO CARD AROUND THE CANVAS
+    // --------------------------------------------------
+    if (!el.dataset.panInitialized) {
+        el.dataset.panInitialized = "true";
+
+        const positionKey = "emf_workflow_next_step_position";
+        const canvas = el.closest(".canvas-area") || el.parentElement;
+
+        // Restore saved position, if one exists.
+        try {
+            const saved = JSON.parse(localStorage.getItem(positionKey) || "null");
+
+            if (
+                saved &&
+                Number.isFinite(saved.left) &&
+                Number.isFinite(saved.top)
+            ) {
+                el.style.left = `${saved.left}px`;
+                el.style.top = `${saved.top}px`;
+                el.style.right = "auto";
+                el.style.bottom = "auto";
+            }
+        } catch (_) { }
+
+        let dragging = false;
+        let moved = false;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+
+        // Use the compact bar when collapsed, header when expanded.
+        const getDragHandle = () =>
+            el.dataset.collapsed === "true"
+                ? el.querySelector(".workflow-next-compact")
+                : el.querySelector(".workflow-next-heading");
+
+        el.addEventListener("pointerdown", event => {
+            const handle = getDragHandle();
+
+            if (!handle || !handle.contains(event.target)) return;
+
+            // In collapsed state, allow dragging the compact button itself.
+            // In expanded state, only the non-button header area is draggable.
+            if (
+                el.dataset.collapsed !== "true" &&
+                event.target.closest("button")
+            ) {
+                return;
+            }
+
+
+            if (event.button !== 0) return;
+
+            const rect = el.getBoundingClientRect();
+            const parentRect = el.offsetParent?.getBoundingClientRect();
+
+            if (!parentRect) return;
+
+            dragging = true;
+            moved = false;
+            startX = event.clientX;
+            startY = event.clientY;
+            startLeft = el.offsetLeft;
+            startTop = el.offsetTop;
+
+            el.dataset.panStartLeft = String(startLeft);
+            el.dataset.panStartTop = String(startTop);
+
+
+            el.style.cursor = "grabbing";
+            el.style.zIndex = "40";
+
+            if (el.dataset.collapsed === "true") {
+                compactBar.setPointerCapture?.(event.pointerId);
+            }
+
+            event.preventDefault();
+
+        });
+
+        document.addEventListener("pointermove", event => {
+            if (!dragging) return;
+
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+
+            if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+
+            if (!moved) return;
+
+            const parent = el.offsetParent;
+            if (!parent) return;
+
+            const maxLeft = Math.max(0, parent.clientWidth - el.offsetWidth);
+            const maxTop = Math.max(0, parent.clientHeight - el.offsetHeight);
+
+            el.style.left = `${Math.min(maxLeft, Math.max(0, startLeft + dx))}px`;
+            el.style.top = `${Math.min(maxTop, Math.max(0, startTop + dy))}px`;
+            el.style.right = "auto";
+            el.style.bottom = "auto";
+        });
+
+        document.addEventListener("pointerup", () => {
+            if (!dragging) return;
+
+            dragging = false;
+            el.style.cursor = "";
+            el.style.zIndex = "";
+
+            if (moved) {
+                try {
+                    localStorage.setItem(
+                        positionKey,
+                        JSON.stringify({
+                            left: el.offsetLeft,
+                            top: el.offsetTop
+                        })
+                    );
+                } catch (_) { }
+            }
+        });
+    }
+
+
+
+    // Force the compact state to show only the reopen bar.
+    const regularContent = el.querySelectorAll(
+        ".workflow-next-heading, " +
+        ".workflow-next-recommended-label, " +
+        ".workflow-next-actions, " +
+        ".workflow-next-summary, " +
+        ".workflow-next-guide-link, " +
+        ".workflow-next-guide"
+    );
+
+    regularContent.forEach(node => {
+        if (collapsed) {
+            node.style.setProperty("display", "none", "important");
+        } else {
+            node.style.removeProperty("display");
+            node.hidden = false;
+        }
+    });
+
+    el.style.setProperty(
+        "padding",
+        collapsed ? "10px 14px" : "",
+        "important"
+    );
+    el.style.setProperty(
+        "min-height",
+        collapsed ? "0" : "",
+        "important"
+    );
+
+
+
+
+    // Collapse button
+    el.querySelector(".workflow-next-collapse")
+        ?.addEventListener("click", () => {
+            el.dataset.collapsed = "true";
+            localStorage.setItem(collapsedKey, "true");
+            updateNextStepCard();
+        });
+
+    // Close button — also leave the compact reopen bar
+    el.querySelector(".workflow-next-close")
+        ?.addEventListener("click", () => {
+            el.dataset.collapsed = "true";
+            localStorage.setItem(collapsedKey, "true");
+            updateNextStepCard();
+        });
+
+    const guidePanel = el.querySelector(".workflow-next-guide");
+    if (guidePanel) guidePanel.hidden = true;
+    // --------------------------------------------------
+    // ACTION CLICKS
+    // Use the existing sidebar action.
+    // --------------------------------------------------
 
     el.querySelectorAll("[data-workflow-action]").forEach(button => {
         button.addEventListener("click", () => {
             const actionId = button.dataset.workflowAction;
-
-            if (actionId === "add-floor") {
-                window.openNewFloorPopup?.();
-                return;
-            }
-
             const menuButton = document.getElementById(actionId);
 
-
-            if (!menuButton) {
-                console.warn("Workflow action button not found:", actionId);
+            if (!menuButton || !isActionAvailable({ id: actionId })) {
+                console.warn(
+                    "Workflow action is not currently available:",
+                    actionId
+                );
                 return;
             }
 
-            if (menuButton.disabled) {
-                return;
+
+            // Set Scale must launch the real scale tool.
+            // Other workflow actions continue using their sidebar buttons.
+            if (actionId === "btnScale") {
+                if (typeof window.startScaleTool === "function") {
+                    window.startScaleTool();
+                } else {
+                    console.error("Set Scale: startScaleTool() is unavailable.");
+                }
+            } else {
+                menuButton.click();
             }
 
-            // Use the existing sidebar action so both entry points
-            // trigger the same application behavior.
-            menuButton.click();
 
-            // Bring the corresponding sidebar action into view.
-
-
+            // Scroll the sidebar so the corresponding action is visible.
             requestAnimationFrame(() => {
-                const b = document.getElementById(actionId);
-                if (!b || !b.isConnected) return;
+                const target = document.getElementById(actionId);
 
-                let p = b.parentElement;
+                if (!target || !target.isConnected) return;
+
+                let parent = target.parentElement;
                 let scroller = null;
 
-                while (p) {
-                    const style = getComputedStyle(p);
+                while (parent) {
+                    const style = getComputedStyle(parent);
 
                     if (
-                        p.scrollHeight > p.clientHeight &&
+                        parent.scrollHeight > parent.clientHeight &&
                         ["auto", "scroll"].includes(style.overflowY)
                     ) {
-                        scroller = p;
+                        scroller = parent;
                         break;
                     }
 
-                    p = p.parentElement;
+                    parent = parent.parentElement;
                 }
 
                 if (!scroller) return;
 
-                const buttonRect = b.getBoundingClientRect();
-                const sidebarRect = scroller.getBoundingClientRect();
+                const targetRect = target.getBoundingClientRect();
+                const scrollRect = scroller.getBoundingClientRect();
 
-                if (buttonRect.bottom > sidebarRect.bottom) {
+                if (targetRect.bottom > scrollRect.bottom) {
                     scroller.scrollTop +=
-                        buttonRect.bottom - sidebarRect.bottom + 24;
-                } else if (buttonRect.top < sidebarRect.top) {
+                        targetRect.bottom - scrollRect.bottom + 24;
+                } else if (targetRect.top < scrollRect.top) {
                     scroller.scrollTop -=
-                        sidebarRect.top - buttonRect.top + 24;
+                        scrollRect.top - targetRect.top + 24;
                 }
             });
-
-
         });
     });
 
+    // --------------------------------------------------
+    // GUIDE CONTROLS
+    // --------------------------------------------------
 
+    el.querySelector(".workflow-next-guide-link")
+        ?.addEventListener("click", () => {
+            const guide = el.querySelector(".workflow-next-guide");
 
-    el.querySelector(".workflow-next-guide-link")?.addEventListener("click", () => {
-        const guide = el.querySelector(".workflow-next-guide");
-        if (guide) {
-            guide.hidden = false;
-            localStorage.setItem(guideKey, "true");
-        }
-    });
+            if (guide) {
+                guide.hidden = false;
+                localStorage.setItem(guideKey, "true");
+            }
+        });
 
+    el.querySelector(".workflow-next-guide-close")
+        ?.addEventListener("click", () => {
+            const guide = el.querySelector(".workflow-next-guide");
 
-    el.querySelector(".workflow-next-guide-close")?.addEventListener("click", () => {
-        const guide = el.querySelector(".workflow-next-guide");
-        if (guide) guide.hidden = true;
-    });
+            if (guide) {
+                guide.hidden = true;
+            }
+        });
 
     el.style.display = "block";
 }
@@ -1486,7 +1954,7 @@ function updateFlow() {
     // STEP 1 — SCALE
     // =====================
     if (!scaleSet) {
-        document.getElementById("btnScale")?.classList.add("next-step");
+
 
         setGuide("👉 Set scale first");
         return;
@@ -1565,7 +2033,7 @@ function highlightNextStep() {
     });
 
     if (!scale || scale === 1) {
-        document.getElementById("btnScale")?.classList.add("next-step");
+
         return;
     }
 
@@ -2503,11 +2971,13 @@ function updateWorkflowUI() {
     // 🔥 CURRENT FLOOR
     // ==================================================
 
+    const project =
+        AppState.businessProject ||
+        AppState.project;
+
     const floor =
-        AppState.project
-            ?.floors?.[
-        AppState.project
-            ?.currentFloorIndex || 0
+        project?.floors?.[
+        project?.currentFloorIndex || 0
         ];
 
     if (!floor) {
@@ -2913,16 +3383,11 @@ function updateWorkflowUI() {
     // SCALE
     // --------------------------------------------------
 
-    if (
-        hasPlan &&
-        !hasScale
-    ) {
+    if (scaleBtn) {
+        const needsScale = hasPlan && !hasScale;
 
-        if (scaleBtn) {
-
-            scaleBtn.style.display =
-                "flex";
-        }
+        scaleBtn.style.display = needsScale ? "flex" : "none";
+        scaleBtn.classList.toggle("scale-needed-pulse", needsScale);
     }
 
 
@@ -3301,9 +3766,7 @@ function updateWorkflowUI() {
         !nextActionButton.disabled &&
         nextActionButton.style.display !== "none"
     ) {
-        // The Next Step card is responsible for highlighting
-        // the recommended action. Keep the top workflow bar calm.
-        nextActionButton.classList.remove(
+        nextActionButton.classList.add(
             "workflow-next-action"
         );
 
@@ -3311,7 +3774,8 @@ function updateWorkflowUI() {
             "🔥 NEXT ACTION",
             {
                 activeStep,
-                nextActionId
+                nextActionId,
+                buttonClasses: nextActionButton.className
             }
         );
     }
@@ -5953,12 +6417,44 @@ function updateMeasurementProfileUI() {
     }
 
 
+
     summary.innerText =
         selected.length
-            ? selected.join(
-                " • "
-            )
+            ? selected.join(" • ")
             : "Configure RF / Electric / Magnetic";
+
+    // ==================================================
+    // TOP TOOLBAR — CHOSEN MEASUREMENT MODALITIES
+    // Independent from VIEW FILTER
+    // ==================================================
+
+    const topLabel = document.getElementById(
+        "measurementModalitiesLabel"
+    );
+
+    if (topLabel) {
+        const modalities = [];
+
+        if (profile?.rf === true) {
+            modalities.push("RF");
+        }
+
+        if (profile?.electric === true) {
+            modalities.push("E");
+        }
+
+        if (profile?.magnetic === true) {
+            modalities.push("M");
+        }
+
+        topLabel.textContent =
+            modalities.length === 3
+                ? "MEASURING: ALL"
+                : modalities.length
+                    ? `MEASURING: ${modalities.join(" + ")}`
+                    : "MEASURING: NOT SET";
+    }
+
 }
 
 function getRequiredCoverage(

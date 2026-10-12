@@ -9602,220 +9602,204 @@
       border-color: #94a3b8 !important;
     }
 
-    /* ================================================== */
-    /* BUSINESS MAP / MEASUREMENTS CONTROLS */
-    /* ================================================== */
+
+    /* ==================================================
+   BUSINESS MAP TOOLBAR — SINGLE HORIZONTAL ROW
+   ================================================== */
 
     .business-map-controls {
-
       display: flex;
-
+      flex-flow: row nowrap;
       align-items: center;
+      gap: 12px;
 
-      gap: 0;
-
-      padding: 7px 10px;
-
-      border-radius: 12px;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 5px 8px;
 
       background: #263246;
-
-      border:
-        1px solid #334155;
-
-      box-shadow:
-        0 3px 10px rgba(15, 23, 42, 0.08);
-
-      box-sizing: border-box;
-    }
-
-    /* ================================================== */
-    /* MAP GROUP */
-    /* ================================================== */
-
-    .business-map-controls .map-control-group {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 8px;
-    }
-
-    /* ================================================== */
-    /* BUSINESS MAP CONTROLS — COMPACT HEIGHT */
-    /* ================================================== */
-
-    .business-map-controls {
-
-      padding: 1px 10px !important;
-
+      border: 1px solid #334155;
       border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08);
 
+      overflow-x: auto;
+      scrollbar-width: none;
     }
 
-
-    /* MAP + MEASUREMENTS buttons */
-
-    .business-map-controls .map-control-btn,
-    .business-map-controls .measurement-type-btn {
-
-      height: 28px !important;
-
-      min-height: 28px !important;
-
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-
-      border-radius: 7px;
-
+    .business-map-controls::-webkit-scrollbar {
+      display: none;
     }
 
+    /* ==================================================
+   MAP LAYERS — DARK BLOCK
+   ================================================== */
 
-    /* ================================================== */
-    /* MEASUREMENTS GROUP */
-    /* ================================================== */
-
-    .business-map-controls .measurement-control-group {
-
-      margin-left: 14px;
-
-      padding-left: 14px;
-
-      border-left:
-        1px solid rgba(148, 163, 184, 0.30);
-    }
-
-
-    /* ================================================== */
-    /* CONTROL GROUP */
-    /* ================================================== */
-
-    .business-map-controls .map-control-group {
-
+    .business-map-controls>.map-control-group:not(.measurement-control-group) {
       display: flex;
-
+      flex: 0 0 auto;
+      flex-flow: row nowrap;
       align-items: center;
-
-      gap: 8px;
+      gap: 7px;
 
       min-width: 0;
+      padding: 5px 8px;
 
+      background: #253348;
+      border: 1px solid #394b63;
+      border-radius: 9px;
     }
 
-
-    /* ================================================== */
-    /* GROUP TITLE */
-    /* ================================================== */
-
+    /* Group titles */
     .business-map-controls .map-control-group-title {
+      flex: 0 0 auto;
+      margin: 0 5px 0 0;
 
+      color: #cbd5e1;
       font-size: 10px;
-
       line-height: 1;
-
       font-weight: 700;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
 
-      letter-spacing: 0.08em;
+    /* ==================================================
+   MAP LAYER BUTTONS
+   ================================================== */
 
-      color: #94a3b8;
+    .business-map-controls .map-control-btn {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
 
+      height: 34px;
+      min-height: 34px;
+      padding: 0 10px;
+
+      box-sizing: border-box;
+      border-radius: 8px;
       white-space: nowrap;
 
-      margin-right: 2px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    /* Active layer */
+
+    .business-map-controls .map-control-btn.active {
+      background: #155e55;
+      border: 1px solid #34d399;
+      color: #ecfdf5;
+      opacity: 1;
     }
 
 
-    /* ================================================== */
-    /* MEASUREMENTS GROUP — SEPARATOR */
-    /* ================================================== */
+    /* Inactive layer */
+    .business-map-controls .map-control-btn:not(.active) {
+      background: #344256;
+      border: 1px solid #526176;
+      color: #cbd5e1;
+      opacity: 1;
+    }
+
+    /* ==================================================
+   MEASUREMENT CONTROLS — LIGHT BLOCK
+   ================================================== */
 
     .business-map-controls .measurement-control-group {
+      display: flex;
+      flex: 0 0 auto;
+      flex-flow: row nowrap;
+      align-items: center;
+      gap: 6px;
 
-      margin-left: 12px;
+      min-width: 0;
+      margin: 0;
+      padding: 5px 8px;
 
-      padding-left: 14px;
-
-      border-left:
-        1px solid rgba(148, 163, 184, 0.25);
-    }
-
-
-    /* ================================================== */
-    /* MAP BUTTONS */
-    /* ================================================== */
-
-    .business-map-controls .map-control-btn,
-    .business-map-controls .measurement-type-btn {
-
-      height: 38px;
-
-      padding: 0 11px;
-
-      border-radius: 8px;
-
+      background: #e8f1ff;
+      border: 1px solid #b9d2f5;
+      border-radius: 10px;
       box-sizing: border-box;
 
       white-space: nowrap;
-
-      transition:
-        background 0.15s ease,
-        border-color 0.15s ease;
     }
 
+    /* VIEW FILTER label */
+    .business-map-controls .measurement-control-group .map-control-group-title,
+    .business-map-controls .measurement-filter-label {
+      flex: 0 0 auto;
+      margin: 0 3px 0 0;
 
-    /* ================================================== */
-    /* ACTIVE MAP BUTTON */
-    /* ================================================== */
-
-    .business-map-controls .map-control-btn.active {
-
-      background:
-        rgba(37, 99, 235, 0.16);
-
-      border-color:
-        rgba(59, 130, 246, 0.45);
-
+      color: #48617f;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
 
-
-    /* ================================================== */
-    /* INACTIVE / SECONDARY MAP BUTTON */
-    /* ================================================== */
-
-    .business-map-controls .map-control-btn:not(.active) {
-
-      opacity: 0.72;
-
-    }
-
-
-    /* ================================================== */
-    /* MEASUREMENT TYPE BUTTONS */
-    /* ================================================== */
-
+    /* ALL / RF / E / M */
     .business-map-controls .measurement-type-btn {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
 
-      min-width: 42px;
+      height: 34px;
+      min-height: 34px;
+      min-width: 40px;
+      padding: 0 10px;
 
-      padding-left: 10px;
+      box-sizing: border-box;
+      border: 1px solid #cbdcf3;
+      border-radius: 8px;
 
-      padding-right: 10px;
+      background: #ffffff;
+      color: #334155;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
-
-    /* ================================================== */
-    /* ACTIVE MEASUREMENT TYPE */
-    /* ================================================== */
-
+    /* Selected view filter */
     .business-map-controls .measurement-type-btn.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
 
-      background:
-        rgba(37, 99, 235, 0.18);
+    /* ==================================================
+   MEASURING MODALITIES BUTTON
+   ================================================== */
 
-      border-color:
-        rgba(59, 130, 246, 0.55);
+    .business-map-controls .measurement-profile-top {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
 
+      height: 34px;
+      min-height: 34px;
+      margin-left: 5px;
+      padding: 0 10px;
+
+      box-sizing: border-box;
+      border: 1px solid #8db7ff;
+      border-radius: 8px;
+
+      background: #e8f1ff;
+      color: #1e40af;
+
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .business-map-controls .measurement-profile-top:hover {
+      background: #d2e4ff;
+      border-color: #60a5fa;
     }
 
 
@@ -11872,6 +11856,10 @@
       margin-bottom: 5px;
     }
 
+    /* Pulse only while scale calibration is required */
+    #businessPlanActions #btnScale.scale-needed-pulse {
+      animation: sidebarActionPulse 1.8s ease-in-out infinite !important;
+    }
 
     /* ---------------------------------------------------------
    SET SCALE — NORMAL
@@ -11879,7 +11867,7 @@
 
     #businessPlanActions #btnScale {
 
-      display: none;
+      display: flex !important;
 
       background: #ffffff;
 
@@ -11971,6 +11959,15 @@
     }
 
 
+    /* Remove red outline from Set Scale only */
+    #businessPlanActions #btnScale,
+    #businessPlanActions #btnScale.active,
+    #businessPlanActions #btnScale:focus,
+    #businessPlanActions #btnScale:focus-visible {
+      outline: none !important;
+      outline-color: transparent !important;
+    }
+
     /* ---------------------------------------------------------
    LEGACY STATES — NEVER VISUALLY COMPETE
    --------------------------------------------------------- */
@@ -11983,6 +11980,8 @@
 
       animation: none !important;
     }
+
+
 
 
     /* ---------------------------------------------------------
@@ -22152,6 +22151,7 @@
 
     /* BUSINESS NEXT STEP — FLOATING GLASS PANEL */
 
+
     #workflowNextStep.workflow-next-floating {
       position: absolute;
       top: 16px;
@@ -22168,7 +22168,48 @@
       padding: 14px;
 
       color: #1e293b;
-      background: rgba(239, 246, 255, 0.78);
+
+      /* Remove the unwanted floating background */
+      background: transparent;
+      background-color: transparent;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    /* Collapsed state: only the blue reopen button remains */
+    #workflowNextStep.workflow-next-floating[data-collapsed="true"] {
+      width: fit-content;
+      max-width: calc(100% - 32px);
+      max-height: none;
+      overflow: visible;
+
+      padding: 0 !important;
+      min-height: 0 !important;
+
+      background: transparent !important;
+      background-color: transparent !important;
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+
+      border: none !important;
+      border-radius: 0;
+      box-shadow: none !important;
+    }
+
+    /* Expanded state: restore the card surface */
+    #workflowNextStep.workflow-next-floating[data-collapsed="false"] {
+      width: 290px;
+      max-width: calc(100% - 32px);
+      max-height: calc(100% - 32px);
+      overflow-y: auto;
+
+      padding: 14px;
+
+      background: rgba(239, 246, 255, 0.96);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
 
@@ -22176,6 +22217,7 @@
       border-radius: 14px;
       box-shadow: 0 8px 28px rgba(15, 23, 42, 0.13);
     }
+
 
 
 
@@ -22373,6 +22415,516 @@
       border: 1px solid #cbd5e1;
       border-radius: 6px;
       cursor: pointer;
+    }
+
+
+    /* Set Scale — blue next-action highlight */
+    #businessPlanActions #btnScale.workflow-next-action {
+      border: 2px solid #60a5fa !important;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16) !important;
+      animation: businessNextActionPulse 1.8s ease-in-out infinite !important;
+      outline: none !important;
+    }
+
+
+
+    /* To Do card — subtle header controls */
+    .workflow-next-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .workflow-next-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .workflow-next-controls button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 23px;
+      height: 23px;
+      padding: 0;
+
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #64748b;
+
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1;
+
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .workflow-next-controls button:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .workflow-next-controls button:focus-visible {
+      outline: 2px solid #60a5fa;
+      outline-offset: 1px;
+    }
+
+
+    /* To Do card — no internal scrollbars */
+    #workflowNextStep {
+      overflow: visible !important;
+      overflow-x: visible !important;
+      overflow-y: visible !important;
+      scrollbar-width: none;
+    }
+
+    #workflowNextStep::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Compact To Do — high-contrast collapsed state */
+    #workflowNextStep .workflow-next-compact {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+
+      width: fit-content;
+      min-width: 300px;
+      max-width: 100%;
+      min-height: 48px;
+      box-sizing: border-box;
+      padding: 0 10px 0 16px;
+
+      border: 1px solid #294b7a;
+      border-radius: 12px;
+      background: #233b60;
+      color: #ffffff;
+
+      text-align: left;
+      cursor: pointer;
+
+      box-shadow: 0 5px 16px rgba(15, 23, 42, 0.24);
+
+      transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+    }
+
+    #workflowNextStep .workflow-next-compact-label {
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.045em;
+      white-space: nowrap;
+    }
+
+    #workflowNextStep .workflow-next-compact-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 28px;
+
+      width: 28px;
+      height: 28px;
+      border: 1px solid #d2e0f4;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #244a7c;
+    }
+
+    #workflowNextStep .workflow-next-compact:hover {
+      background: #2e4f7d;
+      border-color: #4f7fbd;
+      box-shadow: 0 7px 18px rgba(15, 23, 42, 0.3);
+    }
+
+    #workflowNextStep .workflow-next-compact:focus-visible {
+      outline: 2px solid #60a5fa;
+      outline-offset: 3px;
+    }
+
+
+    /* FINAL OVERRIDE — collapsed To Do bar */
+    #workflowNextStep button.workflow-next-compact {
+      background: #233b60 !important;
+      background-color: #233b60 !important;
+      color: #ffffff !important;
+      border: 1px solid #294b7a !important;
+      border-radius: 12px !important;
+      box-shadow: 0 5px 16px rgba(15, 23, 42, 0.24) !important;
+      opacity: 1 !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact .workflow-next-compact-label {
+      color: #ffffff !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact .workflow-next-compact-arrow {
+      background: #ffffff !important;
+      color: #244a7c !important;
+      border: 1px solid #d2e0f4 !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact:hover {
+      background: #2e4f7d !important;
+      background-color: #2e4f7d !important;
+    }
+
+
+    #workflowNextStep button.workflow-next-compact {
+      padding-left: 16px !important;
+      padding-right: 8px !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact .workflow-next-compact-label {
+      text-align: left !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact .workflow-next-compact-arrow {
+      width: 30px !important;
+      height: 30px !important;
+      flex: 0 0 30px !important;
+      border-radius: 8px !important;
+    }
+
+
+    /* Final compact To Do appearance */
+    #workflowNextStep {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact {
+      width: fit-content !important;
+      min-width: 0 !important;
+      max-width: 340px !important;
+      min-height: 44px !important;
+      padding: 0 8px 0 14px !important;
+      gap: 10px !important;
+
+      background: #355783 !important;
+      background-color: #355783 !important;
+      color: #ffffff !important;
+      border: 1px solid #456b9b !important;
+      border-radius: 11px !important;
+
+      box-shadow: 0 4px 12px rgba(25, 48, 78, 0.2) !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact .workflow-next-compact-label {
+      color: #ffffff !important;
+      font-size: 11px !important;
+      letter-spacing: 0.035em !important;
+    }
+
+    #workflowNextStep button.workflow-next-compact .workflow-next-compact-arrow {
+      width: 27px !important;
+      height: 27px !important;
+      flex: 0 0 27px !important;
+      background: #ffffff !important;
+      color: #355783 !important;
+      border: 1px solid #d7e3f2 !important;
+      border-radius: 8px !important;
+    }
+
+
+    /* Remove the floating card surface in collapsed state */
+    #workflowNextStep.workflow-next-floating:has(.workflow-next-compact:not([hidden])) {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+    }
+
+    /* Keep only the compact blue control visible */
+    #workflowNextStep.workflow-next-floating .workflow-next-compact:not([hidden]) {
+      margin: 0 !important;
+    }
+
+
+    /* Remove the floating card surface in collapsed state */
+    #workflowNextStep.workflow-next-floating:has(.workflow-next-compact:not([hidden])) {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+    }
+
+    /* Keep only the compact blue control visible */
+    #workflowNextStep.workflow-next-floating .workflow-next-compact:not([hidden]) {
+      margin: 0 !important;
+    }
+
+
+
+    /* Measurement Profile — top measurement toolbar */
+    .business-map-controls .measurement-profile-top {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 0 0 auto;
+
+      min-height: 32px;
+      margin-left: 8px;
+      padding: 0 11px;
+
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 8px;
+      background: #334155;
+      color: #e2e8f0;
+
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+
+      transition: background 150ms ease, border-color 150ms ease;
+    }
+
+    .business-map-controls .measurement-profile-top:hover {
+      background: #405574;
+      border-color: #647da0;
+    }
+
+    .business-map-controls .measurement-profile-top:focus-visible {
+      outline: 2px solid #60a5fa;
+      outline-offset: 2px;
+    }
+
+
+
+    /* Separate measurement controls from map layers */
+    .business-map-controls .measurement-control-group {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 6px;
+
+      flex: 0 0 auto;
+      min-width: 0;
+      white-space: nowrap;
+
+      margin-left: 12px;
+      padding: 5px 8px;
+
+      background: #e8f1ff;
+      border: 1px solid #b9d2f5;
+      border-radius: 10px;
+
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+      box-sizing: border-box;
+    }
+
+    /* Keep the measurement group visually independent */
+    .business-map-controls .measurement-filter-label {
+      flex: 0 0 auto;
+      margin: 0 3px 0 0;
+      color: #48617f;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    /* Profile button */
+    .business-map-controls .measurement-profile-top {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+
+      white-space: nowrap;
+      padding: 6px 9px;
+
+      background: #d2e4ff;
+      border: 1px solid #a8c8f5;
+      border-radius: 7px;
+
+      color: #1e40af;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .business-map-controls .measurement-profile-top:hover {
+      background: #c3dcff;
+      border-color: #82b1f2;
+    }
+
+
+
+    /* ==================================================
+   BUSINESS TOOLBAR — UNIFIED HEIGHT & SPACING
+   ================================================== */
+
+    .business-map-controls {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: stretch;
+      gap: 10px;
+      padding: 5px 8px;
+      box-sizing: border-box;
+    }
+
+    /* Both blocks share the same outer height */
+    .business-map-controls>.map-control-group,
+    .business-map-controls>.measurement-control-group {
+      display: flex;
+      flex: 0 0 auto;
+      flex-flow: row nowrap;
+      align-items: center;
+      gap: 7px;
+
+      min-height: 46px;
+      height: 46px;
+      padding: 5px 8px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    /* Map layers — dark block */
+    .business-map-controls>.map-control-group:not(.measurement-control-group) {
+      background: #253348;
+      border: 1px solid #394b63;
+    }
+
+    /* Measurement controls — light block */
+    .business-map-controls>.measurement-control-group {
+      margin: 0;
+      border: 1px solid #b9d2f5;
+      background: #e8f1ff;
+    }
+
+    /* All buttons share a consistent height */
+    .business-map-controls .map-control-btn,
+    .business-map-controls .measurement-type-btn,
+    .business-map-controls .measurement-profile-top {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+
+      height: 34px;
+      min-height: 34px;
+      box-sizing: border-box;
+      margin-top: 0;
+      margin-bottom: 0;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    /* Consistent spacing inside both groups */
+    .business-map-controls .map-control-group-title,
+    .business-map-controls .measurement-filter-label {
+      flex: 0 0 auto;
+      align-self: center;
+      margin-top: 0;
+      margin-bottom: 0;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* Keep measurement settings distinct */
+    .business-map-controls .measurement-profile-top {
+      margin-left: 5px;
+      padding: 0 10px;
+    }
+
+
+    /* Final toolbar alignment correction */
+    .business-map-controls {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+    }
+
+    /* Map layers block */
+    .business-map-controls>.map-control-group:not(.measurement-control-group) {
+      flex: 0 1 auto;
+      min-width: 0;
+      height: 46px;
+      padding: 5px 9px;
+      gap: 7px;
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
+
+    /* Clear separation between the two groups */
+    .business-map-controls>.measurement-control-group {
+      flex: 0 0 auto;
+      height: 46px;
+      margin: 0;
+      padding: 5px 9px;
+      gap: 7px;
+      border: 1px solid #b9d2f5;
+      border-radius: 10px;
+      background: #e8f1ff;
+      box-sizing: border-box;
+    }
+
+    /* Consistent button alignment */
+    .business-map-controls .map-control-btn,
+    .business-map-controls .measurement-type-btn,
+    .business-map-controls .measurement-profile-top {
+      flex-shrink: 0;
+      height: 34px;
+      min-height: 34px;
+      margin-block: 0;
+      box-sizing: border-box;
+    }
+
+
+    /* Measurement Profile — make it visibly interactive */
+    .business-map-controls .measurement-profile-top {
+      cursor: pointer;
+      border: 1px solid #7eafff;
+      background: #d7e7ff;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12);
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+    }
+
+    .business-map-controls .measurement-profile-top::after {
+      content: "▾";
+      margin-left: 3px;
+      color: #1d4ed8;
+      font-size: 11px;
+    }
+
+    .business-map-controls .measurement-profile-top:hover {
+      background: #c4dcff;
+      border-color: #4f8df7;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+    }
+
+    .business-map-controls .measurement-profile-top:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
     }
   </style>
 
@@ -22788,24 +23340,14 @@
 
           <!-- SET SCALE -->
 
-          <button id="btnScale" class="workflow-action-btn" style="display:none;">
-
-            <div class="workflow-action-icon">
-              📏
-            </div>
-
-            <div>
-
-              <div class="workflow-action-title">
-                Set Scale
-              </div>
-
+          <button id="btnScale" class="workflow-action-btn">
+            <div class="workflow-action-icon">📏</div>
+            <div class="workflow-action-content">
+              <div class="workflow-action-title">Set Scale</div>
               <div class="workflow-action-subtitle">
-                Calibrate the floor plan scale
+                Calibrate the floor plan scale.
               </div>
-
             </div>
-
           </button>
 
         </div>
@@ -23784,45 +24326,6 @@
 
             </button>
 
-
-            <!-- ==================================================
-     MEASUREMENT PROFILE
-     SECONDARY SETTINGS
-     ================================================== -->
-
-            <button type="button" id="btnEditMeasurementProfile" class="measurement-profile-row" onclick="
-
-        event.stopPropagation();
-
-        showMeasurementProfilePopup();
-
-    ">
-
-              <span class="measurement-profile-icon">
-                ⚙
-              </span>
-
-              <span class="measurement-profile-content">
-
-                <span class="measurement-profile-title">
-                  Measurement Profile
-                </span>
-
-                <span id="measurementProfileSummary" class="measurement-profile-summary">
-                  Configure RF / Electric / Magnetic
-                </span>
-
-              </span>
-
-              <span class="measurement-profile-arrow">
-                ›
-              </span>
-
-            </button>
-
-
-
-
           </div>
 
           <div id="btnAddSources" class="workflow-action-btn workflow-business-tools" onclick="openSourceTypePopup()">
@@ -23845,12 +24348,7 @@
 
           </div>
 
-
-
-
         </div>
-
-
 
         <!-- ================================================== -->
         <!-- OUTPUT -->
@@ -25644,7 +26142,7 @@
           <div class="map-control-group">
 
             <div class="map-control-group-title">
-              MAP
+              MAP LAYERS
             </div>
 
 
@@ -25728,37 +26226,44 @@
           </div>
 
 
+
           <!-- ================================================== -->
-          <!-- MEASUREMENTS -->
+          <!-- MEASUREMENT VIEW FILTER + MODALITIES -->
           <!-- ================================================== -->
 
           <div class="map-control-group measurement-control-group">
 
-            <div class="map-control-group-title">
-              MEASUREMENTS
+            <div class="map-control-group-title measurement-filter-label">
+              VIEW FILTER
             </div>
-
 
             <button type="button" id="measurementTypeAll" class="measurement-type-btn active" aria-pressed="true">
               ALL
             </button>
 
-
             <button type="button" id="measurementTypeRF" class="measurement-type-btn" aria-pressed="false">
               RF
             </button>
-
 
             <button type="button" id="measurementTypeElectric" class="measurement-type-btn" aria-pressed="false">
               E
             </button>
 
-
             <button type="button" id="measurementTypeMagnetic" class="measurement-type-btn" aria-pressed="false">
               M
             </button>
 
+            <button type="button" id="btnMeasurementProfileTop" class="measurement-profile-top"
+              onclick="event.stopPropagation(); showMeasurementProfilePopup();" title="Configure measurement modalities"
+              aria-label="Configure measurement modalities">
+
+              <span aria-hidden="true">⚙</span>
+              <span id="measurementModalitiesLabel">MEASURING: ALL</span>
+
+            </button>
+
           </div>
+
 
         </div>
 

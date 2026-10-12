@@ -1078,9 +1078,12 @@ function loadFloorImage(floor) {
 
 
         window.updateHomeEmptyPlanState?.();
-
         window.updateBusinessEmptyPlanState?.();
 
+        if (window.AppMode?.current === "business") {
+            window.updateWorkflowUI?.();
+            window.updateNextStepCard?.();
+        }
 
         return;
     }
@@ -1283,10 +1286,10 @@ function loadFloorImage(floor) {
         // ==================================================
 
         window.updateHomeEmptyPlanState?.();
-
         window.updateBusinessEmptyPlanState?.();
 
         if (window.AppMode?.current === "business") {
+            window.updateWorkflowUI?.();
             window.updateNextStepCard?.();
         }
 

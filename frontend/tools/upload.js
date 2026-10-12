@@ -825,34 +825,9 @@ window.addEventListener(
             );
 
         btnScale?.addEventListener(
-
             "click",
-
             () => {
-
-                AppState.ui.mode =
-                    "scale";
-
-                if (
-                    window.scaleTool
-                ) {
-
-                    window.scaleTool.active =
-                        true;
-
-                    window.scaleTool.calibrated =
-                        false;
-
-                    window.scaleTool.points =
-                        [];
-                }
-
-                console.log(
-                    "SET SCALE MODE",
-                    window.scaleTool
-                );
-
-                requestRender?.();
+                window.startScaleTool?.();
             }
         );
 
