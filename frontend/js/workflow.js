@@ -806,7 +806,7 @@ function updateNextStepCard() {
         },
         {
             id: "btnAddZone",
-            title: "Draw / Manage Zones",
+            title: "Add / Manage Zones",
             description: "Add or manage lifestyle zones."
         },
         {
@@ -874,10 +874,13 @@ function updateNextStepCard() {
             relevantIds.push("btnAddZone");
         }
 
-        // Zone measuring is relevant only if a zone still needs work.
-        if (hasZones && zoneToMeasure) {
+
+        // Zone measuring is relevant only after room measurements
+        // are complete and a generated zone grid still needs work.
+        if (!roomToMeasure && hasZones && zoneToMeasure) {
             relevantIds.push("btnStartZoneMeasure");
         }
+
 
         // Sources are the next core task after room measurements.
         if (!roomToMeasure && !hasSources) {
@@ -893,8 +896,9 @@ function updateNextStepCard() {
         }
     }
 
+
+    // All currently available actions — preserve primary recommendation
     const availableActions = actions.filter(action =>
-        relevantIds.includes(action.id) &&
         isActionAvailable(action)
     );
 
@@ -903,8 +907,19 @@ function updateNextStepCard() {
         availableActions[0] ||
         null;
 
+    // Only these actions may appear as secondary To Do choices
+    const todoActionIds = [
+        "btnDrawRooms",
+        "btnAddZone",
+        "btnStartMeasure",
+        "btnStartZoneMeasure",
+        "btnAddSources"
+    ];
+
     const otherActions = availableActions.filter(
-        action => action.id !== mainAction?.id
+        action =>
+            action.id !== mainAction?.id &&
+            todoActionIds.includes(action.id)
     );
 
     // --------------------------------------------------
@@ -941,6 +956,7 @@ function updateNextStepCard() {
 
     const showSummary = !mainAction;
 
+
     el.innerHTML = `
 <div class="workflow-next-heading">
     <span>What would you like to do next?</span>
@@ -960,17 +976,35 @@ function updateNextStepCard() {
     </div>
 </div>
 
-
         ${mainAction ? `
             <div class="workflow-next-recommended-label">
                 RECOMMENDED NEXT STEP
             </div>
 
             <div class="workflow-next-actions">
-                ${actionButton(mainAction, true)}
-                ${otherActions.map(action =>
-        actionButton(action, false)
-    ).join("")}
+                <div class="workflow-next-primary">
+                    ${actionButton(mainAction, true)}
+                </div>
+
+                ${otherActions.length ? `
+                    <div class="workflow-next-other">
+                        <div class="workflow-next-other-label">
+                            OTHER AVAILABLE ACTIONS
+                        </div>
+                        <div class="workflow-next-other-list">
+                            ${otherActions.slice(0, 4).map(action => `
+                                <button
+                                    type="button"
+                                    class="workflow-next-other-action"
+                                    data-workflow-action="${escapeHtml(action.id)}"
+                                >
+                                    <span>${escapeHtml(action.title)}</span>
+                                    <span class="workflow-next-other-arrow">›</span>
+                                </button>
+                            `).join("")}
+                        </div>
+                    </div>
+                ` : ""}
             </div>
         ` : `
             <div class="workflow-next-summary">
@@ -1007,6 +1041,7 @@ function updateNextStepCard() {
             </button>
         </div>
     `;
+
 
     // --------------------------------------------------
     // TO DO CARD — COLLAPSE / CLOSE / REOPEN
@@ -1301,6 +1336,24 @@ function updateNextStepCard() {
                     console.error("Set Scale: startScaleTool() is unavailable.");
                 }
             } else {
+                if (actionId === "btnStartMeasure") {
+                    const floor = getCurrentFloor?.();
+                    const rooms = floor?.rooms || [];
+                    const currentRoom = AppState?.ui?.selectedRoom;
+
+                    const activeRoom =
+                        rooms.find(room => room.id === currentRoom?.id) ||
+                        rooms.find(room =>
+                            !getRoomMeasurementStats(room).canComplete
+                        ) ||
+                        rooms[rooms.length - 1] ||
+                        null;
+
+                    if (activeRoom) {
+                        AppState.ui.selectedRoom = activeRoom;
+                    }
+                }
+
                 menuButton.click();
             }
 
@@ -1443,6 +1496,12 @@ function updateProgressUI() {
         document.getElementById(
             "progressContent"
         );
+
+    console.log("PROGRESS UI CALLED", {
+        elementFound: !!el,
+        mode: AppState?.ui?.mode,
+        selectedRoomId: AppState?.ui?.selectedRoom?.id
+    });
 
 
     if (!el) {
@@ -1752,16 +1811,35 @@ function updateProgressUI() {
         // ROOM CARD
         // ==================================================
 
+
+        const isActiveMeasuringRoom =
+            (
+                AppState?.ui?.mode === "measure" ||
+                AppState?.ui?.mode === "roomMeasure"
+            ) &&
+            AppState?.ui?.selectedRoom?.id === room.id;
+
+        console.log("ACTIVE ROOM CARD CHECK", {
+            mode: AppState?.ui?.mode,
+            selectedRoomId: AppState?.ui?.selectedRoom?.id,
+            cardRoomId: room.id,
+            isActiveMeasuringRoom
+        });
+
+        console.log("WORKFLOW.JS ROOM CARD CODE LOADED");
+
         html += `
-            <div
-                style="
-                    margin-bottom:8px;
-                    padding:8px;
-                    border-radius:8px;
-                    background:#1f2937;
-                    border-left:4px solid ${color};
-                "
-            >
+    <div
+        style="
+            margin-bottom:8px;
+            padding:8px;
+            border-radius:8px;
+            background:${isActiveMeasuringRoom ? "#1e3a5f" : "#1f2937"};
+            border-left:4px solid ${color};
+            ${isActiveMeasuringRoom ? "outline:2px solid #3b82f6; outline-offset:1px;" : ""}
+        "
+    >
+
 
                 <div
                     style="
@@ -3461,15 +3539,19 @@ function updateWorkflowUI() {
                     : "none";
         }
 
-        // --------------------------------------------------
-        // SOURCES
-        // --------------------------------------------------
 
+        // SOURCES
         if (sourceBtn) {
+            const roomsNeedGrid = (floor.rooms || []).some(
+                room => !room.grid?.length
+            );
 
             sourceBtn.style.display =
-                "flex";
+                hasScale && hasRooms && !roomsNeedGrid
+                    ? "flex"
+                    : "none";
         }
+
     }
 
     // ==================================================
@@ -3568,6 +3650,27 @@ function updateWorkflowUI() {
     // APPLY LOCKED / AVAILABLE STATE
     // ==================================================
 
+
+    // ==================================================
+    // SIDEBAR — STABLE BLUE OUTLINE, NO PULSE
+    // ==================================================
+
+    const sidebarOutlineIds = [
+        "btnDrawRooms",
+        "btnAddZone",
+        "btnStartMeasure",
+        "btnStartZoneMeasure",
+        "btnAddSources"
+    ];
+
+    sidebarOutlineIds.forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+
+        btn.classList.remove("workflow-available-outline");
+    });
+
+
     Object.entries(
         businessActionStates
     )
@@ -3623,14 +3726,18 @@ function updateWorkflowUI() {
                 // ------------------------------------------------
 
                 if (!available) {
+                    btn.classList.add("workflow-locked");
+                    btn.disabled = true;
+                } else if (sidebarOutlineIds.includes(id)) {
+                    btn.classList.add("workflow-available-outline");
 
-                    btn.classList.add(
-                        "workflow-locked"
-                    );
-
-                    btn.disabled =
-                        true;
+                    console.log("BLUE OUTLINE DEBUG", {
+                        id,
+                        available,
+                        classes: btn.className
+                    });
                 }
+
             }
         );
 
@@ -4173,13 +4280,27 @@ function setupWorkflowNavigation() {
                 // 🔥 MEASURE
                 // =====================
 
-                if (
-                    mode === "measure"
-                ) {
 
-                    AppState.ui.mode =
-                        "measure";
+                if (mode === "measure") {
+
+                    const floor = getCurrentFloor?.();
+                    const rooms = floor?.rooms || [];
+
+                    const selectedRoom = AppState.ui.selectedRoom;
+
+                    // Keep the selected room if it belongs to the current floor.
+                    const activeRoom =
+                        rooms.find(room => room.id === selectedRoom?.id) ||
+                        rooms.find(room => !getRoomMeasurementStats(room).canComplete) ||
+                        rooms[rooms.length - 1] ||
+                        null;
+
+                    AppState.ui.selectedRoom = activeRoom;
+
+                    // Start the existing measurement workflow.
+                    window.startMeasurementMode?.("room");
                 }
+
 
                 // =====================
                 // 🔥 SOURCES
@@ -7007,6 +7128,26 @@ function startBusinessMeasurementFlow() {
     AppState.ui.mode =
         "measure";
 
+    // Select the active room for Room Measuring.
+    const rooms = Array.isArray(floor.rooms)
+        ? floor.rooms
+        : [];
+
+    const currentRoom = AppState.ui.selectedRoom;
+
+    const activeRoom =
+        rooms.find(room => room.id === currentRoom?.id) ||
+        rooms.find(room => !getRoomMeasurementStats(room).canComplete) ||
+        rooms[0] ||
+        null;
+
+    AppState.ui.selectedRoom = activeRoom;
+
+    console.log("ACTIVE ROOM SELECTED", {
+        mode: AppState.ui.mode,
+        roomId: activeRoom?.id,
+        roomName: activeRoom?.name
+    });
 
     // ==================================================
     // 🔥 ROOM GRID IS THE MEASUREMENT GRID
@@ -7094,6 +7235,10 @@ function startBusinessMeasurementFlow() {
     updateUIState?.();
 
     updateProgressUI?.();
+
+    updateRoomStatusUI?.();
+
+    window.updateRoomProgressPanel?.();
 
 
     // ==================================================

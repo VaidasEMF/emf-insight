@@ -4005,75 +4005,44 @@ function updateMeasurementInfo() {
     // and prevents double counting.
     // ==================================================
 
-    if (
-        normalizedType === "all"
-    ) {
 
-        let total =
-            0;
+    if (normalizedType === "all") {
+        const rooms = Array.isArray(floor.rooms)
+            ? floor.rooms
+            : [];
 
-        let completed =
-            0;
+        const isRoomMeasure =
+            mode === "measure" ||
+            mode === "roomMeasure";
 
+        const selectedRoom = AppState?.ui?.selectedRoom;
 
-        const rooms =
-            Array.isArray(
-                floor.rooms
-            )
-                ? floor.rooms
-                : [];
+        const activeRoom = isRoomMeasure
+            ? rooms.find(room => room.id === selectedRoom?.id)
+            : null;
 
+        const roomsToCount = activeRoom
+            ? [activeRoom]
+            : rooms;
 
-        rooms.forEach(
-            room => {
+        let total = 0;
+        let completed = 0;
 
-                const stats =
-                    getRoomMeasurementStats?.(
-                        room
-                    );
+        roomsToCount.forEach(room => {
+            const stats = getRoomMeasurementStats?.(room);
+            if (!stats) return;
 
+            total += Number(stats.total) || 0;
+            completed += Number(stats.completed) || 0;
+        });
 
-                if (!stats) {
-                    return;
-                }
+        titleEl.innerText = activeRoom
+            ? `Measuring: ${activeRoom.code || activeRoom.name || "Room"}`
+            : "Measuring: ALL";
 
-
-                total +=
-                    Number(
-                        stats.total
-                    ) || 0;
-
-
-                // ------------------------------------------
-                // ALL = COMPLETION
-                //
-                // Only confirmed points count as completed.
-                //
-                // This intentionally uses:
-                //
-                // stats.completed
-                //
-                // NOT stats.measured.
-                //
-                // measured = confirmed + partial
-                // completed = confirmed only
-                // ------------------------------------------
-
-                completed +=
-                    Number(
-                        stats.completed
-                    ) || 0;
-            }
-        );
-
-
-        titleEl.innerText =
-            "Measuring: ALL";
-
-
-        descriptionEl.innerText =
-            "ALL shows overall measurement completion according to each point's saved Profile.";
-
+        descriptionEl.innerText = activeRoom
+            ? "Showing measurement completion for the active room."
+            : "ALL shows overall measurement completion according to each point's saved Profile.";
 
         coverageEl.innerText =
             "Measurement completion: " +
@@ -4082,26 +4051,15 @@ function updateMeasurementInfo() {
             total +
             " points";
 
-
-        // ----------------------------------------------
-        // DEBUG
-        // ----------------------------------------------
-
-        console.log(
-            "MEASUREMENT INFO UPDATED",
-            {
-                mode,
-                isMeasurementWorkflow,
-                type: normalizedType,
-                total,
-                completed,
-                floorCoverage:
-                    getFloorCoverage?.(
-                        floor
-                    )
-            }
-        );
-
+        console.log("MEASUREMENT INFO UPDATED", {
+            mode,
+            isMeasurementWorkflow,
+            type: normalizedType,
+            activeRoom: activeRoom?.code || activeRoom?.name || null,
+            total,
+            completed,
+            floorCoverage: getFloorCoverage?.(floor)
+        });
 
         return;
     }

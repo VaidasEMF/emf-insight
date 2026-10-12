@@ -250,7 +250,7 @@ function drawOverlayUI() {
     ) {
 
         let text =
-            "📊 Move cursor to grid point";
+            "Move the crosshair to a grid point and click to measure";
 
         if (
             hoveredMeasurePoint
@@ -288,7 +288,7 @@ function drawOverlayUI() {
         ctx.roundRect(
             20,
             canvas.height - 70,
-            320,
+            420,
             44,
             10
         );

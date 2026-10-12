@@ -9309,19 +9309,17 @@
    ROOM CARD — FINAL BUSINESS STYLE
    ACTUAL CONTAINER: #roomStatus
    ===================================================== */
-
     #roomStatus .room-progress-item {
-
       padding: 9px 10px !important;
-
       border: 1px solid #d9e1ea !important;
-
       border-radius: 9px !important;
-
       background: #ffffff !important;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    }
 
-      box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    #roomStatus .room-progress-item.active-room {
+      border: 2px solid #2563eb !important;
+      background: #eff6ff !important;
     }
 
 
@@ -22926,6 +22924,70 @@
       outline: 2px solid #2563eb;
       outline-offset: 2px;
     }
+
+
+    .workflow-action-btn.workflow-available-outline {
+      outline: 2px solid #3b82f6 !important;
+      outline-offset: 2px !important;
+      animation: none !important;
+    }
+
+
+
+    /* To Do — compact secondary actions */
+
+    .workflow-next-primary .workflow-next-choice {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .workflow-next-other {
+      margin-top: 8px;
+    }
+
+    .workflow-next-other-label {
+      margin: 0 0 5px;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .workflow-next-other-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .workflow-next-other-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      min-height: 29px;
+      padding: 5px 9px;
+      border: 1px solid #dbe4f0;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #334155;
+      font: inherit;
+      font-size: 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .workflow-next-other-action:hover {
+      border-color: #60a5fa;
+      background: #eff6ff;
+    }
+
+    .workflow-next-other-arrow {
+      color: #64748b;
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
   </style>
 
 </head>
@@ -31470,6 +31532,12 @@
       floor.rooms || [];
 
 
+    console.log("ROOM PANEL STATE", {
+      appMode: window.AppMode?.current,
+      uiMode: window.AppState?.ui?.mode,
+      selectedRoomId: window.AppState?.ui?.selectedRoom?.id,
+      windowSelectedRoomId: window.selectedRoom?.id
+    });
     if (
       rooms.length === 0
     ) {
@@ -31604,10 +31672,30 @@
         // ACTIVE ROOM
         // ==================================================
 
+
+        const isMeasuringRoom =
+          AppState?.ui?.mode === "measure" ||
+          AppState?.ui?.mode === "roomMeasure";
+
+        const activeRoomId =
+          AppState?.ui?.selectedRoom?.id ||
+          window.selectedRoom?.id;
+
         const activeClass =
-          window.selectedRoom?.id === room.id
+          isMeasuringRoom &&
+            activeRoomId === room.id
             ? "active-room"
             : "";
+
+        console.log("ROOM CARD ACTIVE CHECK", {
+          mode: AppState?.ui?.mode,
+          isMeasuringRoom,
+          selectedRoomId: AppState?.ui?.selectedRoom?.id,
+          windowSelectedRoomId: window.selectedRoom?.id,
+          cardRoomId: room.id,
+          activeRoomId,
+          activeClass
+        });
 
 
         // ==================================================
@@ -32157,6 +32245,9 @@
     el.innerHTML =
       html;
   }
+
+  window.updateRoomProgressPanel =
+    updateRoomProgressPanel;
 
   function toggleBusinessSources() {
 
