@@ -4317,37 +4317,31 @@ function handleSourceDoubleClick(
             d < 22
         ) {
 
-            // ==================================================
-            // 🔥 BUSINESS
-            //
-            // Business uses the new unified
-            // Business Source popup for both
-            // Indoor and Outdoor sources.
-            // ==================================================
 
             if (
                 window.AppMode?.current ===
                 "business"
             ) {
-
-                window.lastPlacedSource =
-                    s;
-
-                window.activePopupSource =
-                    s;
+                window.lastPlacedSource = s;
+                window.activePopupSource = s;
 
                 closeIndoorDistancePopup?.();
-
                 closeSourcePopup?.();
-
                 closeOutdoorSourcePopup?.();
 
-                showBusinessSourcePopup?.(
-                    s
-                );
+                // Business Indoor Source: use the detailed popup
+                const isIndoor =
+                    window.INDOOR_SOURCE_TYPES?.includes(s.type);
+
+                if (isIndoor) {
+                    window.showHomeIndoorSourcePopup?.(s);
+                } else {
+                    window.showBusinessSourcePopup?.(s);
+                }
 
                 return;
             }
+
 
 
             // ==================================================

@@ -23215,12 +23215,30 @@
       height: 8px !important;
       flex-shrink: 0;
     }
+
+
+    body.home-demo-active #businessProjectToggles {
+      display: none !important;
+    }
   </style>
 
 </head>
 
 
 <body>
+
+  <div id="sourcePopupBackdrop" style="
+        display:none;
+        position:fixed;
+        inset:0;
+        width:100vw;
+        height:100vh;
+        background:rgba(15,23,42,0.32);
+        backdrop-filter:blur(8px);
+        -webkit-backdrop-filter:blur(8px);
+        z-index:1999998;
+        pointer-events:auto;
+    "></div>
 
   <!-- ===================== -->
   <!-- 🔥 MEASUREMENT POPUP -->

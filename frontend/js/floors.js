@@ -2620,6 +2620,21 @@ window.updateBusinessEmptyPlanState =
 
 function renderHomeFloorTabs() {
 
+    // Home Demo must not show real Home floor controls
+    if (
+        window.EMFHomeDemo === true ||
+        window.EMFWorkspaceExperience?.demoType === "home"
+    ) {
+        const wrap = document.getElementById("homeFloorTabs");
+
+        if (wrap) {
+            wrap.innerHTML = "";
+            wrap.style.display = "none";
+        }
+
+        return;
+    }
+
     renderHomeCurrentFloorCard?.();
 
     const wrap =

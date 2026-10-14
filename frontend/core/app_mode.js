@@ -323,7 +323,9 @@ async function setAppMode(
     console.error("🚩 SET APP MODE ENTERED", {
         mode,
         options,
-        url: window.location.href
+        currentMode: window.AppMode?.current,
+        homeDemo: window.EMFHomeDemo,
+        stack: new Error().stack
     });
 
     console.log(
@@ -1886,10 +1888,13 @@ async function setAppMode(
             businessProjectToggles
         ) {
 
-            businessProjectToggles.style.display =
-                mode === "business"
-                    ? "flex"
-                    : "none";
+            if (businessProjectToggles) {
+                businessProjectToggles.style.display =
+                    mode === "business" &&
+                        window.EMFHomeDemo !== true
+                        ? "flex"
+                        : "none";
+            }
         }
 
 

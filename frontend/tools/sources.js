@@ -3982,16 +3982,55 @@ function startOutdoorSourcePlacement() {
 
 
 function closeOutdoorSourcesPopup() {
-    const popup = document.getElementById(
-        "outdoorSourcesPopup"
-    );
+    const popup =
+        document.getElementById("outdoorSourcesPopup");
+
+    const backdrop =
+        document.getElementById("sourcePopupBackdrop");
+
+    const original =
+        window.__sourcePopupCardOriginal;
+
+    const card =
+        document.querySelector(
+            "body > .source-type-popup-card"
+        );
+
+    // Restore the card to its original popup container.
+    if (card && original?.parent) {
+        if (
+            original.nextSibling &&
+            original.nextSibling.parentNode === original.parent
+        ) {
+            original.parent.insertBefore(
+                card,
+                original.nextSibling
+            );
+        } else {
+            original.parent.appendChild(card);
+        }
+
+        card.style.position = "";
+        card.style.top = "";
+        card.style.left = "";
+        card.style.transform = "";
+        card.style.zIndex = "";
+        card.style.width = "";
+        card.style.maxWidth = "";
+        card.style.filter = "";
+        card.style.opacity = "";
+    }
 
     if (popup) {
         popup.style.display = "none";
     }
 
-    // Refresh TO DO after closing the source popup.
-    // The placement flow may hide it again if needed.
+    if (backdrop) {
+        backdrop.style.display = "none";
+    }
+
+    window.__sourcePopupCardOriginal = null;
+
     requestAnimationFrame(() => {
         window.updateNextStepCard?.();
     });
@@ -7862,6 +7901,38 @@ function toggleOutdoorDirectionBlock() {
 
 function openSourceTypePopup() {
 
+    // ==================================================
+    // SOURCES — SYNC ACTIVE WORKFLOW STATE
+    // ==================================================
+
+    if (AppState?.ui) {
+        AppState.ui.mode = "sources";
+    }
+
+    // Stop any active room drawing.
+    if (window.roomTool?.active === true) {
+        window.roomTool.active = false;
+        window.roomTool.points = [];
+        window.roomTool.invalidMessage = null;
+    }
+
+    const drawBtn = document.getElementById("btnDrawRooms");
+
+    if (drawBtn) {
+        drawBtn.classList.remove(
+            "room-drawing-active",
+            "active-step"
+        );
+        drawBtn.setAttribute("aria-pressed", "false");
+    }
+
+    // Highlight the left Sources action.
+    document.getElementById("btnAddSources")
+        ?.classList.add("active-step");
+
+    // Refresh workflow highlights.
+    window.updateWorkflowUI?.();
+
     const popup =
         document.getElementById(
             "outdoorSourcesPopup"
@@ -8414,39 +8485,90 @@ function openSourceTypePopup() {
     `;
 
 
+
     // ==================================================
     // SOURCE POPUP POSITION
     // ==================================================
 
-    // Full-screen overlay
+    // Independent full-screen backdrop
+    const sourceBackdrop =
+        document.getElementById("sourcePopupBackdrop");
+
+    if (sourceBackdrop) {
+        sourceBackdrop.style.position = "fixed";
+        sourceBackdrop.style.inset = "0";
+        sourceBackdrop.style.width = "100vw";
+        sourceBackdrop.style.height = "100vh";
+        sourceBackdrop.style.background =
+            "rgba(15, 23, 42, 0.32)";
+        sourceBackdrop.style.backdropFilter = "blur(8px)";
+        sourceBackdrop.style.webkitBackdropFilter = "blur(8px)";
+        sourceBackdrop.style.zIndex = "1999998";
+        sourceBackdrop.style.display = "block";
+        sourceBackdrop.style.pointerEvents = "auto";
+    }
+
+    // Full-screen popup container — NO BLUR HERE
     popup.style.position = "fixed";
     popup.style.inset = "0";
     popup.style.width = "100vw";
     popup.style.height = "100vh";
     popup.style.maxWidth = "none";
     popup.style.maxHeight = "none";
-
     popup.style.margin = "0";
     popup.style.padding = "220px 16px 16px";
     popup.style.boxSizing = "border-box";
-
     popup.style.display = "flex";
     popup.style.alignItems = "flex-start";
     popup.style.justifyContent = "center";
-
     popup.style.overflowY = "auto";
     popup.style.overflowX = "hidden";
     popup.style.transform = "none";
 
-    // Match the Zone modal backdrop
-    popup.style.background = "rgba(15, 23, 42, 0.28)";
-    popup.style.backdropFilter = "blur(6px)";
-    popup.style.webkitBackdropFilter = "blur(6px)";
-
+    // IMPORTANT: popup itself must not blur its children
+    popup.style.background = "transparent";
+    popup.style.backdropFilter = "none";
+    popup.style.webkitBackdropFilter = "none";
+    popup.style.filter = "none";
     popup.style.visibility = "visible";
     popup.style.opacity = "1";
     popup.style.pointerEvents = "auto";
-    popup.style.zIndex = "2000000";
+    popup.style.zIndex = "1999999";
+
+    // Keep Add Source card sharp
+    const sourceCard =
+        popup.querySelector(".source-type-popup-card");
+
+    if (sourceCard) {
+        sourceCard.style.position = "relative";
+        sourceCard.style.zIndex = "2000000";
+        sourceCard.style.filter = "none";
+        sourceCard.style.opacity = "1";
+
+        // Save original location so the card can be restored on close.
+        if (!window.__sourcePopupCardOriginal) {
+            window.__sourcePopupCardOriginal = {
+                parent: sourceCard.parentElement,
+                nextSibling: sourceCard.nextSibling
+            };
+        }
+
+        // Move card outside the blurred popup layer.
+        document.body.appendChild(sourceCard);
+
+        Object.assign(sourceCard.style, {
+            position: "fixed",
+            top: "220px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: "2000001",
+            width: "520px",
+            maxWidth: "calc(100vw - 32px)",
+            filter: "none",
+            opacity: "1"
+        });
+    }
+
 
 
     // ==================================================
@@ -8480,9 +8602,11 @@ function openSourceTypePopup() {
     // ==================================================
 
     const sourceButtons =
-        popup.querySelectorAll(
-            ".popup-source-type-btn"
-        );
+        sourceCard
+            ? sourceCard.querySelectorAll(
+                ".popup-source-type-btn"
+            )
+            : [];
 
 
     sourceButtons.forEach(
@@ -8630,7 +8754,7 @@ function openSourceTypePopup() {
 
                 if (
                     active &&
-                    popup.contains(active) &&
+                    sourceCard?.contains(active) &&
                     active.classList.contains(
                         "popup-source-type-btn"
                     )
