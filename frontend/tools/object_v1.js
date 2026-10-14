@@ -1,4 +1,4 @@
-console.log("object_v1.js STARTED");
+﻿console.log("object_v1.js STARTED");
 
 window.objectTool = {
 
@@ -11,7 +11,7 @@ window.objectTool = {
     editingHoursId: null,
 
     // =====================
-    // 🔥 INTERACTION
+    // ðŸ”¥ INTERACTION
     // =====================
 
     selectedObjectId: null,
@@ -22,13 +22,13 @@ window.objectTool = {
 };
 
 /// =====================
-// 🔥 OBJECT IMAGES
+// ðŸ”¥ OBJECT IMAGES
 // =====================
 
 const OBJECT_IMAGES = {};
 
 // =====================
-// 🔥 OBJECT CONFIGS
+// ðŸ”¥ OBJECT CONFIGS
 // =====================
 
 window.OBJECT_CONFIGS = {
@@ -203,7 +203,7 @@ window.OBJECT_CONFIGS = {
     },
 
     // ==================================================
-    // 🔥 LEGACY SOURCE ALIAS
+    // ðŸ”¥ LEGACY SOURCE ALIAS
     // ==================================================
     //
     // Existing saved projects may contain
@@ -481,7 +481,7 @@ OBJECT_CONFIGS["electrical_substation"] =
     ];
 
 // =====================
-// 🔥 PRELOAD IMAGES
+// ðŸ”¥ PRELOAD IMAGES
 // =====================
 
 Object.entries(
@@ -508,7 +508,7 @@ Object.entries(
 
 
 // ==================================================
-// 🔥 START OBJECT PLACEMENT
+// ðŸ”¥ START OBJECT PLACEMENT
 // ==================================================
 
 function startObjectPlacement(
@@ -588,7 +588,7 @@ function startObjectPlacement(
     ) {
 
         console.warn(
-            "❌ UNKNOWN OBJECT PLACEMENT TYPE",
+            "âŒ UNKNOWN OBJECT PLACEMENT TYPE",
             {
                 type,
                 meta,
@@ -762,7 +762,7 @@ function startObjectPlacement(
     // ==================================================
 
     console.log(
-        "🔥 CURRENT OBJECT PLACEMENT",
+        "ðŸ”¥ CURRENT OBJECT PLACEMENT",
         {
             type,
             placementType,
@@ -811,7 +811,7 @@ function findNearestLifestyleZoneForOutdoor(
 
 
     console.log(
-        "🔥 OUTDOOR CONTEXT INPUT",
+        "ðŸ”¥ OUTDOOR CONTEXT INPUT",
         {
             floorFound:
                 !!targetFloor,
@@ -855,7 +855,7 @@ function findNearestLifestyleZoneForOutdoor(
     ) {
 
         console.warn(
-            "⚠️ OUTDOOR CONTEXT: NO LIFESTYLE AREAS",
+            "âš ï¸ OUTDOOR CONTEXT: NO LIFESTYLE AREAS",
             {
                 floorId:
                     targetFloor?.id ||
@@ -895,7 +895,7 @@ function findNearestLifestyleZoneForOutdoor(
     ) {
 
         console.warn(
-            "⚠️ OUTDOOR CONTEXT: INVALID SOURCE POSITION",
+            "âš ï¸ OUTDOOR CONTEXT: INVALID SOURCE POSITION",
             {
                 sourceId:
                     source?.id,
@@ -952,7 +952,7 @@ function findNearestLifestyleZoneForOutdoor(
 
 
         console.log(
-            "🔥 CHECK LIFESTYLE AREA",
+            "ðŸ”¥ CHECK LIFESTYLE AREA",
             {
                 id:
                     zone.id,
@@ -986,7 +986,7 @@ function findNearestLifestyleZoneForOutdoor(
         ) {
 
             console.warn(
-                "⚠️ SKIP LIFESTYLE AREA — INVALID X/Y",
+                "âš ï¸ SKIP LIFESTYLE AREA â€” INVALID X/Y",
                 {
                     id:
                         zone.id,
@@ -1028,7 +1028,7 @@ function findNearestLifestyleZoneForOutdoor(
 
 
         console.log(
-            "🔥 LIFESTYLE CONTEXT DISTANCE",
+            "ðŸ”¥ LIFESTYLE CONTEXT DISTANCE",
             {
                 zoneId:
                     zone.id,
@@ -1060,7 +1060,7 @@ function findNearestLifestyleZoneForOutdoor(
     // ==================================================
 
     console.log(
-        "🔥 OUTDOOR NEAREST LIFESTYLE AREA",
+        "ðŸ”¥ OUTDOOR NEAREST LIFESTYLE AREA",
         {
             sourceId:
                 source?.id,
@@ -1094,7 +1094,7 @@ function findNearestLifestyleZoneForOutdoor(
 
 
 // ==================================================
-// 🔥 REFRESH OUTDOOR → LIFESTYLE CONTEXT
+// ðŸ”¥ REFRESH OUTDOOR â†’ LIFESTYLE CONTEXT
 // ==================================================
 //
 // Outdoor Sources are Property-level entities.
@@ -1112,7 +1112,7 @@ function findNearestLifestyleZoneForOutdoor(
 // ==================================================
 
 // ==================================================
-// 🔥 REFRESH OUTDOOR → LIFESTYLE RELATIONSHIPS
+// ðŸ”¥ REFRESH OUTDOOR â†’ LIFESTYLE RELATIONSHIPS
 // ==================================================
 //
 // Outdoor Sources are Property-level entities.
@@ -1294,7 +1294,7 @@ function refreshOutdoorLifestyleLinks(
 
 
             console.log(
-                "🔥 OUTDOOR → LIFESTYLE RELATIONSHIPS",
+                "ðŸ”¥ OUTDOOR â†’ LIFESTYLE RELATIONSHIPS",
                 {
                     floorId:
                         floor.id,
@@ -1350,7 +1350,7 @@ function placeObject(evt) {
         !currentFloor
     ) {
         console.warn(
-            "⚠️ PLACE OBJECT: NO CURRENT FLOOR"
+            "âš ï¸ PLACE OBJECT: NO CURRENT FLOOR"
         );
 
         return;
@@ -1380,7 +1380,7 @@ function placeObject(evt) {
 
 
     console.log(
-        "🔥 PLACE OBJECT",
+        "ðŸ”¥ PLACE OBJECT",
         {
             type,
             isLifestyle,
@@ -1512,7 +1512,7 @@ function placeObject(evt) {
         ) {
 
             console.warn(
-                "⚠️ LIFESTYLE AREA MUST BE INSIDE FLOOR PLAN"
+                "âš ï¸ LIFESTYLE AREA MUST BE INSIDE FLOOR PLAN"
             );
 
             return;
@@ -1533,7 +1533,7 @@ function placeObject(evt) {
 
 
         console.log(
-            "🔥 LIFESTYLE AREA ADDED",
+            "ðŸ”¥ LIFESTYLE AREA ADDED",
             {
                 id:
                     newObject.id,
@@ -1557,7 +1557,7 @@ function placeObject(evt) {
         );
 
         // --------------------------------------------------
-        // 🔥 REFRESH HOME WORKFLOW LOCKS
+        // ðŸ”¥ REFRESH HOME WORKFLOW LOCKS
         //
         // Lifestyle Area now exists on the current floor.
         // This must immediately unlock EMF Sources.
@@ -1656,7 +1656,7 @@ function placeObject(evt) {
         ) {
 
             console.warn(
-                "⚠️ OUTDOOR SOURCE MUST BE OUTSIDE FLOOR PLAN"
+                "âš ï¸ OUTDOOR SOURCE MUST BE OUTSIDE FLOOR PLAN"
             );
 
             return;
@@ -1696,7 +1696,7 @@ function placeObject(evt) {
 
 
         console.log(
-            "🔥 PROPERTY OUTDOOR SOURCE ADDED",
+            "ðŸ”¥ PROPERTY OUTDOOR SOURCE ADDED",
             {
                 id:
                     newObject.id,
@@ -1753,7 +1753,7 @@ function placeObject(evt) {
 
 
         // ==================================================
-        // 🔥 NEW OUTDOOR SOURCE
+        // ðŸ”¥ NEW OUTDOOR SOURCE
         //
         // Closing the popup without Save must remove
         // this newly-created source.
@@ -1815,7 +1815,7 @@ function placeObject(evt) {
 
 
         console.log(
-            "🔥 INDOOR SOURCE ADDED",
+            "ðŸ”¥ INDOOR SOURCE ADDED",
             {
                 id:
                     newObject.id,
@@ -1892,8 +1892,8 @@ function placeObject(evt) {
         renderHomeCurrentFloorCard?.();
 
         return;
-            }
-        }
+    }
+}
 
 
 function calculateBedRisk(
@@ -2123,13 +2123,13 @@ function drawOutdoorPlacementGuide(ctx) {
     ctx.textBaseline = "middle";
 
     ctx.fillText(
-        "↕",
+        "â†•",
         guideLeft + 45,
         guideTop + 29
     );
 
     ctx.fillText(
-        "↔",
+        "â†”",
         guideLeft + guideWidth - 45,
         guideTop + 29
     );
@@ -2161,13 +2161,67 @@ window.drawOutdoorPlacementGuide =
     drawOutdoorPlacementGuide;
 
 // =====================
-// 🔥 DRAW OBJECTS
+// ðŸ”¥ DRAW OBJECTS
 // =====================
 
 // ==================================================
-// 🔥 DRAW OBJECTS
+// ðŸ”¥ DRAW OBJECTS
 // ==================================================
 
+function drawOutdoorSources() {
+    const ctx = window.ctx;
+    const project = window.AppState?.project;
+    const sources = Array.isArray(project?.outdoorSources)
+        ? project.outdoorSources
+        : [];
+
+    if (!ctx || !window.EMFViewport || !sources.length) return;
+
+    ctx.save();
+
+    try {
+        for (const source of sources) {
+            if (!source || !Number.isFinite(Number(source.x)) ||
+                !Number.isFinite(Number(source.y))) continue;
+
+            const type = source.type;
+            if (!window.OUTDOOR_SOURCE_TYPES?.includes(type)) continue;
+
+            const meta = OBJECT_CONFIGS?.[type];
+            if (!meta) continue;
+
+            const p = EMFViewport.worldPoint(source);
+            const img = OBJECT_IMAGES?.[type];
+
+            if (img?.complete && img.naturalWidth > 0) {
+                ctx.drawImage(
+                    img,
+                    p.x - meta.width / 2,
+                    p.y - meta.height / 2,
+                    meta.width,
+                    meta.height
+                );
+            } else {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+                ctx.fillStyle = meta.color || "#059669";
+                ctx.fill();
+            }
+
+            if (meta.label) {
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                ctx.fillStyle = "#1e293b";
+                ctx.fillText(meta.label, p.x, p.y + (meta.height || 48) / 2 + 3);
+            }
+        }
+    } finally {
+        ctx.restore();
+    }
+}
+
+window.drawOutdoorSources = drawOutdoorSources;
 function drawObjects() {
 
     const tool =
@@ -2297,7 +2351,7 @@ function drawObjects() {
 
 
     console.log(
-        "🔥 DRAW OBJECTS",
+        "ðŸ”¥ DRAW OBJECTS",
         {
             floorId:
                 currentFloor.id,
@@ -2324,7 +2378,7 @@ function drawObjects() {
     ctx.save();
 
     // ==================================================
-    // 🔥 OUTDOOR → LIFESTYLE VISUAL LINKS
+    // ðŸ”¥ OUTDOOR â†’ LIFESTYLE VISUAL LINKS
     // ==================================================
     //
     // Draw derived contextual relationships BEFORE
@@ -2539,6 +2593,24 @@ function drawObjects() {
                     obj
                 );
 
+            if (
+                obj.placementType === "outdoor" ||
+                window.OUTDOOR_SOURCE_TYPES?.includes(obj.type)
+            ) {
+                console.log("[DRAW OBJECT]", {
+                    type: obj.type,
+                    x: obj.x,
+                    y: obj.y,
+                    screen: p
+                });
+            }
+
+            if (
+                window.OUTDOOR_SOURCE_TYPES?.includes(obj.type) ||
+                obj.placementType === "outdoor"
+            ) {
+                console.log("[DRAW OBJECTS LOOP]", obj?.type, obj?.id);
+            }
 
             // ==================================================
             // RESOLVE CANONICAL CONFIG TYPE
@@ -2607,7 +2679,7 @@ function drawObjects() {
             ) {
 
                 console.warn(
-                    "❌ OBJECT CONFIG NOT FOUND",
+                    "âŒ OBJECT CONFIG NOT FOUND",
                     {
                         id:
                             obj.id,
@@ -2760,10 +2832,10 @@ function drawObjects() {
             // Use canonical configType.
             //
             // This fixes:
-            // sleep → bed.png
-            // work  → work.png
-            // relax → sofa.png
-            // child → child.png
+            // sleep â†’ bed.png
+            // work  â†’ work.png
+            // relax â†’ sofa.png
+            // child â†’ child.png
             //
             // ==================================================
 
@@ -2938,7 +3010,7 @@ function drawObjects() {
 
 
             // ==================================================
-            // 🔥 OBJECT LABEL
+            // ðŸ”¥ OBJECT LABEL
             // ==================================================
             //
             // Indoor source artwork already provides its own
@@ -3117,7 +3189,7 @@ function drawObjects() {
     // ==================================================
 
     console.log(
-        "✅ DRAW OBJECTS COMPLETE",
+        "âœ… DRAW OBJECTS COMPLETE",
         {
             floorId:
                 currentFloor.id,
@@ -3138,7 +3210,7 @@ window.findNearestLifestyleZoneForOutdoor =
     findNearestLifestyleZoneForOutdoor;
 
 // =====================
-// 🔥 ROOM SCORE
+// ðŸ”¥ ROOM SCORE
 // =====================
 
 function calculateRoomRisk(
@@ -3183,7 +3255,7 @@ function calculateRoomRisk(
 }
 
 // =====================
-// 🔥 ROOM RECOMMENDATIONS
+// ðŸ”¥ ROOM RECOMMENDATIONS
 // =====================
 
 function getRoomRecommendations(
@@ -3223,7 +3295,7 @@ function getRoomRecommendations(
         }
 
         // =====================
-        // 🔥 WIFI
+        // ðŸ”¥ WIFI
         // =====================
 
         if (
@@ -3237,7 +3309,7 @@ function getRoomRecommendations(
         }
 
         // =====================
-        // 🔥 PANEL
+        // ðŸ”¥ PANEL
         // =====================
 
         if (
@@ -3252,7 +3324,7 @@ function getRoomRecommendations(
         }
 
         // =====================
-        // 🔥 SMART METER
+        // ðŸ”¥ SMART METER
         // =====================
 
         if (
@@ -3267,7 +3339,7 @@ function getRoomRecommendations(
         }
 
         // =====================
-        // 🔥 TOWER
+        // ðŸ”¥ TOWER
         // =====================
 
         if (
@@ -3282,7 +3354,7 @@ function getRoomRecommendations(
         }
 
         // =====================
-        // 🔥 EV
+        // ðŸ”¥ EV
         // =====================
 
         if (
@@ -3305,7 +3377,7 @@ function getRoomRecommendations(
 }
 
 // =====================
-// 🔥 SELECT OBJECT
+// ðŸ”¥ SELECT OBJECT
 // =====================
 
 function getObjectAtPoint(
@@ -3502,7 +3574,7 @@ window.getObjectAtPoint =
 
 
 // =====================
-// 🔥 UPDATE HOURS
+// ðŸ”¥ UPDATE HOURS
 // =====================
 
 function updateZoneHours(
@@ -3657,13 +3729,13 @@ function showHoursPopup(
 
 
 // ==================================================
-// HOME — INDOOR SOURCE → LIFESTYLE AREA DISTANCE
+// HOME â€” INDOOR SOURCE â†’ LIFESTYLE AREA DISTANCE
 // ==================================================
 //
 // Same floor:
 //     calibrated floor-plan distance
 //
-// d = sqrt(dx² + dy²) × metersPerPixel
+// d = sqrt(dxÂ² + dyÂ²) Ã— metersPerPixel
 //
 // Cross floor:
 //     true 3D only when defensible Z/elevation exists.
@@ -3708,7 +3780,7 @@ function calculateHomeIndoorSourceDistance(
     ) {
 
         console.warn(
-            "⚠️ INDOOR DISTANCE — SCALE UNAVAILABLE",
+            "âš ï¸ INDOOR DISTANCE â€” SCALE UNAVAILABLE",
             {
                 floorId:
                     floor.id,
@@ -3917,7 +3989,7 @@ function calculateHomeIndoorSourceDistance(
 
 
     // ==================================================
-    // CROSS FLOOR — NO DEFENSIBLE Z
+    // CROSS FLOOR â€” NO DEFENSIBLE Z
     //
     // Never fake a 3D distance from XY only.
     // ==================================================
@@ -3953,7 +4025,7 @@ window.calculateHomeIndoorSourceDistance =
 
 
 // ==================================================
-// HOME — DELETE LIFESTYLE AREA CONFIRMATION
+// HOME â€” DELETE LIFESTYLE AREA CONFIRMATION
 // ==================================================
 
 function showDeleteLifestyleAreaConfirm(
@@ -4063,7 +4135,7 @@ function showDeleteLifestyleAreaConfirm(
                 <div
                     class="delete-measurement-icon"
                 >
-                    🗑
+                    ðŸ—‘
                 </div>
 
 
@@ -4073,7 +4145,7 @@ function showDeleteLifestyleAreaConfirm(
                     id="deleteLifestyleAreaClose"
                     aria-label="Close"
                 >
-                    ✕
+                    âœ•
                 </button>
 
             </div>
@@ -4134,7 +4206,7 @@ function showDeleteLifestyleAreaConfirm(
                 >
 
                     <span>
-                        ℹ
+                        â„¹
                     </span>
 
                     <span>
@@ -4166,7 +4238,7 @@ function showDeleteLifestyleAreaConfirm(
                     id="deleteLifestyleAreaConfirm"
                     class="delete-measurement-confirm"
                 >
-                    🗑 Delete Lifestyle Area
+                    ðŸ—‘ Delete Lifestyle Area
                 </button>
 
             </div>
@@ -4393,7 +4465,7 @@ function showDeleteIndoorSourceConfirm(
                 <div
                     class="delete-measurement-icon"
                 >
-                    🗑
+                    ðŸ—‘
                 </div>
 
 
@@ -4403,7 +4475,7 @@ function showDeleteIndoorSourceConfirm(
                     id="deleteIndoorSourceClose"
                     aria-label="Close"
                 >
-                    ✕
+                    âœ•
                 </button>
 
             </div>
@@ -4466,7 +4538,7 @@ function showDeleteIndoorSourceConfirm(
                 >
 
                     <span>
-                        ℹ
+                        â„¹
                     </span>
 
                     <span>
@@ -4498,7 +4570,7 @@ function showDeleteIndoorSourceConfirm(
                     id="deleteIndoorSourceConfirm"
                     class="delete-measurement-confirm"
                 >
-                    🗑 Delete Indoor Source
+                    ðŸ—‘ Delete Indoor Source
                 </button>
 
             </div>
@@ -4637,7 +4709,7 @@ window.showDeleteIndoorSourceConfirm =
     showDeleteIndoorSourceConfirm;
 
 // ==================================================
-// HOME — LIFESTYLE AREA POPUP
+// HOME â€” LIFESTYLE AREA POPUP
 // ==================================================
 
 function showLifestyleAreaPopup(
@@ -4648,7 +4720,7 @@ function showLifestyleAreaPopup(
     if (!zone) {
 
         console.warn(
-            "⚠️ LIFESTYLE POPUP — NO ZONE"
+            "âš ï¸ LIFESTYLE POPUP â€” NO ZONE"
         );
 
         return;
@@ -4671,7 +4743,7 @@ function showLifestyleAreaPopup(
     ) {
 
         console.error(
-            "❌ LIFESTYLE POPUP INIT FAILED",
+            "âŒ LIFESTYLE POPUP INIT FAILED",
             {
                 popup:
                     !!popup,
@@ -4718,7 +4790,7 @@ function showLifestyleAreaPopup(
     if (!floor) {
 
         console.warn(
-            "⚠️ LIFESTYLE POPUP — NO CURRENT FLOOR"
+            "âš ï¸ LIFESTYLE POPUP â€” NO CURRENT FLOOR"
         );
 
         return;
@@ -4777,7 +4849,7 @@ function showLifestyleAreaPopup(
 
 
     // ==================================================
-    // 🔥 LIFESTYLE AREA POPUP — DRAG
+    // ðŸ”¥ LIFESTYLE AREA POPUP â€” DRAG
     //
     // Drag only the popup header.
     // This moves the popup on screen.
@@ -5236,12 +5308,12 @@ function showLifestyleAreaPopup(
 
 
     // ==================================================
-    // TIME SPENT — MOUSE WHEEL
+    // TIME SPENT â€” MOUSE WHEEL
     //
     // Wheel up   = +0.5 h
     // Wheel down = -0.5 h
     //
-    // Range = 0–24 h/day
+    // Range = 0â€“24 h/day
     // ==================================================
 
     if (
@@ -5318,7 +5390,7 @@ function showLifestyleAreaPopup(
 
 
     // ==================================================
-    // TIME SPENT — ARROW KEYS
+    // TIME SPENT â€” ARROW KEYS
     // ==================================================
 
     if (
@@ -5410,9 +5482,9 @@ function showLifestyleAreaPopup(
         //     source X/Y/Z
         //          +
         //     Lifestyle Area X/Y/Z
-        //          ↓
+        //          â†“
         //     calibrated floor scale
-        //          ↓
+        //          â†“
         //     automatic spatial distance
         //
         // IMPORTANT:
@@ -5533,15 +5605,15 @@ function showLifestyleAreaPopup(
         // FIND CONTEXTUAL INDOOR SOURCES
         // ==================================================
         //
-        // Calculate the real source → Lifestyle Area
+        // Calculate the real source â†’ Lifestyle Area
         // distance for EVERY Indoor Source on the
         // current floor.
         //
         // This avoids:
-        //     linkedZoneIds → arbitrary relationship
+        //     linkedZoneIds â†’ arbitrary relationship
         //
         // and avoids:
-        //     canvas pixels → displayed metres
+        //     canvas pixels â†’ displayed metres
         //
         // The result is based on actual calibrated
         // floor-plan geometry.
@@ -5829,7 +5901,7 @@ function showLifestyleAreaPopup(
         // Keep every Indoor Source for which a defensible
         // spatial relationship can be calculated.
         //
-        // Sort nearest → farthest.
+        // Sort nearest â†’ farthest.
         //
         // We do NOT silently discard other Indoor Sources
         // just because one is nearest.
@@ -5881,7 +5953,7 @@ function showLifestyleAreaPopup(
         // ==================================================
 
         console.log(
-            "🔥 HOME LIFESTYLE → INDOOR CONTEXT",
+            "ðŸ”¥ HOME LIFESTYLE â†’ INDOOR CONTEXT",
             {
                 lifestyleAreaId:
                     zone.id,
@@ -6153,7 +6225,7 @@ function showLifestyleAreaPopup(
             else {
 
                 iconWrap.textContent =
-                    "📡";
+                    "ðŸ“¡";
 
             }
 
@@ -6207,7 +6279,7 @@ function showLifestyleAreaPopup(
 
 
             meta.textContent =
-                `${state} · ${secondary}`;
+                `${state} Â· ${secondary}`;
 
 
             textWrap.appendChild(
@@ -6570,7 +6642,7 @@ function showLifestyleAreaPopup(
 
 
                 console.log(
-                    "✅ LIFESTYLE AREA SAVED",
+                    "âœ… LIFESTYLE AREA SAVED",
                     {
                         id:
                             zone.id,
@@ -6767,7 +6839,7 @@ function showLifestyleAreaPopup(
 
 
                         console.log(
-                            "🗑️ LIFESTYLE AREA DELETED",
+                            "ðŸ—‘ï¸ LIFESTYLE AREA DELETED",
                             {
                                 id:
                                     zone.id,
@@ -6847,7 +6919,7 @@ function showLifestyleAreaPopup(
             event => {
 
                 // ------------------------------------------
-                // ESC → CLOSE WITHOUT SAVING
+                // ESC â†’ CLOSE WITHOUT SAVING
                 // ------------------------------------------
 
                 if (
@@ -6865,7 +6937,7 @@ function showLifestyleAreaPopup(
 
 
                 // ------------------------------------------
-                // ENTER → SAVE
+                // ENTER â†’ SAVE
                 // ------------------------------------------
 
                 if (
@@ -6924,7 +6996,7 @@ function showLifestyleAreaPopup(
 
 
     console.log(
-        "🔥 LIFESTYLE AREA POPUP OPEN",
+        "ðŸ”¥ LIFESTYLE AREA POPUP OPEN",
         {
             id:
                 zone.id,
@@ -6963,7 +7035,7 @@ function showHomeIndoorSourcePopup(
     if (!source) {
 
         console.warn(
-            "⚠️ HOME INDOOR POPUP — NO SOURCE"
+            "âš ï¸ HOME INDOOR POPUP â€” NO SOURCE"
         );
 
         return;
@@ -6986,7 +7058,7 @@ function showHomeIndoorSourcePopup(
     ) {
 
         console.error(
-            "❌ HOME INDOOR POPUP INIT FAILED",
+            "âŒ HOME INDOOR POPUP INIT FAILED",
             {
                 popup:
                     !!popup,
@@ -7033,7 +7105,7 @@ function showHomeIndoorSourcePopup(
     if (!floor) {
 
         console.warn(
-            "⚠️ HOME INDOOR POPUP — NO FLOOR"
+            "âš ï¸ HOME INDOOR POPUP â€” NO FLOOR"
         );
 
         return;
@@ -7408,7 +7480,7 @@ function showHomeIndoorSourcePopup(
                                     font-size:20px;
                                 "
                             >
-                                📡
+                                ðŸ“¡
                             </div>
                         `
             }
@@ -7802,7 +7874,7 @@ function showHomeIndoorSourcePopup(
                     else {
 
                         icon.textContent =
-                            "•";
+                            "â€¢";
                     }
 
 
@@ -8069,7 +8141,7 @@ function showHomeIndoorSourcePopup(
 
 
                 console.log(
-                    "✅ HOME INDOOR SOURCE SAVED",
+                    "âœ… HOME INDOOR SOURCE SAVED",
                     {
                         id:
                             source.id,
@@ -8124,7 +8196,7 @@ function showHomeIndoorSourcePopup(
 
 
     // ==================================================
-    // DELETE — CONFIRMATION
+    // DELETE â€” CONFIRMATION
     // ==================================================
 
     if (deleteBtn) {
@@ -8229,7 +8301,7 @@ function showHomeIndoorSourcePopup(
 
 
                         console.log(
-                            "🗑️ HOME INDOOR SOURCE DELETED",
+                            "ðŸ—‘ï¸ HOME INDOOR SOURCE DELETED",
                             {
                                 id:
                                     source.id,
@@ -8373,7 +8445,7 @@ function showHomeIndoorSourcePopup(
 
 
     console.log(
-        "🔥 HOME INDOOR SOURCE POPUP OPEN",
+        "ðŸ”¥ HOME INDOOR SOURCE POPUP OPEN",
         {
             id:
                 source.id,
@@ -8418,23 +8490,23 @@ function updateOutdoorDistanceCategoryLabels() {
 
         "1_3m":
             units === "ft"
-                ? "3–10 ft"
-                : "1–3 m",
+                ? "3â€“10 ft"
+                : "1â€“3 m",
 
         "3_10m":
             units === "ft"
-                ? "10–30 ft"
-                : "3–10 m",
+                ? "10â€“30 ft"
+                : "3â€“10 m",
 
         "10_30m":
             units === "ft"
-                ? "30–100 ft"
-                : "10–30 m",
+                ? "30â€“100 ft"
+                : "10â€“30 m",
 
         "30_100m":
             units === "ft"
-                ? "100–300 ft"
-                : "30–100 m",
+                ? "100â€“300 ft"
+                : "30â€“100 m",
 
         "100m_plus":
             units === "ft"
@@ -8487,7 +8559,7 @@ window.updateZoneHours =
     updateZoneHours;
 
 // =====================
-// 🔥 EXPORTS
+// ðŸ”¥ EXPORTS
 // =====================
 
 window.startObjectPlacement =
@@ -8502,7 +8574,7 @@ window.drawObjects =
 
 
 // =====================
-// 🔥 PRELOAD OBJECT IMAGES
+// ðŸ”¥ PRELOAD OBJECT IMAGES
 // =====================
 
 Object.entries(

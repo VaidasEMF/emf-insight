@@ -454,6 +454,7 @@ function renderFrame() {
                     currentFloor
                 );
 
+                window.drawOutdoorSources?.();
                 window.updateBusinessSourcePopupPosition?.();
             }
 
