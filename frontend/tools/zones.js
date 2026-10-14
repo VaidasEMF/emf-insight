@@ -1575,6 +1575,7 @@ function startZoneMeasuring() {
         "🔥 START ZONE MEASURING"
     );
 
+    console.error("[TRACE] startZoneMeasuring EXECUTED");
 
     // ==================================================
     // CURRENT FLOOR
@@ -1728,12 +1729,53 @@ function startZoneMeasuring() {
     }
 
 
+
     // ==================================================
     // ZONE MEASURE MODE
     // ==================================================
 
-    AppState.ui.mode =
-        "zoneMeasure";
+    // Stop any unfinished room drawing.
+    if (window.roomTool) {
+        window.roomTool.active = false;
+    }
+
+    const drawRoomsButton =
+        document.getElementById("btnDrawRooms");
+
+    if (drawRoomsButton) {
+        drawRoomsButton.classList.remove(
+            "room-drawing-active"
+        );
+
+        drawRoomsButton.setAttribute(
+            "aria-pressed",
+            "false"
+        );
+    }
+
+    // Activate zone measurement mode.
+    AppState.ui.mode = "zoneMeasure";
+
+
+    // ==================================================
+    // SYNC GRID LAYER VISIBILITY
+    // ==================================================
+
+    if (!window.layerVisibility) {
+        window.layerVisibility = {};
+    }
+
+    // Zone Measuring must show zone grid points.
+    window.layerVisibility.zoneGrid = true;
+
+    // Keep the layer button synchronized with its state.
+    const zoneGridButton =
+        document.getElementById("toggleZoneGrid");
+
+    if (zoneGridButton) {
+        zoneGridButton.classList.add("active");
+        zoneGridButton.setAttribute("aria-pressed", "true");
+    }
 
 
     // ==================================================
@@ -1803,6 +1845,20 @@ function startZoneMeasuring() {
     window.updateWorkflowUI?.();
 
     requestRender?.();
+
+
+    console.log("ZONE MEASURE FINAL STATE", {
+        mode: AppState.ui.mode,
+        zoneGrid: window.layerVisibility?.zoneGrid,
+        zones: window.layerVisibility?.zones,
+        buttonActive: document
+            .getElementById("toggleZoneGrid")
+            ?.classList.contains("active"),
+        ariaPressed: document
+            .getElementById("toggleZoneGrid")
+            ?.getAttribute("aria-pressed")
+    });
+
 }
 
 function selectZoneFromPopup(
@@ -3912,6 +3968,22 @@ margin: 0;
             AppState.ui.mode =
                 "zone";
 
+            // Stop any leftover room-drawing visual state.
+            if (window.roomTool) {
+                window.roomTool.active = false;
+            }
+
+            const drawRoomsButton =
+                document.getElementById("btnDrawRooms");
+
+            if (drawRoomsButton) {
+                drawRoomsButton.classList.remove("room-drawing-active");
+                drawRoomsButton.setAttribute("aria-pressed", "false");
+            }
+
+            // Refresh the shared workflow state.
+            window.updateWorkflowUI?.();
+
 
             closeRoomZonesPopup();
 
@@ -5857,7 +5929,8 @@ function drawZonesLayer(floor) {
         // =================================================
 
         if (
-            AppState.ui.selectedZone === zone
+            AppState.ui.mode === "zoneMeasure" &&
+            AppState.ui.selectedZone?.id === zone.id
         ) {
 
             ctx.strokeStyle =

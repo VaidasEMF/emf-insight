@@ -2557,12 +2557,25 @@ function updateBusinessEmptyPlanState() {
             : null;
 
 
+    console.log("[BUSINESS EMPTY STATE CHECK]", {
+        mode,
+        projectId: project?.id,
+        floorExists: !!floor,
+        floorImage: floor?.image,
+        floorImageType: typeof floor?.image,
+        floorPlanUrl: floor?.floorPlanUrl,
+        shouldShowBeforeAssignment:
+            mode === "business" &&
+            !!project &&
+            !!floor &&
+            !floor.image
+    });
+
     const shouldShow =
         mode === "business" &&
         !!project &&
         !!floor &&
         !floor.image;
-
 
     emptyState.style.display =
         shouldShow
@@ -5644,7 +5657,7 @@ function resizeCanvasSafe() {
     // ==================================================
 
     console.error(
-        "🔥🔥🔥 VIEWPORT AFTER RESIZE",
+        "🔥🔥🔥 ",
         {
 
             canvasWidth:

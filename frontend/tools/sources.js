@@ -3980,20 +3980,23 @@ function startOutdoorSourcePlacement() {
 }
 
 
+
 function closeOutdoorSourcesPopup() {
-
-    const popup =
-
-        document.getElementById(
-            "outdoorSourcesPopup"
-        );
+    const popup = document.getElementById(
+        "outdoorSourcesPopup"
+    );
 
     if (popup) {
-
-        popup.style.display =
-            "none";
+        popup.style.display = "none";
     }
+
+    // Refresh TO DO after closing the source popup.
+    // The placement flow may hide it again if needed.
+    requestAnimationFrame(() => {
+        window.updateNextStepCard?.();
+    });
 }
+
 
 function showOutdoorSourcePicker() {
 
@@ -5258,8 +5261,31 @@ ${sources.map(source => `
 
 `;
 
-    popup.style.display =
-        "block";
+
+    // Full-screen overlay with the same blur as Zone modal.
+    popup.style.position = "fixed";
+    popup.style.inset = "0";
+    popup.style.width = "100vw";
+    popup.style.height = "100vh";
+    popup.style.maxWidth = "none";
+    popup.style.maxHeight = "none";
+    popup.style.boxSizing = "border-box";
+
+    popup.style.display = "flex";
+    popup.style.alignItems = "flex-start";
+    popup.style.justifyContent = "center";
+
+    popup.style.padding = "220px 16px 16px";
+    popup.style.overflowY = "auto";
+    popup.style.overflowX = "hidden";
+    popup.style.transform = "none";
+
+    popup.style.background = "rgba(15, 23, 42, 0.28)";
+    popup.style.backdropFilter = "blur(6px)";
+    popup.style.webkitBackdropFilter = "blur(6px)";
+
+    popup.style.zIndex = "2000000";
+
 }
 
 
@@ -8108,6 +8134,21 @@ function openSourceTypePopup() {
     popup.innerHTML = `
 
         <div
+            class="source-type-popup-card"
+            style="
+                width:520px;
+                max-width:100%;
+                box-sizing:border-box;
+                background:#ffffff;
+                border:1px solid #dbe3ec;
+                border-radius:14px;
+                box-shadow:0 18px 45px rgba(15,23,42,.18);
+                overflow:hidden;
+            "
+        >
+
+
+        <div
             style="
                 height:48px;
 
@@ -8368,79 +8409,44 @@ function openSourceTypePopup() {
             </div>
 
         </div>
+                </div>
 
     `;
+
 
     // ==================================================
     // SOURCE POPUP POSITION
     // ==================================================
 
-    popup.style.position =
-        "fixed";
+    // Full-screen overlay
+    popup.style.position = "fixed";
+    popup.style.inset = "0";
+    popup.style.width = "100vw";
+    popup.style.height = "100vh";
+    popup.style.maxWidth = "none";
+    popup.style.maxHeight = "none";
 
-    popup.style.left =
-        "50%";
+    popup.style.margin = "0";
+    popup.style.padding = "220px 16px 16px";
+    popup.style.boxSizing = "border-box";
 
-    popup.style.top =
-        "220px";
+    popup.style.display = "flex";
+    popup.style.alignItems = "flex-start";
+    popup.style.justifyContent = "center";
 
-    popup.style.right =
-        "auto";
+    popup.style.overflowY = "auto";
+    popup.style.overflowX = "hidden";
+    popup.style.transform = "none";
 
-    popup.style.bottom =
-        "auto";
+    // Match the Zone modal backdrop
+    popup.style.background = "rgba(15, 23, 42, 0.28)";
+    popup.style.backdropFilter = "blur(6px)";
+    popup.style.webkitBackdropFilter = "blur(6px)";
 
-    popup.style.transform =
-        "translateX(-50%)";
-
-    popup.style.margin =
-        "0";
-
-    popup.style.width =
-        "520px";
-
-    popup.style.maxWidth =
-        "calc(100vw - 32px)";
-
-    popup.style.maxHeight =
-        "calc(100vh - 220px)";
-
-    popup.style.overflowY =
-        "auto";
-
-    popup.style.overflowX =
-        "hidden";
-
-    popup.style.boxSizing =
-        "border-box";
-
-    popup.style.border =
-        "1px solid #dbe3ec";
-
-    popup.style.borderRadius =
-        "14px";
-
-    popup.style.boxShadow =
-        "0 18px 45px rgba(15,23,42,.18)";
-
-    popup.style.background =
-        "#ffffff";
-
-    popup.style.display =
-        "block";
-
-    popup.style.visibility =
-        "visible";
-
-    popup.style.opacity =
-        "1";
-
-    popup.style.pointerEvents =
-        "auto";
-
-    popup.style.zIndex =
-        "2000000";
-
+    popup.style.visibility = "visible";
+    popup.style.opacity = "1";
+    popup.style.pointerEvents = "auto";
+    popup.style.zIndex = "2000000";
 
 
     // ==================================================
@@ -8566,12 +8572,19 @@ function openSourceTypePopup() {
                     }
 
 
+
                     closeOutdoorSourcesPopup();
 
+                    // Keep TO DO hidden while source placement starts.
+                    const nextStepCard =
+                        document.getElementById("workflowNextStep");
 
-                    startObjectPlacement(
-                        type
-                    );
+                    if (nextStepCard) {
+                        nextStepCard.style.display = "none";
+                    }
+
+                    startObjectPlacement(type);
+
 
                 }
             );

@@ -3308,16 +3308,16 @@ function startScaleTool() {
     }
 
 
-    // ==================================================
-    // BUTTON — PRESERVE FULL CONTENT
-    // ==================================================
+      // ==================================================
+  // BUTTON — PRESERVE FULL CONTENT
+  // ==================================================
 
-    const btn =
-        document.getElementById("btnScale");
+  const btn =
+      document.getElementById("btnScale");
 
-    if (btn) {
-        if (!btn.querySelector(".workflow-action-icon")) {
-            btn.innerHTML = `
+  if (btn) {
+      if (!btn.querySelector(".workflow-action-icon")) {
+          btn.innerHTML = `
               <div class="workflow-action-icon">📏</div>
               <div class="workflow-action-content">
                   <div class="workflow-action-title">Set Scale</div>
@@ -3326,15 +3326,15 @@ function startScaleTool() {
                   </div>
               </div>
           `;
-        }
+      }
 
-        btn.style.outline = "none";
-        btn.style.outlineOffset = "";
-        btn.style.background = "";
-        btn.style.color = "";
+      btn.style.outline = "none";
+      btn.style.outlineOffset = "";
+      btn.style.background = "";
+      btn.style.color = "";
 
-        btn.classList.add("workflow-next-action");
-    }
+      btn.classList.add("workflow-next-action");
+  }
 
 
     // ==================================================

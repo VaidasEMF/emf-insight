@@ -8160,6 +8160,18 @@
       transform: scale(0.98);
     }
 
+
+
+    #businessWorkflowSection .workflow-action-btn.room-drawing-active {
+      background: #d8e6fb !important;
+      background-color: #d8e6fb !important;
+      color: #243b5a !important;
+      border-color: #82aaf0 !important;
+      outline: 2px solid #a8c7f5;
+      outline-offset: 1px;
+    }
+
+
     .workflow-action-icon {
 
       width: 46px;
@@ -12284,11 +12296,16 @@
    ========================================================= */
 
 
+
     #businessWorkflowSection .workflow-action-btn.active-step {
-      background: #eff6ff !important;
-      border: 2px solid #3b82f6 !important;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+      background: #dbeafe !important;
+      border: 2px solid #2563eb !important;
+      color: #1d4ed8 !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
+      outline: none !important;
+      animation: none !important;
     }
+
 
 
 
@@ -22988,6 +23005,216 @@
       line-height: 1;
       flex-shrink: 0;
     }
+
+
+
+    /* Room drawing contextual hint */
+    .workflow-room-drawing-hint {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin: 12px 0 14px;
+      padding: 11px 12px;
+      background: #fff8e8;
+      border-left: 3px solid #e6b85c;
+      border-radius: 5px;
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .workflow-room-drawing-hint[hidden] {
+      display: none !important;
+    }
+
+    .workflow-room-drawing-hint strong {
+      display: block;
+      color: #244675;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .workflow-room-drawing-hint-text {
+      display: block;
+      color: #475569;
+    }
+
+
+    /* Room measuring contextual hint — matches Drawing a room */
+    .workflow-room-measuring-hint {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin: 12px 0 14px;
+      padding: 11px 12px;
+      background: #fff8e8;
+      border-left: 3px solid #e6b85c;
+      border-radius: 5px;
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .workflow-room-measuring-hint[hidden] {
+      display: none !important;
+    }
+
+    .workflow-room-measuring-hint strong {
+      display: block;
+      color: #244675;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .workflow-room-measuring-hint span {
+      display: block;
+      color: #475569;
+    }
+
+
+    /* Active room-measurement action */
+    #businessWorkflowSection #btnStartMeasure.active-step {
+      background: #dbeafe !important;
+      border: 2px solid #2563eb !important;
+      color: #1d4ed8 !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
+      outline: none !important;
+      animation: none !important;
+    }
+
+
+
+    /* TO DO — active action */
+    #workflowNextStep .workflow-next-choice.is-active,
+    #workflowNextStep .workflow-next-other-action.is-active {
+      background: #dbeafe !important;
+      border: 2px solid #2563eb !important;
+      color: #1d4ed8 !important;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
+      animation: none !important;
+    }
+
+    /* Active action takes precedence over recommendation styling */
+    #workflowNextStep .workflow-next-choice.is-active.is-recommended {
+      animation: none !important;
+    }
+
+
+
+    /* TO DO — recommendation is amber, not active blue */
+    #workflowNextStep .workflow-next-choice.is-recommended:not(.is-active) {
+      background: #FFF1D6 !important;
+      border: 1px solid #E9B45B !important;
+      color: #85520A !important;
+      box-shadow: 0 2px 6px rgba(180, 120, 20, 0.10) !important;
+      animation: none !important;
+    }
+
+    /* Recommended action description */
+    #workflowNextStep .workflow-next-choice.is-recommended:not(.is-active) .workflow-next-choice-desc {
+      color: #966B2D !important;
+    }
+
+    /* Active action remains blue */
+    #workflowNextStep .workflow-next-choice.is-active,
+    #workflowNextStep .workflow-next-other-action.is-active {
+      background: #DBEAFE !important;
+      border: 2px solid #2563EB !important;
+      color: #1D4ED8 !important;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
+      animation: none !important;
+    }
+
+
+    /* =========================================
+   TO DO — FINAL ACTION STATE COLORS
+   ========================================= */
+
+    /* Recommended action: amber */
+    #workflowNextStep .workflow-next-choice.is-recommended:not(.is-active) {
+      background: #FFF1D6 !important;
+      border: 1px solid #E9B45B !important;
+      color: #85520A !important;
+      box-shadow: 0 2px 6px rgba(180, 120, 20, 0.10) !important;
+      animation: none !important;
+    }
+
+    #workflowNextStep .workflow-next-choice.is-recommended:not(.is-active) .workflow-next-choice-desc {
+      color: #966B2D !important;
+    }
+
+    /* Active action: blue */
+    #workflowNextStep .workflow-next-choice.is-active,
+    #workflowNextStep .workflow-next-other-action.is-active {
+      background: #DBEAFE !important;
+      border: 2px solid #2563EB !important;
+      color: #1D4ED8 !important;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
+      animation: none !important;
+    }
+
+    /* Available actions: neutral */
+    #workflowNextStep .workflow-next-choice:not(.is-active):not(.is-recommended),
+    #workflowNextStep .workflow-next-other-action:not(.is-active) {
+      background: #FFFFFF !important;
+      border: 1px solid #D6DEE9 !important;
+      color: #334155 !important;
+      box-shadow: none !important;
+      animation: none !important;
+    }
+
+
+    .measurement-info-dot.measured-room {
+      background: #22C55E;
+    }
+
+    .measurement-info-dot.measured-zone {
+      background: #06B6D4;
+    }
+
+
+    /* Compact measurement information panel */
+    #measureInfo {
+      padding: 8px 10px !important;
+      gap: 4px !important;
+    }
+
+    #measurementInfoTitle {
+      font-size: 13px !important;
+      line-height: 1.3 !important;
+      margin-bottom: 2px !important;
+    }
+
+    #measurementInfoDescription {
+      font-size: 12px !important;
+      line-height: 1.3 !important;
+      margin-bottom: 2px !important;
+    }
+
+    #measurementInfoCoverage {
+      font-size: 13px !important;
+      line-height: 1.3 !important;
+      margin-bottom: 2px !important;
+    }
+
+    #measurementInfoLegend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 10px !important;
+    }
+
+    #measurementInfoLegend .measurement-info-item {
+      font-size: 12px !important;
+      line-height: 1.3 !important;
+      gap: 4px !important;
+    }
+
+    #measurementInfoLegend .measurement-info-dot {
+      width: 8px !important;
+      height: 8px !important;
+      flex-shrink: 0;
+    }
   </style>
 
 </head>
@@ -24313,69 +24540,144 @@
      START ZONE MEASURING
      ================================================== -->
 
-            <button class="workflow-action-btn workflow-business-tools" id="btnStartZoneMeasure" style="display:none;"
+            <button class="workflow-action-btn workflow-business-tools" id="btnStartZoneMeasure" style="display: none;"
               onclick="
-
         event.stopPropagation();
 
-        AppState.ui.mode =
-            'zoneMeasure';
-
-        const floor =
-            getCurrentFloor?.();
-
-        const firstZone =
-            (floor?.zones || [])
-                .find(
-                    z =>
-                        (z.grid || []).some(
-                            p =>
-                                !p.measurements?.[sessionId]
-                        )
-                );
-
-        if (firstZone) {
-
-            AppState.ui.selectedZone =
-                firstZone;
-
-            window.selectedZone =
-                firstZone;
-
-            updateStatus?.(
-                '🎯 Measuring ' +
-                getZoneLabel(
-                    firstZone.type
-                )
-            );
-
-            console.log(
-                '🔥 ACTIVE ZONE',
-                firstZone
-            );
-
+        // Disable room drawing mode.
+        if (window.roomTool) {
+            window.roomTool.active = false;
         }
 
-        else {
+        const drawRoomsButton =
+            document.getElementById('btnDrawRooms');
 
-            updateStatus?.(
-                '✅ All zones measured'
-            );
-
+        if (drawRoomsButton) {
+            drawRoomsButton.classList.remove('room-drawing-active');
+            drawRoomsButton.classList.remove('active-step');
+            drawRoomsButton.setAttribute('aria-pressed', 'false');
         }
 
-        window.updateWorkflowUI?.();
+        // Activate zone measuring mode.
+        AppState.ui.mode = 'zoneMeasure';
+
+// Clear the previous room selection.
+// Zone Measure highlights only the active zone.
+AppState.ui.selectedRoom = null;
+window.selectedRoom = null;
+
+if (typeof selectedRoom !== 'undefined') {
+    selectedRoom = null;
+}
+
+// Refresh measurement profile label without changing its meaning.
+if (typeof updateMeasurementProfileUI === 'function') {
+    updateMeasurementProfileUI();
+}
+
+        // Synchronize Zone Grid visibility.
+        if (!window.layerVisibility) {
+            window.layerVisibility = {};
+        }
+
+        window.layerVisibility.zoneGrid = true;
+
+        // Synchronize Zone Grid button state.
+        const zoneGridButton =
+            document.getElementById('toggleZoneGrid');
+
+        if (zoneGridButton) {
+            zoneGridButton.classList.add('active');
+            zoneGridButton.setAttribute('aria-pressed', 'true');
+        }
+
+
+
+        console.log('[TRACE] Zone Grid enabled via sidebar button', {
+            mode: AppState.ui.mode,
+            zoneGrid: window.layerVisibility.zoneGrid
+        });
+
+
+        const floor = getCurrentFloor?.();
+
+        const firstZone = (floor?.zones || []).find(
+    z =>
+        (z.grid || []).some(
+            p => !p.measurements?.[sessionId]
+        )
+);
+
+if (firstZone) {
+    AppState.ui.selectedZone = firstZone;
+    window.selectedZone = firstZone;
+
+    console.log('[ZONE DEBUG] Zone assigned', {
+        mode: AppState?.ui?.mode,
+        appStateZone: AppState?.ui?.selectedZone?.id,
+        windowZone: window.selectedZone?.id,
+        zoneType: firstZone?.type,
+        zoneId: firstZone?.id
+    });
+
+    updateStatus?.(
+        '🎯 Measuring ' + getZoneLabel(firstZone.type)
+    );
+
+    console.log('🔥 ACTIVE ZONE', firstZone);
+} else {
+    AppState.ui.selectedZone = null;
+    window.selectedZone = null;
+
+    updateStatus?.('✅ All zones measured');
+}
+
+window.updateWorkflowUI?.();
+
+// Refresh measurement info after selecting the active zone.
+requestAnimationFrame(() => {
+    if (AppState?.ui?.mode !== 'zoneMeasure') {
+        return;
+    }
+
+    const measureInfo =
+        document.getElementById('measureInfo');
+
+    if (measureInfo) {
+        measureInfo.style.display = 'block';
+    }
+
+    if (typeof updateMeasurementInfo === 'function') {
+        updateMeasurementInfo();
+    } else {
+        console.warn(
+            '[Zone Measure] updateMeasurementInfo is not available.'
+        );
+    }
+
+    console.log('[ZONE DEBUG] After updateWorkflowUI', {
+        appStateZone: AppState?.ui?.selectedZone?.id ?? null,
+        windowZone: window.selectedZone?.id ?? null
+    });
+});
+
+window.updateNextStepCard?.();
+
+requestRender?.();
+
+return false;
+
+        window.updateNextStepCard?.();
 
         requestRender?.();
 
+        return false;
     ">
-
               <div class="workflow-action-icon">
                 🎯
               </div>
 
               <div class="workflow-action-text">
-
                 <div class="workflow-action-title">
                   Start Zone Measuring
                 </div>
@@ -24383,10 +24685,9 @@
                 <div class="workflow-action-sub">
                   Collect RF / E / M values inside zones
                 </div>
-
               </div>
-
             </button>
+
 
           </div>
 
@@ -26376,11 +26677,17 @@
                 Measurement coverage: 0 / 0 points
               </div>
 
+
               <div id="measurementInfoLegend">
 
                 <span class="measurement-info-item">
-                  <span class="measurement-info-dot measured"></span>
-                  Measured
+                  <span class="measurement-info-dot measured-room"></span>
+                  Measured Room
+                </span>
+
+                <span class="measurement-info-item">
+                  <span class="measurement-info-dot measured-zone"></span>
+                  Measured Zone
                 </span>
 
                 <span class="measurement-info-item">
@@ -26394,6 +26701,7 @@
                 </span>
 
               </div>
+
 
             </div>
 
@@ -31682,8 +31990,7 @@
           window.selectedRoom?.id;
 
         const activeClass =
-          isMeasuringRoom &&
-            activeRoomId === room.id
+          activeRoomId === room.id
             ? "active-room"
             : "";
 

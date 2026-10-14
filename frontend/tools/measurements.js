@@ -449,7 +449,11 @@ function drawGridPointsLayer(
     // We only determine whether it is actually rendered.
     // ==================================================
 
+    const isZoneMeasure =
+        AppState?.ui?.mode === "zoneMeasure";
+
     const showRoomGrid =
+        !isZoneMeasure &&
         layers.roomGrid !== false &&
         layers.rooms !== false;
 
@@ -1033,262 +1037,38 @@ function drawGridPoint(
     let lineWidth =
         1.5;
 
+
     // ==================================================
     // MEASUREMENT STATE VISUALIZATION
     // ==================================================
-    //
-    // Colors:
-    // WHITE  = not measured
-    // VIOLET = partial
-    // GREEN  = complete
-    //
-    // These colors indicate measurement state only.
-    // They are NOT risk colors.
-    // ==================================================
 
+    // Zone points: completed = light cyan.
+    // Room points: completed = green.
+    if (currentType === "all") {
+        if (profileComplete) {
+            radius = 5;
 
-    // ==================================================
-    // ALL
-    // ==================================================
-
-    if (
-        currentType ===
-        "all"
-    ) {
-
-        if (
-            profileComplete
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#22c55e";
-
-            stroke =
-                "#22c55e";
-        }
-
-        else if (
-            profilePartial
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#8b5cf6";
-
-            stroke =
-                "#8b5cf6";
-        }
-
-        else {
-
-            radius =
-                4;
-
-            fill =
-                "#ffffff";
-
-            stroke =
-                "#cbd5e1";
+            if (point.type === "zone") {
+                fill = "#06b6d4";
+                stroke = "#06b6d4";
+            } else {
+                fill = "#22c55e";
+                stroke = "#22c55e";
+            }
+        } else if (profilePartial) {
+            radius = 5;
+            fill = "#8b5cf6";
+            stroke = "#8b5cf6";
+        } else {
+            radius = 4;
+            fill = "#ffffff";
+            stroke = "#cbd5e1";
         }
     }
 
+    // Zone points remain diamonds.
+    // Do not override the selected modality's state.
 
-    // ==================================================
-    // RF
-    // ==================================================
-
-    else if (
-        currentType ===
-        "rf"
-    ) {
-
-        if (
-            requiredRF &&
-            hasRF
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#22c55e";
-
-            stroke =
-                "#22c55e";
-        }
-
-        else if (
-            requiredRF &&
-            !hasRF &&
-            (
-                hasElectric ||
-                hasMagnetic
-            )
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#8b5cf6";
-
-            stroke =
-                "#8b5cf6";
-        }
-
-        else {
-
-            radius =
-                4;
-
-            fill =
-                "#ffffff";
-
-            stroke =
-                "#cbd5e1";
-        }
-    }
-
-
-    // ==================================================
-    // ELECTRIC
-    // ==================================================
-
-    else if (
-        currentType ===
-        "electric"
-    ) {
-
-        if (
-            requiredElectric &&
-            hasElectric
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#22c55e";
-
-            stroke =
-                "#22c55e";
-        }
-
-        else if (
-            requiredElectric &&
-            !hasElectric &&
-            (
-                hasRF ||
-                hasMagnetic
-            )
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#8b5cf6";
-
-            stroke =
-                "#8b5cf6";
-        }
-
-        else {
-
-            radius =
-                4;
-
-            fill =
-                "#ffffff";
-
-            stroke =
-                "#cbd5e1";
-        }
-    }
-
-
-    // ==================================================
-    // MAGNETIC
-    // ==================================================
-
-    else if (
-        currentType ===
-        "magnetic"
-    ) {
-
-        if (
-            requiredMagnetic &&
-            hasMagnetic
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#22c55e";
-
-            stroke =
-                "#22c55e";
-        }
-
-        else if (
-            requiredMagnetic &&
-            !hasMagnetic &&
-            (
-                hasRF ||
-                hasElectric
-            )
-        ) {
-
-            radius =
-                5;
-
-            fill =
-                "#8b5cf6";
-
-            stroke =
-                "#8b5cf6";
-        }
-
-        else {
-
-            radius =
-                4;
-
-            fill =
-                "#ffffff";
-
-            stroke =
-                "#cbd5e1";
-        }
-    }
-
-
-    // ==================================================
-    // ZONE POINT
-    //
-    // Keep zone grid points visually identifiable
-    // when they have not been measured.
-    // ==================================================
-
-    if (
-        point.type ===
-        "zone" &&
-        measuredCount ===
-        0
-    ) {
-
-        fill =
-            "#f3e8ff";
-
-        stroke =
-            "#a855f7";
-    }
 
 
     // ==================================================
@@ -1504,17 +1284,6 @@ function getRoomSector(
     y,
     room
 ) {
-
-    console.error(
-        "MIN/MAX:",
-        {
-            minX: Math.min(...room.polygon.map(p => p.x)),
-            maxX: Math.max(...room.polygon.map(p => p.x)),
-            minY: Math.min(...room.polygon.map(p => p.y)),
-            maxY: Math.max(...room.polygon.map(p => p.y))
-        }
-    );
-
 
 
     const xs = room.polygon.map(p => p.x);
@@ -3443,6 +3212,20 @@ function startMeasurementMode(
             : "room";
 
 
+    // Stop room drawing when measurement starts.
+    if (window.roomTool) {
+        window.roomTool.active = false;
+    }
+
+    const drawRoomsButton =
+        document.getElementById("btnDrawRooms");
+
+    if (drawRoomsButton) {
+        drawRoomsButton.classList.remove("room-drawing-active");
+        drawRoomsButton.setAttribute("aria-pressed", "false");
+    }
+
+
     AppState.ui.mode =
         normalizedTarget === "zone"
             ? "zoneMeasure"
@@ -3843,6 +3626,23 @@ function updateMeasurementUIVisibility() {
 
 function updateMeasurementInfo() {
 
+    console.log("[MEASURE INFO TRACE]", {
+        mode: AppState?.ui?.mode,
+        selectedRoom: AppState?.ui?.selectedRoom,
+        selectedZone: AppState?.ui?.selectedZone,
+        windowSelectedZone: window.selectedZone,
+        infoExists: !!document.getElementById("measureInfo"),
+        infoDisplay: document.getElementById("measureInfo")?.style.display
+    });
+
+
+    console.log('[MEASURE INFO TRACE]', {
+        mode: AppState?.ui?.mode,
+        appZoneId: AppState?.ui?.selectedZone?.id ?? null,
+        windowZoneId: window.selectedZone?.id ?? null,
+        appZoneType: AppState?.ui?.selectedZone?.type ?? null,
+        roomId: AppState?.ui?.selectedRoom?.id ?? null
+    });
     const measureInfo =
         document.getElementById(
             "measureInfo"
@@ -4006,11 +3806,98 @@ function updateMeasurementInfo() {
     // ==================================================
 
 
+
     if (normalizedType === "all") {
-        const rooms = Array.isArray(floor.rooms)
+        const rooms = Array.isArray(floor?.rooms)
             ? floor.rooms
             : [];
 
+        // ==================================================
+        // ZONE MEASURE — show only the active zone
+        // ==================================================
+
+        if (mode === "zoneMeasure") {
+            const selectedZone =
+                AppState?.ui?.selectedZone ||
+                window.selectedZone ||
+                null;
+
+            // Confirm that the active zone exists on the current floor.
+            const activeZone = selectedZone
+                ? (floor?.zones || []).find(
+                    zone => zone.id === selectedZone.id
+                ) || null
+                : null;
+
+            if (!activeZone) {
+                titleEl.innerText = "Measuring: Zone";
+                descriptionEl.innerText =
+                    "Select a zone to view its measurement completion.";
+                coverageEl.innerText =
+                    "Measurement completion: 0 / 0 points";
+
+                return;
+            }
+
+            const zonePoints = Array.isArray(activeZone.grid)
+                ? activeZone.grid
+                : [];
+
+            let zoneTotal = 0;
+            let zoneCompleted = 0;
+
+            zonePoints.forEach(point => {
+                if (!point) return;
+
+                zoneTotal++;
+
+                const status = getMeasurementPointStatus(point);
+
+                if (status?.confirmed === true) {
+                    zoneCompleted++;
+                }
+            });
+
+            const zoneLabels = {
+                sleep: "Sleep",
+                child: "Child",
+                work: "Work",
+                rest: "Rest"
+            };
+
+            const zoneLabel =
+                zoneLabels[String(activeZone.type || "").toLowerCase()] ||
+                activeZone.name ||
+                activeZone.label ||
+                "Zone";
+
+            titleEl.innerText = `Measuring: Zone — ${zoneLabel}`;
+
+            descriptionEl.innerText =
+                "Showing measurement completion for the active zone.";
+
+            coverageEl.innerText =
+                "Measurement completion: " +
+                zoneCompleted +
+                " / " +
+                zoneTotal +
+                " points";
+
+            console.log("[MEASUREMENT INFO UPDATED]", {
+                mode,
+                activeZone: zoneLabel,
+                zoneId: activeZone.id,
+                floorIndex: activeZone.floorIndex,
+                total: zoneTotal,
+                completed: zoneCompleted
+            });
+
+            return;
+        }
+
+        // ==================================================
+        // ROOM MEASURE — show only the active room
+        // ==================================================
         const isRoomMeasure =
             mode === "measure" ||
             mode === "roomMeasure";

@@ -73,15 +73,41 @@ function startRoomMode() {
     window.roomTool.points =
         [];
 
+    window.updateRoomDrawingHint?.();
+
     // =====================
     // 🔥 CURSOR
     // =====================
 
-    if (window.canvas) {
 
-        canvas.style.cursor =
-            "crosshair";
+    if (window.canvas) {
+        const cursorSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="32" height="32" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="10"
+                    fill="white" fill-opacity="0.85"
+                    stroke="#1d4ed8" stroke-width="2"/>
+            <path d="M16 2 V11 M16 21 V30 M2 16 H11 M21 16 H30"
+                  stroke="#1d4ed8" stroke-width="2"
+                  stroke-linecap="round"/>
+            <circle cx="16" cy="16" r="2.5"
+                    fill="#1d4ed8"/>
+        </svg>
+    `;
+
+        const cursorUrl =
+            "data:image/svg+xml;charset=utf-8," +
+            encodeURIComponent(cursorSvg);
+
+        window.canvas.style.cursor =
+            `url("${cursorUrl}") 16 16, crosshair`;
+
+        console.log(
+            "ROOM CURSOR SET:",
+            window.canvas.style.cursor
+        );
     }
+
 
     // 🔥 DRAW ROOM BUTTON
 
@@ -90,13 +116,12 @@ function startRoomMode() {
             "btnDrawRooms"
         );
 
-    if (btn) {
 
-        btn.style.background = "";
-        btn.style.color = "";
-        btn.style.outline = "";
-        btn.style.outlineOffset = "";
+    if (btn) {
+        btn.classList.add("room-drawing-active");
+        btn.setAttribute("aria-pressed", "true");
     }
+
 
     // 🔥 FINISH BUTTON
 
@@ -346,17 +371,7 @@ function handleRoomToolClick(evt) {
 
     console.error("ROOM TOOL CLICK ENTERED");
 
-    console.log("ROOM CLICK", {
 
-        mode: AppState.ui.mode,
-
-        active: roomTool?.active,
-
-        pointCount: roomTool?.points?.length,
-
-        rooms: getCurrentFloor?.()?.rooms?.length
-
-    });
 
     const tool =
         window.roomTool;
@@ -385,6 +400,16 @@ function handleRoomToolClick(evt) {
 
     const floor =
         getCurrentFloor?.();
+
+    console.log("ROOM CLICK DIAGNOSTICS", {
+        mode: AppState.ui.mode,
+        active: window.roomTool?.active,
+        sameTool: tool === window.roomTool,
+        toolRooms: tool?.rooms?.length,
+        floorRooms: floor?.rooms?.length,
+        toolPoints: tool?.points?.length,
+        roomCodes: (floor?.rooms || []).map(room => room.code)
+    });
 
     // =====================
     // 🔥 FINISH BUTTON
@@ -418,21 +443,46 @@ function handleRoomToolClick(evt) {
     // 🔥 OVERLAP PREVENTION
     // =====================
 
+    const existingRooms =
+        floor?.rooms || [];
+
+
+    console.log("OVERLAP CHECK", {
+        existingRooms: existingRooms.length,
+        roomCodes: existingRooms.map(room => room.code),
+        point: p,
+        pointsInDrawing: tool.points.length
+    });
+
+
     const invalid =
-        tool.rooms.some(room => {
+        existingRooms.some(room => {
+
+
 
             // =====================
             // 🔥 POINT INSIDE ROOM
             // =====================
 
-            if (
+            const insideRoom = isPointInsideRoom(
+                p,
+                room.polygon
+            );
 
-                isPointInsideRoom(
-                    p,
-                    room.polygon
-                )
-            ) {
+            console.log(
+                "ROOM POINT TEST",
+                JSON.stringify({
+                    room: room.code,
+                    point: p,
+                    polygon: room.polygon.map(v => ({
+                        x: v.x,
+                        y: v.y
+                    })),
+                    insideRoom: isPointInsideRoom(p, room.polygon)
+                }, null, 2)
+            );
 
+            if (insideRoom) {
                 return true;
             }
 
@@ -929,6 +979,8 @@ function handleRoomToolClick(evt) {
 
     tool.points.push(p);
 
+    window.updateRoomDrawingHint?.();
+
     setTimeout(() => {
 
         console.error(
@@ -1300,6 +1352,7 @@ function finishRoomV2() {
     AppState.ui.mode =
         "idle";
 
+    window.updateRoomDrawingHint?.();
 
     room;
 
@@ -1326,15 +1379,21 @@ function finishRoomV2() {
         );
 
     if (drawBtn) {
+        drawBtn.classList.remove(
+            "room-drawing-active"
+        );
 
-        drawBtn.style.background =
-            "#a1bde6";
+        drawBtn.setAttribute(
+            "aria-pressed",
+            "false"
+        );
 
-        drawBtn.style.outline =
-            "none";
-
-        drawBtn.style.color =
-            "#ffffff";
+        drawBtn.style.background = "";
+        drawBtn.style.backgroundColor = "";
+        drawBtn.style.outline = "";
+        drawBtn.style.outlineOffset = "";
+        drawBtn.style.color = "";
+        drawBtn.style.borderColor = "";
     }
 
     // =====================
@@ -1395,6 +1454,59 @@ function finishRoomV2() {
     );
 
 }
+
+
+function cancelRoomDrawing() {
+    const tool = window.roomTool;
+
+    if (!tool || tool.active !== true) {
+        return;
+    }
+
+    // Remove only the unfinished drawing.
+    tool.points = [];
+    tool.invalidMessage = null;
+    tool.active = false;
+
+    const drawBtn = document.getElementById("btnDrawRooms");
+
+    if (drawBtn) {
+        drawBtn.classList.remove("room-drawing-active");
+        drawBtn.setAttribute("aria-pressed", "false");
+    }
+
+    // Return to neutral selection mode.
+    if (AppState?.ui) {
+        AppState.ui.mode = "idle";
+    }
+
+    // Restore the normal cursor.
+    const canvas = document.getElementById("canvas");
+    if (canvas) {
+        canvas.style.cursor = "default";
+    }
+
+    window.updateRoomDrawingHint?.();
+    window.requestRender?.();
+}
+
+
+document.addEventListener("keydown", function roomDrawingEscapeHandler(event) {
+    if (event.key !== "Escape") {
+        return;
+    }
+
+    if (
+        AppState?.ui?.mode === "rooms" &&
+        window.roomTool?.active === true
+    ) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        cancelRoomDrawing();
+    }
+}, true);
+
 
 
 function showRoomDetails(room) {
@@ -1694,57 +1806,66 @@ function drawRoomTool() {
         // 🔥 PREVIEW LINE
         // =====================
 
+
         if (
-
             AppState.mouseX !== undefined &&
-
             AppState.mouseY !== undefined &&
-
             Boundaries.isInsidePlan({
-
                 x: AppState.mouseX,
-
                 y: AppState.mouseY
-
             })
-
         ) {
+            const lastPoint =
+                tool.points[tool.points.length - 1];
 
-            const last =
-                EMFViewport.worldPoint(
-                    tool.points[
-                    tool.points.length - 1
-                    ]
-                );
+            const mousePoint = {
+                x: AppState.mouseX,
+                y: AppState.mouseY
+            };
 
-            const mouse =
-                EMFViewport.worldPoint({
+            const floor = getCurrentFloor?.();
+            const existingRooms = floor?.rooms || [];
 
-                    x: AppState.mouseX,
-                    y: AppState.mouseY
+            const crossesRoom = existingRooms.some(room => {
+                const polygon = room.polygon;
 
-                });
+                if (!polygon || polygon.length < 3) {
+                    return false;
+                }
 
-            ctx.beginPath();
+                if (isPointInsideRoom(mousePoint, polygon)) {
+                    return true;
+                }
 
-            ctx.moveTo(
-                last.x,
-                last.y
-            );
+                for (let i = 0; i < polygon.length; i++) {
+                    const a = polygon[i];
+                    const b = polygon[(i + 1) % polygon.length];
 
-            ctx.lineTo(
-                mouse.x,
-                mouse.y
-            );
+                    if (linesIntersect(lastPoint, mousePoint, a, b)) {
+                        return true;
+                    }
+                }
 
-            ctx.strokeStyle =
-                "#2563eb";
+                return false;
+            });
 
-            ctx.lineWidth =
-                2;
+            if (!crossesRoom) {
+                const last =
+                    EMFViewport.worldPoint(lastPoint);
 
-            ctx.stroke();
+                const mouse =
+                    EMFViewport.worldPoint(mousePoint);
+
+                ctx.beginPath();
+                ctx.moveTo(last.x, last.y);
+                ctx.lineTo(mouse.x, mouse.y);
+
+                ctx.strokeStyle = "#2563eb";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
         }
+
         // =====================
         // 🔥 POINTS
         // =====================

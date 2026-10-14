@@ -5555,9 +5555,28 @@ async function openExistingProject(
         // LOAD PROJECT
         // ==================================================
 
-        await loadProject(
-            projectId
+
+        const loadResult = await loadProject(projectId);
+
+        console.log(
+            "[OPEN PROJECT LOAD RESULT]",
+            {
+                projectId,
+                loadResult,
+                appMode: window.AppMode?.current,
+                activeProjectId: AppState?.project?.id,
+                activeProjectType: AppState?.project?.type
+            }
         );
+
+        if (loadResult === false) {
+            console.error(
+                "[OPEN PROJECT] loadProject returned false",
+                { projectId }
+            );
+            return;
+        }
+
 
         document.body.classList.remove("project-popup-open");
 

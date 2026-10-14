@@ -664,6 +664,32 @@ function updateNextStepCard() {
 
     el.classList.add("workflow-next-floating");
 
+
+    // Hide TO DO while zone creation is active.
+    const zoneCreationActive =
+        window.zoneTool?.active === true ||
+        window.AppState?.ui?.mode === "zoneDraw" ||
+        window.AppState?.ui?.mode === "drawZone";
+
+    if (zoneCreationActive) {
+        el.style.display = "none";
+        return;
+    }
+
+
+    // Hide TO DO while the Add Source popup is open.
+    const sourcePopupOpen =
+        document.getElementById("sourceTypePopup")?.style.display !== "none" &&
+        document.getElementById("sourceTypePopup")?.style.visibility !== "hidden" &&
+        document.getElementById("sourceTypePopup") !== null;
+
+    if (sourcePopupOpen) {
+        el.style.display = "none";
+        return;
+    }
+
+
+
     const floor = getCurrentFloor?.();
 
     // The initial floor-plan upload is already available elsewhere.
@@ -916,11 +942,41 @@ function updateNextStepCard() {
         "btnAddSources"
     ];
 
+
     const otherActions = availableActions.filter(
         action =>
             action.id !== mainAction?.id &&
-            todoActionIds.includes(action.id)
+            todoActionIds.includes(action.id) &&
+            !(
+                action.id === "btnDrawRooms" &&
+                hasRooms &&
+                roomWithoutGrid
+            )
     );
+
+
+
+    // --------------------------------------------------
+    // ACTIVE ACTION — SYNC WITH THE REAL WORKSPACE MODE
+    // --------------------------------------------------
+
+    const currentMode = AppState?.ui?.mode;
+
+    const activeTodoActionId = {
+        room: "btnDrawRooms",
+        rooms: "btnDrawRooms",
+        zone: "btnAddZone",
+        measure: "btnStartMeasure",
+        roomMeasure: "btnStartMeasure",
+        zoneMeasure: "btnStartZoneMeasure",
+        sources: "btnAddSources",
+        grid: "btnGenerateGrid"
+    }[currentMode] || (
+            window.roomTool?.active === true
+                ? "btnDrawRooms"
+                : null
+        );
+
 
     // --------------------------------------------------
     // SAFE HTML HELPERS
@@ -935,20 +991,34 @@ function updateNextStepCard() {
             "'": "&#39;"
         })[char]);
 
-    const actionButton = (action, isRecommended) => `
-        <button
-            type="button"
-            class="workflow-next-choice${isRecommended ? " is-recommended" : ""}"
-            data-workflow-action="${escapeHtml(action.id)}"
-        >
-            <span class="workflow-next-choice-title">
-                ${escapeHtml(action.title)} →
-            </span>
-            <span class="workflow-next-choice-desc">
-                ${escapeHtml(action.description)}
-            </span>
-        </button>
-    `;
+
+    const actionButton = (action, isRecommended) => {
+        const isActive =
+            action.id === activeTodoActionId;
+
+        const classes = [
+            "workflow-next-choice",
+            isRecommended && !isActive ? "is-recommended" : "",
+            isActive ? "is-active" : ""
+        ].filter(Boolean).join(" ");
+
+        return `
+            <button
+                type="button"
+                class="${classes}"
+                data-workflow-action="${escapeHtml(action.id)}"
+                aria-pressed="${isActive ? "true" : "false"}"
+            >
+                <span class="workflow-next-choice-title">
+                    ${escapeHtml(action.title)} →
+                </span>
+                <span class="workflow-next-choice-desc">
+                    ${escapeHtml(action.description)}
+                </span>
+            </button>
+        `;
+    };
+
 
     // --------------------------------------------------
     // CARD CONTENT
@@ -993,14 +1063,16 @@ function updateNextStepCard() {
                         </div>
                         <div class="workflow-next-other-list">
                             ${otherActions.slice(0, 4).map(action => `
-                                <button
-                                    type="button"
-                                    class="workflow-next-other-action"
-                                    data-workflow-action="${escapeHtml(action.id)}"
-                                >
-                                    <span>${escapeHtml(action.title)}</span>
-                                    <span class="workflow-next-other-arrow">›</span>
-                                </button>
+    <button
+        type="button"
+        class="workflow-next-other-action${action.id === activeTodoActionId ? " is-active" : ""}"
+        data-workflow-action="${escapeHtml(action.id)}"
+        aria-pressed="${action.id === activeTodoActionId ? "true" : "false"}"
+    >
+        <span>${escapeHtml(action.title)}</span>
+        <span class="workflow-next-other-arrow">›</span>
+    </button>
+
                             `).join("")}
                         </div>
                     </div>
@@ -1020,6 +1092,25 @@ function updateNextStepCard() {
                 </span>
             </div>
         `}
+<div class="workflow-room-drawing-hint" hidden>
+    <strong>Drawing a room</strong>
+    <span class="workflow-room-drawing-hint-text">
+        Click on the floor plan to place the first corner.
+    </span>
+</div>
+
+
+<div class="workflow-room-measuring-hint" hidden>
+    <strong>Room Measuring</strong>
+    <span>
+        Move the crosshair to a grid point and click to measure.
+    </span>
+    <span>
+        Measure each required grid point inside the active room.
+        Continue until all required measurements are complete.
+    </span>
+</div>
+
 
         <button type="button" class="workflow-next-guide-link">
             View step-by-step guide
@@ -1327,35 +1418,44 @@ function updateNextStepCard() {
             }
 
 
+
             // Set Scale must launch the real scale tool.
-            // Other workflow actions continue using their sidebar buttons.
             if (actionId === "btnScale") {
                 if (typeof window.startScaleTool === "function") {
                     window.startScaleTool();
                 } else {
-                    console.error("Set Scale: startScaleTool() is unavailable.");
+                    console.error(
+                        "Set Scale: startScaleTool() is unavailable."
+                    );
                 }
+            } else if (actionId === "btnStartMeasure") {
+                // Use the same measurement flow as the sidebar button.
+                if (typeof window.startBusinessMeasurementFlow === "function") {
+                    window.startBusinessMeasurementFlow();
+                } else if (typeof startBusinessMeasurementFlow === "function") {
+                    startBusinessMeasurementFlow();
+                } else {
+                    console.error(
+                        "Room Measuring: startBusinessMeasurementFlow() is unavailable."
+                    );
+                }
+
+                requestAnimationFrame(() => {
+                    window.updateWorkflowUI?.();
+                    window.updateNextStepCard?.();
+                    window.updateRoomDrawingHint?.();
+                });
             } else {
-                if (actionId === "btnStartMeasure") {
-                    const floor = getCurrentFloor?.();
-                    const rooms = floor?.rooms || [];
-                    const currentRoom = AppState?.ui?.selectedRoom;
-
-                    const activeRoom =
-                        rooms.find(room => room.id === currentRoom?.id) ||
-                        rooms.find(room =>
-                            !getRoomMeasurementStats(room).canComplete
-                        ) ||
-                        rooms[rooms.length - 1] ||
-                        null;
-
-                    if (activeRoom) {
-                        AppState.ui.selectedRoom = activeRoom;
-                    }
-                }
-
+                // Other workflow actions continue using their sidebar buttons.
                 menuButton.click();
+
+                requestAnimationFrame(() => {
+                    window.updateWorkflowUI?.();
+                    window.updateNextStepCard?.();
+                    window.updateRoomDrawingHint?.();
+                });
             }
+
 
 
             // Scroll the sidebar so the corresponding action is visible.
@@ -2220,13 +2320,51 @@ function updateMeasurementWorkflowUIVisibility() {
     // measurement workflow.
     // ==================================================
 
-    if (info) {
 
-        info.style.display =
-            isMeasuring
-                ? "flex"
-                : "none";
+    if (info) {
+        if (info) {
+            info.style.display = isMeasuring ? "flex" : "none";
+
+            if (!isMeasuring) {
+                const title = document.getElementById(
+                    "measurementInfoTitle"
+                );
+                const description = document.getElementById(
+                    "measurementInfoDescription"
+                );
+                const coverage = document.getElementById(
+                    "measurementInfoCoverage"
+                );
+
+                if (title) {
+                    title.textContent = "";
+                }
+
+                if (description) {
+                    description.textContent = "";
+                }
+
+                if (coverage) {
+                    coverage.textContent = "";
+                }
+            }
+        }
+
+        if (isMeasuring) {
+            requestAnimationFrame(() => {
+                if (
+                    AppState?.ui?.mode === "measure" ||
+                    AppState?.ui?.mode === "roomMeasure" ||
+                    AppState?.ui?.mode === "zoneMeasure"
+                ) {
+                    if (typeof updateMeasurementInfo === "function") {
+                        updateMeasurementInfo();
+                    }
+                }
+            });
+        }
     }
+
 
 
     // ==================================================
@@ -2891,6 +3029,72 @@ function closeMeasurementProfilePopup() {
 }
 
 
+window.updateRoomDrawingHint = function () {
+    const drawingPanel = document.querySelector(
+        ".workflow-room-drawing-hint"
+    );
+
+    const measuringPanel = document.querySelector(
+        ".workflow-room-measuring-hint"
+    );
+
+    // ------------------------------------------
+    // ROOM DRAWING HINT
+    // ------------------------------------------
+
+    const tool = window.roomTool;
+
+    const isDrawing =
+        tool?.active === true &&
+        window.AppState?.ui?.mode === "rooms";
+
+    if (drawingPanel) {
+        const text = drawingPanel.querySelector(
+            ".workflow-room-drawing-hint-text"
+        );
+
+        if (isDrawing) {
+            const count = Array.isArray(tool.points)
+                ? tool.points.length
+                : 0;
+
+            if (text) {
+                if (count === 0) {
+                    text.textContent =
+                        "Click on the floor plan to place the first corner.";
+                } else if (count === 1) {
+                    text.textContent =
+                        "First corner placed. Click to add the next corner.";
+                } else if (count < 3) {
+                    text.textContent =
+                        "Continue placing corners. At least 3 points are needed to finish.";
+                } else {
+                    text.textContent =
+                        "Continue placing corners. Close the shape to finish.";
+                }
+            }
+        }
+
+        drawingPanel.hidden = !isDrawing;
+    }
+
+    // ------------------------------------------
+    // ROOM MEASURING HINT
+    // ------------------------------------------
+
+    if (measuringPanel) {
+        const mode = window.AppState?.ui?.mode;
+
+        const isMeasuring =
+            mode === "roomMeasure" ||
+            mode === "measure";
+
+        measuringPanel.hidden = !isMeasuring;
+    }
+};
+
+
+
 function updateWorkflowUI() {
 
 
@@ -3475,11 +3679,18 @@ function updateWorkflowUI() {
 
     if (hasScale) {
 
+
         if (drawBtn) {
+            const roomsNeedGrid = (floor.rooms || []).some(
+                room => !room.grid?.length
+            );
 
             drawBtn.style.display =
-                "flex";
+                hasRooms && roomsNeedGrid
+                    ? "none"
+                    : "flex";
         }
+
 
         if (gridBtn) {
 
@@ -3558,22 +3769,23 @@ function updateWorkflowUI() {
     // RESET OLD / LEGACY HIGHLIGHT STATES
     // ==================================================
 
+
     document
         .querySelectorAll(
             "#businessProjectActions .workflow-action-btn, " +
             "#businessPlanActions .workflow-action-btn, " +
-            "#businessAssessmentWorkspace .workflow-action-btn"
+            "#businessAssessmentWorkspace .workflow-action-btn, " +
+            "#businessWorkflowSection .workflow-action-btn"
         )
         .forEach(btn => {
-
             btn.classList.remove(
                 "workflow-required",
                 "next-step",
                 "active-step",
                 "workflow-next-action"
             );
-
         });
+
 
 
 
@@ -3597,8 +3809,12 @@ function updateWorkflowUI() {
         // Requires confirmed floor scale.
         // ------------------------------------------------
 
+
+
         btnDrawRooms:
             hasScale,
+
+
 
         // ------------------------------------------------
         // ROOM GRID
@@ -3617,14 +3833,21 @@ function updateWorkflowUI() {
             hasRooms &&
             hasGrid,
 
+
         // ------------------------------------------------
         // ROOM MEASURING
-        // Requires room grid.
+        // Requires at least one room with a generated grid.
         // ------------------------------------------------
+
 
         btnStartMeasure:
             hasRooms &&
-            hasGrid,
+            floor.rooms.some(room =>
+                Array.isArray(room.grid) &&
+                room.grid.length > 0
+            ),
+
+
 
         // ------------------------------------------------
         // ZONE MEASURING
@@ -3677,30 +3900,7 @@ function updateWorkflowUI() {
         .forEach(
             ([id, available]) => {
 
-                console.error(
-                    "🔥 SOURCES LOCK DEBUG",
-                    {
-                        hasScale,
-                        hasMeasurements,
-                        sourceState:
-                            businessActionStates.btnAddSources,
 
-                        sourceElement:
-                            document.getElementById(
-                                "btnAddSources"
-                            ),
-
-                        sourceClasses:
-                            document.getElementById(
-                                "btnAddSources"
-                            )?.className,
-
-                        sourceDisplay:
-                            document.getElementById(
-                                "btnAddSources"
-                            )?.style.display
-                    }
-                );
 
                 const btn =
                     document.getElementById(id);
@@ -3860,12 +4060,24 @@ function updateWorkflowUI() {
         ];
 
 
-    const nextActionButton =
-        nextActionId
-            ? document.getElementById(
-                nextActionId
+    // Do not recommend room measuring while zone measuring is active.
+    const effectiveNextActionId =
+        AppState?.ui?.mode === "zoneMeasure"
+            ? (
+                nextActionId === "btnStartMeasure"
+                    ? null
+                    : nextActionId
             )
+            : nextActionId;
+
+
+
+
+    const nextActionButton =
+        effectiveNextActionId
+            ? document.getElementById(effectiveNextActionId)
             : null;
+
 
 
     if (
@@ -3894,18 +4106,43 @@ function updateWorkflowUI() {
 
     const currentMode = AppState?.ui?.mode;
 
+    console.log(
+        "[WORKFLOW UI]",
+        new Date().toLocaleTimeString(),
+        "MODE =", AppState?.ui?.mode,
+        "| INTERACTION =", AppState?.ui?.measurementInteraction
+    );
+
+
+    console.log("WORKFLOW ACTIVE MODE DEBUG", {
+        currentMode,
+        selectedRoom: AppState?.ui?.selectedRoom?.name,
+        drawRoomActive: window.roomTool?.active,
+        measureButtonExists:
+            !!document.getElementById("btnStartMeasure"),
+        measureButtonDisabled:
+            document.getElementById("btnStartMeasure")?.disabled
+    });
+
+
+
     const activeButtonByMode = {
         measure: "btnStartMeasure",
+        roomMeasure: "btnStartMeasure",
         zoneMeasure: "btnStartZoneMeasure",
         sources: "btnAddSources",
         grid: "btnGenerateGrid"
     };
 
+
+
     document.querySelectorAll(
-        "#businessAssessmentWorkspace .workflow-action-btn.active-step"
+        "#businessAssessmentWorkspace .workflow-action-btn.active-step, " +
+        "#businessWorkflowSection .workflow-action-btn.active-step"
     ).forEach(btn => {
         btn.classList.remove("active-step");
     });
+
 
     const activeButtonId = activeButtonByMode[currentMode];
     const activeButton = activeButtonId
@@ -3915,6 +4152,43 @@ function updateWorkflowUI() {
     if (activeButton && !activeButton.disabled) {
         activeButton.classList.add("active-step");
     }
+
+    requestAnimationFrame(() => {
+        const btn = document.getElementById("btnStartMeasure");
+
+        console.log("[MEASURE BUTTON AFTER RENDER]", {
+            mode: AppState?.ui?.mode,
+            className: btn?.className,
+            activeStep: btn?.classList.contains("active-step"),
+            background: btn ? getComputedStyle(btn).backgroundColor : null,
+            color: btn ? getComputedStyle(btn).color : null
+        });
+    });
+
+    console.log("[ACTIVE WORKFLOW BUTTONS]", {
+        mode: AppState?.ui?.mode,
+        drawRooms: {
+            activeStep: document.getElementById("btnDrawRooms")
+                ?.classList.contains("active-step"),
+            drawingActive: document.getElementById("btnDrawRooms")
+                ?.classList.contains("room-drawing-active")
+        },
+        roomMeasure: document.getElementById("btnStartMeasure")
+            ?.classList.contains("active-step"),
+        zoneMeasure: document.getElementById("btnStartZoneMeasure")
+            ?.classList.contains("active-step")
+    });
+
+    console.log("ACTIVE BUTTON AFTER UPDATE", {
+        currentMode,
+        activeButtonId,
+        measureClasses:
+            document.getElementById("btnStartMeasure")?.className,
+        drawRoomClasses:
+            document.querySelector(
+                '#businessAssessmentWorkspace [data-step="rooms"]'
+            )?.className
+    });
 
 
     // ==================================================
@@ -6433,10 +6707,6 @@ function updateMeasurementProfileUI() {
         );
 
 
-    if (!button) {
-        return;
-    }
-
 
     // ==================================================
     // BUSINESS ONLY
@@ -6455,10 +6725,9 @@ function updateMeasurementProfileUI() {
 
 
     if (!isBusiness) {
-
-        button.style.display =
-            "none";
-
+        if (button) {
+            button.style.display = "none";
+        }
         return;
     }
 
@@ -6468,9 +6737,11 @@ function updateMeasurementProfileUI() {
     // ==================================================
 
     const profile =
-        AppState.project
-            ?.measurementProfile;
-
+        AppState.project?.measurementProfile || {
+            rf: false,
+            electric: false,
+            magnetic: false
+        };
 
     // ==================================================
     // PROFILE BUTTON IS ALWAYS AVAILABLE
@@ -6483,25 +6754,25 @@ function updateMeasurementProfileUI() {
     // has not been created yet.
     // ==================================================
 
-    button.style.display =
-        "flex";
+    if (button) {
+        button.style.display = "flex";
+    }
 
 
     // ==================================================
     // SUMMARY
     // ==================================================
 
-    if (!summary) {
-        return;
-    }
-
 
     if (!profile) {
 
-        summary.innerText =
-            "Configure RF / Electric / Magnetic";
+        if (summary) {
+            summary.innerText =
+                "Configure RF / Electric / Magnetic";
+        }
 
-        return;
+        // Continue to update the top toolbar even if
+        // the profile summary element is not present.
     }
 
 
@@ -6539,10 +6810,14 @@ function updateMeasurementProfileUI() {
 
 
 
-    summary.innerText =
-        selected.length
-            ? selected.join(" • ")
-            : "Configure RF / Electric / Magnetic";
+    if (summary) {
+        summary.innerText =
+            selected.length
+                ? selected.join(" • ")
+                : "Configure RF / Electric / Magnetic";
+    }
+
+
 
     // ==================================================
     // TOP TOOLBAR — CHOSEN MEASUREMENT MODALITIES
@@ -6554,27 +6829,41 @@ function updateMeasurementProfileUI() {
     );
 
     if (topLabel) {
+        const currentProfile =
+            AppState?.project?.measurementProfile;
+
         const modalities = [];
 
-        if (profile?.rf === true) {
+        if (currentProfile?.rf === true) {
             modalities.push("RF");
         }
 
-        if (profile?.electric === true) {
+        if (currentProfile?.electric === true) {
             modalities.push("E");
         }
 
-        if (profile?.magnetic === true) {
+        if (currentProfile?.magnetic === true) {
             modalities.push("M");
         }
 
-        topLabel.textContent =
+        const labelText =
             modalities.length === 3
                 ? "MEASURING: ALL"
-                : modalities.length
+                : modalities.length > 0
                     ? `MEASURING: ${modalities.join(" + ")}`
                     : "MEASURING: NOT SET";
+
+        topLabel.textContent = labelText;
+
+        console.log("[PROFILE LABEL UPDATED]", {
+            profile: currentProfile,
+            modalities,
+            label: topLabel.textContent
+        });
     }
+
+
+
 
 }
 
@@ -7226,11 +7515,16 @@ function startBusinessMeasurementFlow() {
     // 🔥 WORKFLOW UI
     // ==================================================
 
+
     window.updateWorkflowUI?.();
 
     window.updateFlow?.();
 
+    // Refresh contextual instructions in the TO DO panel.
+    window.updateRoomDrawingHint?.();
+
     updateGuideText?.();
+
 
     updateUIState?.();
 

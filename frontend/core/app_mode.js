@@ -1616,6 +1616,12 @@ async function setAppMode(
                     "none";
             }
 
+            console.log("[TOGGLES HIDDEN]", {
+                mode: window.workspaceMode,
+                appMode: window.AppState?.ui?.mode,
+                display: businessProjectToggles.style.display,
+                time: new Date().toISOString()
+            });
 
             // ----------------------------------------------
             // ROOM PROGRESS
@@ -4667,18 +4673,24 @@ function updateWorkspaceUI() {
     }
 
 
-    if (
-        businessPlanActions
-    ) {
+
+    if (businessPlanActions) {
+        const activeFloor =
+            typeof getCurrentFloor === "function"
+                ? getCurrentFloor()
+                : null;
+
+        const scaleConfirmed =
+            activeFloor?.scaleConfirmed === true;
 
         businessPlanActions.style.display =
-            (
-                mode === "business" &&
-                hasActiveProject
-            )
+            mode === "business" &&
+                hasActiveProject &&
+                !scaleConfirmed
                 ? "block"
                 : "none";
     }
+
 
 
     console.error(

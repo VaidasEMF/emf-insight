@@ -1363,6 +1363,15 @@ function handleMouseDown(evt) {
             existingRoom
         ) {
 
+
+            // Draw Room: existing rooms are blocked.
+            // Do not select the room or exit drawing mode.
+            if (
+                window.roomTool?.active === true
+            ) {
+                return;
+            }
+
             console.error(
                 "🔥 EXISTING ROOM SELECTED",
                 {
@@ -1428,6 +1437,8 @@ function handleMouseDown(evt) {
             showRoomDetails?.(
                 existingRoom
             );
+
+            window.updateRoomProgressPanel?.();
 
             requestRender?.();
 
@@ -2185,6 +2196,22 @@ function handleMouseDown(evt) {
 
 
         // ==================================================
+        // ROOM DRAWING — IGNORE OBJECT SELECTION
+        // ==================================================
+
+        if (
+            AppState.ui.mode === "rooms" &&
+            window.roomTool?.active === true
+        ) {
+            window.objectTool.selectedObjectId = null;
+            window.objectTool.draggingObject = null;
+
+            requestRender?.();
+            return;
+        }
+
+
+        // ==================================================
         // 🔥 SELECT OBJECT
         // ==================================================
 
@@ -2692,28 +2719,10 @@ function handleMouseDown(evt) {
                         room;
 
                     window.selectedRoom =
-                        AppState.ui.selectedRoom;
+                        room;
 
-
-                    console.log(
-                        "SELECTED ROOM:",
-                        selectedRoom?.code
-                    );
-
-                    console.log(
-                        "SELECTED ROOM GRID:",
-                        selectedRoom?.grid?.length
-                    );
-
-                    console.log(
-                        "LOCAL:",
-                        selectedRoom?.code
-                    );
-
-                    console.log(
-                        "WINDOW:",
-                        window.selectedRoom?.code
-                    );
+                    selectedRoom =
+                        room;
 
 
                     roomTool.active =
@@ -2726,10 +2735,7 @@ function handleMouseDown(evt) {
                         "idle";
 
 
-                    console.error(
-                        "ROOM HIT",
-                        room.code
-                    );
+
 
 
                     if (
@@ -2760,6 +2766,8 @@ function handleMouseDown(evt) {
 
 
                     syncState?.();
+
+                    window.updateRoomProgressPanel?.();
 
                     requestRender?.();
 
@@ -3698,25 +3706,71 @@ function handleMouseMove(evt) {
         }
 
 
+
+
         // ==================================================
         // NO MEASUREMENT POINT
         // ==================================================
 
         if (
-            measurementInteraction ===
-            "awaitingPoint"
+            AppState.ui.mode === "rooms" &&
+            window.roomTool?.active === true
         ) {
 
-            canvas.style.cursor =
-                "crosshair";
+            const currentFloor =
+                window.getCurrentFloor?.();
+
+            const insidePlan =
+                typeof Boundaries !== "undefined" &&
+                Boundaries.isInsidePlan(p);
+
+            const overExistingRoom =
+                (currentFloor?.rooms || []).some(room =>
+                    room.polygon?.length >= 3 &&
+                    pointInPolygon(p, room.polygon)
+                );
+
+            const canDrawHere =
+                insidePlan && !overExistingRoom;
+
+            if (canDrawHere) {
+
+                const cursorSvg = `
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="32"
+                         height="32"
+                         viewBox="0 0 32 32">
+                        <circle cx="16" cy="16" r="10"
+                                fill="white"
+                                fill-opacity="0.85"
+                                stroke="#1d4ed8"
+                                stroke-width="2"/>
+                        <path d="M16 2 V11 M16 21 V30 M2 16 H11 M21 16 H30"
+                              stroke="#1d4ed8"
+                              stroke-width="2"
+                              stroke-linecap="round"/>
+                        <circle cx="16" cy="16" r="2.5"
+                                fill="#1d4ed8"/>
+                    </svg>`;
+
+                canvas.style.cursor =
+                    `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorSvg)}") 16 16, crosshair`;
+
+            } else {
+
+                canvas.style.cursor = "default";
+            }
+
+        } else if (
+            measurementInteraction === "awaitingPoint"
+        ) {
+
+            canvas.style.cursor = "crosshair";
+
+        } else {
+
+            canvas.style.cursor = "default";
         }
-
-        else {
-
-            canvas.style.cursor =
-                "default";
-        }
-
 
         requestRender?.();
 
@@ -3724,28 +3778,66 @@ function handleMouseMove(evt) {
     }
 
 
+
+
+
     // ==================================================
     // NORMAL BUSINESS / OBJECT HOVER
     // ==================================================
 
+    const roomDrawingActive =
+        AppState.ui.mode === "rooms" &&
+        window.roomTool?.active === true;
+
     const hoverObject =
-        window.getObjectAtPoint?.(
-            p
-        );
+        window.getObjectAtPoint?.(p);
 
+    if (roomDrawingActive) {
 
-    if (
-        hoverObject
-    ) {
+        const insidePlan =
+            typeof Boundaries !== "undefined" &&
+            Boundaries.isInsidePlan(p);
 
-        canvas.style.cursor =
-            "grab";
-    }
+        const currentFloor =
+            window.getCurrentFloor?.();
 
-    else {
+        const overExistingRoom =
+            (currentFloor?.rooms || []).some(room =>
+                room.polygon?.length >= 3 &&
+                pointInPolygon(p, room.polygon)
+            );
 
-        canvas.style.cursor =
-            "default";
+        if (insidePlan && !overExistingRoom) {
+
+            const cursorSvg = `
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="32" height="32"
+                     viewBox="0 0 32 32">
+                    <circle cx="16" cy="16" r="10"
+                            fill="white" fill-opacity="0.85"
+                            stroke="#1d4ed8" stroke-width="2"/>
+                    <path d="M16 2 V11 M16 21 V30 M2 16 H11 M21 16 H30"
+                          stroke="#1d4ed8" stroke-width="2"
+                          stroke-linecap="round"/>
+                    <circle cx="16" cy="16" r="2.5"
+                            fill="#1d4ed8"/>
+                </svg>`;
+
+            canvas.style.cursor =
+                `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorSvg)}") 16 16, crosshair`;
+
+        } else {
+
+            canvas.style.cursor = "default";
+        }
+
+    } else if (hoverObject) {
+
+        canvas.style.cursor = "grab";
+
+    } else {
+
+        canvas.style.cursor = "default";
     }
 
 
