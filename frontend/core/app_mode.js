@@ -1615,7 +1615,10 @@ async function setAppMode(
             ) {
 
                 businessProjectToggles.style.display =
-                    "none";
+                    window.AppMode?.current === "business" &&
+                        window.EMFHomeDemo !== true
+                        ? "flex"
+                        : "none";
             }
 
             console.log("[TOGGLES HIDDEN]", {

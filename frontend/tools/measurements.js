@@ -1044,7 +1044,12 @@ function drawGridPoint(
 
     // Zone points: completed = light cyan.
     // Room points: completed = green.
-    if (currentType === "all") {
+    if (
+        currentType === "all" ||
+        currentType === "rf" ||
+        currentType === "electric" ||
+        currentType === "magnetic"
+    ) {
         if (profileComplete) {
             radius = 5;
 
