@@ -872,6 +872,7 @@ function drawGridPoint(
         ] || {};
 
 
+
     // ==================================================
     // ACTIVE MEASUREMENT TYPE
     // ==================================================
@@ -1037,42 +1038,50 @@ function drawGridPoint(
     let lineWidth =
         1.5;
 
-
     // ==================================================
     // MEASUREMENT STATE VISUALIZATION
     // ==================================================
 
-    // Zone points: completed = light cyan.
-    // Room points: completed = green.
-    if (
-        currentType === "all" ||
-        currentType === "rf" ||
-        currentType === "electric" ||
-        currentType === "magnetic"
-    ) {
-        if (profileComplete) {
-            radius = 5;
+    // Keep ALL grid points visible in every modality.
+    // Color indicates measurement state, not EMF risk.
 
-            if (point.type === "zone") {
-                fill = "#06b6d4";
-                stroke = "#06b6d4";
-            } else {
-                fill = "#22c55e";
-                stroke = "#22c55e";
-            }
-        } else if (profilePartial) {
-            radius = 5;
-            fill = "#8b5cf6";
-            stroke = "#8b5cf6";
+    const modalityComplete =
+        currentType === "rf"
+            ? hasRF
+            : currentType === "electric"
+                ? hasElectric
+                : currentType === "magnetic"
+                    ? hasMagnetic
+                    : profileComplete;
+
+    const modalityPartial =
+        currentType === "rf"
+            ? hasRF
+            : currentType === "electric"
+                ? hasElectric
+                : currentType === "magnetic"
+                    ? hasMagnetic
+                    : profilePartial;
+
+    if (modalityComplete) {
+        radius = 5;
+
+        if (point.type === "zone") {
+            fill = "#06b6d4";
+            stroke = "#06b6d4";
         } else {
-            radius = 4;
-            fill = "#ffffff";
-            stroke = "#cbd5e1";
+            fill = "#22c55e";
+            stroke = "#22c55e";
         }
+    } else if (modalityPartial) {
+        radius = 5;
+        fill = "#8b5cf6";
+        stroke = "#8b5cf6";
+    } else {
+        radius = 4;
+        fill = "#ffffff";
+        stroke = "#cbd5e1";
     }
-
-    // Zone points remain diamonds.
-    // Do not override the selected modality's state.
 
 
 
@@ -3512,6 +3521,12 @@ function setMeasureType(t) {
     // =====================================================
 
     requestRender?.();
+
+    console.log("FILTER RENDER CHECK", {
+        selected: activeMeasureType,
+        requestRender: typeof requestRender,
+        drawGridPoint: typeof drawGridPoint
+    });
 }
 
 
@@ -3631,23 +3646,6 @@ function updateMeasurementUIVisibility() {
 
 function updateMeasurementInfo() {
 
-    console.log("[MEASURE INFO TRACE]", {
-        mode: AppState?.ui?.mode,
-        selectedRoom: AppState?.ui?.selectedRoom,
-        selectedZone: AppState?.ui?.selectedZone,
-        windowSelectedZone: window.selectedZone,
-        infoExists: !!document.getElementById("measureInfo"),
-        infoDisplay: document.getElementById("measureInfo")?.style.display
-    });
-
-
-    console.log('[MEASURE INFO TRACE]', {
-        mode: AppState?.ui?.mode,
-        appZoneId: AppState?.ui?.selectedZone?.id ?? null,
-        windowZoneId: window.selectedZone?.id ?? null,
-        appZoneType: AppState?.ui?.selectedZone?.type ?? null,
-        roomId: AppState?.ui?.selectedRoom?.id ?? null
-    });
     const measureInfo =
         document.getElementById(
             "measureInfo"
