@@ -60,7 +60,6 @@ def me(
     # -----------------------------------------------
     try:
         from sqlalchemy import text
-
         entitlement = db.execute(
             text("""
                 SELECT
@@ -70,6 +69,9 @@ def me(
                     contact_opportunities_used
                 FROM professional_entitlements
                 WHERE user_id = :user_id
+                  AND plan_code = 'professional'
+                  AND status = 'active'
+                LIMIT 1
             """),
             {
                 "user_id": str(current_user.id),
@@ -112,6 +114,7 @@ def me(
                     FROM professional_demo_links
                     WHERE user_id = :user_id
                       AND status = 'active'
+                      AND expires_at > CURRENT_TIMESTAMP
                     ORDER BY expires_at DESC
                     LIMIT 1
                 """),

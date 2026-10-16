@@ -225,7 +225,7 @@ def register_professional(
             password,
         ),
         credits=0,
-        plan="professional",
+        plan="free",
         role="professional",
     )
 
@@ -265,45 +265,6 @@ def register_professional(
             "first_name": professional.first_name,
             "last_name": professional.last_name,
             "professional_email": professional.email,
-        },
-    )
-
-    db.execute(
-        text(
-            """
-            INSERT INTO professional_entitlements (
-                user_id,
-                plan_code,
-                assessment_limit,
-                assessments_used,
-                contact_opportunity_limit,
-                contact_opportunities_used,
-                branding_included,
-                status
-            )
-            VALUES (
-                :user_id,
-                'professional',
-                25,
-                0,
-                10,
-                0,
-                TRUE,
-                'active'
-            )
-            ON CONFLICT (user_id) DO UPDATE SET
-                plan_code = EXCLUDED.plan_code,
-                assessment_limit = EXCLUDED.assessment_limit,
-                assessments_used = EXCLUDED.assessments_used,
-                contact_opportunity_limit = EXCLUDED.contact_opportunity_limit,
-                contact_opportunities_used = EXCLUDED.contact_opportunities_used,
-                branding_included = EXCLUDED.branding_included,
-                status = EXCLUDED.status,
-                updated_at = CURRENT_TIMESTAMP
-            """
-        ),
-        {
-            "user_id": str(professional.id),
         },
     )
 

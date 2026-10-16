@@ -164,16 +164,18 @@ def create_professional_request(
     # ---------------------------------
     # CHECK PROFESSIONAL ASSESSMENT ENTITLEMENT
     # ---------------------------------
-
     professional_entitlement = db.execute(
         text("""
             SELECT
                 id,
+                plan_code,
                 assessment_limit,
                 assessments_used,
                 status
             FROM professional_entitlements
             WHERE user_id = :user_id
+              AND plan_code = 'professional'
+            LIMIT 1
         """),
         {
             "user_id": str(current_user.id),
@@ -250,18 +252,30 @@ def create_professional_request(
         },
     ).mappings().first()
 
-    db.execute(
+    assessment_update = db.execute(
         text("""
             UPDATE professional_entitlements
             SET
                 assessments_used = assessments_used + 1,
                 updated_at = CURRENT_TIMESTAMP
             WHERE user_id = :user_id
+              AND plan_code = 'professional'
+              AND status = 'active'
+              AND assessments_used < assessment_limit
+            RETURNING id
         """),
         {
             "user_id": str(current_user.id),
         },
-    )
+    ).first()
+
+    if not assessment_update:
+        db.rollback()
+        raise HTTPException(
+            status_code=403,
+            detail="Your active Professional Assessment entitlement is unavailable or exhausted.",
+        )
+
 
     db.commit()
 
@@ -770,14 +784,16 @@ def unlock_professional_request_contact(
                     contact_opportunities_used + 1,
                 updated_at = CURRENT_TIMESTAMP
             WHERE user_id = :user_id
-            AND status = 'active'
-            AND contact_opportunities_used < contact_opportunity_limit
+              AND plan_code = 'professional'
+              AND status = 'active'
+              AND contact_opportunities_used < contact_opportunity_limit
             RETURNING
                 contact_opportunity_limit,
                 contact_opportunities_used
         """),
         {"user_id": str(current_user.id)},
     ).mappings().first()
+
 
     if opportunity_result is None:
         db.rollback()
@@ -1076,7 +1092,8 @@ def get_professional_contact_opportunities(
                 contact_opportunities_used
             FROM professional_entitlements
             WHERE user_id = :user_id
-            AND status = 'active'
+              AND plan_code = 'professional'
+              AND status = 'active'
             LIMIT 1
         """),
         {"user_id": str(current_user.id)},

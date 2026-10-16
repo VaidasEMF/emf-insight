@@ -12,9 +12,6 @@ def is_professional_demo_active(user, db):
     if not user:
         return False
 
-    if getattr(user, "role", None) != "professional":
-        return False
-
     result = db.execute(
         text(
             """

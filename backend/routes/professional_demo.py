@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from db.database import SessionLocal
 from models.user import User
-from auth.passwords import hash_password
+from auth.passwords import hash_password, verify_password
 from auth.jwt import create_access_token
 from routes.auth import get_current_user
 
@@ -686,6 +686,7 @@ def get_professional_demo(
 # PUBLIC — ACTIVATE DEMO
 # =====================
 
+
 @router.post("/{token}/activate")
 def activate_professional_demo(
     token: str,
@@ -695,166 +696,183 @@ def activate_professional_demo(
     password: str = Form(),
     db: Session = Depends(get_db),
 ):
-    demo = db.execute(
-        text(
-            """
-            SELECT
-                id,
-                status,
-                duration_days,
-                expires_at
-            FROM professional_demo_links
-            WHERE token = :token
-            """
-        ),
-        {
-            "token": token,
-        },
-    ).mappings().first()
-
-    if not demo:
-        raise HTTPException(
-            status_code=404,
-            detail="Demo link not found",
-        )
-
-    if demo["status"] != "available":
-        raise HTTPException(
-            status_code=400,
-            detail="Demo link is no longer available",
-        )
-
-    existing = (
-        db.query(User)
-        .filter(User.email == email)
-        .first()
-    )
-
-    if existing:
-        raise HTTPException(
-            status_code=400,
-            detail="Email already exists",
-        )
-
     now = datetime.utcnow()
-    expires_at = now + timedelta(
-        days=demo["duration_days"]
-    )
 
-    professional = User(
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        hashed_password=hash_password(password),
-        credits=0,
-        plan="professional",
-        role="professional",
-    )
+    try:
+        # --------------------------------------------------
+        # 1. LOCK DEMO LINK — prevent concurrent activation
+        # --------------------------------------------------
+        demo = db.execute(
+            text("""
+                SELECT
+                    id,
+                    status,
+                    duration_days,
+                    expires_at
+                FROM professional_demo_links
+                WHERE token = :token
+                FOR UPDATE
+            """),
+            {"token": token},
+        ).mappings().first()
 
-    db.add(professional)
-    db.flush()
-
-    db.execute(
-        text(
-            """
-            INSERT INTO professional_profiles (
-                user_id,
-                first_name,
-                last_name,
-                professional_email,
-                availability_status,
-                verification_status
+        if not demo:
+            raise HTTPException(
+                status_code=404,
+                detail="Demo link not found",
             )
-            VALUES (
-                :user_id,
-                :first_name,
-                :last_name,
-                :professional_email,
-                'unavailable',
-                'not_requested'
+
+        if demo["status"] != "available":
+            raise HTTPException(
+                status_code=400,
+                detail="Demo link is no longer available",
             )
-            """
-        ),
-        {
-            "user_id": str(professional.id),
-            "first_name": professional.first_name,
-            "last_name": professional.last_name,
-            "professional_email": professional.email,
-        },
-    )
 
-    db.execute(
-        text(
-            """
-            INSERT INTO professional_entitlements (
-                user_id,
-                plan_code,
-                assessment_limit,
-                assessments_used,
-                contact_opportunity_limit,
-                contact_opportunities_used,
-                branding_included,
-                status
+        duration_days = int(demo["duration_days"] or 0)
+
+        if not 1 <= duration_days <= 365:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid Demo duration",
             )
-            VALUES (
-                :user_id,
-                'professional',
-                25,
-                0,
-                10,
-                0,
-                TRUE,
-                'active'
+
+        expires_at = now + timedelta(days=duration_days)
+
+        # --------------------------------------------------
+        # 2. FIND EXISTING ACCOUNT
+        # --------------------------------------------------
+        normalized_email = email.strip().lower()
+
+        if not normalized_email:
+            raise HTTPException(
+                status_code=400,
+                detail="Email is required",
             )
-            ON CONFLICT (user_id) DO UPDATE SET
-                plan_code = EXCLUDED.plan_code,
-                assessment_limit = EXCLUDED.assessment_limit,
-                contact_opportunity_limit = EXCLUDED.contact_opportunity_limit,
-                branding_included = EXCLUDED.branding_included,
-                status = EXCLUDED.status,
-                updated_at = CURRENT_TIMESTAMP
-            """
-        ),
-        {
-            "user_id": str(professional.id),
-        },
-    )
 
-    db.execute(
-        text(
-            """
-            UPDATE professional_demo_links
-            SET
-                status = 'active',
-                user_id = :user_id,
-                activated_at = :activated_at,
-                expires_at = :expires_at
-            WHERE id = :demo_id
-              AND status = 'available'
-            """
-        ),
-        {
-            "user_id": str(professional.id),
-            "activated_at": now,
-            "expires_at": expires_at,
-            "demo_id": demo["id"],
-        },
-    )
+        professional = (
+            db.query(User)
+            .filter(User.email == normalized_email)
+            .with_for_update()
+            .first()
+        )
 
-    db.commit()
-    db.refresh(professional)
+        if professional:
+            # Existing account: verify its password.
+            if (
+                not professional.hashed_password
+                or not verify_password(
+                    password,
+                    professional.hashed_password,
+                )
+            ):
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid email or password",
+                )
 
-    access_token = create_access_token(
-        {
-            "sub": str(professional.id),
+        else:
+            # --------------------------------------------------
+            # 3. CREATE ACCOUNT ONLY IF IT DOES NOT EXIST
+            # --------------------------------------------------
+            professional = User(
+                first_name=first_name.strip(),
+                last_name=last_name.strip(),
+                email=normalized_email,
+                hashed_password=hash_password(password),
+                credits=0,
+                plan="free",
+                role="professional",
+            )
+
+            db.add(professional)
+            db.flush()
+
+        # --------------------------------------------------
+        # 4. CREATE PROFESSIONAL PROFILE IF MISSING
+        # --------------------------------------------------
+        db.execute(
+            text("""
+                INSERT INTO professional_profiles (
+                    user_id,
+                    first_name,
+                    last_name,
+                    professional_email,
+                    availability_status,
+                    verification_status
+                )
+                VALUES (
+                    :user_id,
+                    :first_name,
+                    :last_name,
+                    :professional_email,
+                    'unavailable',
+                    'not_requested'
+                )
+                ON CONFLICT (user_id) DO NOTHING
+            """),
+            {
+                "user_id": str(professional.id),
+                "first_name": (
+                    professional.first_name or first_name.strip()
+                ),
+                "last_name": (
+                    professional.last_name or last_name.strip()
+                ),
+                "professional_email": professional.email,
+            },
+        )
+
+        # IMPORTANT:
+        # Do not create a permanent paid professional_entitlements
+        # record for a temporary Demo. Demo validity is tracked by
+        # professional_demo_links and expires_at.
+        #
+        # Do not overwrite any existing paid entitlements.
+
+        # --------------------------------------------------
+        # 5. ACTIVATE DEMO — only if the link is still available
+        # --------------------------------------------------
+        updated = db.execute(
+            text("""
+                UPDATE professional_demo_links
+                SET
+                    status = 'active',
+                    user_id = :user_id,
+                    activated_at = :activated_at,
+                    expires_at = :expires_at
+                WHERE id = :demo_id
+                  AND status = 'available'
+            """),
+            {
+                "user_id": str(professional.id),
+                "activated_at": now,
+                "expires_at": expires_at,
+                "demo_id": demo["id"],
+            },
+        )
+
+        if updated.rowcount != 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Demo link has already been activated",
+            )
+
+        db.commit()
+        db.refresh(professional)
+
+        access_token = create_access_token(
+            {"sub": str(professional.id)}
+        )
+
+        return {
+            "message": "Professional Demo activated",
+            "access_token": access_token,
+            "token_type": "bearer",
+            "role": professional.role,
+            "demo_status": "active",
+            "demo_expires_at": expires_at,
         }
-    )
 
-    return {
-        "message": "Professional Demo activated",
-        "access_token": access_token,
-        "token_type": "bearer",
-        "role": professional.role,
-        "demo_status": "active",
-        "demo_expires_at": expires_at,
-    }
+    except Exception:
+        db.rollback()
+        raise

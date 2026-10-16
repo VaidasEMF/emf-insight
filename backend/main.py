@@ -449,6 +449,11 @@ def _ensure_professional_entitlements_table(db):
         )
     """))
 
+    db.execute(text("""
+        ALTER TABLE professional_entitlements
+        ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(255)
+    """))
+
 
 def _claim_stripe_event(db, event_id):
     result = db.execute(
@@ -872,7 +877,8 @@ async def stripe_webhook(request: Request):
                             contact_opportunity_limit,
                             contact_opportunities_used,
                             branding_included,
-                            status
+                            status,
+                            stripe_subscription_id
                         )
                         VALUES (
                             :user_id,
@@ -882,7 +888,8 @@ async def stripe_webhook(request: Request):
                             10,
                             0,
                             TRUE,
-                            'active'
+                            'active',
+                            :stripe_subscription_id
                         )
                         ON CONFLICT (user_id) DO UPDATE SET
                             plan_code = 'professional',
@@ -892,12 +899,18 @@ async def stripe_webhook(request: Request):
                             contact_opportunities_used = 0,
                             branding_included = TRUE,
                             status = 'active',
+                            stripe_subscription_id = COALESCE(
+                                EXCLUDED.stripe_subscription_id,
+                                professional_entitlements.stripe_subscription_id
+                            ),
                             updated_at = CURRENT_TIMESTAMP
                     """),
                     {
                         "user_id": str(user.id),
+                        "stripe_subscription_id": session.get("subscription"),
                     },
                 )
+
 
             elif plan == "home_full_report":
                 # Home Full Report is deliberately separate from Business credits
@@ -1070,6 +1083,10 @@ async def stripe_webhook(request: Request):
                                     UPDATE professional_entitlements
                                     SET
                                         plan_code = 'professional',
+                                        stripe_subscription_id = COALESCE(
+                                            :stripe_subscription_id,
+                                            stripe_subscription_id
+                                        ),
                                         assessment_limit = 25,
                                         assessments_used = 0,
                                         contact_opportunity_limit = 10,
@@ -1083,6 +1100,7 @@ async def stripe_webhook(request: Request):
                                 """),
                                 {
                                     "user_id": str(user.id),
+                                    "stripe_subscription_id": subscription_id,
                                 },
                             )
 
@@ -1127,6 +1145,80 @@ async def stripe_webhook(request: Request):
                                 )
 
             db.commit()
+        elif event_type in (
+            "customer.subscription.updated",
+            "customer.subscription.deleted",
+            "invoice.payment_failed",
+        ):
+            event_object = event["data"]["object"]
+
+            subscription_id = event_object.get("id")
+
+            if event_type == "invoice.payment_failed":
+                subscription_id = event_object.get("subscription")
+
+                if not subscription_id:
+                    parent = event_object.get("parent") or {}
+                    details = parent.get("subscription_details") or {}
+                    subscription_id = details.get("subscription")
+
+                if subscription_id:
+                    subscription = stripe.Subscription.retrieve(
+                        subscription_id
+                    )
+                else:
+                    subscription = None
+            else:
+                subscription = event_object
+
+            if subscription:
+                subscription_data = (
+                    subscription.to_dict()
+                    if hasattr(subscription, "to_dict")
+                    else dict(subscription)
+                )
+
+                metadata = subscription_data.get("metadata") or {}
+                user_id = metadata.get("user_id")
+                plan = metadata.get("plan")
+                stripe_status = subscription_data.get("status")
+                subscription_id = subscription_data.get("id") or subscription_id
+
+                if user_id and plan == "professional":
+                    # A failed invoice alone does not immediately revoke access.
+                    # Only terminal Stripe subscription states deactivate it.
+                    if event_type == "customer.subscription.deleted":
+                        entitlement_status = "inactive"
+                    elif stripe_status in (
+                        "canceled",
+                        "unpaid",
+                        "incomplete_expired",
+                    ):
+                        entitlement_status = "inactive"
+                    elif stripe_status in ("active", "trialing"):
+                        entitlement_status = "active"
+                    else:
+                        entitlement_status = None
+
+                    if entitlement_status:
+                        db.execute(
+                            text("""
+                                UPDATE professional_entitlements
+                                SET
+                                    status = :status,
+                                    updated_at = CURRENT_TIMESTAMP
+                                WHERE user_id = :user_id
+  AND stripe_subscription_id = :subscription_id
+                            """),
+                            {
+                                "status": entitlement_status,
+                                "user_id": str(user_id),
+                                "subscription_id": subscription_id,
+                            },
+                        )
+
+            db.commit()
+
 
         else:
             # We received a valid Stripe event that this V1 backend does not
@@ -1960,12 +2052,23 @@ def generate_pdf(
                 )
 
         elif active_demo:
-
             pass
 
-        elif active_demo:
+        elif user.plan == "professional":
+            paid_professional = db.execute(
+                text("""
+                    SELECT 1
+                    FROM professional_entitlements
+                    WHERE user_id = :user_id
+                      AND plan_code = 'professional'
+                      AND status = 'active'
+                    LIMIT 1
+                """),
+                {"user_id": str(user.id)},
+            ).first()
 
-            pass
+            if not paid_professional:
+                is_preview = True
 
         elif user.plan == "premium":
 
@@ -1998,7 +2101,7 @@ def generate_pdf(
             workspace != "home"
             and not is_preview
             and not active_demo
-            and user.plan != "premium"
+            and user.plan not in ("premium", "professional")
         ):
 
             user.credits -= 1

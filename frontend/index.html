@@ -23470,11 +23470,14 @@
 
 
     /* LOGO IN THE LEFT SIDEBAR */
-    #panel>.emf-topbar-logo-slot {
+    #panel>div.emf-topbar-logo-slot {
       width: 100%;
       min-width: 0;
-      height: 54px;
-      margin: 0 0 12px;
+      height: 42px !important;
+      min-height: 42px !important;
+      max-height: 42px !important;
+      flex: 0 0 42px !important;
+      margin: 0 0 8px;
       border: none;
       border-radius: 0;
       border-bottom: 1px solid #e2e8f0;
@@ -25728,14 +25731,6 @@ return false;
 
             </div>
 
-            <!-- ================================================== -->
-            <!-- CONTEXTUAL RETURN ACTION -->
-            <!-- ================================================== -->
-
-            <button id="contextualReturnButton" type="button" style="display: none;"
-              onclick="returnToPrimaryWorkspace()">
-              ← <span id="contextualReturnLabel">My Property</span>
-            </button>
 
           </div>
 
