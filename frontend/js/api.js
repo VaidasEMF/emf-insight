@@ -5322,6 +5322,29 @@ async function performProjectDelete(
 }
 
 
+function initProjectHeaderCloseButton() {
+    const button = document.getElementById("projectHeaderCloseButton");
+    if (!button || button.dataset.closeHandlerAttached === "true") return;
+
+    button.dataset.closeHandlerAttached = "true";
+
+    button.addEventListener("click", async event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (typeof window.closeActiveProject === "function") {
+            await window.closeActiveProject();
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initProjectHeaderCloseButton);
+} else {
+    initProjectHeaderCloseButton();
+}
+
+
 // ==================================================
 // ACTIVE PROJECT HEADER DELETE
 // ==================================================

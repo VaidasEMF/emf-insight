@@ -241,73 +241,7 @@ function drawOverlayUI() {
         }
     }
 
-    // =====================
-    // 🔥 MEASURE HELPER
-    // =====================
 
-    if (
-        AppState.ui.mode === "measure"
-    ) {
-
-        let text =
-            "Move the crosshair to a grid point and click to measure";
-
-        if (
-            hoveredMeasurePoint
-        ) {
-
-            const m =
-
-                hoveredMeasurePoint
-                    .measurements?.[
-                sessionId
-                ] || {};
-
-            text =
-
-                "📍 " +
-
-                hoveredMeasurePoint.id +
-
-                " • RF: " +
-                (m.rf || 0) +
-
-                " • E: " +
-                (m.electric || 0) +
-
-                " • M: " +
-                (m.magnetic || 0);
-        }
-
-        // background
-        ctx.fillStyle =
-            "rgba(0,0,0,0.82)";
-
-        ctx.beginPath();
-
-        ctx.roundRect(
-            20,
-            canvas.height - 70,
-            420,
-            44,
-            10
-        );
-
-        ctx.fill();
-
-        // text
-        ctx.fillStyle =
-            "white";
-
-        ctx.font =
-            "15px Arial";
-
-        ctx.fillText(
-            text,
-            35,
-            canvas.height - 42
-        );
-    }
 
     // =====================
     // 🔥 FLOATING FINISH

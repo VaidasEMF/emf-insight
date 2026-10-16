@@ -1790,41 +1790,101 @@
     }
 
 
+
     /* ===================== */
     /* SWITCHER BUTTON */
     /* ===================== */
 
     .workspace-switcher {
-      height: 38px;
-      padding: 0 12px;
-      border-radius: 8px;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 9px;
       border: 1px solid #cbd5e1;
-      background: #fff;
+      background: #ffffff;
 
       display: flex;
       align-items: center;
-      gap: 7px;
+      justify-content: center;
+      gap: 8px;
 
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #0f172a;
+      white-space: nowrap;
 
       cursor: pointer;
+      transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
     }
 
     .workspace-switcher:hover {
-      background: #f8fafc;
+      background: #f1f6ff;
+      border-color: #93b4ed;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
     }
 
     .workspace-switcher-chevron {
-      font-size: 11px;
+      font-size: 10px;
       color: #475569;
+      margin-left: 2px;
+    }
+
+    .workspace-switcher.menu-open {
+      background: #eff6ff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.10);
     }
 
 
-    .workspace-switcher.menu-open {
+    /* Direct Home / Business workspace switcher */
+
+    .workspace-selector-direct {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .workspace-selector-direct .workspace-mode-btn {
+      min-height: 42px;
+      padding: 0 16px;
+      gap: 8px;
+      border: 1px solid #d5dfed;
+      border-radius: 10px;
       background: #f8fafc;
-      border-color: #94a3b8;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
+    .workspace-selector-direct .workspace-mode-btn:hover {
+      background: #eff6ff;
+      border-color: #93b4ed;
+    }
+
+    .workspace-selector-direct .workspace-mode-btn.active {
+      background: #1765ed;
+      color: #ffffff;
+      border-color: #1765ed;
+      box-shadow: 0 2px 6px rgba(23, 101, 237, 0.22);
+    }
+
+    .workspace-selector-direct .workspace-mode-btn.active:hover {
+      background: #1057d5;
+      border-color: #1057d5;
+    }
+
+    .workspace-mode-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      line-height: 1;
     }
 
 
@@ -5324,7 +5384,7 @@
 
       box-sizing: border-box;
 
-      padding: 8px 16px;
+      padding: 8px 0;
 
       background: #ffffff;
 
@@ -5334,25 +5394,131 @@
 
 
     /* =========================================================
-   HEADER TOP ROW
+   HEADER TOP ROW — SINGLE SOURCE OF TRUTH
    ========================================================= */
 
     #projectHeader .project-header-top {
-
       display: flex;
-
-      flex-wrap: nowrap;
-
       align-items: center;
-
       justify-content: flex-start;
-
-      width: 100%;
-
-      min-height: 36px;
-
+      flex-wrap: nowrap;
       gap: 16px;
+      min-height: 46px;
+      width: 100%;
+      box-sizing: border-box;
+      padding-left: 10px;
+    }
 
+    #projectWorkspaceTitle {
+      flex: 0 0 auto;
+      margin: 0 12px 0 0;
+      white-space: nowrap;
+      font-size: 18px;
+      font-weight: 700;
+      color: #172033;
+    }
+
+
+    .emf-topbar-logo-slot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 1 260px;
+      min-width: 150px;
+      height: 42px;
+      padding: 0 10px;
+      box-sizing: border-box;
+      border: 1px dashed #cbd5e1;
+      border-radius: 9px;
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .emf-topbar-logo-slot .logo-slot-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: #eaf1ff;
+      color: #2563eb;
+      font-size: 18px;
+    }
+
+    #projectHeader .project-header-top>.project-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    #projectHeader .project-header-top>.workspace-selector {
+      margin-left: 20px;
+      margin-right: auto;
+      flex: 0 0 auto;
+    }
+
+    .emf-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex: 0 0 auto;
+    }
+
+    .emf-topbar-icon-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+
+      padding: 0;
+      border: 1px solid #e8edf3;
+      border-radius: 9px;
+
+      background: transparent;
+      color: #64748b;
+      font-size: 15px;
+
+      cursor: pointer;
+      box-shadow: none;
+
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    .emf-topbar-icon-btn:hover {
+      background: #f5f8fc;
+      border-color: #d5deea;
+      color: #334155;
+    }
+
+    .emf-topbar-notification-dot {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      min-width: 15px;
+      height: 15px;
+      padding: 0 3px;
+      border-radius: 999px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 9px;
+      line-height: 15px;
+      text-align: center;
+    }
+
+    #projectHeader .project-header-top>.user-selector {
+      margin-left: 0;
+      flex: 0 0 auto;
     }
 
     #projectHeader .project-header-top .user-selector {
@@ -5361,7 +5527,34 @@
     }
 
     #projectHeader .project-header-top .workspace-selector {
-      margin-left: auto;
+      margin-left: 0 !important;
+      margin-right: 0;
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      width: auto;
+      min-width: 0;
+    }
+
+    #projectHeader .project-header-top .workspace-selector-direct #workspaceHomeButton {
+      margin-left: 220px;
+    }
+
+    #projectHeader .project-header-top .workspace-selector-direct #workspaceBusinessButton {
+      margin-left: 0;
+    }
+
+    #projectHeader .emf-topbar-actions {
+      margin-left: 12px;
+      flex-shrink: 0;
+    }
+
+    #projectHeader .user-selector {
+      margin-left: 12px;
       flex-shrink: 0;
     }
 
@@ -5370,43 +5563,88 @@
    ========================================================= */
 
     #projectHeader .project-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
 
       font-size: 18px;
-
       line-height: 1.2;
-
       font-weight: 600;
-
       white-space: nowrap;
 
+      min-width: 0;
+      flex: 0 1 auto;
     }
+
+    #projectHeader .project-display-name-edit,
+    #projectHeader .project-display-name-delete {
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .project-header-id {
+      display: none;
+      align-items: center;
+
+      min-height: 26px;
+      padding: 0 9px;
+
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+
+      background: #f8fafc;
+      color: #64748b;
+
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+
+      white-space: nowrap;
+    }
+
 
 
     /* =========================================================
-   PROJECT META
+   PROJECT META — SECOND HEADER ROW
    ========================================================= */
 
     #projectHeader .project-meta {
-
       display: flex;
-
       align-items: center;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: 12px;
 
-      flex-wrap: wrap;
+      margin-top: 5px;
+      min-height: 36px;
+      padding: 6px 0 2px;
 
-      gap: 0;
-
-      margin-top: 6px;
-
-      min-height: 26px;
-
-      font-size: 14px;
-
-      line-height: 1.2;
-
+      font-size: 13px;
+      line-height: 1.3;
       font-weight: 500;
 
+      border-top: 1px solid #edf1f6;
+      box-sizing: border-box;
+      white-space: nowrap;
     }
+
+    #projectHeader .project-display-name-wrap {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
 
 
     /* =========================================================
@@ -5447,27 +5685,24 @@
     /* =========================================================
    PROJECT STATS
    ========================================================= */
-
-    #projectHeader .project-stats {
-
+    .project-meta .project-stats {
       display: inline-flex;
-
       align-items: center;
+      min-height: 30px;
+      margin-left: 0;
+      padding-left: 0;
+      border-left: none;
 
-      min-height: 26px;
+      position: relative;
+      left: 24px;
 
-      margin-left: 24px;
-
-      font-size: 14px;
-
-      line-height: 1.2;
-
-      font-weight: 600;
-
-      color: #334155;
-
+      font-size: 13px;
+      line-height: 1.3;
+      font-weight: 500;
+      color: #475569;
       white-space: nowrap;
     }
+
 
 
     /* =========================================================
@@ -5478,7 +5713,7 @@
 
       #projectHeader {
 
-        padding: 8px 16px;
+        padding: 8px 0;
 
       }
 
@@ -16876,15 +17111,21 @@
 
 
 
-    .project-display-name-wrap {
+    #projectHeader .project-display-name-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+
+      min-width: 0;
+      margin-left: 2px;
+      padding-left: 12px;
+
+      border-left: 1px solid #d7dee8;
     }
 
     .project-display-name-edit {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
 
       display: inline-flex;
       align-items: center;
@@ -16892,50 +17133,56 @@
 
       padding: 0;
 
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
 
-      background: #ffffff;
+      background: transparent;
       color: #64748b;
 
-      font-size: 16px;
+      font-size: 13px;
       line-height: 1;
 
       cursor: pointer;
+      box-sizing: border-box;
     }
 
     .project-display-name-edit:hover {
       background: #f1f5f9;
-      color: #2563eb;
-      border-color: #93c5fd;
+      color: #475569;
+      border-color: #cbd5e1;
     }
 
 
     .project-display-name-delete {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
 
       display: inline-flex;
       align-items: center;
       justify-content: center;
 
       padding: 0;
+      box-sizing: border-box;
 
-      border: 1px solid #fecaca;
-      border-radius: 6px;
+      border: 1px solid #f1dede;
+      border-radius: 8px;
 
-      background: #ffffff;
-      color: #dc2626;
+      background: transparent;
+      color: #c87878;
 
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1;
 
       cursor: pointer;
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
     }
 
     .project-display-name-delete:hover {
-      background: #fef2f2;
-      border-color: #fca5a5;
+      background: #fff1f1;
+      border-color: #e8bcbc;
       color: #b91c1c;
     }
 
@@ -23220,6 +23467,83 @@
     body.home-demo-active #businessProjectToggles {
       display: none !important;
     }
+
+
+    /* LOGO IN THE LEFT SIDEBAR */
+    #panel>.emf-topbar-logo-slot {
+      width: 100%;
+      min-width: 0;
+      height: 54px;
+      margin: 0 0 12px;
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid #e2e8f0;
+      background: #ffffff;
+      box-sizing: border-box;
+    }
+
+
+    /* WORKSPACE BUTTONS IN THE MIDDLE */
+    #projectHeader .workspace-selector {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* HELP, NOTIFICATIONS AND ACCOUNT AT THE RIGHT */
+    #projectHeader .emf-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    #projectHeader .user-selector {
+      margin-left: 0;
+      flex-shrink: 0;
+    }
+
+
+
+    /* OPEN PROJECT — hide workspace switcher and TODO */
+    body.open-project-modal .workspace-selector,
+    body.open-project-modal .emf-topbar-actions,
+    body.open-project-modal .project-next-step-card {
+      display: none !important;
+    }
+
+
+
+    /* OPEN PROJECT — hide workspace switcher and TODO card */
+    body.project-popup-open .workspace-selector,
+    body.project-popup-open .emf-topbar-actions,
+    body.project-popup-open #workflowNextStep {
+      display: none !important;
+    }
+
+
+    /* Keep the left sidebar sharp and readable */
+    body.project-popup-open #sidebar,
+    body.project-popup-open .sidebar {
+      filter: none !important;
+      backdrop-filter: none !important;
+    }
+
+
+
+    #projectWorkspaceTitle {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      font-size: 18px;
+      font-weight: 700;
+      color: #172033;
+      margin-right: 12px;
+    }
+
+
+    #projectHeader .workspace-selector-direct {
+      justify-content: flex-start !important;
+    }
   </style>
 
 </head>
@@ -23483,23 +23807,10 @@
       <!-- 🔥 LEFT PANEL -->
       <div id="panel" class="sidebar">
 
-
-        <div id="progressContentSidebar" class="home-only">
-
-          <!-- GUIDE -->
-
-          <div id="guideText" class="mutedText">
-          </div>
-
-          <!-- ===================== -->
-          <!-- 🔥 WELLNESS CARD -->
-          <!-- ===================== -->
-
-          <div id="wellnessScore"></div>
-
-
+        <div class="emf-topbar-logo-slot">
+          <span class="logo-slot-mark">✳</span>
+          <span class="logo-slot-label">EMF Insight</span>
         </div>
-
 
         <!-- ================================================== -->
         <!-- PROJECT -->
@@ -23584,6 +23895,21 @@
           <div id="workflowNextStep" class="workflow-next-step" style="display:none;">
           </div>
 
+
+          <div id="workflowRoomMeasuringHint" class="workflow-room-measuring-hint" hidden>
+            <strong>Room Measuring</strong>
+            <span>Move the crosshair to a grid point and click to measure.</span>
+            <span>
+              Measure each required grid point inside the active room.
+              Continue until all required measurements are complete.
+            </span>
+          </div>
+
+          <div id="workflowRoomDrawingHint" class="workflow-room-drawing-hint" hidden>
+            <strong>Drawing a room</strong>
+            <span class="workflow-room-drawing-hint-text">
+              1. Click on the floor plan to place the first corner. </span>
+          </div>
 
         </div>
 
@@ -24873,150 +25199,24 @@ return false;
 
           <div class="project-header-top">
 
-            <!-- ================================================== -->
-            <!-- PROJECT TITLE -->
-            <!-- ================================================== -->
-
-            <div class="project-title">
-
-              <span class="project-workspace-name">
-                🏠 My Property
-              </span>
-
-              <div class="project-display-name-wrap">
-                <span id="homeProjectDisplayName" class="project-display-name"></span>
-
-                <button id="homeProjectRenameButton" type="button" class="project-display-name-edit"
-                  title="Rename Project" aria-label="Rename Project">
-                  ✎
-                </button>
-
-                <button id="projectHeaderDeleteButton" type="button" class="project-display-name-delete"
-                  title="Delete Project" aria-label="Delete Project">
-                  🗑
-                </button>
-              </div>
-            </div>
-
-
-            <!-- ================================================== -->
             <!-- WORKSPACE SELECTOR -->
-            <!-- ================================================== -->
+            <div class="workspace-selector workspace-selector-direct">
+              <div id="projectWorkspaceTitle" class="project-workspace-title">
+                🏢 Business Project
+              </div>
 
-            <div class="workspace-selector">
+              <button id="workspaceHomeButton" class="workspace-switcher workspace-mode-btn" type="button"
+                onclick="setAppMode?.('home')" aria-label="Switch to Home Wellness">
 
-              <button id="workspaceSwitcherBtn" class="workspace-switcher" onclick="toggleWorkspaceMenu()"
-                type="button">
-
-                <span id="workspaceLabel">
-
-                  🏢 Business Survey
-
-                </span>
-
-                <span class="workspace-switcher-chevron">
-
-                  ▼
-
-                </span>
-
+                <span class="workspace-mode-icon">🏠</span>
+                <span>Home Wellness</span>
               </button>
 
+              <button id="workspaceBusinessButton" class="workspace-switcher workspace-mode-btn" type="button"
+                onclick="setAppMode?.('business')" aria-label="Switch to Business Survey">
 
-              <!-- ================================================== -->
-              <!-- WORKSPACE MENU -->
-              <!-- ================================================== -->
-
-              <div id="workspaceMenu" class="workspace-menu" style="display:none;">
-
-                <!-- ================================================== -->
-                <!-- WORKSPACE -->
-                <!-- ================================================== -->
-
-                <div class="workspace-menu-section">
-
-                  <div class="workspace-menu-section-title">
-
-                    WORKSPACE
-
-                  </div>
-
-
-                  <!-- BUSINESS -->
-
-                  <div id="workspaceBusinessItem" class="workspace-menu-item" onclick="
-                      setAppMode?.('business');
-                      closeWorkspaceMenu?.();
-                  ">
-
-                    <span class="workspace-menu-icon">
-                      🏢
-                    </span>
-
-                    <span class="workspace-menu-content">
-
-                      <span class="workspace-menu-title">
-                        Business Survey
-                      </span>
-
-                      <span class="workspace-menu-subtitle">
-                        Professional EMF Assessment
-                      </span>
-
-                    </span>
-
-                    <span id="workspaceBusinessCheck" class="workspace-menu-check" style="display: none;">
-                      ✓
-                    </span>
-
-                  </div>
-
-
-                  <!-- HOME -->
-
-                  <div id="workspaceHomeItem" class="workspace-menu-item" onclick="
-    setAppMode?.('home');
-    closeWorkspaceMenu?.();
-">
-                    <span class="workspace-menu-icon">
-                      🏠
-                    </span>
-
-                    <span class="workspace-menu-content">
-
-                      <span class="workspace-menu-title">
-                        My Property
-                      </span>
-
-                      <span class="workspace-menu-subtitle">
-                        Property Health Record
-                      </span>
-
-                    </span>
-
-                    <span id="workspaceHomeCheck" class="workspace-menu-check">
-                      ✓
-                    </span>
-
-                  </div>
-
-                </div>
-
-
-                <div class="workspace-menu-divider"></div>
-
-
-
-
-              </div>
-
-              <!-- ================================================== -->
-              <!-- CONTEXTUAL RETURN ACTION -->
-              <!-- ================================================== -->
-
-              <button id="contextualReturnButton" type="button" style="display: none;"
-                onclick="returnToPrimaryWorkspace()">
-                ← <span id="contextualReturnLabel">My Property</span>
+                <span class="workspace-mode-icon">🏢</span>
+                <span>Business Survey</span>
               </button>
 
             </div>
@@ -25025,6 +25225,110 @@ return false;
             <!-- ================================================== -->
             <!-- USER ACCOUNT SELECTOR -->
             <!-- ================================================== -->
+            <!-- HEADER ACTIONS -->
+            <div class="emf-topbar-actions">
+
+              <button id="headerHelpButton" class="emf-topbar-icon-btn" type="button" onclick="openDashboardHelp()"
+                title="Help & Support" aria-label="Help & Support">
+                ?
+              </button>
+
+              <button id="headerNotificationsButton" class="emf-topbar-icon-btn" type="button"
+                onclick="openAccountNotifications()" title="Notifications" aria-label="Notifications">
+                🔔
+                <span id="headerNotificationsBadge" class="emf-topbar-notification-dot" style="display:none;">
+                </span>
+              </button>
+
+            </div>
+
+            <!-- ================================================== -->
+            <!-- WORKSPACE MENU -->
+            <!-- ================================================== -->
+
+            <div id="workspaceMenu" class="workspace-menu" style="display:none;">
+
+              <!-- ================================================== -->
+              <!-- WORKSPACE -->
+              <!-- ================================================== -->
+
+              <div class="workspace-menu-section">
+
+                <div class="workspace-menu-section-title">
+
+                  WORKSPACE
+
+                </div>
+
+
+                <!-- BUSINESS -->
+
+                <div id="workspaceBusinessItem" class="workspace-menu-item" onclick="
+                      setAppMode?.('business');
+                      closeWorkspaceMenu?.();
+                  ">
+
+                  <span class="workspace-menu-icon">
+                    🏢
+                  </span>
+
+                  <span class="workspace-menu-content">
+
+                    <span class="workspace-menu-title">
+                      Business Survey
+                    </span>
+
+                    <span class="workspace-menu-subtitle">
+                      Professional EMF Assessment
+                    </span>
+
+                  </span>
+
+                  <span id="workspaceBusinessCheck" class="workspace-menu-check" style="display: none;">
+                    ✓
+                  </span>
+
+                </div>
+
+
+                <!-- HOME -->
+
+                <div id="workspaceHomeItem" class="workspace-menu-item" onclick="
+    setAppMode?.('home');
+    closeWorkspaceMenu?.();
+">
+                  <span class="workspace-menu-icon">
+                    🏠
+                  </span>
+
+                  <span class="workspace-menu-content">
+
+                    <span class="workspace-menu-title">
+                      My Property
+                    </span>
+
+                    <span class="workspace-menu-subtitle">
+                      Property Health Record
+                    </span>
+
+                  </span>
+
+                  <span id="workspaceHomeCheck" class="workspace-menu-check">
+                    ✓
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="workspace-menu-divider"></div>
+
+
+
+
+            </div>
+
 
             <div class="user-selector">
 
@@ -25424,211 +25728,235 @@ return false;
 
             </div>
 
-            <!-- MY PROPERTY HUB -->
-            <div id="myPropertyHubModal" class="modal-overlay" style="display:none;">
+            <!-- ================================================== -->
+            <!-- CONTEXTUAL RETURN ACTION -->
+            <!-- ================================================== -->
 
-              <div class="modal-content my-property-hub-modal">
+            <button id="contextualReturnButton" type="button" style="display: none;"
+              onclick="returnToPrimaryWorkspace()">
+              ← <span id="contextualReturnLabel">My Property</span>
+            </button>
 
-                <div class="my-property-hub-header">
+          </div>
 
-                  <div>
-                    <div class="my-property-hub-eyebrow">
-                      HOME WELLNESS
-                    </div>
 
-                    <h2>
-                      My Properties
-                    </h2>
+          <!-- ================================================== -->
+          <!-- PROJECT META — SECOND HEADER ROW -->
+          <!-- ================================================== -->
 
-                    <p>
-                      Select a property to open its Property Health Record.
-                    </p>
-                  </div>
+          <div class="project-meta">
 
-                  <button type="button" class="my-property-hub-close" onclick="closeMyPropertyHub()" aria-label="Close">
-                    ×
-                  </button>
+            <span class="project-stats">
+              <span id="projectSessionName">
+                Session 1 · Initial Survey
+              </span>
+            </span>
 
-                </div>
+            <div class="project-display-name-wrap">
 
-                <div id="myPropertyHubList" class="my-property-hub-list">
-                </div>
+              <span id="homeProjectDisplayName" class="project-display-name"></span>
 
-              </div>
+              <button id="homeProjectRenameButton" type="button" class="project-display-name-edit"
+                title="Rename Project" aria-label="Rename Project">✎</button>
+
+              <button id="projectHeaderDeleteButton" type="button" class="project-display-name-delete"
+                title="Delete Project" aria-label="Delete Project">🗑</button>
+
+              <button id="projectHeaderCloseButton" type="button" class="project-display-name-edit"
+                title="Close Project" aria-label="Close Project">✕</button>
+
+              <span id="projectHeaderId" class="project-header-id"></span>
+
             </div>
 
-            <!-- ================================================== -->
-            <!-- PROPERTY HEALTH RECORD MODAL -->
-            <!-- ================================================== -->
+          </div>
 
-            <div id="propertyHealthRecordModal" class="modal-overlay" style="display:none;">
 
-              <div class="modal-content property-health-record-modal">
+          <!-- MY PROPERTY HUB -->
+          <div id="myPropertyHubModal" class="modal-overlay" style="display:none;">
 
-                <div class="property-health-record-modal-header">
+            <div class="modal-content my-property-hub-modal">
 
-                  <div>
-                    <div class="property-health-record-modal-eyebrow">
-                      PROPERTY HEALTH RECORD
-                    </div>
+              <div class="my-property-hub-header">
 
-                    <h3 id="propertyHealthRecordModalTitle">
-                      My Property
-                    </h3>
+                <div>
+                  <div class="my-property-hub-eyebrow">
+                    HOME WELLNESS
                   </div>
 
-                  <button type="button" class="property-health-record-modal-close" onclick="closePropertyHealthRecord()"
-                    aria-label="Close">
-                    ×
-                  </button>
+                  <h2>
+                    My Properties
+                  </h2>
 
+                  <p>
+                    Select a property to open its Property Health Record.
+                  </p>
                 </div>
 
+                <button type="button" class="my-property-hub-close" onclick="closeMyPropertyHub()" aria-label="Close">
+                  ×
+                </button>
 
-                <div class="property-health-record-modal-body">
+              </div>
 
-                  <!-- ==========================================
+              <div id="myPropertyHubList" class="my-property-hub-list">
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ================================================== -->
+          <!-- PROPERTY HEALTH RECORD MODAL -->
+          <!-- ================================================== -->
+
+          <div id="propertyHealthRecordModal" class="modal-overlay" style="display:none;">
+
+            <div class="modal-content property-health-record-modal">
+
+              <div class="property-health-record-modal-header">
+
+                <div>
+                  <div class="property-health-record-modal-eyebrow">
+                    PROPERTY HEALTH RECORD
+                  </div>
+
+                  <h3 id="propertyHealthRecordModalTitle">
+                    My Property
+                  </h3>
+                </div>
+
+                <button type="button" class="property-health-record-modal-close" onclick="closePropertyHealthRecord()"
+                  aria-label="Close">
+                  ×
+                </button>
+
+              </div>
+
+
+              <div class="property-health-record-modal-body">
+
+                <!-- ==========================================
        PROPERTY + LOCATION
        ========================================== -->
 
-                  <div class="property-health-record-section property-health-record-property-card">
+                <div class="property-health-record-section property-health-record-property-card">
 
-                    <div class="property-health-record-property-grid">
+                  <div class="property-health-record-property-grid">
 
-                      <!-- PROPERTY -->
-                      <div class="property-health-record-property-column">
+                    <!-- PROPERTY -->
+                    <div class="property-health-record-property-column">
 
-                        <div class="phr-heading-row">
-                          <div class="phr-icon phr-icon-property">⌂</div>
+                      <div class="phr-heading-row">
+                        <div class="phr-icon phr-icon-property">⌂</div>
 
-                          <div class="property-health-record-section-title">
-                            PROPERTY
-                          </div>
+                        <div class="property-health-record-section-title">
+                          PROPERTY
                         </div>
-
-                        <div id="propertyHealthRecordPropertyType" class="property-health-record-property-type">
-                          Property
-                        </div>
-
-                        <div class="property-health-record-property-detail">
-                          <span class="property-health-record-property-detail-label">
-                            Floors
-                          </span>
-
-                          <span id="propertyHealthRecordFloors" class="property-health-record-property-detail-value">
-                            1
-                          </span>
-                        </div>
-
-                        <div class="property-health-record-id-label">
-                          Property ID
-                        </div>
-
-                        <div id="propertyHealthRecordId" class="property-health-record-id">
-                          —
-                        </div>
-
                       </div>
 
+                      <div id="propertyHealthRecordPropertyType" class="property-health-record-property-type">
+                        Property
+                      </div>
 
-                      <!-- LOCATION -->
-                      <div class="property-health-record-property-column">
+                      <div class="property-health-record-property-detail">
+                        <span class="property-health-record-property-detail-label">
+                          Floors
+                        </span>
 
-                        <div class="phr-heading-row">
-                          <div class="phr-icon phr-icon-location">⌖</div>
+                        <span id="propertyHealthRecordFloors" class="property-health-record-property-detail-value">
+                          1
+                        </span>
+                      </div>
 
-                          <div class="property-health-record-section-title">
-                            LOCATION
-                          </div>
+                      <div class="property-health-record-id-label">
+                        Property ID
+                      </div>
+
+                      <div id="propertyHealthRecordId" class="property-health-record-id">
+                        —
+                      </div>
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+                    <div class="property-health-record-property-column">
+
+                      <div class="phr-heading-row">
+                        <div class="phr-icon phr-icon-location">⌖</div>
+
+                        <div class="property-health-record-section-title">
+                          LOCATION
                         </div>
+                      </div>
 
-                        <div id="propertyHealthRecordAddress" class="property-health-record-address">
-                          Address not yet added
-                        </div>
+                      <div id="propertyHealthRecordAddress" class="property-health-record-address">
+                        Address not yet added
+                      </div>
 
-                        <div id="propertyHealthRecordCity" class="property-health-record-address">
-                          Location not yet added
-                        </div>
+                      <div id="propertyHealthRecordCity" class="property-health-record-address">
+                        Location not yet added
+                      </div>
 
-                        <div id="propertyHealthRecordCountry" class="property-health-record-address">
-                          Country not yet added
-                        </div>
-
+                      <div id="propertyHealthRecordCountry" class="property-health-record-address">
+                        Country not yet added
                       </div>
 
                     </div>
 
                   </div>
 
+                </div>
 
-                  <!-- ==========================================
+
+                <!-- ==========================================
        ENVIRONMENT + LIFESTYLE
        ========================================== -->
 
-                  <div class="property-health-record-two-column">
+                <div class="property-health-record-two-column">
 
 
-                    <!-- ENVIRONMENT -->
-                    <div class="property-health-record-section">
+                  <!-- ENVIRONMENT -->
+                  <div class="property-health-record-section">
 
-                      <div class="phr-heading-row">
-                        <div class="phr-icon phr-icon-environment">◌</div>
+                    <div class="phr-heading-row">
+                      <div class="phr-icon phr-icon-environment">◌</div>
 
-                        <div class="property-health-record-section-title">
-                          ENVIRONMENT
-                        </div>
+                      <div class="property-health-record-section-title">
+                        ENVIRONMENT
                       </div>
-
-                      <div id="propertyHealthRecordEnvironment" class="property-health-record-environment-grid">
-
-                        <div class="property-health-record-metric">
-                          <span class="property-health-record-metric-label">
-                            Indoor Sources
-                          </span>
-
-                          <span id="propertyHealthRecordIndoorSources" class="property-health-record-metric-value">
-                            0
-                          </span>
-                        </div>
-
-                        <div class="property-health-record-metric">
-                          <span class="property-health-record-metric-label">
-                            Outdoor Sources
-                          </span>
-
-                          <span id="propertyHealthRecordOutdoorSources" class="property-health-record-metric-value">
-                            0
-                          </span>
-                        </div>
-
-                        <div class="property-health-record-metric">
-                          <span class="property-health-record-metric-label">
-                            Total Sources
-                          </span>
-
-                          <span id="propertyHealthRecordTotalSources" class="property-health-record-metric-value">
-                            0
-                          </span>
-                        </div>
-
-                      </div>
-
                     </div>
 
+                    <div id="propertyHealthRecordEnvironment" class="property-health-record-environment-grid">
 
-                    <!-- LIFESTYLE -->
-                    <div class="property-health-record-section">
+                      <div class="property-health-record-metric">
+                        <span class="property-health-record-metric-label">
+                          Indoor Sources
+                        </span>
 
-                      <div class="phr-heading-row">
-                        <div class="phr-icon phr-icon-lifestyle">♧</div>
-
-                        <div class="property-health-record-section-title">
-                          LIFESTYLE
-                        </div>
+                        <span id="propertyHealthRecordIndoorSources" class="property-health-record-metric-value">
+                          0
+                        </span>
                       </div>
 
-                      <div id="propertyHealthRecordLifestyle" class="property-health-record-section-value">
-                        Living areas not yet added
+                      <div class="property-health-record-metric">
+                        <span class="property-health-record-metric-label">
+                          Outdoor Sources
+                        </span>
+
+                        <span id="propertyHealthRecordOutdoorSources" class="property-health-record-metric-value">
+                          0
+                        </span>
+                      </div>
+
+                      <div class="property-health-record-metric">
+                        <span class="property-health-record-metric-label">
+                          Total Sources
+                        </span>
+
+                        <span id="propertyHealthRecordTotalSources" class="property-health-record-metric-value">
+                          0
+                        </span>
                       </div>
 
                     </div>
@@ -25636,71 +25964,89 @@ return false;
                   </div>
 
 
-                  <!-- ==========================================
+                  <!-- LIFESTYLE -->
+                  <div class="property-health-record-section">
+
+                    <div class="phr-heading-row">
+                      <div class="phr-icon phr-icon-lifestyle">♧</div>
+
+                      <div class="property-health-record-section-title">
+                        LIFESTYLE
+                      </div>
+                    </div>
+
+                    <div id="propertyHealthRecordLifestyle" class="property-health-record-section-value">
+                      Living areas not yet added
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <!-- ==========================================
        CURRENT ASSESSMENT
        ========================================== -->
 
-                  <!-- CURRENT ASSESSMENT -->
+                <!-- CURRENT ASSESSMENT -->
 
-                  <div class="property-health-record-section property-health-record-current-assessment">
+                <div class="property-health-record-section property-health-record-current-assessment">
 
-                    <div class="property-health-record-assessment-header">
+                  <div class="property-health-record-assessment-header">
 
-                      <div class="phr-heading-row">
+                    <div class="phr-heading-row">
 
-                        <div class="phr-icon phr-icon-assessment">
-                          ▣
-                        </div>
-
-                        <div class="property-health-record-section-title">
-                          CURRENT ASSESSMENT
-                        </div>
-
+                      <div class="phr-icon phr-icon-assessment">
+                        ▣
                       </div>
 
-                      <div id="propertyHealthRecordAssessmentStatus" class="property-health-record-assessment-status">
-                        In progress
+                      <div class="property-health-record-section-title">
+                        CURRENT ASSESSMENT
                       </div>
 
                     </div>
 
-                    <div id="propertyHealthRecordAssessment" class="property-health-record-section-value">
-                      Initial Home Assessment
+                    <div id="propertyHealthRecordAssessmentStatus" class="property-health-record-assessment-status">
+                      In progress
                     </div>
 
                   </div>
 
+                  <div id="propertyHealthRecordAssessment" class="property-health-record-section-value">
+                    Initial Home Assessment
+                  </div>
 
-                  <!-- ==========================================
+                </div>
+
+
+                <!-- ==========================================
        RECORD HISTORY
        ========================================== -->
 
-                  <div class="property-health-record-history">
+                <div class="property-health-record-history">
 
-                    <div class="property-health-record-section-title">
-                      RECORD HISTORY
-                    </div>
+                  <div class="property-health-record-section-title">
+                    RECORD HISTORY
+                  </div>
 
-                    <div id="propertyHealthRecordHistoryItems">
+                  <div id="propertyHealthRecordHistoryItems">
 
-                      <div class="property-health-record-history-item">
+                    <div class="property-health-record-history-item">
 
-                        <div class="property-health-record-history-dot"></div>
+                      <div class="property-health-record-history-dot"></div>
 
-                        <div>
+                      <div>
 
-                          <div class="property-health-record-history-title">
-                            Initial record created
-                          </div>
+                        <div class="property-health-record-history-title">
+                          Initial record created
+                        </div>
 
-                          <div id="propertyHealthRecordCreatedDate" class="property-health-record-history-date">
-                            —
-                          </div>
+                        <div id="propertyHealthRecordCreatedDate" class="property-health-record-history-date">
+                          —
+                        </div>
 
-                          <div class="property-health-record-history-subtitle">
-                            Your Property Health Record has started.
-                          </div>
-
+                        <div class="property-health-record-history-subtitle">
+                          Your Property Health Record has started.
                         </div>
 
                       </div>
@@ -25709,38 +26055,38 @@ return false;
 
                   </div>
 
+                </div>
 
-                  <!-- ==========================================
+
+                <!-- ==========================================
        PROPERTY HEALTH DASHBOARD
        ========================================== -->
 
-                  <div class="property-health-record-dashboard-link">
+                <div class="property-health-record-dashboard-link">
 
-                    <div class="phr-icon phr-icon-dashboard">
-                      ▥
+                  <div class="phr-icon phr-icon-dashboard">
+                    ▥
+                  </div>
+
+                  <div class="property-health-record-dashboard-text">
+
+                    <div class="property-health-record-dashboard-title">
+                      Your Property Health Record
                     </div>
 
-                    <div class="property-health-record-dashboard-text">
-
-                      <div class="property-health-record-dashboard-title">
-                        Your Property Health Record
-                      </div>
-
-                      <div class="property-health-record-dashboard-subtitle">
-                        View your property's environmental profile, living areas and current assessment in the Property
-                        Health Dashboard.
-                      </div>
-
+                    <div class="property-health-record-dashboard-subtitle">
+                      View your property's environmental profile, living areas and current assessment in the Property
+                      Health Dashboard.
                     </div>
-
-                    <button type="button" class="property-health-record-dashboard-btn"
-                      onclick="openPropertyHealthDashboard()">
-                      View Property Health Dashboard
-                      <span aria-hidden="true">→</span>
-
-                    </button>
 
                   </div>
+
+                  <button type="button" class="property-health-record-dashboard-btn"
+                    onclick="openPropertyHealthDashboard()">
+                    View Property Health Dashboard
+                    <span aria-hidden="true">→</span>
+
+                  </button>
 
                 </div>
 
@@ -25750,369 +26096,371 @@ return false;
 
           </div>
 
-          <!-- ==========================================================
+        </div>
+
+        <!-- ==========================================================
      PROPERTY HEALTH DASHBOARD
      ========================================================== -->
 
-          <div id="propertyHealthDashboardModal" class="modal-overlay" style="display:none;">
+        <div id="propertyHealthDashboardModal" class="modal-overlay" style="display:none;">
 
-            <div class="modal-content property-health-dashboard-modal">
+          <div class="modal-content property-health-dashboard-modal">
 
-              <!-- HEADER -->
-              <div class="property-health-dashboard-header">
+            <!-- HEADER -->
+            <div class="property-health-dashboard-header">
 
-                <div>
-                  <div class="property-health-dashboard-eyebrow">
-                    PROPERTY HEALTH RECORD
+              <div>
+                <div class="property-health-dashboard-eyebrow">
+                  PROPERTY HEALTH RECORD
+                </div>
+
+                <h2 id="propertyHealthDashboardViewTitle">
+                  My Property
+                </h2>
+
+                <div id="propertyHealthDashboardViewSubtitle" class="property-health-dashboard-subtitle">
+                  Your property's personal health record
+                </div>
+              </div>
+
+              <button type="button" class="property-health-dashboard-close" onclick="closePropertyHealthDashboard()"
+                aria-label="Close">
+                ×
+              </button>
+
+            </div>
+
+
+            <!-- BODY -->
+            <div class="property-health-dashboard-body">
+
+              <!-- PROPERTY OVERVIEW -->
+              <div class="property-health-dashboard-card">
+
+                <div class="property-health-dashboard-card-header">
+                  <div class="phr-icon phr-icon-property">
+                    ⌂
                   </div>
 
-                  <h2 id="propertyHealthDashboardViewTitle">
-                    My Property
-                  </h2>
-
-                  <div id="propertyHealthDashboardViewSubtitle" class="property-health-dashboard-subtitle">
-                    Your property's personal health record
+                  <div class="property-health-dashboard-card-title">
+                    PROPERTY OVERVIEW
                   </div>
                 </div>
 
-                <button type="button" class="property-health-dashboard-close" onclick="closePropertyHealthDashboard()"
-                  aria-label="Close">
-                  ×
+                <div class="property-health-dashboard-overview-grid">
+
+                  <div>
+                    <div class="property-health-dashboard-label">
+                      Property Type
+                    </div>
+
+                    <div id="propertyHealthDashboardPropertyType" class="property-health-dashboard-value">
+                      —
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="property-health-dashboard-label">
+                      Location
+                    </div>
+
+                    <div id="propertyHealthDashboardLocation" class="property-health-dashboard-value">
+                      —
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="property-health-dashboard-label">
+                      Floors
+                    </div>
+
+                    <div id="propertyHealthDashboardFloors" class="property-health-dashboard-value">
+                      0
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="property-health-dashboard-label">
+                      Property ID
+                    </div>
+
+                    <div id="propertyHealthDashboardId" class="property-health-dashboard-id">
+                      —
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- ENVIRONMENT + LIFESTYLE -->
+              <div class="property-health-dashboard-two-column">
+
+                <!-- ENVIRONMENT -->
+                <div class="property-health-dashboard-card">
+
+                  <div class="property-health-dashboard-card-header">
+
+                    <div class="phr-icon phr-icon-environment">
+                      ◌
+                    </div>
+
+                    <div class="property-health-dashboard-card-title">
+                      ENVIRONMENT
+                    </div>
+
+                  </div>
+
+                  <div class="property-health-dashboard-metrics">
+
+                    <div class="property-health-dashboard-metric">
+                      <span>Indoor Sources</span>
+                      <strong id="propertyHealthDashboardIndoorSources">0</strong>
+                    </div>
+
+                    <div class="property-health-dashboard-metric">
+                      <span>Outdoor Sources</span>
+                      <strong id="propertyHealthDashboardOutdoorSources">0</strong>
+                    </div>
+
+                    <div class="property-health-dashboard-metric">
+                      <span>Total Sources</span>
+                      <strong id="propertyHealthDashboardTotalSources">0</strong>
+                    </div>
+
+                  </div>
+
+                  <div class="property-health-dashboard-note">
+                    <strong>Identified environmental sources</strong>
+                    <span>
+                      Sources identified from your property information and assessment context.
+                      Professional measurements are required to validate actual exposure levels.
+                    </span>
+                  </div>
+
+                  <div class="property-health-dashboard-note">
+                    <strong>Identified environmental sources</strong>
+                    <span>
+                      Sources identified from your property information and assessment context.
+                      Professional measurements are required to validate actual exposure levels.
+                    </span>
+                  </div>
+
+                </div>
+
+
+                <!-- LIFESTYLE -->
+                <div class="property-health-dashboard-card">
+
+                  <div class="property-health-dashboard-card-header">
+
+                    <div class="phr-icon phr-icon-lifestyle">
+                      ♧
+                    </div>
+
+                    <div class="property-health-dashboard-card-title">
+                      LIFESTYLE
+                    </div>
+
+                    <div class="property-health-dashboard-note">
+                      Areas where your daily activities take place.
+                    </div>
+
+                  </div>
+
+                  <div class="property-health-dashboard-metric">
+
+                    <span>
+                      Living Areas
+                    </span>
+
+                    <strong id="propertyHealthDashboardLifestyle">
+                      Living areas not yet added
+                    </strong>
+
+                  </div>
+
+                </div>
+              </div>
+
+
+              <!-- CURRENT ASSESSMENT -->
+              <div class="property-health-dashboard-card">
+
+                <div class="property-health-dashboard-card-header">
+
+                  <div class="phr-icon phr-icon-assessment">
+                    ▣
+                  </div>
+
+                  <div class="property-health-dashboard-card-title">
+                    CURRENT ASSESSMENT
+                  </div>
+
+                  <div id="propertyHealthDashboardAssessmentStatus" class="property-health-dashboard-status">
+                    In progress
+                  </div>
+
+                </div>
+
+                <div id="propertyHealthDashboardAssessment" class="property-health-dashboard-value">
+                  Initial Home Assessment
+                </div>
+
+              </div>
+
+
+              <!-- PROPERTY INSIGHTS -->
+              <div class="property-health-dashboard-card property-health-dashboard-insights">
+
+                <div class="property-health-dashboard-card-header">
+
+                  <div class="phr-icon phr-icon-dashboard">
+                    ◈
+                  </div>
+
+                  <div>
+                    <div class="property-health-dashboard-card-title">
+                      PROPERTY INSIGHTS
+                    </div>
+
+                    <div class="property-health-dashboard-card-description">
+                      What we currently understand about this property.
+                    </div>
+                  </div>
+
+                </div>
+
+                <button type="button" class="property-health-dashboard-primary-btn" onclick="openResultsDashboard()">
+                  View Property Insights
+                  <span aria-hidden="true">→</span>
                 </button>
 
               </div>
 
 
-              <!-- BODY -->
-              <div class="property-health-dashboard-body">
+              <!-- WHAT CAN YOU DO NEXT? -->
 
-                <!-- PROPERTY OVERVIEW -->
-                <div class="property-health-dashboard-card">
+              <section class="property-health-dashboard-section">
 
-                  <div class="property-health-dashboard-card-header">
-                    <div class="phr-icon phr-icon-property">
-                      ⌂
-                    </div>
-
-                    <div class="property-health-dashboard-card-title">
-                      PROPERTY OVERVIEW
-                    </div>
-                  </div>
-
-                  <div class="property-health-dashboard-overview-grid">
-
-                    <div>
-                      <div class="property-health-dashboard-label">
-                        Property Type
-                      </div>
-
-                      <div id="propertyHealthDashboardPropertyType" class="property-health-dashboard-value">
-                        —
-                      </div>
-                    </div>
-
-                    <div>
-                      <div class="property-health-dashboard-label">
-                        Location
-                      </div>
-
-                      <div id="propertyHealthDashboardLocation" class="property-health-dashboard-value">
-                        —
-                      </div>
-                    </div>
-
-                    <div>
-                      <div class="property-health-dashboard-label">
-                        Floors
-                      </div>
-
-                      <div id="propertyHealthDashboardFloors" class="property-health-dashboard-value">
-                        0
-                      </div>
-                    </div>
-
-                    <div>
-                      <div class="property-health-dashboard-label">
-                        Property ID
-                      </div>
-
-                      <div id="propertyHealthDashboardId" class="property-health-dashboard-id">
-                        —
-                      </div>
-                    </div>
-
-                  </div>
-
+                <div class="property-health-dashboard-section-title">
+                  WHAT CAN YOU DO NEXT?
                 </div>
 
+                <div class="property-health-dashboard-next-grid">
 
-                <!-- ENVIRONMENT + LIFESTYLE -->
-                <div class="property-health-dashboard-two-column">
-
-                  <!-- ENVIRONMENT -->
-                  <div class="property-health-dashboard-card">
-
-                    <div class="property-health-dashboard-card-header">
-
-                      <div class="phr-icon phr-icon-environment">
-                        ◌
-                      </div>
-
-                      <div class="property-health-dashboard-card-title">
-                        ENVIRONMENT
-                      </div>
-
+                  <!-- UNDERSTAND -->
+                  <button type="button" class="property-health-dashboard-next-card" onclick="openResultsDashboard()">
+                    <div class="phr-next-icon">
+                      📖
                     </div>
 
-                    <div class="property-health-dashboard-metrics">
-
-                      <div class="property-health-dashboard-metric">
-                        <span>Indoor Sources</span>
-                        <strong id="propertyHealthDashboardIndoorSources">0</strong>
-                      </div>
-
-                      <div class="property-health-dashboard-metric">
-                        <span>Outdoor Sources</span>
-                        <strong id="propertyHealthDashboardOutdoorSources">0</strong>
-                      </div>
-
-                      <div class="property-health-dashboard-metric">
-                        <span>Total Sources</span>
-                        <strong id="propertyHealthDashboardTotalSources">0</strong>
-                      </div>
-
-                    </div>
-
-                    <div class="property-health-dashboard-note">
-                      <strong>Identified environmental sources</strong>
+                    <div class="phr-next-content">
+                      <strong>Understand More</strong>
                       <span>
-                        Sources identified from your property information and assessment context.
-                        Professional measurements are required to validate actual exposure levels.
+                        Explore your current property insights
                       </span>
                     </div>
 
-                    <div class="property-health-dashboard-note">
-                      <strong>Identified environmental sources</strong>
-                      <span>
-                        Sources identified from your property information and assessment context.
-                        Professional measurements are required to validate actual exposure levels.
-                      </span>
-                    </div>
-
-                  </div>
-
-
-                  <!-- LIFESTYLE -->
-                  <div class="property-health-dashboard-card">
-
-                    <div class="property-health-dashboard-card-header">
-
-                      <div class="phr-icon phr-icon-lifestyle">
-                        ♧
-                      </div>
-
-                      <div class="property-health-dashboard-card-title">
-                        LIFESTYLE
-                      </div>
-
-                      <div class="property-health-dashboard-note">
-                        Areas where your daily activities take place.
-                      </div>
-
-                    </div>
-
-                    <div class="property-health-dashboard-metric">
-
-                      <span>
-                        Living Areas
-                      </span>
-
-                      <strong id="propertyHealthDashboardLifestyle">
-                        Living areas not yet added
-                      </strong>
-
-                    </div>
-
-                  </div>
-                </div>
-
-
-                <!-- CURRENT ASSESSMENT -->
-                <div class="property-health-dashboard-card">
-
-                  <div class="property-health-dashboard-card-header">
-
-                    <div class="phr-icon phr-icon-assessment">
-                      ▣
-                    </div>
-
-                    <div class="property-health-dashboard-card-title">
-                      CURRENT ASSESSMENT
-                    </div>
-
-                    <div id="propertyHealthDashboardAssessmentStatus" class="property-health-dashboard-status">
-                      In progress
-                    </div>
-
-                  </div>
-
-                  <div id="propertyHealthDashboardAssessment" class="property-health-dashboard-value">
-                    Initial Home Assessment
-                  </div>
-
-                </div>
-
-
-                <!-- PROPERTY INSIGHTS -->
-                <div class="property-health-dashboard-card property-health-dashboard-insights">
-
-                  <div class="property-health-dashboard-card-header">
-
-                    <div class="phr-icon phr-icon-dashboard">
-                      ◈
-                    </div>
-
-                    <div>
-                      <div class="property-health-dashboard-card-title">
-                        PROPERTY INSIGHTS
-                      </div>
-
-                      <div class="property-health-dashboard-card-description">
-                        What we currently understand about this property.
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <button type="button" class="property-health-dashboard-primary-btn" onclick="openResultsDashboard()">
-                    View Property Insights
-                    <span aria-hidden="true">→</span>
+                    <span class="phr-next-arrow">→</span>
                   </button>
 
+
+
+
+                  <!-- IMPROVE -->
+                  <div class="property-health-dashboard-next-card is-locked">
+
+                    <div class="phr-next-icon phr-next-icon-muted">
+                      🌿
+                    </div>
+
+                    <div class="phr-next-content">
+                      <strong>Improve Your Environment</strong>
+                      <span>
+                        Coming soon
+                      </span>
+                    </div>
+
+                  </div>
+
+
+                  <!-- TRACK -->
+                  <div class="property-health-dashboard-next-card is-locked">
+
+                    <div class="phr-next-icon phr-next-icon-muted">
+                      ◷
+                    </div>
+
+                    <div class="phr-next-content">
+                      <strong>Track Changes</strong>
+                      <span>
+                        Your Property Health History will grow over time
+                      </span>
+                    </div>
+
+                  </div>
+
                 </div>
 
-
-                <!-- WHAT CAN YOU DO NEXT? -->
-
-                <section class="property-health-dashboard-section">
-
-                  <div class="property-health-dashboard-section-title">
-                    WHAT CAN YOU DO NEXT?
-                  </div>
-
-                  <div class="property-health-dashboard-next-grid">
-
-                    <!-- UNDERSTAND -->
-                    <button type="button" class="property-health-dashboard-next-card" onclick="openResultsDashboard()">
-                      <div class="phr-next-icon">
-                        📖
-                      </div>
-
-                      <div class="phr-next-content">
-                        <strong>Understand More</strong>
-                        <span>
-                          Explore your current property insights
-                        </span>
-                      </div>
-
-                      <span class="phr-next-arrow">→</span>
-                    </button>
+              </section>
 
 
+              <section class="property-health-dashboard-section">
 
+                <div class="property-health-dashboard-section-title">
+                  PROPERTY HEALTH HISTORY
+                </div>
 
-                    <!-- IMPROVE -->
-                    <div class="property-health-dashboard-next-card is-locked">
+                <div class="phr-history">
 
-                      <div class="phr-next-icon phr-next-icon-muted">
-                        🌿
-                      </div>
+                  <div class="phr-history-item">
 
-                      <div class="phr-next-content">
-                        <strong>Improve Your Environment</strong>
-                        <span>
-                          Coming soon
-                        </span>
-                      </div>
-
+                    <div class="phr-history-marker">
+                      <div class="phr-history-dot"></div>
                     </div>
 
+                    <div class="phr-history-content">
 
-                    <!-- TRACK -->
-                    <div class="property-health-dashboard-next-card is-locked">
+                      <div class="phr-history-top">
 
-                      <div class="phr-next-icon phr-next-icon-muted">
-                        ◷
+                        <strong>
+                          Property Health Record created
+                        </strong>
+
+                        <span id="dashboardPropertyCreatedDate" class="phr-history-date">
+                          —
+                        </span>
+
                       </div>
 
-                      <div class="phr-next-content">
-                        <strong>Track Changes</strong>
-                        <span>
-                          Your Property Health History will grow over time
-                        </span>
+                      <div class="phr-history-subtitle">
+                        Your property's health record has started.
+                      </div>
+
+                      <div class="phr-history-description">
+                        Property information, lifestyle areas and environmental
+                        context are now part of your property's record.
                       </div>
 
                     </div>
 
                   </div>
 
-                </section>
+                </div>
 
-
-                <section class="property-health-dashboard-section">
-
-                  <div class="property-health-dashboard-section-title">
-                    PROPERTY HEALTH HISTORY
-                  </div>
-
-                  <div class="phr-history">
-
-                    <div class="phr-history-item">
-
-                      <div class="phr-history-marker">
-                        <div class="phr-history-dot"></div>
-                      </div>
-
-                      <div class="phr-history-content">
-
-                        <div class="phr-history-top">
-
-                          <strong>
-                            Property Health Record created
-                          </strong>
-
-                          <span id="dashboardPropertyCreatedDate" class="phr-history-date">
-                            —
-                          </span>
-
-                        </div>
-
-                        <div class="phr-history-subtitle">
-                          Your property's health record has started.
-                        </div>
-
-                        <div class="phr-history-description">
-                          Property information, lifestyle areas and environmental
-                          context are now part of your property's record.
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </section>
-
-              </div>
+              </section>
 
             </div>
 
+          </div>
 
-            <!-- =========================================================
+
+          <!-- =========================================================
      HOME — MY PROFESSIONAL REQUEST
      ========================================================= -->
-            <section id="homeProfessionalRequestPage" style="
+          <section id="homeProfessionalRequestPage" style="
   display:none;
   flex:1;
   min-height:0;
@@ -26122,7 +26470,7 @@ return false;
   box-sizing:border-box;
 " aria-labelledby="homeProfessionalRequestPageTitle">
 
-              <div class="property-health-dashboard-card" style="
+            <div class="property-health-dashboard-card" style="
   width:100%;
   max-width:none;
   flex:1;
@@ -26137,41 +26485,41 @@ return false;
   overflow:hidden;
 ">
 
-                <div class="property-health-dashboard-card-header">
+              <div class="property-health-dashboard-card-header">
 
-                  <div>
-                    <div class="property-health-dashboard-card-title">
-                      MY PROFESSIONAL REQUEST
-                    </div>
+                <div>
+                  <div class="property-health-dashboard-card-title">
+                    MY PROFESSIONAL REQUEST
+                  </div>
 
-                    <h2 id="homeProfessionalRequestPageTitle" style="
+                  <h2 id="homeProfessionalRequestPageTitle" style="
             margin:6px 0 0;
             font-size:28px;
             line-height:1.15;
           ">
-                      Get Professional Assessment
-                    </h2>
+                    Get Professional Assessment
+                  </h2>
 
-                    <p id="homeProfessionalRequestPageIntro" style="
+                  <p id="homeProfessionalRequestPageIntro" style="
             margin:8px 0 0;
             color:#64748b;
             max-width:720px;
           ">
-                      Connect your property with a qualified EMF professional
-                      for an on-site assessment and professional measurement.
-                    </p>
-                  </div>
-
-                  <button type="button" class="btn-secondary" onclick="closeHomeProfessionalRequestPage()">
-                    ← Back to My Property
-                  </button>
-
+                    Connect your property with a qualified EMF professional
+                    for an on-site assessment and professional measurement.
+                  </p>
                 </div>
 
+                <button type="button" class="btn-secondary" onclick="closeHomeProfessionalRequestPage()">
+                  ← Back to My Property
+                </button>
 
-                <!-- REQUEST CONTENT -->
+              </div>
 
-                <div id="homeProfessionalRequestPageContent" style="
+
+              <!-- REQUEST CONTENT -->
+
+              <div id="homeProfessionalRequestPageContent" style="
   margin-top:24px;
   flex:1;
   min-height:0;
@@ -26180,29 +26528,29 @@ return false;
   padding-right:8px;
 ">
 
-                  <div style="
+                <div style="
           padding:24px;
           border:1px solid #dbe5f1;
           border-radius:14px;
           background:#f8fbff;
         ">
 
-                    <h3 style="margin:0 0 8px;">
-                      Why request a professional assessment?
-                    </h3>
+                  <h3 style="margin:0 0 8px;">
+                    Why request a professional assessment?
+                  </h3>
 
-                    <p style="
+                  <p style="
             margin:0;
             color:#64748b;
             max-width:760px;
             line-height:1.6;
           ">
-                      Your Property Health Record helps you understand your
-                      property's environmental context. A professional assessment
-                      adds actual EMF measurements and professional interpretation.
-                    </p>
+                    Your Property Health Record helps you understand your
+                    property's environmental context. A professional assessment
+                    adds actual EMF measurements and professional interpretation.
+                  </p>
 
-                    <div style="
+                  <div style="
             display:grid;
             grid-template-columns:
               repeat(auto-fit,minmax(210px,1fr));
@@ -26210,39 +26558,39 @@ return false;
             margin-top:20px;
           ">
 
-                      <div class="home-professional-benefit">
-                        ✓ Actual EMF measurements
-                      </div>
-
-                      <div class="home-professional-benefit">
-                        ✓ On-site assessment
-                      </div>
-
-                      <div class="home-professional-benefit">
-                        ✓ Professional interpretation
-                      </div>
-
-                      <div class="home-professional-benefit">
-                        ✓ Practical recommendations
-                      </div>
-
+                    <div class="home-professional-benefit">
+                      ✓ Actual EMF measurements
                     </div>
 
-                    <button type="button" id="homeProfessionalRequestSubmitButton"
-                      class="property-health-dashboard-primary-btn" style="margin-top:24px;"
-                      onclick="openHomeProfessionalRequestPage()">
-                      Submit Professional Request →
-                    </button>
+                    <div class="home-professional-benefit">
+                      ✓ On-site assessment
+                    </div>
+
+                    <div class="home-professional-benefit">
+                      ✓ Professional interpretation
+                    </div>
+
+                    <div class="home-professional-benefit">
+                      ✓ Practical recommendations
+                    </div>
 
                   </div>
 
+                  <button type="button" id="homeProfessionalRequestSubmitButton"
+                    class="property-health-dashboard-primary-btn" style="margin-top:24px;"
+                    onclick="openHomeProfessionalRequestPage()">
+                    Submit Professional Request →
+                  </button>
 
-                  <!-- REQUEST STATUS -->
-                  <div id="homeProfessionalRequestStatus" style="margin-top:20px;"></div>
+                </div>
 
 
-                  <!-- EARLY NETWORK -->
-                  <div style="
+                <!-- REQUEST STATUS -->
+                <div id="homeProfessionalRequestStatus" style="margin-top:20px;"></div>
+
+
+                <!-- EARLY NETWORK -->
+                <div style="
           margin-top:20px;
           padding:18px 20px;
           border-radius:12px;
@@ -26250,51 +26598,27 @@ return false;
           border:1px solid #e2e8f0;
         ">
 
-                    <strong>
-                      Early Professional Network
-                    </strong>
+                  <strong>
+                    Early Professional Network
+                  </strong>
 
-                    <p style="
+                  <p style="
             margin:6px 0 0;
             color:#64748b;
             line-height:1.5;
           ">
-                      Our professional network is growing.
-                      By submitting a request, you help us understand
-                      where Home users are looking for professional EMF assessment.
-                    </p>
-
-                  </div>
+                    Our professional network is growing.
+                    By submitting a request, you help us understand
+                    where Home users are looking for professional EMF assessment.
+                  </p>
 
                 </div>
 
               </div>
 
-            </section>
+            </div>
 
-          </div>
-
-          <!-- ================================================== -->
-          <!-- PROJECT META -->
-          <!-- ================================================== -->
-
-          <div class="project-meta">
-
-            <span class="status-badge">
-
-              Ready
-
-            </span>
-
-            <span class="project-stats">
-
-              <span id="projectSessionName">
-                Session 1 · Initial Survey
-              </span>
-
-            </span>
-
-          </div>
+          </section>
 
         </div>
 
@@ -26746,13 +27070,15 @@ return false;
                   <img id="projectStartIcon" src="assets/icons/home-project-start.png" alt="Project">
                 </div>
 
-                <div class="project-start-title">
-                  My Property
+
+                <div id="projectStartTitle" class="project-start-title">
+                  My Home
                 </div>
 
-                <div class="project-start-subtitle">
-                  Start building your property's environmental profile or open an existing property.
+                <div id="projectStartSubtitle" class="project-start-subtitle">
+                  Create your home environment profile or open an existing property.
                 </div>
+
 
                 <div class="project-start-actions">
 
@@ -30469,468 +30795,467 @@ return false;
 
       </div>
 
+    </div>
 
 
-      <!-- ================================================== -->
-      <!-- PROFESSIONAL DEMO FEEDBACK MODAL -->
-      <!-- ================================================== -->
 
-      <div id="professionalDemoFeedbackModal" class="modal hidden">
+    <!-- ================================================== -->
+    <!-- PROFESSIONAL DEMO FEEDBACK MODAL -->
+    <!-- ================================================== -->
 
-        <div class="modal-box" style="width: min(620px, 92vw); max-height: 90vh; overflow-y: auto;">
+    <div id="professionalDemoFeedbackModal" class="modal hidden">
 
-          <h2 style="margin-top: 0;">Demo Feedback</h2>
+      <div class="modal-box" style="width: min(620px, 92vw); max-height: 90vh; overflow-y: auto;">
 
-          <p class="mutedText">Please share your experience using EMF Insights Professional Demo.</p>
+        <h2 style="margin-top: 0;">Demo Feedback</h2>
 
-          <form id="professionalDemoFeedbackForm">
+        <p class="mutedText">Please share your experience using EMF Insights Professional Demo.</p>
 
-            <div class="professional-demo-required-note">
-              <span class="professional-demo-required">*</span>
-              Required
-            </div>
+        <form id="professionalDemoFeedbackForm">
 
-            <div style="margin-top: 18px;">
-              <label>
-                <strong>Overall experience <span class="professional-demo-required">*</span></strong>
-              </label>
-              <p class="mutedText">
-                How would you rate your overall experience with EMF Insight Professional Demo?
-              </p>
-              <select name="overall_rating" required>
-                <option value="">Select rating</option>
-                <option value="5">5 — Excellent</option>
-                <option value="4">4 — Good</option>
-                <option value="3">3 — Average</option>
-                <option value="2">2 — Poor</option>
-                <option value="1">1 — Very poor</option>
-              </select>
-            </div>
+          <div class="professional-demo-required-note">
+            <span class="professional-demo-required">*</span>
+            Required
+          </div>
 
-            <div style="margin-top: 18px;">
-              <label>
-                <strong>Business Survey <span class="professional-demo-required">*</span></strong>
-              </label>
-              <p class="mutedText">
-                How easy was it to create a Business Survey, add rooms and zones, take measurements, and work with
-                the
-                project?
-              </p>
-              <select name="business_survey_rating" required>
-                <option value="">Select rating</option>
-                <option value="5">5 — Excellent</option>
-                <option value="4">4 — Good</option>
-                <option value="3">3 — Average</option>
-                <option value="2">2 — Poor</option>
-                <option value="1">1 — Very poor</option>
-              </select>
-            </div>
-
-            <div style="margin-top: 18px;">
-              <label>
-                <strong>Measurements <span class="professional-demo-required">*</span></strong>
-              </label>
-              <p class="mutedText">
-                How clear and easy was the process of adding and reviewing EMF measurements?
-              </p>
-              <select name="measurements_rating" required>
-                <option value="">Select rating</option>
-                <option value="5">5 — Excellent</option>
-                <option value="4">4 — Good</option>
-                <option value="3">3 — Average</option>
-                <option value="2">2 — Poor</option>
-                <option value="1">1 — Very poor</option>
-              </select>
-            </div>
-
-            <div style="margin-top: 18px;">
-              <label>
-                <strong>Results / Insights <span class="professional-demo-required">*</span></strong>
-              </label>
-              <p class="mutedText">
-                How clear and useful were the results, heatmaps, risk information, and insights provided by EMF
-                Insight?
-              </p>
-              <select name="results_rating" required>
-                <option value="">Select rating</option>
-                <option value="5">5 — Excellent</option>
-                <option value="4">4 — Good</option>
-                <option value="3">3 — Average</option>
-                <option value="2">2 — Poor</option>
-                <option value="1">1 — Very poor</option>
-              </select>
-            </div>
-
-            <div style="margin-top: 18px;">
-              <label>
-                <strong>PDF Report <span class="professional-demo-required">*</span></strong>
-              </label>
-              <p class="mutedText">
-                How useful and professional did you find the generated PDF report?
-              </p>
-              <select name="pdf_rating" required>
-                <option value="">Select rating</option>
-                <option value="5">5 — Excellent</option>
-                <option value="4">4 — Good</option>
-                <option value="3">3 — Average</option>
-                <option value="2">2 — Poor</option>
-                <option value="1">1 — Very poor</option>
-              </select>
-            </div>
-
-            <hr style="margin: 24px 0; border: 0; border-top: 1px solid #e5e7eb;">
-
-            <h3 style="margin: 0 0 6px;">About your experience</h3>
-
-            <p class="mutedText" style="margin-top: 0;">
-              This helps us understand who is testing EMF Insight and how we can improve it.
+          <div style="margin-top: 18px;">
+            <label>
+              <strong>Overall experience <span class="professional-demo-required">*</span></strong>
+            </label>
+            <p class="mutedText">
+              How would you rate your overall experience with EMF Insight Professional Demo?
             </p>
+            <select name="overall_rating" required>
+              <option value="">Select rating</option>
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Poor</option>
+              <option value="1">1 — Very poor</option>
+            </select>
+          </div>
 
-            <div style="margin-top: 18px;">
-              <label><strong>How would you describe your experience with EMF measurements?</strong></label>
-              <select name="experience_level">
-                <option value="">Select one</option>
-                <option value="Professional EMF measurement / building biology professional">
-                  I work professionally as an EMF measurement / building biology professional
-                </option>
-                <option value="Professional related field">
-                  I work with EMF measurements professionally, but not as my main occupation
-                </option>
-                <option value="Hobby / enthusiast">
-                  I measure EMF as a hobby / enthusiast
-                </option>
-                <option value="Learning">
-                  I am learning about EMF measurements
-                </option>
-                <option value="No previous experience">
-                  I have no previous EMF measurement experience
-                </option>
-              </select>
-            </div>
+          <div style="margin-top: 18px;">
+            <label>
+              <strong>Business Survey <span class="professional-demo-required">*</span></strong>
+            </label>
+            <p class="mutedText">
+              How easy was it to create a Business Survey, add rooms and zones, take measurements, and work with
+              the
+              project?
+            </p>
+            <select name="business_survey_rating" required>
+              <option value="">Select rating</option>
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Poor</option>
+              <option value="1">1 — Very poor</option>
+            </select>
+          </div>
 
-            <div style="margin-top: 18px;">
-              <label><strong>How many years of experience do you have with EMF measurements?</strong></label>
-              <select name="experience_years">
-                <option value="">Select one</option>
-                <option value="No experience">No experience</option>
-                <option value="Less than 1 year">Less than 1 year</option>
-                <option value="1–2 years">1–2 years</option>
-                <option value="3–5 years">3–5 years</option>
-                <option value="6–10 years">6–10 years</option>
-                <option value="More than 10 years">More than 10 years</option>
-              </select>
-            </div>
+          <div style="margin-top: 18px;">
+            <label>
+              <strong>Measurements <span class="professional-demo-required">*</span></strong>
+            </label>
+            <p class="mutedText">
+              How clear and easy was the process of adding and reviewing EMF measurements?
+            </p>
+            <select name="measurements_rating" required>
+              <option value="">Select rating</option>
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Poor</option>
+              <option value="1">1 — Very poor</option>
+            </select>
+          </div>
 
-            <div style="margin-top: 18px;">
-              <label><strong>What type of work do you mainly do?</strong></label>
-              <select name="work_type">
-                <option value="">Select one</option>
-                <option value="Residential / Home EMF assessments">
-                  Residential / Home EMF assessments
-                </option>
-                <option value="Commercial / Building assessments">
-                  Commercial / Building assessments
-                </option>
-                <option value="Both Home and Business">
-                  Both Home and Business
-                </option>
-                <option value="Research / Education">
-                  Research / Education
-                </option>
-                <option value="Personal interest">
-                  Personal interest
-                </option>
-                <option value="Other">
-                  Other
-                </option>
-              </select>
-            </div>
+          <div style="margin-top: 18px;">
+            <label>
+              <strong>Results / Insights <span class="professional-demo-required">*</span></strong>
+            </label>
+            <p class="mutedText">
+              How clear and useful were the results, heatmaps, risk information, and insights provided by EMF
+              Insight?
+            </p>
+            <select name="results_rating" required>
+              <option value="">Select rating</option>
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Poor</option>
+              <option value="1">1 — Very poor</option>
+            </select>
+          </div>
 
-            <div style="margin-top: 18px;">
-              <label><strong>Tell us a little about your background</strong></label>
-              <p class="mutedText" style="margin: 4px 0 8px;">
-                For example: your professional role, experience with EMF measurements,
-                building biology, consulting, or related fields.
-              </p>
-              <textarea name="background_text" rows="4"
-                placeholder="A few sentences about your background..."></textarea>
-            </div>
+          <div style="margin-top: 18px;">
+            <label>
+              <strong>PDF Report <span class="professional-demo-required">*</span></strong>
+            </label>
+            <p class="mutedText">
+              How useful and professional did you find the generated PDF report?
+            </p>
+            <select name="pdf_rating" required>
+              <option value="">Select rating</option>
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Poor</option>
+              <option value="1">1 — Very poor</option>
+            </select>
+          </div>
+
+          <hr style="margin: 24px 0; border: 0; border-top: 1px solid #e5e7eb;">
+
+          <h3 style="margin: 0 0 6px;">About your experience</h3>
+
+          <p class="mutedText" style="margin-top: 0;">
+            This helps us understand who is testing EMF Insight and how we can improve it.
+          </p>
+
+          <div style="margin-top: 18px;">
+            <label><strong>How would you describe your experience with EMF measurements?</strong></label>
+            <select name="experience_level">
+              <option value="">Select one</option>
+              <option value="Professional EMF measurement / building biology professional">
+                I work professionally as an EMF measurement / building biology professional
+              </option>
+              <option value="Professional related field">
+                I work with EMF measurements professionally, but not as my main occupation
+              </option>
+              <option value="Hobby / enthusiast">
+                I measure EMF as a hobby / enthusiast
+              </option>
+              <option value="Learning">
+                I am learning about EMF measurements
+              </option>
+              <option value="No previous experience">
+                I have no previous EMF measurement experience
+              </option>
+            </select>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <label><strong>How many years of experience do you have with EMF measurements?</strong></label>
+            <select name="experience_years">
+              <option value="">Select one</option>
+              <option value="No experience">No experience</option>
+              <option value="Less than 1 year">Less than 1 year</option>
+              <option value="1–2 years">1–2 years</option>
+              <option value="3–5 years">3–5 years</option>
+              <option value="6–10 years">6–10 years</option>
+              <option value="More than 10 years">More than 10 years</option>
+            </select>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <label><strong>What type of work do you mainly do?</strong></label>
+            <select name="work_type">
+              <option value="">Select one</option>
+              <option value="Residential / Home EMF assessments">
+                Residential / Home EMF assessments
+              </option>
+              <option value="Commercial / Building assessments">
+                Commercial / Building assessments
+              </option>
+              <option value="Both Home and Business">
+                Both Home and Business
+              </option>
+              <option value="Research / Education">
+                Research / Education
+              </option>
+              <option value="Personal interest">
+                Personal interest
+              </option>
+              <option value="Other">
+                Other
+              </option>
+            </select>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <label><strong>Tell us a little about your background</strong></label>
+            <p class="mutedText" style="margin: 4px 0 8px;">
+              For example: your professional role, experience with EMF measurements,
+              building biology, consulting, or related fields.
+            </p>
+            <textarea name="background_text" rows="4" placeholder="A few sentences about your background..."></textarea>
+          </div>
 
 
-            <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e5e7eb;">
+          <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e5e7eb;">
 
-            <h3 style="margin: 0 0 6px;">About Home Requests</h3>
+          <h3 style="margin: 0 0 6px;">About Home Requests</h3>
 
-            <div style="margin-top: 18px;">
-              <label><strong>How clear was the “Want to join the Early Professional Network?”
-                  section?</strong></label>
-              <select name="home_projects_clarity">
-                <option value="">Select one</option>
-                <option value="Very clear">Very clear</option>
-                <option value="Clear">Clear</option>
-                <option value="Somewhat unclear">Somewhat unclear</option>
-                <option value="Very unclear">Very unclear</option>
-              </select>
-            </div>
+          <div style="margin-top: 18px;">
+            <label><strong>How clear was the “Want to join the Early Professional Network?”
+                section?</strong></label>
+            <select name="home_projects_clarity">
+              <option value="">Select one</option>
+              <option value="Very clear">Very clear</option>
+              <option value="Clear">Clear</option>
+              <option value="Somewhat unclear">Somewhat unclear</option>
+              <option value="Very unclear">Very unclear</option>
+            </select>
+          </div>
 
-            <div style="margin-top: 18px;">
-              <label><strong>What would make the Home Requests section clearer?</strong></label>
-              <textarea name="home_projects_clarity_text" rows="3"
-                placeholder="Optional — tell us what was unclear or what you would change..."></textarea>
-            </div>
+          <div style="margin-top: 18px;">
+            <label><strong>What would make the Home Requests section clearer?</strong></label>
+            <textarea name="home_projects_clarity_text" rows="3"
+              placeholder="Optional — tell us what was unclear or what you would change..."></textarea>
+          </div>
 
-            <div style="margin-top: 18px;">
-              <label><strong>What was confusing?</strong></label>
-              <textarea name="confusing_text" rows="3" style="width: 100%; box-sizing: border-box;"
-                placeholder="Tell us what was unclear or difficult to understand."></textarea>
-            </div>
+          <div style="margin-top: 18px;">
+            <label><strong>What was confusing?</strong></label>
+            <textarea name="confusing_text" rows="3" style="width: 100%; box-sizing: border-box;"
+              placeholder="Tell us what was unclear or difficult to understand."></textarea>
+          </div>
 
-            <div style="margin-top: 14px;">
-              <label><strong>What is missing?</strong></label>
-              <textarea name="missing_features" rows="3" style="width: 100%; box-sizing: border-box;"
-                placeholder="What features or information would you expect?"></textarea>
-            </div>
+          <div style="margin-top: 14px;">
+            <label><strong>What is missing?</strong></label>
+            <textarea name="missing_features" rows="3" style="width: 100%; box-sizing: border-box;"
+              placeholder="What features or information would you expect?"></textarea>
+          </div>
 
-            <div style="margin-top: 14px;">
-              <label><strong>Bugs or technical problems</strong></label>
-              <textarea name="bugs_text" rows="3" style="width: 100%; box-sizing: border-box;"
-                placeholder="Describe anything that did not work correctly."></textarea>
-            </div>
+          <div style="margin-top: 14px;">
+            <label><strong>Bugs or technical problems</strong></label>
+            <textarea name="bugs_text" rows="3" style="width: 100%; box-sizing: border-box;"
+              placeholder="Describe anything that did not work correctly."></textarea>
+          </div>
 
-            <div style="margin-top: 14px;">
-              <label><strong>What would you improve?</strong></label>
-              <textarea name="improvements_text" rows="3" style="width: 100%; box-sizing: border-box;"
-                placeholder="What should we improve or change?"></textarea>
-            </div>
+          <div style="margin-top: 14px;">
+            <label><strong>What would you improve?</strong></label>
+            <textarea name="improvements_text" rows="3" style="width: 100%; box-sizing: border-box;"
+              placeholder="What should we improve or change?"></textarea>
+          </div>
 
-            <div style="margin-top: 14px;">
-              <label><strong>Would you use EMF Insight professionally?</strong></label>
-              <select name="professional_use">
-                <option value="">Select an option</option>
-                <option value="yes">Yes</option>
-                <option value="maybe">Maybe</option>
-                <option value="no">No</option>
-              </select>
-            </div>
+          <div style="margin-top: 14px;">
+            <label><strong>Would you use EMF Insight professionally?</strong></label>
+            <select name="professional_use">
+              <option value="">Select an option</option>
+              <option value="yes">Yes</option>
+              <option value="maybe">Maybe</option>
+              <option value="no">No</option>
+            </select>
+          </div>
 
-            <div style="margin-top: 14px;">
-              <label><strong>How likely are you to recommend EMF Insight?</strong></label>
-              <select name="recommendation_score">
-                <option value="">Select score</option>
-                <option value="10">10</option>
-                <option value="9">9</option>
-                <option value="8">8</option>
-                <option value="7">7</option>
-                <option value="6">6</option>
-                <option value="5">5</option>
-                <option value="4">4</option>
-                <option value="3">3</option>
-                <option value="2">2</option>
-                <option value="1">1</option>
-                <option value="0">0</option>
-              </select>
-            </div>
+          <div style="margin-top: 14px;">
+            <label><strong>How likely are you to recommend EMF Insight?</strong></label>
+            <select name="recommendation_score">
+              <option value="">Select score</option>
+              <option value="10">10</option>
+              <option value="9">9</option>
+              <option value="8">8</option>
+              <option value="7">7</option>
+              <option value="6">6</option>
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+              <option value="0">0</option>
+            </select>
+          </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
-              <button type="button" class="btn-secondary" onclick="closeProfessionalDemoFeedback();">Cancel</button>
-              <button type="button" class="btn-primary" id="professionalDemoFeedbackSubmit"
-                onclick="submitProfessionalDemoFeedback();">Submit Feedback</button>
-            </div>
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+            <button type="button" class="btn-secondary" onclick="closeProfessionalDemoFeedback();">Cancel</button>
+            <button type="button" class="btn-primary" id="professionalDemoFeedbackSubmit"
+              onclick="submitProfessionalDemoFeedback();">Submit Feedback</button>
+          </div>
 
-          </form>
-
-        </div>
+        </form>
 
       </div>
 
+    </div>
 
 
-      <!-- ===================== -->
-      <!-- 🔥 CORE -->
-      <!-- ===================== -->
 
+    <!-- ===================== -->
+    <!-- 🔥 CORE -->
+    <!-- ===================== -->
 
-      <script src="core/app_mode.js"></script>
 
-      <script src="core/app_state.js"></script>
-      <script src="core/id_factory.js"></script>
+    <script src="core/app_mode.js"></script>
 
-      <script src="core/viewport.js"></script>
+    <script src="core/app_state.js"></script>
+    <script src="core/id_factory.js"></script>
 
-      <script src="core/getters.js"></script>
+    <script src="core/viewport.js"></script>
 
-      <script src="core/render_engine.js"></script>
+    <script src="core/getters.js"></script>
 
+    <script src="core/render_engine.js"></script>
 
 
 
 
-      <!-- ===================== -->
-      <!-- 🔥 STATE / UI -->
-      <!-- ===================== -->
 
-      <script src="js/ui.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 STATE / UI -->
+    <!-- ===================== -->
 
-      <script src="factories/session_factory.js"></script>
+    <script src="js/ui.js"></script>
 
+    <script src="factories/session_factory.js"></script>
 
 
 
-      <!-- ===================== -->
-      <!-- 🔥 ANALYTICS -->
-      <!-- ===================== -->
 
-      <script src="js/analytics.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 ANALYTICS -->
+    <!-- ===================== -->
 
-      <script src="js/session_compare.js"></script>
+    <script src="js/analytics.js"></script>
 
-      <script src="js/hud.js"></script>
+    <script src="js/session_compare.js"></script>
 
+    <script src="js/hud.js"></script>
 
-      <!-- ===================== -->
-      <!-- 🔥 EXPORT -->
-      <!-- ===================== -->
 
-      <script src="js/export.js"></script>
-      <script src="js/business_results.js"></script>
-      <script src="js/business_demo.js"></script>
-      <script src="js/home_demo.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 EXPORT -->
+    <!-- ===================== -->
 
-      <!-- ===================== -->
-      <!-- 🔥 RENDER HELPERS -->
-      <!-- ===================== -->
+    <script src="js/export.js"></script>
+    <script src="js/business_results.js"></script>
+    <script src="js/business_demo.js"></script>
+    <script src="js/home_demo.js"></script>
 
-      <script src="js/heatmap.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 RENDER HELPERS -->
+    <!-- ===================== -->
 
-      <script src="js/render_overlays.js"></script>
+    <script src="js/heatmap.js"></script>
 
-      <script src="js/layers.js"></script>
+    <script src="js/render_overlays.js"></script>
 
-      <script src="js/source_impact.js"></script>
+    <script src="js/layers.js"></script>
 
-      <script src="js/editor_preview.js"></script>
+    <script src="js/source_impact.js"></script>
 
+    <script src="js/editor_preview.js"></script>
 
-      <!-- ===================== -->
-      <!-- 🔥 PROJECT -->
-      <!-- ===================== -->
 
-      <script src="factories/floor_factory.js"></script>
-      <script src="factories/project_factory.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 PROJECT -->
+    <!-- ===================== -->
 
-      <script src="ui/notification_bubble.js"></script>
+    <script src="factories/floor_factory.js"></script>
+    <script src="factories/project_factory.js"></script>
 
-      <script src="core/bootstrap.js"></script>
+    <script src="ui/notification_bubble.js"></script>
 
-      <script src="js/sessions.js"></script>
+    <script src="core/bootstrap.js"></script>
 
-      <script src="js/floors.js"></script>
+    <script src="js/sessions.js"></script>
 
-      <script src="js/api.js"></script>
-      <script src="js/professional_profile.js"></script>
-      <script src="js/professional_demo_feedback.js"></script>
+    <script src="js/floors.js"></script>
 
-      <!-- ===================== -->
-      <!-- 🔥 SHARED HELPERS -->
-      <!-- ===================== -->
+    <script src="js/api.js"></script>
+    <script src="js/professional_profile.js"></script>
+    <script src="js/professional_demo_feedback.js"></script>
 
-      <script src="js/measurement_utils.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 SHARED HELPERS -->
+    <!-- ===================== -->
 
+    <script src="js/measurement_utils.js"></script>
 
-      <!-- ===================== -->
-      <!-- 🔥 TOOLS -->
-      <!-- ===================== -->
-      <script src="utils/geometry.js"></script>
 
-      <script src="core/image_analysis.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 TOOLS -->
+    <!-- ===================== -->
+    <script src="utils/geometry.js"></script>
 
-      <script src="utils/boundaries.js"></script>
+    <script src="core/image_analysis.js"></script>
 
-      <script src="tools/room_v2.js"></script>
+    <script src="utils/boundaries.js"></script>
 
-      <script src="tools/zones.js"></script>
+    <script src="tools/room_v2.js"></script>
 
-      <script src="tools/sources.js"></script>
+    <script src="tools/zones.js"></script>
 
-      <script src="tools/measurements.js"></script>
+    <script src="tools/sources.js"></script>
 
-      <script src="core/render_frame.js"></script>
+    <script src="tools/measurements.js"></script>
 
-      <script src="tools/drag.js"></script>
+    <script src="core/render_frame.js"></script>
 
-      <script src="tools/upload.js"></script>
+    <script src="tools/drag.js"></script>
 
-      <!-- <script src="tools/scale.js"></script>-->
+    <script src="tools/upload.js"></script>
 
-      <script src="tools/scale_v2.js"></script>
+    <!-- <script src="tools/scale.js"></script>-->
 
+    <script src="tools/scale_v2.js"></script>
 
-      <!-- ===================== -->
-      <!-- 🔥 EVENTS -->
-      <!-- ===================== -->
 
-      <script src="core/object_types.js"></script>
-      <script src="tools/source_links.js"></script>
-      <script src="tools/object_v1.js"></script>
+    <!-- ===================== -->
+    <!-- 🔥 EVENTS -->
+    <!-- ===================== -->
 
-      <script src="js/exposure.js"></script>
+    <script src="core/object_types.js"></script>
+    <script src="tools/source_links.js"></script>
+    <script src="tools/object_v1.js"></script>
 
+    <script src="js/exposure.js"></script>
 
 
-      <script src="js/render.js"></script>
 
-      <script src="js/workflow.js"></script>
+    <script src="js/render.js"></script>
 
-      <script src="js/events.js"></script>
+    <script src="js/workflow.js"></script>
 
+    <script src="js/events.js"></script>
 
-      <div id="roomModal" class="room-modal" style="display:none;">
 
-        <div class="room-modal-card">
+    <div id="roomModal" class="room-modal" style="display:none;">
 
-          <h2 class="room-modal-title">
-            🏠 New Room
-          </h2>
+      <div class="room-modal-card">
 
-          <div class="room-code-block">
+        <h2 class="room-modal-title">
+          🏠 New Room
+        </h2>
 
-            <div class="room-code-label">
-              Room Code
-            </div>
+        <div class="room-code-block">
 
-            <div class="room-code-value" id="modalRoomCodeLabel">
-            </div>
-
+          <div class="room-code-label">
+            Room Code
           </div>
 
-          <label>
-            Room Name
-          </label>
-
-          <div class="room-help-text">
-            Rename this room (optional)
+          <div class="room-code-value" id="modalRoomCodeLabel">
           </div>
 
-          <input id="modalRoomName" placeholder="Bedroom, Kitchen, Office..." />
+        </div>
 
-          <label>
-            Description (optional)
-          </label>
+        <label>
+          Room Name
+        </label>
 
-          <textarea id="modalRoomDescription">
+        <div class="room-help-text">
+          Rename this room (optional)
+        </div>
+
+        <input id="modalRoomName" placeholder="Bedroom, Kitchen, Office..." />
+
+        <label>
+          Description (optional)
+        </label>
+
+        <textarea id="modalRoomDescription">
       </textarea>
 
-          <button class="room-save-btn" onclick="saveRoomModal()">
+        <button class="room-save-btn" onclick="saveRoomModal()">
 
-            Save Room
+          Save Room
 
-          </button>
+        </button>
 
-          <div class="room-skip-btn" onclick="closeRoomModal()">
+        <div class="room-skip-btn" onclick="closeRoomModal()">
 
-            Skip for now
-
-          </div>
+          Skip for now
 
         </div>
 
@@ -30938,170 +31263,171 @@ return false;
 
     </div>
 
-    <!-- DELETE ACCOUNT MODAL -->
-    <div id="deleteAccountModal">
-      <div class="modal-content">
+  </div>
 
-        <h3>Delete Account?</h3>
+  <!-- DELETE ACCOUNT MODAL -->
+  <div id="deleteAccountModal">
+    <div class="modal-content">
 
-        <p>
-          This action will permanently delete your account and all associated data.
-        </p>
+      <h3>Delete Account?</h3>
 
-        <p>
-          This cannot be undone.
-        </p>
+      <p>
+        This action will permanently delete your account and all associated data.
+      </p>
 
-        <div class="modal-actions">
+      <p>
+        This cannot be undone.
+      </p>
 
-          <button type="button" onclick="closeDeleteAccountModal()">
-            Cancel
-          </button>
+      <div class="modal-actions">
 
-          <button type="button" onclick="confirmDeleteAccount()">
-            Delete Account
-          </button>
+        <button type="button" onclick="closeDeleteAccountModal()">
+          Cancel
+        </button>
 
-        </div>
+        <button type="button" onclick="confirmDeleteAccount()">
+          Delete Account
+        </button>
 
       </div>
+
     </div>
+  </div>
 
-    <!-- ACCOUNT SECURITY MODAL -->
-    <div id="accountSecurityModal" class="modal-overlay" style="display:none;">
-      <div class="modal-content user-profile-modal">
+  <!-- ACCOUNT SECURITY MODAL -->
+  <div id="accountSecurityModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content user-profile-modal">
 
-        <div class="user-profile-header">
-          <div>
-            <h2>Security</h2>
-            <p>Password & account security</p>
-          </div>
-
-          <button type="button" class="modal-close-btn" onclick="closeAccountSecurity()" aria-label="Close">
-            ×
-          </button>
+      <div class="user-profile-header">
+        <div>
+          <h2>Security</h2>
+          <p>Password & account security</p>
         </div>
 
-        <div class="user-profile-section">
+        <button type="button" class="modal-close-btn" onclick="closeAccountSecurity()" aria-label="Close">
+          ×
+        </button>
+      </div>
 
-          <div class="user-profile-section-title">
-            PASSWORD
+      <div class="user-profile-section">
+
+        <div class="user-profile-section-title">
+          PASSWORD
+        </div>
+
+        <div class="user-profile-field">
+          <label for="accountSecurityCurrentPassword">
+            Current password
+          </label>
+
+          <div class="account-security-password-field">
+            <input id="accountSecurityCurrentPassword" type="password" autocomplete="current-password"
+              placeholder="Enter current password">
+
+            <button type="button" class="account-security-password-toggle"
+              onclick="toggleAccountPasswordVisibility('accountSecurityCurrentPassword', this)"
+              aria-label="Show password">
+              👁
+            </button>
           </div>
+        </div>
 
-          <div class="user-profile-field">
-            <label for="accountSecurityCurrentPassword">
-              Current password
-            </label>
+        <div class="user-profile-field">
+          <div class="account-security-password-field">
+            <input id="accountSecurityNewPassword" type="password" autocomplete="new-password"
+              placeholder="Enter new password">
 
-            <div class="account-security-password-field">
-              <input id="accountSecurityCurrentPassword" type="password" autocomplete="current-password"
-                placeholder="Enter current password">
-
-              <button type="button" class="account-security-password-toggle"
-                onclick="toggleAccountPasswordVisibility('accountSecurityCurrentPassword', this)"
-                aria-label="Show password">
-                👁
-              </button>
-            </div>
+            <button type="button" class="account-security-password-toggle"
+              onclick="toggleAccountPasswordVisibility('accountSecurityNewPassword', this)" aria-label="Show password">
+              👁
+            </button>
           </div>
+        </div>
 
-          <div class="user-profile-field">
-            <div class="account-security-password-field">
-              <input id="accountSecurityNewPassword" type="password" autocomplete="new-password"
-                placeholder="Enter new password">
+        <div class="user-profile-field">
+          <div class="account-security-password-field">
+            <input id="accountSecurityConfirmPassword" type="password" autocomplete="new-password"
+              placeholder="Repeat new password">
 
-              <button type="button" class="account-security-password-toggle"
-                onclick="toggleAccountPasswordVisibility('accountSecurityNewPassword', this)"
-                aria-label="Show password">
-                👁
-              </button>
-            </div>
-          </div>
-
-          <div class="user-profile-field">
-            <div class="account-security-password-field">
-              <input id="accountSecurityConfirmPassword" type="password" autocomplete="new-password"
-                placeholder="Repeat new password">
-
-              <button type="button" class="account-security-password-toggle"
-                onclick="toggleAccountPasswordVisibility('accountSecurityConfirmPassword', this)"
-                aria-label="Show password">
-                👁
-              </button>
-            </div>
-
-
-          </div>
-
-          <div id="accountSecurityMessage" style="display:none;">
-          </div>
-
-          <div class="user-profile-actions">
-            <button type="button" class="user-profile-save-btn" onclick="changeAccountPassword()">
-              Change password
+            <button type="button" class="account-security-password-toggle"
+              onclick="toggleAccountPasswordVisibility('accountSecurityConfirmPassword', this)"
+              aria-label="Show password">
+              👁
             </button>
           </div>
 
+
         </div>
 
-        <div class="user-profile-section">
+        <div id="accountSecurityMessage" style="display:none;">
+        </div>
 
-          <div class="user-profile-section-title">
-            TWO-FACTOR AUTHENTICATION
-          </div>
+        <div class="user-profile-actions">
+          <button type="button" class="user-profile-save-btn" onclick="changeAccountPassword()">
+            Change password
+          </button>
+        </div>
 
+      </div>
+
+      <div class="user-profile-section">
+
+        <div class="user-profile-section-title">
+          TWO-FACTOR AUTHENTICATION
+        </div>
+
+        <div class="user-profile-info-row">
+          <strong>Two-factor authentication</strong>
+
+          <p>
+            Add an additional layer of protection to your account.
+          </p>
+        </div>
+
+        <button type="button" disabled>
+          Coming soon
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACCOUNT NOTIFICATIONS MODAL -->
+  <div id="accountNotificationsModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content user-profile-modal">
+
+      <div class="user-profile-header">
+        <div>
+          <h2>Notifications</h2>
+          <p>Alerts and account updates</p>
+        </div>
+
+        <button type="button" class="modal-close-btn" onclick="closeAccountNotifications()" aria-label="Close">
+          ×
+        </button>
+      </div>
+
+      <div class="user-profile-section">
+
+        <div class="user-profile-section-title">
+          NOTIFICATIONS
+        </div>
+
+        <div id="accountNotificationsList">
           <div class="user-profile-info-row">
-            <strong>Two-factor authentication</strong>
+            <strong>No new notifications</strong>
 
             <p>
-              Add an additional layer of protection to your account.
+              You’re all caught up. Important account and platform updates will appear here.
             </p>
           </div>
-
-          <button type="button" disabled>
-            Coming soon
-          </button>
-
         </div>
 
       </div>
+
     </div>
-
-    <!-- ACCOUNT NOTIFICATIONS MODAL -->
-    <div id="accountNotificationsModal" class="modal-overlay" style="display:none;">
-      <div class="modal-content user-profile-modal">
-
-        <div class="user-profile-header">
-          <div>
-            <h2>Notifications</h2>
-            <p>Alerts and account updates</p>
-          </div>
-
-          <button type="button" class="modal-close-btn" onclick="closeAccountNotifications()" aria-label="Close">
-            ×
-          </button>
-        </div>
-
-        <div class="user-profile-section">
-
-          <div class="user-profile-section-title">
-            NOTIFICATIONS
-          </div>
-
-          <div id="accountNotificationsList">
-            <div class="user-profile-info-row">
-              <strong>No new notifications</strong>
-
-              <p>
-                You’re all caught up. Important account and platform updates will appear here.
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
+  </div>
 
 </body>
 
@@ -33855,6 +34181,7 @@ return false;
         homeProject?.project_id ??
         homeProject?.id ??
         null;
+
 
       if (!projectId) {
 

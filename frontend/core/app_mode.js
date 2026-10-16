@@ -1065,6 +1065,8 @@ async function setAppMode(
             // Business is now the active workspace
             window.AppMode.current = "business";
 
+            window.updateProjectWorkspaceTitle?.();
+
             window.WorkspaceAccess =
                 window.WorkspaceAccess || {};
 
@@ -3787,6 +3789,8 @@ async function loadHomeDemoExperience() {
     window.AppMode.current =
         "home";
 
+    window.updateProjectWorkspaceTitle?.();
+
 
     window.WorkspaceAccess =
         window.WorkspaceAccess ||
@@ -4091,13 +4095,101 @@ function resolveWorkspaceExperience(mode) {
     };
 }
 
+
+async function closeActiveProject() {
+    const mode = window.AppMode?.current || "home";
+    const project = mode === "home"
+        ? (window.AppState?.homeProject || window.AppState?.project || null)
+        : (window.AppState?.project || null);
+
+    if (!project) return;
+
+    const isDemo =
+        project.isDemo === true ||
+        project.demo === true ||
+        String(project.project_id || project.id || "").startsWith("demo-");
+
+    // Preserve the project data; clear only the active workspace state.
+    if (mode === "home") {
+        window.AppState.homeProject = null;
+        localStorage.removeItem("home_project_id");
+        localStorage.removeItem("homeProjectId");
+
+        const token = localStorage.getItem("token");
+        try {
+            const userId = token
+                ? JSON.parse(atob(token.split(".")[1])).sub
+                : null;
+            if (userId) {
+                localStorage.removeItem(`home_project_id_${userId}`);
+                localStorage.removeItem(`home_workspace_active_${userId}`);
+            }
+        } catch (error) {
+            console.warn("Could not resolve user ID while closing Home project.", error);
+        }
+
+        // Prevent the Home Demo from immediately reopening.
+        sessionStorage.setItem("home_project_closed", "true");
+        window.EMFHomeDemo = false;
+        document.body.classList.remove("home-demo-active");
+    } else {
+        localStorage.removeItem("business_project_id");
+        sessionStorage.setItem("business_project_closed", "true");
+    }
+
+    window.AppState.project = null;
+    window.project = null;
+    window.currentProjectId = null;
+
+    if (mode === "business") {
+        window.AppState.businessProject = null;
+        window.EMFBusinessDemo = false;
+        document.body.classList.remove("business-demo-active");
+    }
+
+    window.updateWorkspaceUI?.();
+    window.updateProjectHeader?.();
+
+    console.log("PROJECT CLOSED", { mode, isDemo, projectId: project.project_id || project.id });
+}
+
+window.closeActiveProject = closeActiveProject;
+
+
 function updateWorkspaceUI() {
 
+
+    console.log("[START SCREEN DEBUG]", {
+        mode: window.AppMode?.current,
+        titleExists: !!document.getElementById("projectStartTitle"),
+        subtitleExists: !!document.getElementById("projectStartSubtitle"),
+        screenDisplay: document.getElementById("projectStartScreen")?.style.display
+    });
 
 
     const mode =
         window.AppMode?.current ||
         "home";
+
+
+    const homeButton =
+        document.getElementById("workspaceHomeButton");
+
+    const businessButton =
+        document.getElementById("workspaceBusinessButton");
+
+    if (homeButton) {
+        const active = mode === "home";
+        homeButton.classList.toggle("active", active);
+        homeButton.setAttribute("aria-pressed", String(active));
+    }
+
+    if (businessButton) {
+        const active = mode === "business";
+        businessButton.classList.toggle("active", active);
+        businessButton.setAttribute("aria-pressed", String(active));
+    }
+
 
     // ==================================================
     // CONTEXTUAL RETURN ACTION
@@ -4156,15 +4248,9 @@ function updateWorkspaceUI() {
 
     // Professional exploring Home
     else if (isHomeDemo && role === "professional") {
-
         if (returnAction) {
-            returnAction.style.display = "block";
+            returnAction.style.display = "none";
         }
-
-        if (returnLabel) {
-            returnLabel.textContent = "Business Workspace";
-        }
-
     }
 
     // Primary workspace / real workspace
@@ -4201,6 +4287,22 @@ function updateWorkspaceUI() {
     const hasActiveProject =
         !!activeProject;
 
+    // ==================================================
+    // PROJECT HEADER ACTIONS
+    // ==================================================
+
+    [
+        "homeProjectRenameButton",
+        "projectHeaderDeleteButton",
+        "projectHeaderCloseButton"
+    ].forEach(id => {
+        const button = document.getElementById(id);
+
+        if (button) {
+            button.style.display =
+                hasActiveProject ? "" : "none";
+        }
+    });
 
     const homeProjectDisplayName =
         document.getElementById(
@@ -4222,6 +4324,28 @@ function updateWorkspaceUI() {
                 ? "inline-flex"
                 : "none";
     }
+
+
+    const projectStartTitle =
+        document.getElementById("projectStartTitle");
+
+    const projectStartSubtitle =
+        document.getElementById("projectStartSubtitle");
+
+    if (projectStartTitle) {
+        projectStartTitle.textContent =
+            mode === "home"
+                ? "My Home"
+                : "Business Survey";
+    }
+
+    if (projectStartSubtitle) {
+        projectStartSubtitle.textContent =
+            mode === "home"
+                ? "Create your home environment profile or open an existing property."
+                : "Start a professional property assessment or open an existing project.";
+    }
+
 
 
     const projectStartIcon =

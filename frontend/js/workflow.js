@@ -957,6 +957,7 @@ function updateNextStepCard() {
 
 
     // --------------------------------------------------
+
     // ACTIVE ACTION — SYNC WITH THE REAL WORKSPACE MODE
     // --------------------------------------------------
 
@@ -972,10 +973,12 @@ function updateNextStepCard() {
         sources: "btnAddSources",
         grid: "btnGenerateGrid"
     }[currentMode] || (
-            window.roomTool?.active === true
+            window.roomTool?.active === true &&
+                currentMode === "rooms"
                 ? "btnDrawRooms"
                 : null
         );
+
 
 
     // --------------------------------------------------
@@ -1063,7 +1066,7 @@ function updateNextStepCard() {
                         </div>
                         <div class="workflow-next-other-list">
                             ${otherActions.slice(0, 4).map(action => `
-    <button
+                                <button
         type="button"
         class="workflow-next-other-action${action.id === activeTodoActionId ? " is-active" : ""}"
         data-workflow-action="${escapeHtml(action.id)}"
@@ -1092,25 +1095,6 @@ function updateNextStepCard() {
                 </span>
             </div>
         `}
-<div class="workflow-room-drawing-hint" hidden>
-    <strong>Drawing a room</strong>
-    <span class="workflow-room-drawing-hint-text">
-        Click on the floor plan to place the first corner.
-    </span>
-</div>
-
-
-<div class="workflow-room-measuring-hint" hidden>
-    <strong>Room Measuring</strong>
-    <span>
-        Move the crosshair to a grid point and click to measure.
-    </span>
-    <span>
-        Measure each required grid point inside the active room.
-        Continue until all required measurements are complete.
-    </span>
-</div>
-
 
         <button type="button" class="workflow-next-guide-link">
             View step-by-step guide
@@ -3030,12 +3014,12 @@ function closeMeasurementProfilePopup() {
 
 
 window.updateRoomDrawingHint = function () {
-    const drawingPanel = document.querySelector(
-        ".workflow-room-drawing-hint"
+    const drawingPanel = document.getElementById(
+        "workflowRoomDrawingHint"
     );
 
-    const measuringPanel = document.querySelector(
-        ".workflow-room-measuring-hint"
+    const measuringPanel = document.getElementById(
+        "workflowRoomMeasuringHint"
     );
 
     // ------------------------------------------
@@ -3061,13 +3045,13 @@ window.updateRoomDrawingHint = function () {
             if (text) {
                 if (count === 0) {
                     text.textContent =
-                        "Click on the floor plan to place the first corner.";
+                        "1.Click on the floor plan to place the first corner.";
                 } else if (count === 1) {
                     text.textContent =
                         "First corner placed. Click to add the next corner.";
                 } else if (count < 3) {
                     text.textContent =
-                        "Continue placing corners. At least 3 points are needed to finish.";
+                        "2.Continue placing corners. At least 3 points are needed to finish.";
                 } else {
                     text.textContent =
                         "Continue placing corners. Close the shape to finish.";

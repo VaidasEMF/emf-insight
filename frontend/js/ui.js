@@ -307,6 +307,26 @@ function updateProjectHeader() {
         project?.id ??
         null;
 
+    // ==================================================
+    // PROJECT HEADER ID
+    // ==================================================
+
+    const projectHeaderId =
+        document.getElementById("projectHeaderId");
+
+    if (projectHeaderId) {
+        const hasProjectId =
+            hasActiveProject &&
+            projectId !== null &&
+            projectId !== undefined &&
+            projectId !== "";
+
+        projectHeaderId.textContent =
+            hasProjectId ? `Project #${projectId}` : "";
+
+        projectHeaderId.style.display =
+            hasProjectId ? "inline-flex" : "none";
+    }
 
     // ==================================================
     // STATUS BADGE
@@ -316,6 +336,16 @@ function updateProjectHeader() {
         document.querySelector(
             ".status-badge"
         );
+
+    const experience =
+        window.AppState?.experience ||
+        window.experience ||
+        {};
+
+    const isHomeDemo =
+        mode === "home" &&
+        experience.mode === "demo" &&
+        experience.demoType === "home";
 
 
     // ==================================================
@@ -477,9 +507,7 @@ function updateProjectHeader() {
     // DISPLAY STATUS
     // ==================================================
 
-    if (
-        statusEl
-    ) {
+    if (statusEl) {
 
         const isDemo =
             mode === "business" &&
@@ -490,14 +518,19 @@ function updateProjectHeader() {
                 AppState?.project?.demo === true
             );
 
-        statusEl.innerText =
-            !isDemo &&
-                projectId !== null &&
-                projectId !== undefined &&
-                projectId !== ""
-                ? `${status} • Project #${projectId}`
-                : status;
+        if (
+            status === "Set Scale" ||
+            isHomeDemo ||
+            isDemo
+        ) {
+            statusEl.innerText = "";
+            statusEl.style.display = "none";
+        } else {
+            statusEl.style.display = "";
+            statusEl.innerText = status;
+        }
     }
+
 
 
     // ==================================================
@@ -534,8 +567,8 @@ function updateProjectHeader() {
 
         const header =
             document.querySelector(
-                ".status-badge"
-            )?.parentElement;
+                "#projectHeader .project-meta"
+            );
 
 
         if (
@@ -780,6 +813,23 @@ function updateProjectHeader() {
             };
     }
 }
+
+function updateProjectWorkspaceTitle() {
+    const title = document.getElementById("projectWorkspaceTitle");
+    if (!title) return;
+
+    const mode = window.AppMode?.current || "home";
+
+    if (mode === "home") {
+        title.textContent = "🏠 My Wellness Project";
+    } else {
+        title.textContent = "🏢 Business Project";
+    }
+}
+
+window.updateProjectWorkspaceTitle = updateProjectWorkspaceTitle;
+
+window.updateProjectWorkspaceTitle = updateProjectWorkspaceTitle;
 
 function scrollToUnlockReport() {
 
