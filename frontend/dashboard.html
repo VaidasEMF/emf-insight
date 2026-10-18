@@ -1283,6 +1283,13 @@
             align-items: start;
         }
 
+        /* Single-section Account Dashboard navigation.
+           The !important rule hides inactive views without overriding
+           each section's existing inline access/eligibility visibility. */
+        .dashboard-view-hidden {
+            display: none !important;
+        }
+
         .professional-my-contacts-page-size {
             position: absolute !important;
             top: -42px;
@@ -3821,13 +3828,16 @@
 
                         <button type="button" class="professional-dashboard-subnav-item"
                             data-professional-section="my-contacts"
-                            onclick="navigateProfessionalDashboardSection('my-contacts'); updateProfessionalMyContacts();">
+                            onclick="navigateProfessionalDashboardSection('my-contacts');">
                             My Contacts
                         </button>
 
                     </div>
                     <a class="nav-link" href="#projects"><span class="nav-icon">📁</span><span>Projects</span></a>
-                    <a class="nav-link" href="#reports"><span class="nav-icon">📊</span><span>Reports</span></a>
+                    <a class="nav-link" href="#reports"
+                        onclick="event.preventDefault(); navigateProfessionalDashboardSection('reports');">
+                        <span class="nav-icon">📊</span><span>Reports</span>
+                    </a>
                     <a class="nav-link" href="#billing"><span class="nav-icon">💳</span><span>Billing &amp;
                             Plan</span></a>
                     <a class="nav-link" href="#branding"><span class="nav-icon">🏢</span><span>Company &amp;
@@ -4559,7 +4569,7 @@
                 <!-- =========================
                  SUMMARY
                  ========================= -->
-                <section class="section" aria-labelledby="summary-title">
+                <section class="section" id="account-summary-section" aria-labelledby="summary-title">
                     <div class="section-heading">
                         <div>
                             <h2 class="section-title" id="summary-title">Account Overview</h2>
@@ -11802,12 +11812,22 @@ ADMIN PAYMENTS
             const dashboardBackBtn =
                 document.getElementById("dashboardBackBtn");
 
+
             if (dashboardBackBtn) {
+                const role = String(
+                    window.currentUser?.role ||
+                    window.currentUserRole ||
+                    ""
+                ).toLowerCase();
+
                 dashboardBackBtn.textContent =
-                    isHome
-                        ? "← Back to My Property"
-                        : "← Back to Business Survey";
+                    role === "professional"
+                        ? "← Back to Professional Dashboard"
+                        : isHome
+                            ? "← Back to My Property"
+                            : "← Back to Business Survey";
             }
+
 
 
             // =========================================================
@@ -12242,6 +12262,8 @@ ADMIN PAYMENTS
 
 
         function startNewProject() {
+
+            console.log("🚩 startNewProject CALLED");
             const workspaceMode =
                 localStorage.getItem("workspaceMode") || "business";
 
@@ -12268,6 +12290,8 @@ ADMIN PAYMENTS
                 }
 
             } else {
+
+                console.trace("🚩 BUSINESS PROJECT ID REMOVED");
                 // Clear all Business project references
                 localStorage.removeItem("business_project_id");
                 localStorage.removeItem("businessProjectId");
@@ -19459,7 +19483,16 @@ ${request.has_active_unlock
                 }
 
                 const data = await res.json();
+                console.time("loadUser processing");
                 window.currentUser = data;
+
+                window.currentUserRole =
+                    String(data.role || "").toLowerCase();
+
+                if (window.currentUserRole === "professional") {
+                    applyDashboardWorkspaceMode();
+                    updateDashboardBackButton();
+                }
 
                 const brandingStatus =
                     document.getElementById("brandingStatus");
@@ -19820,11 +19853,17 @@ ${request.has_active_unlock
                         companyIdentityUnlocked ? "none" : "block";
                 }
 
+
+                console.time("loadProfessionalDashboardStatus");
                 await loadProfessionalDashboardStatus();
+                console.timeEnd("loadProfessionalDashboardStatus");
 
                 if (typeof updateProfessionalMyContacts === "function") {
+                    console.time("updateProfessionalMyContacts");
                     await updateProfessionalMyContacts();
+                    console.timeEnd("updateProfessionalMyContacts");
                 }
+
 
                 initializeProfessionalDashboardSubnav();
 
@@ -20152,6 +20191,8 @@ ${request.has_active_unlock
                     loadAdminProfessionalRequests();
                     loadAdminProfessionalDemos();
                 }
+
+                console.timeEnd("loadUser processing");
 
                 return data;
             } catch (error) {
@@ -21953,44 +21994,130 @@ ${request.has_active_unlock
                 });
         }
 
+        // ============================================================
+        // ACCOUNT DASHBOARD — SINGLE ACTIVE CONTENT VIEW
+        // Keep the topbar visible; show only the requested content view.
+        // Existing inline display rules still control role/access visibility.
+        // ============================================================
+        const DASHBOARD_VIEW_SECTIONS = [
+            "workspace-section",
+            "account-summary-section",
+            "professionalStatusSection",
+            "professionalDemoSection",
+            "professionalQuickActionsSection",
+            "service-areas",
+            "availability",
+            "home-requests",
+            "my-contacts",
+            "projects",
+            "home-professional-requests",
+            "reports",
+            "billing",
+            "branding",
+            "admin-professionals",
+            "admin-professional-demos",
+            "admin-users",
+            "admin-payments",
+            "admin-pricing",
+            "admin-professional-requests",
+            "help"
+        ];
+
+        function applyDashboardSectionView(sectionId) {
+            const requestedId = sectionId || "overview";
+            const viewIds = requestedId === "overview"
+                ? ["workspace-section", "account-summary-section"]
+                : [requestedId];
+
+            DASHBOARD_VIEW_SECTIONS.forEach((id) => {
+                const section = document.getElementById(id);
+                if (!section) return;
+
+                const isActiveView = viewIds.includes(id);
+                section.classList.toggle(
+                    "dashboard-view-hidden",
+                    !isActiveView
+                );
+
+                // These sections start with inline display:none and are later
+                // enabled by their own account/eligibility loaders. Do not
+                // force them visible here: navigation controls the active view,
+                // while the loader remains responsible for availability.
+            });
+
+            // Keep professional sub-navigation state aligned with the view.
+            if (DASHBOARD_VIEW_SECTIONS.includes(requestedId) &&
+                document.querySelector(`[data-professional-section="${requestedId}"]`)) {
+                setProfessionalDashboardSubnavActive(requestedId);
+            } else {
+                setProfessionalDashboardSubnavActive(null);
+            }
+        }
+
         function navigateProfessionalDashboardSection(sectionId) {
             const target = document.getElementById(sectionId);
             if (!target) return;
 
-            setProfessionalDashboardSubnavActive(sectionId);
-
-            requestAnimationFrame(() => {
-                target.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
-                if (window.history && window.history.replaceState) {
-                    window.history.replaceState(
-                        null,
-                        "",
-                        "#" + sectionId
-                    );
-                }
+            console.log("[NAV BEFORE]", sectionId, {
+                inlineDisplay: target.style.display,
+                className: target.className,
+                childCount: target.children.length
             });
+
+            applyDashboardSectionView(sectionId);
+
+            console.log("[NAV AFTER]", sectionId, {
+                inlineDisplay: target.style.display,
+                className: target.className,
+                computedDisplay: getComputedStyle(target).display,
+                childCount: target.children.length
+            });
+
+
+
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, "", "#" + sectionId);
+            }
+
+            // Move to the start of the selected view, rather than scrolling
+            // through unrelated dashboard sections.
+            window.scrollTo({ top: 0, behavior: "smooth" });
+
+            if (sectionId === "my-contacts" &&
+                typeof updateProfessionalMyContacts === "function") {
+                updateProfessionalMyContacts();
+            }
+
+            if (sectionId === "home-requests" &&
+                typeof updateProfessionalHomeProjectsAccess === "function") {
+                updateProfessionalHomeProjectsAccess();
+            }
         }
 
 
         function openProfessionalContacts() {
             navigateProfessionalDashboardSection("my-contacts");
-
-            if (typeof updateProfessionalMyContacts === "function") {
-                updateProfessionalMyContacts();
-            }
         }
+
 
         function openDashboardSectionFromHash() {
-            const sectionId = window.location.hash.slice(1);
+            const sectionId = window.location.hash.slice(1) || "overview";
 
-            if (sectionId === "my-contacts") {
-                openProfessionalContacts();
+            if (DASHBOARD_VIEW_SECTIONS.includes(sectionId) || sectionId === "overview") {
+                applyDashboardSectionView(sectionId);
+            }
+
+            if (sectionId === "my-contacts" &&
+                typeof updateProfessionalMyContacts === "function") {
+                updateProfessionalMyContacts();
+            }
+
+            if (sectionId === "home-requests" &&
+                typeof updateProfessionalHomeProjectsAccess === "function") {
+                updateProfessionalHomeProjectsAccess();
             }
         }
+
 
         if (document.readyState === "loading") {
             document.addEventListener(
@@ -23104,6 +23231,11 @@ ${request.contact_expires_at
 
 
         function initializeProfessionalDashboardSubnav() {
+            // The Account Dashboard now displays one content view at a time.
+            // IntersectionObserver scroll-spy would incorrectly switch the
+            // selected menu item based on hidden/non-active sections.
+            if (document.querySelector(".dashboard-view-hidden")) return;
+
             const sections = [
                 "professionalStatusSection",
                 "professionalQuickActionsSection",
@@ -24760,6 +24892,7 @@ ${request.contact_expires_at
 
         window.loadProjects = loadProjects;
 
+
         function activateDashboardSection() {
             let sectionId = window.location.hash.replace("#", "");
 
@@ -24770,28 +24903,75 @@ ${request.contact_expires_at
 
             const section = document.getElementById(sectionId);
 
+            applyDashboardSectionView(sectionId);
+            window.scrollTo({ top: 0, behavior: "auto" });
+
             // Clear all sidebar active states first.
             document.querySelectorAll(".nav-link").forEach(link => {
                 link.classList.remove("active");
             });
 
+            // Activate the matching Account Dashboard sidebar link.
             const activeLink = document.querySelector(
                 `.nav-link[href="#${sectionId}"]`
             );
 
+
+
             if (activeLink) {
                 activeLink.classList.add("active");
+
+                // Keep the active sidebar link visible.
+                activeLink.scrollIntoView({
+                    behavior: "auto",
+                    block: "nearest"
+                });
             }
 
+            // Explicitly activate Reports for the Reports section.
+            if (sectionId === "reports") {
+                const reportsLink = document.querySelector(
+                    '.nav-link[href="#reports"]'
+                );
+
+                if (reportsLink) {
+                    reportsLink.classList.add("active");
+                }
+            }
+
+            // Highlight the matching Professional Dashboard submenu item.
+            document.querySelectorAll(
+                ".professional-dashboard-subnav-item"
+            ).forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.professionalSection === sectionId
+                );
+            });
+
+            // Automatically scroll the sidebar to the active submenu item.
+            const activeProfessionalItem = document.querySelector(
+                ".professional-dashboard-subnav-item.active"
+            );
+
+            if (activeProfessionalItem) {
+                activeProfessionalItem.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                });
+            }
 
             if (!section) return;
 
             // Automatically load payment history when Billing & Plan opens.
-            if (sectionId === "billing" &&
-                typeof window.loadPaymentHistory === "function") {
+            if (
+                sectionId === "billing" &&
+                typeof window.loadPaymentHistory === "function"
+            ) {
                 window.loadPaymentHistory();
             }
         }
+
 
 
         function openHelpGettingStarted() {
@@ -27595,7 +27775,16 @@ ${request.contact_expires_at
         }
 
 
+
         function goBackToWorkspace() {
+
+            const role =
+                window.EMFProductContext?.account?.role;
+
+            if (role === "professional") {
+                window.location.href = "index.html";
+                return;
+            }
 
             const workspaceMode =
                 localStorage.getItem("workspaceMode") || "business";
@@ -27624,6 +27813,8 @@ ${request.contact_expires_at
             window.location.href = "index.html";
         }
 
+
+
         function updateDashboardBackButton() {
 
             const button =
@@ -27634,23 +27825,43 @@ ${request.contact_expires_at
             const workspaceMode =
                 localStorage.getItem("workspaceMode") || "business";
 
+            const role = String(
+                window.currentUser?.role ||
+                window.currentUserRole ||
+                ""
+            ).toLowerCase();
+
             button.textContent =
-                workspaceMode === "home"
-                    ? "← Back to My Property"
-                    : "← Back to Business Survey";
+                role === "professional"
+                    ? "← Back to Professional Dashboard"
+                    : workspaceMode === "home"
+                        ? "← Back to My Property"
+                        : "← Back to Business Survey";
         }
+
+
 
         async function initDashboard() {
             if (!token) return;
+            console.time("Dashboard initialization");
 
-            // Apply workspace immediately, before slow account loading.
-            applyDashboardWorkspaceMode();
-
+            console.time("Pricing wait");
             await window.pricingReady;
-            await loadUser();
+            console.timeEnd("Pricing wait");
 
-            // Re-apply after user data is loaded.
+            console.time("loadUser");
+            await loadUser();
+            console.timeEnd("loadUser");
+            console.timeLog("Dashboard initialization", "loadUser completed");
+
+            // Apply the correct role and workspace after account data loads.
             applyDashboardWorkspaceMode();
+            updateDashboardBackButton();
+
+            console.timeLog("Dashboard initialization", "role and workspace applied");
+
+
+            activateDashboardSection();
 
             await Promise.all([
                 loadProjects(),
@@ -27659,7 +27870,6 @@ ${request.contact_expires_at
                 loadAdminProfessionals()
             ]);
 
-            activateDashboardSection();
         }
 
         initDashboard().then(() => {
@@ -27675,19 +27885,16 @@ ${request.contact_expires_at
 
         updateDashboardBackButton();
 
-        // Set Dashboard Back button label based on workspace
+        // Set Dashboard Back button label
+        // using the shared update function.
         const dashboardBackBtn =
             document.getElementById("dashboardBackBtn");
 
         if (dashboardBackBtn) {
-            const workspaceMode =
-                localStorage.getItem("workspaceMode") || "business";
-
-            dashboardBackBtn.textContent =
-                workspaceMode === "home"
-                    ? "← Back to My Property"
-                    : "← Back to Business Survey";
+            updateDashboardBackButton();
         }
+
+
 
 
         function openAdminProfessionalDemoSend(demoId) {

@@ -814,20 +814,28 @@ function updateProjectHeader() {
     }
 }
 
+
+
 function updateProjectWorkspaceTitle() {
     const title = document.getElementById("projectWorkspaceTitle");
     if (!title) return;
 
     const mode = window.AppMode?.current || "home";
 
-    if (mode === "home") {
+    const isProfessionalDashboard =
+        mode === "business" &&
+        window.EMFProductContext?.account?.role === "professional" &&
+        !window.AppState?.project &&
+        document.getElementById("professionalDashboard")?.style.display === "block";
+
+    if (isProfessionalDashboard) {
+        title.textContent = "Professional Dashboard";
+    } else if (mode === "home") {
         title.textContent = "🏠 My Wellness Project";
     } else {
         title.textContent = "🏢 Business Project";
     }
 }
-
-window.updateProjectWorkspaceTitle = updateProjectWorkspaceTitle;
 
 window.updateProjectWorkspaceTitle = updateProjectWorkspaceTitle;
 

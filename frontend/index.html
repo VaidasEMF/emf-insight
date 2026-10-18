@@ -27,6 +27,7 @@
       }
     })();
   </script>
+
   <meta charset="utf-8">
   <title>EMF Planner</title>
 
@@ -3735,6 +3736,8 @@
     /* ===================== */
     /* 🔥 SIDEBAR */
     /* ===================== */
+
+
 
     .sidebar {
 
@@ -15214,20 +15217,19 @@
     /* PROJECT START SCREEN */
     /* ================================================== */
 
+
     .project-start-screen {
-
       width: 100%;
+      min-width: 0;
+      flex: 1 1 100%;
       min-height: 520px;
-
       box-sizing: border-box;
-
       display: flex;
-
       align-items: center;
       justify-content: center;
-
       padding: 48px 32px;
     }
+
 
 
     .project-start-card {
@@ -18017,22 +18019,41 @@
    ========================================= */
 
     #professionalProfileModal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
       padding: 24px;
       box-sizing: border-box;
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+      background: rgba(15, 23, 42, 0.48);
     }
 
     #professionalProfileModal .professional-profile-dialog {
-      width: min(760px, 100%) !important;
-      max-width: 760px !important;
-      max-height: 90vh !important;
-      overflow-y: auto !important;
-      overflow-x: hidden;
+      width: min(900px, calc(100vw - 48px)) !important;
+      max-width: 900px !important;
+      height: min(750px, calc(100vh - 48px));
+      max-height: calc(100vh - 48px) !important;
+      margin: 0 auto !important;
+      overflow: hidden !important;
       box-sizing: border-box;
-      background: #ffffff;
       border-radius: 18px !important;
-      padding: 0 !important;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22) !important;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
     }
+
+    #professionalProfileModal .professional-profile-dialog {
+      width: min(760px, calc(100vw - 48px)) !important;
+      max-width: 760px !important;
+      height: calc(100vh - 48px);
+      max-height: calc(100vh - 48px) !important;
+      margin-left: 0;
+      overflow-y: auto !important;
+      box-sizing: border-box;
+    }
+
+
 
     #professionalProfileModal .professional-profile-header {
       position: sticky;
@@ -23469,6 +23490,71 @@
     }
 
 
+
+    /* PROFESSIONAL SIDEBAR MENU */
+
+    #professionalSidebarMenu {
+      padding: 18px 8px 16px;
+      border-top: 1px solid #e2e8f0;
+      color: #172554;
+      font-size: 12px;
+    }
+
+    #professionalSidebarMenu .professional-sidebar-heading {
+      padding: 0 10px;
+      margin: 0 0 10px;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    #professionalSidebarMenu .professional-sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 36px;
+      margin: 2px 0;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: #172554;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    #professionalSidebarMenu .professional-sidebar-item:hover {
+      background: #f1f6ff;
+    }
+
+    #professionalSidebarMenu .professional-sidebar-item.active {
+      background: #e8f1ff;
+      color: #0754d1;
+      font-weight: 600;
+    }
+
+    #professionalSidebarMenu .professional-sidebar-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 18px;
+      width: 18px;
+      color: #1765f5;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    #professionalSidebarMenu .professional-sidebar-divider {
+      height: 1px;
+      margin: 14px 2px;
+      background: #dbe5f2;
+    }
+
+
+
     /* LOGO IN THE LEFT SIDEBAR */
     #panel>div.emf-topbar-logo-slot {
       width: 100%;
@@ -23546,6 +23632,762 @@
 
     #projectHeader .workspace-selector-direct {
       justify-content: flex-start !important;
+    }
+
+
+
+    /* ==================================================
+   PROFESSIONAL DASHBOARD
+   ================================================== */
+
+    #professionalDashboard {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 100%;
+      padding: 30px 32px 40px;
+      color: #172033;
+    }
+
+
+
+    /* ==================================================
+   PROFESSIONAL DASHBOARD — NEW DESIGN
+   ================================================== */
+
+    #professionalDashboard {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      min-height: 100%;
+      background: #f1f5f9;
+    }
+
+    /* Dashboard header */
+    #professionalDashboard .professional-dashboard-header {
+      padding: 24px 26px;
+      margin-bottom: 24px;
+      border: 1px solid #dbeafe;
+      border-radius: 16px;
+      background: linear-gradient(110deg, #eaf3ff 0%, #ffffff 72%);
+    }
+
+    #professionalDashboard .professional-dashboard-eyebrow {
+      color: #3159a8;
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
+
+    /* Four cards in one row on desktop */
+    #professionalDashboard .professional-dashboard-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      min-width: 0;
+      align-items: stretch;
+    }
+
+    #professionalDashboard .professional-dashboard-action {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+      min-height: 150px;
+      padding: 14px;
+      gap: 6px;
+      border: 1px solid #e1eaf7;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(30, 64, 175, 0.03);
+    }
+
+    #professionalDashboard .professional-dashboard-action:hover {
+      border-color: #93b4f8;
+      box-shadow: 0 5px 18px rgba(31, 75, 140, 0.08);
+      transform: translateY(-2px);
+    }
+
+    #professionalDashboard .professional-dashboard-action-icon,
+    #professionalDashboard .professional-dashboard-activity-icon {
+      background: #e8f1ff;
+      color: #1264f5;
+    }
+
+    #professionalDashboard .professional-dashboard-action-title {
+      font-size: 14px;
+    }
+
+    #professionalDashboard .professional-dashboard-action-description {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    #professionalDashboard .professional-dashboard-action-link {
+      margin-top: auto;
+      font-size: 12px;
+    }
+
+    #professionalDashboard .professional-dashboard-activity {
+      border-color: #e1eaf7;
+      border-radius: 12px;
+    }
+
+    /* Tablet: two columns */
+    @media (max-width: 900px) {
+      #professionalDashboard .professional-dashboard-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    /* Mobile: one column */
+    @media (max-width: 640px) {
+      #professionalDashboard {
+        padding: 24px 16px 32px;
+      }
+
+      #professionalDashboard .professional-dashboard-header {
+        padding: 20px 16px;
+      }
+
+      #professionalDashboard .professional-dashboard-actions {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+
+
+
+    #professionalDashboard *,
+    #professionalDashboard *::before,
+    #professionalDashboard *::after {
+      box-sizing: border-box;
+    }
+
+    #professionalDashboard .professional-dashboard-header {
+      margin-bottom: 30px;
+    }
+
+    #professionalDashboard .professional-dashboard-eyebrow {
+      margin-bottom: 10px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    #professionalDashboard h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    #professionalDashboard .professional-dashboard-header p {
+      margin: 0;
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    #professionalDashboard .professional-dashboard-section {
+      margin-top: 28px;
+    }
+
+    #professionalDashboard .professional-dashboard-section h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    #professionalDashboard .professional-dashboard-section-subtitle {
+      margin: 0 0 18px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    #professionalDashboard .professional-dashboard-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    #professionalDashboard .professional-dashboard-action {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+      min-height: 205px;
+      padding: 22px;
+      border: 1px solid #dce4ef;
+      border-radius: 12px;
+      background: #fff;
+      color: #172033;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    #professionalDashboard .professional-dashboard-action:hover {
+      border-color: #93b4f8;
+      box-shadow: 0 5px 18px rgba(31, 75, 140, 0.08);
+      transform: translateY(-2px);
+    }
+
+    #professionalDashboard .professional-dashboard-action-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: #edf4ff;
+      color: #2563eb;
+      font-size: 23px;
+    }
+
+    #professionalDashboard .professional-dashboard-action-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    #professionalDashboard .professional-dashboard-action-description {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    #professionalDashboard .professional-dashboard-action-link {
+      margin-top: auto;
+      color: #2563eb;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    #professionalDashboard .professional-dashboard-activity {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 22px;
+      border: 1px solid #dce4ef;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    #professionalDashboard .professional-dashboard-activity-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: #edf4ff;
+      color: #2563eb;
+      font-size: 22px;
+    }
+
+    #professionalDashboard .professional-dashboard-activity h3 {
+      margin: 2px 0 8px;
+      font-size: 16px;
+    }
+
+    #professionalDashboard .professional-dashboard-activity p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1000px) {
+      #professionalDashboard .professional-dashboard-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      #professionalDashboard {
+        padding: 24px 16px 32px;
+      }
+
+      #professionalDashboard h1 {
+        font-size: 25px;
+      }
+
+      #professionalDashboard .professional-dashboard-actions {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* Subtle Professional Dashboard back button */
+    #btnBackToProfessionalDashboard {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 16px;
+      padding: 7px 11px;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+      background: transparent;
+      color: #64748b;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    #btnBackToProfessionalDashboard:hover {
+      background: #f1f5f9;
+      color: #2563eb;
+      border-color: #cbdaf5;
+    }
+
+
+    /* Professional Dashboard Hero */
+    #professionalDashboard .professional-dashboard-hero {
+      position: relative;
+      isolation: isolate;
+      display: block;
+      min-height: 250px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      background: #f5faff;
+    }
+
+    #professionalDashboard .professional-dashboard-hero-content {
+      position: relative;
+      z-index: 1;
+      width: 58%;
+      min-height: 250px;
+      box-sizing: border-box;
+      padding: 28px 24px;
+      background: transparent;
+    }
+
+    #professionalDashboard .professional-dashboard-hero h1 {
+      max-width: 440px;
+      margin: 10px 0;
+      color: #101c55;
+      font-size: clamp(24px, 2.2vw, 32px);
+      line-height: 1.08;
+    }
+
+    #professionalDashboard .professional-dashboard-hero-content>p {
+      max-width: 470px;
+      margin: 0;
+      color: #526789;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #professionalDashboard .professional-dashboard-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    #professionalDashboard .professional-dashboard-hero-actions button {
+      padding: 10px 13px;
+      border: 1px solid #1765f5;
+      border-radius: 8px;
+      background: #1765f5;
+      color: #fff;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #professionalDashboard .professional-dashboard-hero-actions button+button {
+      background: #fff;
+      color: #1765f5;
+    }
+
+    /* Hero image with a soft transition into the text area */
+    #professionalDashboard .professional-dashboard-hero-image {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      min-height: 250px;
+      background-image:
+        linear-gradient(90deg,
+          #f5faff 0%,
+          rgba(245, 250, 255, 0.96) 24%,
+          rgba(245, 250, 255, 0.78) 40%,
+          rgba(245, 250, 255, 0.3) 56%,
+          transparent 72%),
+        url("assets/business/professional_emf.png");
+      background-size: cover;
+      background-position: center right;
+    }
+
+
+
+    #professionalDashboard .professional-dashboard-next-steps {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      box-sizing: border-box;
+      width: 220px;
+      max-width: calc(100% - 32px);
+      padding: 14px;
+      border: 1px solid #e5edf8;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 8px 24px rgba(26, 56, 100, 0.1);
+      z-index: 2;
+    }
+
+    /* Next steps card stays fully inside the right side */
+    #professionalDashboard .professional-dashboard-next-steps {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      box-sizing: border-box;
+      width: min(230px, calc(100% - 32px));
+      padding: 14px;
+      border: 1px solid #e5edf8;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 8px 24px rgba(26, 56, 100, 0.1);
+      z-index: 2;
+    }
+
+    #professionalDashboard .professional-dashboard-next-steps h3 {
+      margin: 0 0 12px;
+      font-size: 13px;
+    }
+
+    #professionalDashboard .professional-dashboard-next-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #professionalDashboard .professional-dashboard-next-step span {
+      display: grid;
+      flex: 0 0 26px;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      border-radius: 50%;
+      background: #e4efff;
+      color: #1765f5;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    #professionalDashboard .professional-dashboard-next-step:first-of-type span {
+      background: #d8f8e7;
+      color: #079455;
+    }
+
+    #professionalDashboard .professional-dashboard-next-step p {
+      margin: 0;
+      color: #526789;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 900px) {
+      #professionalDashboard .professional-dashboard-hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      #professionalDashboard .professional-dashboard-hero-image {
+        min-height: 250px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      #professionalDashboard .professional-dashboard-hero-content {
+        padding: 22px 18px;
+      }
+
+      #professionalDashboard .professional-dashboard-next-steps {
+        right: 10px;
+        width: min(220px, calc(100% - 20px));
+      }
+    }
+
+    /* Professional Journey and Recent Activity */
+    #professionalDashboard .professional-dashboard-bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(240px, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    #professionalDashboard .professional-dashboard-journey,
+    #professionalDashboard .professional-dashboard-recent {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid #e1eaf7;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    #professionalDashboard .professional-dashboard-journey h2,
+    #professionalDashboard .professional-dashboard-recent h2 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    #professionalDashboard .professional-dashboard-journey-steps {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    #professionalDashboard .professional-dashboard-journey-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-width: 0;
+    }
+
+    #professionalDashboard .journey-step-icon {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      margin-bottom: 8px;
+      border: 1px solid #cfe0f8;
+      border-radius: 50%;
+      background: #eff6ff;
+      color: #1765f5;
+    }
+
+    #professionalDashboard .professional-dashboard-journey-step.completed .journey-step-icon {
+      border-color: #10b981;
+      background: #e4fbef;
+      color: #059669;
+    }
+
+    #professionalDashboard .professional-dashboard-journey-step strong {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    #professionalDashboard .professional-dashboard-journey-step p {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    #professionalDashboard .professional-dashboard-recent-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    #professionalDashboard .professional-dashboard-recent-heading a {
+      color: #1765f5;
+      font-size: 11px;
+      text-decoration: none;
+    }
+
+    #professionalDashboard .professional-dashboard-recent-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 150px;
+      padding: 16px 8px;
+      text-align: center;
+    }
+
+    #professionalDashboard .recent-activity-icon {
+      margin-bottom: 10px;
+      color: #1765f5;
+      font-size: 28px;
+    }
+
+    #professionalDashboard .professional-dashboard-recent-empty strong {
+      font-size: 12px;
+    }
+
+    #professionalDashboard .professional-dashboard-recent-empty p,
+    #professionalDashboard .professional-dashboard-recent-empty>span:last-child {
+      max-width: 260px;
+      margin: 8px 0 0;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+
+
+    #professionalDashboard .professional-dashboard-community {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 100px;
+      margin-top: 12px;
+      padding: 16px 20px;
+      overflow: hidden;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      background:
+        linear-gradient(90deg,
+          rgba(235, 244, 255, 0.98) 0%,
+          rgba(235, 244, 255, 0.94) 34%,
+          rgba(235, 244, 255, 0.78) 52%,
+          rgba(235, 244, 255, 0.28) 72%,
+          rgba(235, 244, 255, 0.08) 100%),
+        url("assets/business/collaborative_emf.png") center 45% / cover no-repeat;
+    }
+
+    #professionalDashboard .professional-dashboard-community h2 {
+      margin: 0 0 5px;
+      color: #101c55;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    #professionalDashboard .professional-dashboard-community p {
+      margin: 0;
+      color: #263f63;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+
+
+    #professionalDashboard .professional-dashboard-community-icon {
+      flex: 0 0 auto;
+      color: #1765f5;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    #professionalDashboard .professional-dashboard-community h2 {
+      margin: 0 0 5px;
+      font-size: 14px;
+    }
+
+    #professionalDashboard .professional-dashboard-community p {
+      margin: 0;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    #professionalDashboard .professional-dashboard-community button {
+      flex: 0 0 auto;
+      margin-left: auto;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 7px;
+      background: #1765f5;
+      color: #fff;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1000px) {
+      #professionalDashboard .professional-dashboard-bottom {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      #professionalDashboard .professional-dashboard-journey-steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #professionalDashboard .professional-dashboard-community {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      #professionalDashboard .professional-dashboard-community button {
+        margin-left: 0;
+      }
+    }
+
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    .app {
+      height: 100vh;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .workspace {
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .main-content {
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior-y: contain;
+      scrollbar-gutter: stable;
+    }
+
+    #professionalDashboard {
+      min-height: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    /* Dashboard: keep top header and floor tabs outside scrolling */
+    .main-content:has(#professionalDashboard) {
+      overflow: hidden;
+    }
+
+    .main-content:has(#professionalDashboard)>#professionalDashboard {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+
+    /* Hide workspace title while Professional Profile modal is open */
+    body.professional-profile-open #projectWorkspaceTitle {
+      visibility: hidden !important;
+    }
+
+
+    /* Hide workspace switchers while Professional Profile is open */
+    body.professional-profile-open #workspaceHomeButton,
+    body.professional-profile-open #workspaceBusinessButton {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+
+
+    /* Professional Dashboard: hide workspace switchers */
+    body:has(#professionalDashboard) #projectHeader #workspaceHomeButton,
+    body:has(#professionalDashboard) #projectHeader #workspaceBusinessButton {
+      display: none !important;
     }
   </style>
 
@@ -23814,6 +24656,74 @@
           <span class="logo-slot-mark">✳</span>
           <span class="logo-slot-label">EMF Insight</span>
         </div>
+
+
+        <!-- PROFESSIONAL SIDEBAR MENU -->
+        <nav id="professionalSidebarMenu" class="professional-sidebar-menu" style="display:none;">
+
+          <div class="professional-sidebar-heading">
+            Professional Workspace
+          </div>
+
+          <button type="button" class="professional-sidebar-item active" data-professional-view="dashboard">
+            <span class="professional-sidebar-icon">⌂</span>
+            <span>Dashboard</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="requests">
+            <span class="professional-sidebar-icon">♧</span>
+            <span>Client Requests</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="profile">
+            <span class="professional-sidebar-icon">♙</span>
+            <span>Professional Profile</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="projects">
+            <span class="professional-sidebar-icon">▥</span>
+            <span>Business Projects</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="reports">
+            <span class="professional-sidebar-icon">▤</span>
+            <span>Reports &amp; Documents</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="marketplace">
+            <span class="professional-sidebar-icon">▦</span>
+            <span>Marketplace</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="community">
+            <span class="professional-sidebar-icon">♧</span>
+            <span>Community</span>
+          </button>
+
+          <div class="professional-sidebar-divider"></div>
+
+          <div class="professional-sidebar-heading">
+            Account
+          </div>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="billing">
+            <span class="professional-sidebar-icon">▣</span>
+            <span>Plan &amp; Billing</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="notifications">
+            <span class="professional-sidebar-icon">♧</span>
+            <span>Notifications</span>
+          </button>
+
+          <button type="button" class="professional-sidebar-item" data-professional-view="settings">
+            <span class="professional-sidebar-icon">⚙</span>
+            <span>Settings</span>
+          </button>
+
+        </nav>
+        <!-- END PROFESSIONAL SIDEBAR MENU -->
+
 
         <!-- ================================================== -->
         <!-- PROJECT -->
@@ -25513,6 +26423,19 @@ return false;
 
 
 
+                  <!-- PROFESSIONAL DASHBOARD -->
+                  <div class="user-menu-item" id="userProfessionalDashboardItem" style="display:none;"
+                    onclick="returnToProfessionalDashboard()">
+                    <span class="user-menu-icon">📊</span>
+                    <span class="user-menu-content">
+                      <span class="user-menu-title">Professional Dashboard</span>
+                      <span class="user-menu-subtitle">
+                        Return to your professional projects
+                      </span>
+                    </span>
+                  </div>
+
+
                   <!-- BILLING -->
                   <div class="user-menu-item" id="userBillingItem"
                     onclick="window.location.href='dashboard.html#billing'">
@@ -26978,9 +27901,195 @@ return false;
         </div>
 
 
+        <!-- ================================================== -->
+        <!-- PROFESSIONAL DASHBOARD -->
+        <!-- ================================================== -->
+        <section id="professionalDashboard" class="professional-dashboard" style="display:none;"
+          aria-label="Professional Dashboard">
 
 
+          <div class="professional-dashboard-hero">
+            <div class="professional-dashboard-hero-content">
+              <div class="professional-dashboard-eyebrow">
+                PROFESSIONAL MODE
+              </div>
 
+              <h1>Grow your EMF consulting business with EMF Insight</h1>
+
+              <p>
+                Connect with people who need help, deliver professional
+                assessments, and build your reputation.
+              </p>
+
+              <div class="professional-dashboard-hero-actions">
+                <button type="button" onclick="window.location.href='dashboard.html#home-requests'">
+                  <span aria-hidden="true">👥</span>
+                  View Client Requests →
+                </button>
+
+                <button type="button" onclick="setAppMode('business', { showProjectStart: true })">
+                  <span aria-hidden="true">▥</span>
+                  Open Business Survey →
+                </button>
+              </div>
+            </div>
+
+            <div class="professional-dashboard-hero-image" role="img"
+              aria-label="EMF consultant performing a property assessment">
+              <div class="professional-dashboard-next-steps">
+                <h3>⚑ Your next steps</h3>
+
+                <div class="professional-dashboard-next-step">
+                  <span>1</span>
+                  <p>Complete your professional profile</p>
+                </div>
+
+                <div class="professional-dashboard-next-step">
+                  <span>2</span>
+                  <p>Review client requests</p>
+                </div>
+
+                <div class="professional-dashboard-next-step">
+                  <span>3</span>
+                  <p>Start or continue an assessment</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- QUICK ACTIONS -->
+          <div class="professional-dashboard-section">
+            <h2>Quick Actions</h2>
+            <p class="professional-dashboard-section-subtitle">
+              Access your professional workspace.
+            </p>
+
+
+            <div class="professional-dashboard-actions">
+
+              <button type="button" class="professional-dashboard-action"
+                onclick="window.location.href='dashboard.html#home-requests'">
+                <span class="professional-dashboard-action-icon">▣</span>
+                <span class="professional-dashboard-action-title">Client Requests</span>
+                <span class="professional-dashboard-action-description">
+                  Review requests from Home users who need EMF assessments.
+                </span>
+                <span class="professional-dashboard-action-link">View Client Requests →</span>
+              </button>
+
+              <button type="button" class="professional-dashboard-action" onclick="window.openProfessionalProfile()">
+                <span class="professional-dashboard-action-icon">●</span>
+                <span class="professional-dashboard-action-title">Professional Profile</span>
+                <span class="professional-dashboard-action-description">
+                  Build trust and showcase your expertise.
+                </span>
+                <span class="professional-dashboard-action-link">Edit Your Profile →</span>
+              </button>
+
+              <button type="button" class="professional-dashboard-action"
+                onclick="setAppMode('business', { showProjectStart: true })">
+                <span class="professional-dashboard-action-icon">▦</span>
+                <span class="professional-dashboard-action-title">Business Survey</span>
+                <span class="professional-dashboard-action-description">
+                  Create a new assessment or continue your existing projects.
+                </span>
+                <span class="professional-dashboard-action-link">Open Business Survey →</span>
+              </button>
+
+              <button type="button" class="professional-dashboard-action"
+                onclick="window.location.href='dashboard.html#reports'">
+                <span class="professional-dashboard-action-icon">▤</span>
+                <span class="professional-dashboard-action-title">Reports &amp; Documents</span>
+                <span class="professional-dashboard-action-description">
+                  Access completed reports, floor plans and supporting documents.
+                </span>
+                <span class="professional-dashboard-action-link">View Documents →</span>
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- PROFESSIONAL JOURNEY + RECENT ACTIVITY -->
+          <div class="professional-dashboard-bottom">
+
+            <div class="professional-dashboard-journey">
+              <h2>♡ Your Professional Journey</h2>
+              <p class="professional-dashboard-section-subtitle">
+                Follow these steps to grow your impact on the EMF Insight platform.
+              </p>
+
+              <div class="professional-dashboard-journey-steps">
+                <div class="professional-dashboard-journey-step completed">
+                  <span class="journey-step-icon">♟</span>
+                  <strong>1. Complete profile</strong>
+                  <p>Add your details, qualifications and service areas.</p>
+                </div>
+
+                <div class="professional-dashboard-journey-step">
+                  <span class="journey-step-icon">⌕</span>
+                  <strong>2. Become discoverable</strong>
+                  <p>Get found by people in your area who need help.</p>
+                </div>
+
+                <div class="professional-dashboard-journey-step">
+                  <span class="journey-step-icon">☏</span>
+                  <strong>3. Receive requests</strong>
+                  <p>Review and respond to client requests.</p>
+                </div>
+
+                <div class="professional-dashboard-journey-step">
+                  <span class="journey-step-icon">▤</span>
+                  <strong>4. Perform assessments</strong>
+                  <p>Use our tools to create professional assessments.</p>
+                </div>
+
+                <div class="professional-dashboard-journey-step">
+                  <span class="journey-step-icon">▥</span>
+                  <strong>5. Build reputation</strong>
+                  <p>Deliver quality work and grow your business.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="professional-dashboard-recent">
+              <div class="professional-dashboard-recent-heading">
+                <h2>◷ Recent Activity</h2>
+                <a href="dashboard.html#activity">View All →</a>
+              </div>
+
+              <div class="professional-dashboard-recent-empty">
+                <span class="recent-activity-icon">☷</span>
+                <strong>Your professional activity</strong>
+                <p>
+                  Your recent requests, assessments and report activity
+                  will appear here.
+                </p>
+                <span>Start by completing your profile or opening a Business Survey project.</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- COMMUNITY BANNER -->
+          <div class="professional-dashboard-community">
+            <div class="professional-dashboard-community-icon" aria-hidden="true">⚛</div>
+            <div>
+              <h2>Be part of a growing EMF community</h2>
+              <p>
+                Connect with Home users, professionals and experts to share knowledge
+                and improve environments.
+              </p>
+            </div>
+            <button type="button" onclick="window.location.href='dashboard.html#community'">
+              Explore Community →
+            </button>
+          </div>
+
+
+        </section>
 
         <!-- ================================================== -->
         <!-- 🔥 BUSINESS WORKSPACE BODY -->
@@ -27052,7 +28161,6 @@ return false;
 
             </div>
 
-
             <!-- ================================================== -->
             <!-- PROJECT START SCREEN -->
             <!-- ================================================== -->
@@ -27060,11 +28168,16 @@ return false;
             <div id="projectStartScreen" class="project-start-screen" style="display:none;">
 
               <div class="project-start-card">
+                <!-- RETURN TO PROFESSIONAL DASHBOARD -->
+                <button id="btnBackToProfessionalDashboard" type="button" onclick="setAppMode('business')"
+                  class="professional-dashboard-back-btn" style="display:none;">
+                  <span aria-hidden="true">←</span>
+                  Professional Dashboard
+                </button>
 
                 <div class="project-start-icon">
                   <img id="projectStartIcon" src="assets/icons/home-project-start.png" alt="Project">
                 </div>
-
 
                 <div id="projectStartTitle" class="project-start-title">
                   My Home
@@ -27074,46 +28187,26 @@ return false;
                   Create your home environment profile or open an existing property.
                 </div>
 
-
                 <div class="project-start-actions">
 
                   <button id="projectStartNew" class="project-start-btn primary" type="button"
                     onclick="createProject?.()">
-
-                    <span class="project-start-btn-icon">
-                      +
-                    </span>
+                    <span class="project-start-btn-icon">+</span>
 
                     <span>
-                      <strong>
-                        New Property
-                      </strong>
-
-                      <small>
-                        Start building your property's environmental profile
-                      </small>
+                      <strong>New Property</strong>
+                      <small>Start building your property's environmental profile</small>
                     </span>
-
                   </button>
-
 
                   <button id="projectStartOpen" class="project-start-btn secondary" type="button"
                     onclick="openProjectMenu?.()">
-
-                    <span class="project-start-btn-icon">
-                      📁
-                    </span>
+                    <span class="project-start-btn-icon">📁</span>
 
                     <span>
-                      <strong>
-                        Open Property
-                      </strong>
-
-                      <small>
-                        Continue exploring your property
-                      </small>
+                      <strong>Open Property</strong>
+                      <small>Continue exploring your property</small>
                     </span>
-
                   </button>
 
                 </div>
@@ -27121,6 +28214,9 @@ return false;
               </div>
 
             </div>
+
+
+
 
 
             <!-- ================================================== -->
@@ -34094,17 +35190,110 @@ return false;
   }
 
 
+  function returnToProfessionalDashboard() {
+    const role = window.EMFProductContext?.account?.role;
+
+    if (role !== "professional") {
+      return;
+    }
+    setAppMode("business", {
+      forceProfessionalDashboard: true,
+      skipProjectRestore: true
+    });
+  }
+
+  // Hide Demo Feedback in Professional Dashboard
+  const demoFeedbackButton = [
+    ...document.querySelectorAll(".sidebar-section button")
+  ].find(button =>
+    button.textContent.trim() === "Demo Feedback"
+  );
+
+  if (demoFeedbackButton) {
+    demoFeedbackButton.closest(".sidebar-section").style.display = "none";
+  }
+
+
+  // PROFESSIONAL SIDEBAR NAVIGATIO
+  document.querySelectorAll(
+    "#professionalSidebarMenu [data-professional-view]"
+  ).forEach(button => {
+    button.addEventListener("click", () => {
+      const view = button.dataset.professionalView;
+
+      // Update active menu item
+      document.querySelectorAll(
+        "#professionalSidebarMenu .professional-sidebar-item"
+      ).forEach(item => {
+        item.classList.toggle("active", item === button);
+      });
+
+      // Dashboard
+      if (view === "dashboard") {
+        returnToProfessionalDashboard();
+        return;
+      }
+
+      // Client Requests
+      if (view === "requests") {
+        window.location.href = "dashboard.html#home-requests";
+        return;
+      }
+
+      // Professional Profile
+      if (view === "profile") {
+        if (typeof window.openProfessionalProfile === "function") {
+          window.openProfessionalProfile();
+        } else {
+          console.error("Professional Profile function is not available");
+        }
+        return;
+      }
+      // Reports & Documents
+      if (view === "reports") {
+        window.location.href = "dashboard.html#reports";
+        return;
+      }
+
+      // Plan & Billing
+      if (view === "billing") {
+        window.location.href = "dashboard.html#billing";
+        return;
+      }
+
+      // Notifications
+      if (view === "notifications") {
+        if (typeof window.openAccountNotifications === "function") {
+          window.openAccountNotifications();
+        }
+        return;
+      }
+    });
+  });
+
+
+
   function updateProfessionalContactsMenu() {
     const contactsItem = document.getElementById(
       "userProfessionalContactsItem"
     );
 
-    if (!contactsItem) return;
+    const dashboardItem = document.getElementById(
+      "userProfessionalDashboardItem"
+    );
 
     const role = window.EMFProductContext?.account?.role;
+    const isProfessional = role === "professional";
 
-    contactsItem.style.display =
-      role === "professional" ? "flex" : "none";
+    if (contactsItem) {
+      contactsItem.style.display =
+        isProfessional ? "flex" : "none";
+    }
+
+    if (dashboardItem) {
+      dashboardItem.style.display =
+        isProfessional ? "flex" : "none";
+    }
   }
 
 
@@ -40685,6 +41874,15 @@ return false;
 
   window.onload = async () => {
 
+
+    console.log("🚦 STARTUP ROLE CHECK", {
+      role: window.EMFProductContext?.account?.role,
+      workspaceMode: localStorage.getItem("workspaceMode"),
+      dashboardDisplay:
+        document.getElementById("professionalDashboard")?.style.display,
+      sidebarDisplay:
+        document.getElementById("panel")?.style.display
+    });
     // Resolve current user for startup diagnostics
     const startupToken =
       localStorage.getItem("token");
@@ -41437,6 +42635,15 @@ return false;
                 window.EMFProductContext.account.isAdmin
             }
           );
+
+          console.log("🚦 ROLE READY CHECK", {
+            role: window.EMFProductContext?.account?.role,
+            workspaceMode: localStorage.getItem("workspaceMode"),
+            dashboardDisplay:
+              document.getElementById("professionalDashboard")?.style.display,
+            sidebarDisplay:
+              document.getElementById("panel")?.style.display
+          });
         }
       }
 
@@ -41484,6 +42691,8 @@ return false;
 
         const response =
           await res.json();
+
+        console.log("🔎 PROJECTS API RESPONSE", response);
 
         const projects =
           Array.isArray(response)
@@ -42454,12 +43663,19 @@ z-index:2;
 
       const businessOutputActions =
         document.getElementById("businessOutputActions");
-      if (businessOutputActions) businessOutputActions.style.display = "";
+
+      if (businessOutputActions) {
+        businessOutputActions.style.display = "";
+      }
 
       const professionalDemoFeedbackSection =
         document.getElementById("professionalDemoFeedbackSection");
+
       if (professionalDemoFeedbackSection) {
-        professionalDemoFeedbackSection.style.display = "";
+        professionalDemoFeedbackSection.style.display =
+          window.EMFProductContext?.account?.role === "professional"
+            ? "none"
+            : "";
       }
 
       const header = document.getElementById("projectHeader");
@@ -42616,6 +43832,17 @@ z-index:2;
           skipProjectRestore: false
         }
       );
+
+      console.log("🚦 DASHBOARD IMMEDIATELY AFTER setAppMode", {
+        role: window.EMFProductContext?.account?.role,
+        mode: window.AppMode?.current,
+        dashboardDisplay:
+          document.getElementById("professionalDashboard")?.style.display,
+        sidebarHomeItems: [
+          ...document.querySelectorAll("#panel .home-only")
+        ].filter(el => getComputedStyle(el).display !== "none")
+          .map(el => el.id || el.className)
+      });
 
       console.log("🔎 INDEX AFTER setAppMode", {
         requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),

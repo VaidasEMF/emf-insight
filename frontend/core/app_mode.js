@@ -320,6 +320,8 @@ async function setAppMode(
     options = {}
 ) {
 
+    console.time("setAppMode TOTAL");
+
     console.error("🚩 SET APP MODE ENTERED", {
         mode,
         options,
@@ -662,8 +664,12 @@ async function setAppMode(
         !targetProjectId &&
         typeof window.restoreProfessionalBusinessProject === "function"
     ) {
+        console.time("restoreProfessionalBusinessProject");
+
         targetProjectId =
             await window.restoreProfessionalBusinessProject();
+
+        console.timeEnd("restoreProfessionalBusinessProject");
     }
 
     console.error(
@@ -1656,7 +1662,7 @@ async function setAppMode(
             // GENERAL UI
             // ----------------------------------------------
 
-            updateWorkspaceUI?.();
+            updateWorkspaceUI?.(options);
             updateHomeWorkflow?.();
             updateHomeLocks?.();
             updateHomeEmptyPlanState?.();
@@ -2153,7 +2159,8 @@ async function setAppMode(
         );
     }
 
-
+    console.timeEnd("setAppMode TOTAL");
+    console.log("✅ SET APP MODE FINISHED");
 }
 
 // ============================================================
@@ -4156,7 +4163,7 @@ async function closeActiveProject() {
 window.closeActiveProject = closeActiveProject;
 
 
-function updateWorkspaceUI() {
+function updateWorkspaceUI(options = {}) {
 
 
     console.log("[START SCREEN DEBUG]", {
@@ -4541,23 +4548,143 @@ function updateWorkspaceUI() {
     }
 
     // ==================================================
-    // PROJECT START SCREEN
+    // PROFESSIONAL DASHBOARD / PROJECT START SCREEN
     // ==================================================
 
+    const professionalDashboard =
+        document.getElementById("professionalDashboard");
+
     const projectStartScreen =
-        document.getElementById(
-            "projectStartScreen"
-        );
+        document.getElementById("projectStartScreen");
 
 
-    if (
-        projectStartScreen
-    ) {
+    const isProfessionalAssessmentView =
+        sessionStorage.getItem("requestedWorkspace") ===
+        "professional-assessment" &&
+        !!sessionStorage.getItem("professionalAssessmentContext");
 
-        projectStartScreen.style.display =
-            hasActiveProject
+    const forceProfessionalDashboard =
+        options.forceProfessionalDashboard === true &&
+        role === "professional";
+
+    const showProfessionalDashboard =
+        mode === "business" &&
+        role === "professional" &&
+        (
+            !hasActiveProject ||
+            forceProfessionalDashboard
+        ) &&
+        !isBusinessDemo &&
+        !isProfessionalAssessmentView &&
+        options.showProjectStart !== true;
+
+    // PROFESSIONAL DASHBOARD
+    if (professionalDashboard) {
+        professionalDashboard.style.display =
+            showProfessionalDashboard ? "block" : "none";
+    }
+
+
+    // PROFESSIONAL SIDEBAR MENU VISIBILITY
+    const professionalSidebarMenu =
+        document.getElementById("professionalSidebarMenu");
+
+    if (professionalSidebarMenu) {
+        professionalSidebarMenu.style.display =
+            showProfessionalDashboard ? "block" : "none";
+    }
+
+
+    // PROFESSIONAL DASHBOARD — DEMO FEEDBACK VISIBILITY
+    const professionalDemoFeedbackSection =
+        document.getElementById("professionalDemoFeedbackSection");
+
+    if (professionalDemoFeedbackSection) {
+        professionalDemoFeedbackSection.style.display =
+            mode === "business" &&
+                role === "professional" &&
+                !hasActiveProject &&
+                !isBusinessDemo &&
+                !isProfessionalAssessmentView &&
+                options.showProjectStart !== true
                 ? "none"
-                : "flex";
+                : "";
+    }
+
+    window.updateProjectWorkspaceTitle?.();
+
+    // PROJECT START SCREEN
+    if (projectStartScreen) {
+        projectStartScreen.style.display =
+            !hasActiveProject &&
+                (!showProfessionalDashboard || options.showProjectStart === true)
+                ? "flex"
+                : "none";
+    }
+
+    const backToProfessionalDashboard =
+        document.getElementById("btnBackToProfessionalDashboard");
+
+    if (backToProfessionalDashboard) {
+        backToProfessionalDashboard.style.display =
+            mode === "business" &&
+                role === "professional" &&
+                !hasActiveProject &&
+                !showProfessionalDashboard
+                ? "block"
+                : "none";
+    }
+
+    // BUSINESS PROJECT ACTIONS IN SIDEBAR
+    const businessProjectActions =
+        document.getElementById("businessProjectActions");
+
+    if (businessProjectActions) {
+        businessProjectActions.style.display =
+            showProfessionalDashboard ? "none" : "";
+    }
+
+    // BUSINESS OUTPUT ACTIONS
+    const businessOutputActions =
+        document.getElementById("businessOutputActions");
+
+    if (businessOutputActions) {
+        businessOutputActions.style.display =
+            showProfessionalDashboard ? "none" : "";
+    }
+
+    // BUSINESS MEASUREMENT CONTROLS
+    const businessProjectToggles =
+        document.getElementById("businessProjectToggles");
+
+    if (businessProjectToggles) {
+        businessProjectToggles.style.display =
+            showProfessionalDashboard
+                ? "none"
+                : (
+                    mode === "business" &&
+                        window.EMFHomeDemo !== true
+                        ? "flex"
+                        : "none"
+                );
+    }
+
+    // BUSINESS WORKSPACE CANVAS
+    const businessWorkspaceBody =
+        document.querySelector(".business-workspace-body");
+
+    if (businessWorkspaceBody) {
+        businessWorkspaceBody.style.display =
+            showProfessionalDashboard ? "none" : "";
+    }
+
+
+    const projectMeta =
+        document.querySelector("#projectHeader .project-meta");
+
+    if (projectMeta) {
+        projectMeta.style.display =
+            showProfessionalDashboard ? "none" : "";
     }
 
     console.error(
@@ -6215,6 +6342,7 @@ function closePropertyHealthRecord() {
     }
 
     modal.style.display = "none";
+    document.body.classList.remove("professional-profile-open");
     modal.classList.remove("active");
 
     document.body.classList.remove(

@@ -291,6 +291,8 @@ async function openProfessionalProfile() {
 
     modal.style.display = "flex";
 
+    document.body.classList.add("professional-profile-open");
+
     const modalCard = modal.querySelector(
         "#professionalProfileModal > div"
     );
@@ -518,7 +520,7 @@ function initializeProfessionalServiceAreaCountry() {
         return;
     }
 
-const serviceAreaCountryCodes = {
+    const serviceAreaCountryCodes = {
         "Afghanistan": "AF",
         "Albania": "AL",
         "Algeria": "DZ",
@@ -951,16 +953,16 @@ function addProfessionalServiceArea() {
 
     const sameAsPrimaryLocation =
         country.toLowerCase() ===
-            primaryCountry.toLowerCase() &&
+        primaryCountry.toLowerCase() &&
         (
             !city ||
             city.toLowerCase() ===
-                primaryCity.toLowerCase()
+            primaryCity.toLowerCase()
         ) &&
         (
             !postalCode ||
             postalCode.toLowerCase() ===
-                primaryPostalCode.toLowerCase()
+            primaryPostalCode.toLowerCase()
         ) &&
         !region;
 
@@ -979,13 +981,13 @@ function addProfessionalServiceArea() {
         professionalServiceAreas.some(
             (area) =>
                 area.country.toLowerCase() ===
-                    country.toLowerCase() &&
+                country.toLowerCase() &&
                 area.region.toLowerCase() ===
-                    region.toLowerCase() &&
+                region.toLowerCase() &&
                 area.city.toLowerCase() ===
-                    city.toLowerCase() &&
+                city.toLowerCase() &&
                 area.postal_code.toLowerCase() ===
-                    postalCode.toLowerCase()
+                postalCode.toLowerCase()
         );
 
 
@@ -1919,7 +1921,7 @@ function validateProfessionalProfileForHome() {
         }
     });
 
-        const primaryCountry =
+    const primaryCountry =
         document.getElementById(
             "professionalProfileCountry"
         )?.value.trim() || "";
