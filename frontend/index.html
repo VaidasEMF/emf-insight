@@ -71,7 +71,10 @@
         rgba(15, 23, 42, 0.42);
 
       backdrop-filter:
-        blur(3px);
+        blur(8px);
+
+      -webkit-backdrop-filter:
+        blur(8px);
 
       pointer-events: auto;
     }
@@ -5428,7 +5431,7 @@
       gap: 8px;
       flex: 0 1 260px;
       min-width: 150px;
-      height: 42px;
+      height: 46px;
       padding: 0 10px;
       box-sizing: border-box;
       border: 1px dashed #cbd5e1;
@@ -16225,12 +16228,16 @@
     }
 
 
+
     #openProjectPopup .project-popup-card {
-
       position: relative !important;
-
       z-index: 1 !important;
+      filter: none !important;
+      opacity: 1 !important;
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
     }
+
 
 
 
@@ -20914,7 +20921,21 @@
       box-sizing: border-box;
 
       background: rgba(15, 23, 42, 0.42) !important;
+
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
     }
+
+
+    /* BLUR APP BACKGROUND WITHOUT BLURRING OPEN PROJECT */
+    body:has(.project-popup[style*="display: flex"]) #panel,
+    body:has(.project-popup[style*="display: flex"]) .main-content:not(:has(.project-popup[style*="display: flex"])),
+    body:has(#accountNotificationsModal[style*="display: flex"]) #panel,
+    body:has(#accountNotificationsModal[style*="display: flex"]) .main-content {
+      filter: blur(5px);
+      transition: filter 0.15s ease;
+    }
+
 
     #accountNotificationsModal .modal-content.user-profile-modal {
       width: min(500px, calc(100vw - 40px)) !important;
@@ -23555,21 +23576,23 @@
 
 
 
+
     /* LOGO IN THE LEFT SIDEBAR */
     #panel>div.emf-topbar-logo-slot {
       width: 100%;
       min-width: 0;
-      height: 42px !important;
-      min-height: 42px !important;
-      max-height: 42px !important;
-      flex: 0 0 42px !important;
-      margin: 0 0 8px;
+      height: 56px !important;
+      min-height: 56px !important;
+      max-height: none !important;
+      flex: 0 0 56px !important;
+      margin: 0 0 4px;
       border: none;
       border-radius: 0;
       border-bottom: 1px solid #e2e8f0;
       background: #ffffff;
       box-sizing: border-box;
     }
+
 
 
     /* WORKSPACE BUTTONS IN THE MIDDLE */
@@ -23611,12 +23634,20 @@
     }
 
 
-    /* Keep the left sidebar sharp and readable */
+
+    body.project-popup-open #panel,
     body.project-popup-open #sidebar,
     body.project-popup-open .sidebar {
-      filter: none !important;
+      filter: blur(5px) !important;
       backdrop-filter: none !important;
     }
+
+    body.project-popup-open #openProjectPopup,
+    body.project-popup-open #openProjectPopup .project-popup-card,
+    body.project-popup-open #openProjectPopup .project-popup-card * {
+      filter: none !important;
+    }
+
 
 
 
@@ -24384,10 +24415,48 @@
 
 
 
-    /* Professional Dashboard: hide workspace switchers */
-    body:has(#professionalDashboard) #projectHeader #workspaceHomeButton,
-    body:has(#professionalDashboard) #projectHeader #workspaceBusinessButton {
-      display: none !important;
+    /* Professional Dashboard — subtle sidebar link */
+
+
+    #btnOpenProfessionalDashboard {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: calc(100% - 32px);
+      margin: 0 16px 4px !important;
+      padding: 4px 0 8px !important;
+      border: 0 !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      color: #64748b !important;
+      font-family: inherit;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+      line-height: 18px;
+      text-align: left;
+      box-shadow: none !important;
+      cursor: pointer;
+    }
+
+    #btnOpenProfessionalDashboard:hover {
+      background: transparent !important;
+      color: #2563eb !important;
+      box-shadow: none !important;
+    }
+
+    #btnOpenProfessionalDashboard .professional-dashboard-nav-icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
+    }
+
+    #btnOpenProfessionalDashboard .professional-dashboard-nav-arrow {
+      margin-left: 0;
+      color: #2563eb;
+      font-size: 16px;
+      line-height: 18px;
     }
   </style>
 
@@ -24656,6 +24725,23 @@
           <span class="logo-slot-mark">✳</span>
           <span class="logo-slot-label">EMF Insight</span>
         </div>
+
+
+
+
+        <button id="btnOpenProfessionalDashboard" type="button" class="professional-dashboard-nav-btn"
+          style="display:none;" onclick="returnToProfessionalDashboard()">
+          <svg class="professional-dashboard-nav-icon" viewBox="0 0 24 24" width="17" height="17" fill="none"
+            stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3.5 10.5 12 3.5l8.5 7" />
+            <path d="M5.5 9.5v10h13v-10" />
+            <path d="M9.5 19.5v-6h5v6" />
+          </svg>
+          <span>Professional Dashboard</span>
+          <span class="professional-dashboard-nav-arrow" aria-hidden="true">→</span>
+        </button>
+
+
 
 
         <!-- PROFESSIONAL SIDEBAR MENU -->
@@ -35190,17 +35276,22 @@ return false;
   }
 
 
+
   function returnToProfessionalDashboard() {
     const role = window.EMFProductContext?.account?.role;
 
     if (role !== "professional") {
       return;
     }
+
+    sessionStorage.setItem("professionalDashboardRequested", "true");
+
     setAppMode("business", {
       forceProfessionalDashboard: true,
       skipProjectRestore: true
     });
   }
+
 
   // Hide Demo Feedback in Professional Dashboard
   const demoFeedbackButton = [

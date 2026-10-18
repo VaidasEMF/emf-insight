@@ -1902,6 +1902,10 @@ async function setAppMode(
             if (businessProjectToggles) {
                 businessProjectToggles.style.display =
                     mode === "business" &&
+                        !!(
+                            window.AppState?.businessProject ||
+                            window.AppState?.project
+                        ) &&
                         window.EMFHomeDemo !== true
                         ? "flex"
                         : "none";
@@ -4567,16 +4571,21 @@ function updateWorkspaceUI(options = {}) {
         options.forceProfessionalDashboard === true &&
         role === "professional";
 
+
     const showProfessionalDashboard =
         mode === "business" &&
         role === "professional" &&
         (
-            !hasActiveProject ||
-            forceProfessionalDashboard
+            forceProfessionalDashboard ||
+            (
+                !hasActiveProject &&
+                options.showProjectStart !== true &&
+                sessionStorage.getItem("professionalDashboardRequested") === "true"
+            )
         ) &&
         !isBusinessDemo &&
-        !isProfessionalAssessmentView &&
-        options.showProjectStart !== true;
+        !isProfessionalAssessmentView;
+
 
     // PROFESSIONAL DASHBOARD
     if (professionalDashboard) {
@@ -4592,6 +4601,21 @@ function updateWorkspaceUI(options = {}) {
     if (professionalSidebarMenu) {
         professionalSidebarMenu.style.display =
             showProfessionalDashboard ? "block" : "none";
+    }
+
+
+    const dashboardNavButton =
+        document.getElementById("btnOpenProfessionalDashboard");
+
+    if (dashboardNavButton) {
+        dashboardNavButton.style.display =
+            mode === "business" &&
+                role === "professional" &&
+                !showProfessionalDashboard &&
+                !isBusinessDemo &&
+                !isProfessionalAssessmentView
+                ? "flex"
+                : "none";
     }
 
 
@@ -4663,6 +4687,7 @@ function updateWorkspaceUI(options = {}) {
                 ? "none"
                 : (
                     mode === "business" &&
+                        hasActiveProject &&
                         window.EMFHomeDemo !== true
                         ? "flex"
                         : "none"
@@ -5199,6 +5224,15 @@ function updateWorkspaceUI(options = {}) {
                 : "none";
     }
 
+    const businessFloorTabsBar =
+        document.getElementById("businessFloorTabsBar");
+
+    if (businessFloorTabsBar) {
+        businessFloorTabsBar.style.display =
+            mode === "business" && hasActiveProject
+                ? ""
+                : "none";
+    }
 
     // ==================================================
     // NO ACTIVE PROJECT
