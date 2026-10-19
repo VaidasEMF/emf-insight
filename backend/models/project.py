@@ -3,6 +3,8 @@ from sqlalchemy import (
     String,
     ForeignKey,
     JSON,
+    DateTime,
+    func,
 )
 
 from sqlalchemy.orm import (
@@ -10,6 +12,7 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
 )
+from datetime import datetime
 
 from db.base import Base
 
@@ -48,6 +51,19 @@ class Project(Base):
 
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"),
+        nullable=False,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
         nullable=False,
     )
 

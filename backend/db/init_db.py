@@ -35,6 +35,18 @@ def init_db():
                 NOT NULL DEFAULT 'business'
             """))
 
+            connection.execute(text("""
+                ALTER TABLE projects
+                ADD COLUMN IF NOT EXISTS created_at TIMESTAMP
+                NOT NULL DEFAULT CURRENT_TIMESTAMP
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE projects
+                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP
+                NOT NULL DEFAULT CURRENT_TIMESTAMP
+            """))
+
 
      # ==================================================
     # PROFESSIONAL REQUESTS

@@ -15,6 +15,8 @@ from models.project import Project
 
 from models.project_version import ProjectVersion
 
+from datetime import datetime, timezone
+
 router = APIRouter()
 
 
@@ -178,11 +180,8 @@ def my_projects(
             or ""
         )
 
-        created_at = getattr(
-            p,
-            "created_at",
-            None
-        )
+        created_at = p.created_at
+        updated_at = p.updated_at
 
         result.append({
             "id": p.id,
@@ -213,9 +212,15 @@ def my_projects(
             "unit":
                 data.get("unit"),
 
-            "created_at": (
+           "created_at": (
                 created_at.isoformat()
                 if created_at
+                else None
+            ),
+
+            "updated_at": (
+                updated_at.isoformat()
+                if updated_at
                 else None
             ),
         })
@@ -437,6 +442,7 @@ def rename_project(
     # =====================
 
     project.name = new_name
+    project.updated_at = datetime.now(timezone.utc)
 
 
     # Keep name synchronized

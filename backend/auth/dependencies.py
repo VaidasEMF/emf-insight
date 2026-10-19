@@ -84,7 +84,12 @@ def get_current_user(
                 "sub",
             )
 
-       
+        print(
+            "AUTH DEBUG: sub =",
+            repr(user_id),
+            "type =",
+            type(user_id).__name__,
+        )
 
         if user_id is None:
 
@@ -106,7 +111,10 @@ def get_current_user(
                 User.id == user_id
             ).first()
 
-       
+        print(
+            "AUTH DEBUG: user_found =",
+            user is not None,
+        )
 
         if not user:
 
@@ -115,7 +123,7 @@ def get_current_user(
             raise credentials_exception
 
        
-
+        print("AUTH DEBUG: returning authenticated user")
 
         return user
 

@@ -1445,6 +1445,8 @@ async function saveProject() {
 
 async function loadProjectList() {
 
+    console.log("TEST: loadProjectList CALLED");
+
     console.log("=================================");
     console.log("🔥 LOAD PROJECT LIST START");
 

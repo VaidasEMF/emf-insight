@@ -5729,6 +5729,59 @@ async function openHomeWorkspaceStart() {
 }
 
 
+async function openHomeNewProjectStart() {
+    window.myWellnessDashboardOpen = false;
+
+    const dashboard =
+        document.getElementById("myWellnessDashboard");
+
+    if (dashboard) {
+        dashboard.style.display = "none";
+        dashboard.hidden = true;
+    }
+
+    // Show the existing Home Wellness start screen
+    // without clearing or changing the saved project.
+    const startScreen =
+        document.getElementById("projectStartScreen");
+
+    if (startScreen) {
+        startScreen.hidden = false;
+        startScreen.style.display = "flex";
+    }
+
+    const projectMeta =
+        document.querySelector("#projectHeader .project-meta");
+
+    if (projectMeta) {
+        projectMeta.style.display = "none";
+    }
+
+    const projectWorkspaceTitle =
+        document.getElementById("projectWorkspaceTitle");
+
+    if (projectWorkspaceTitle) {
+        projectWorkspaceTitle.textContent = "My Wellness Project";
+    }
+
+    const homeFloorTabsBar =
+        document.getElementById("homeFloorTabsBar");
+
+    const canvasArea =
+        document.querySelector(".canvas-area");
+
+    if (homeFloorTabsBar) {
+        homeFloorTabsBar.style.display = "none";
+    }
+
+    if (canvasArea) {
+        canvasArea.style.display = "none";
+    }
+}
+
+window.openHomeNewProjectStart = openHomeNewProjectStart;
+
+
 async function openMyWellnessDashboard() {
     window.myWellnessDashboardOpen = true;
     if (window.AppMode?.current !== "home") {
@@ -5819,6 +5872,10 @@ async function openMyWellnessDashboard() {
                 button.dataset.homeNav === "home"
             );
         });
+
+    if (typeof window.loadHomeWellnessRecentProjects === "function") {
+        await window.loadHomeWellnessRecentProjects();
+    }
 }
 
 
