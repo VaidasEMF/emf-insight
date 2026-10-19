@@ -4562,6 +4562,132 @@ function updateWorkspaceUI(options = {}) {
         document.getElementById("projectStartScreen");
 
 
+    // ==================================================
+    // MY WELLNESS DASHBOARD
+    // ==================================================
+
+    const myWellnessDashboard =
+        document.getElementById("myWellnessDashboard");
+
+    const homeSidebar =
+        document.getElementById("panel");
+
+    const myWellnessSidebar =
+        document.getElementById("myWellnessSidebar");
+
+    // Dashboard is shown ONLY when explicitly requested.
+    if (mode !== "home") {
+        window.myWellnessDashboardOpen = false;
+    }
+
+
+    const showMyWellnessDashboard =
+        mode === "home" &&
+        window.myWellnessDashboardOpen === true;
+
+
+    console.log("MY WELLNESS DASHBOARD CHECK", {
+        mode,
+        hasActiveProject,
+        activeProjectId:
+            activeProject?.project_id ??
+            activeProject?.id ??
+            null,
+        dashboardRequested:
+            window.myWellnessDashboardOpen === true,
+        showMyWellnessDashboard
+    });
+
+    console.log("DASHBOARD DISPLAY DECISION", {
+        mode,
+        hasActiveProject,
+        dashboardOpen: window.myWellnessDashboardOpen,
+        showMyWellnessDashboard,
+        willShow: showMyWellnessDashboard ? "block" : "none"
+    });
+
+    if (myWellnessDashboard) {
+        const startScreenIsVisible =
+            mode === "home" &&
+            projectStartScreen &&
+            projectStartScreen.style.display !== "none" &&
+            !projectStartScreen.hidden;
+
+        const shouldShowDashboard =
+            showMyWellnessDashboard && !startScreenIsVisible;
+
+        myWellnessDashboard.style.display =
+            shouldShowDashboard ? "block" : "none";
+
+        myWellnessDashboard.hidden =
+            !shouldShowDashboard;
+    }
+
+    // Hide Dashboard when the Home project start screen is active.
+    if (
+        mode === "home" &&
+        projectStartScreen &&
+        projectStartScreen.style.display !== "none" &&
+        window.myWellnessDashboardOpen !== true &&
+        myWellnessDashboard
+    ) {
+        myWellnessDashboard.style.display = "none";
+        myWellnessDashboard.hidden = true;
+    }
+
+    // Dashboard sidebar vs project sidebar
+    if (homeSidebar) {
+        homeSidebar.classList.toggle(
+            "my-wellness-sidebar-hidden",
+            showMyWellnessDashboard
+        );
+
+        if (mode === "home" && !hasActiveProject && !showMyWellnessDashboard) {
+            homeSidebar.style.display = "";
+            homeSidebar.classList.remove("my-wellness-sidebar-hidden");
+        }
+    }
+
+    if (myWellnessSidebar) {
+        myWellnessSidebar.classList.toggle(
+            "is-visible",
+            showMyWellnessDashboard
+        );
+    }
+
+
+
+
+
+    // MY_WELLNESS_DASHBOARD_LAYOUT_FIX
+    const projectHeader = document.getElementById("projectHeader");
+    const homeFloorTabsBar = document.getElementById("homeFloorTabsBar");
+    const businessWorkspaceBody = document.querySelector(".business-workspace-body");
+
+    if (projectHeader) {
+        projectHeader.style.display =
+            showMyWellnessDashboard ? "none" : "";
+    }
+
+    if (homeFloorTabsBar) {
+        homeFloorTabsBar.style.display =
+            showMyWellnessDashboard ? "none" : "";
+    }
+
+    if (businessWorkspaceBody) {
+        businessWorkspaceBody.style.display =
+            showMyWellnessDashboard ? "none" : "";
+    }
+
+    const canvasArea =
+        document.querySelector(".canvas-area");
+
+    if (canvasArea) {
+        canvasArea.style.display =
+            showMyWellnessDashboard ? "none" : "";
+    }
+
+    // END MY_WELLNESS_DASHBOARD_LAYOUT_FIX
     const isProfessionalAssessmentView =
         sessionStorage.getItem("requestedWorkspace") ===
         "professional-assessment" &&
@@ -4636,11 +4762,11 @@ function updateWorkspaceUI(options = {}) {
     }
 
     window.updateProjectWorkspaceTitle?.();
-
     // PROJECT START SCREEN
     if (projectStartScreen) {
         projectStartScreen.style.display =
             !hasActiveProject &&
+                !showMyWellnessDashboard &&
                 (!showProfessionalDashboard || options.showProjectStart === true)
                 ? "flex"
                 : "none";
@@ -4695,8 +4821,6 @@ function updateWorkspaceUI(options = {}) {
     }
 
     // BUSINESS WORKSPACE CANVAS
-    const businessWorkspaceBody =
-        document.querySelector(".business-workspace-body");
 
     if (businessWorkspaceBody) {
         businessWorkspaceBody.style.display =
@@ -4869,22 +4993,22 @@ function updateWorkspaceUI(options = {}) {
 
     document
         .querySelectorAll(".home-only")
-        .forEach(
-            el => {
+        .forEach(el => {
 
-                if (
-                    el.id === "propertyHealthDashboardView"
-                ) {
-                    el.style.display = "none";
-                    return;
-                }
-
-                el.style.display =
-                    mode === "home"
-                        ? "block"
-                        : "none";
+            if (
+                el.id === "propertyHealthDashboardView" ||
+                el.id === "myWellnessDashboard"
+            ) {
+                el.style.display = "none";
+                el.hidden = true;
+                return;
             }
-        );
+
+            el.style.display =
+                mode === "home"
+                    ? "block"
+                    : "none";
+        });
 
 
     document
@@ -5470,6 +5594,234 @@ function updateWorkspaceUI(options = {}) {
 
     updateProfessionalContactsMenu();
 }
+
+
+
+async function openHomeWorkspaceStart() {
+
+    // If a Home project is already active, return to it
+    // instead of showing the New/Open Property start screen.
+    const existingHomeProject =
+        window.AppState?.homeProject ||
+        (
+            window.AppMode?.current === "home"
+                ? window.AppState?.project
+                : null
+        );
+
+    if (existingHomeProject) {
+        await window.returnToHomeWorkspace();
+        return;
+    }
+
+    window.myWellnessDashboardOpen = false;
+
+    if (window.AppMode?.current !== "home") {
+        await window.setAppMode("home");
+    }
+
+    // ==================================================
+    // HOME START SCREEN
+    // ==================================================
+
+    const dashboard =
+        document.getElementById("myWellnessDashboard");
+
+    const startScreen =
+        document.getElementById("projectStartScreen");
+
+    if (dashboard) {
+        dashboard.style.display = "none";
+        dashboard.hidden = true;
+    }
+
+    if (startScreen) {
+        startScreen.hidden = false;
+        startScreen.style.display = "flex";
+    }
+
+    // ==================================================
+    // HIDE PROJECT HEADER
+    // ==================================================
+
+    const projectHeader =
+        document.getElementById("projectHeader");
+
+    const projectMeta =
+        document.querySelector("#projectHeader .project-meta");
+
+    const projectWorkspaceTitle =
+        document.getElementById("projectWorkspaceTitle");
+
+    if (projectMeta) {
+        projectMeta.style.display = "none";
+    }
+
+    if (projectWorkspaceTitle) {
+        projectWorkspaceTitle.textContent = "My Wellness Project";
+    }
+
+    // ==================================================
+    // HIDE PROJECT WORKSPACE
+    // ==================================================
+
+    const homeFloorTabsBar =
+        document.getElementById("homeFloorTabsBar");
+
+    const canvasArea =
+        document.querySelector(".canvas-area");
+
+    const businessWorkspaceBody =
+        document.querySelector(".business-workspace-body");
+
+    if (homeFloorTabsBar) {
+        homeFloorTabsBar.style.display = "none";
+    }
+
+    if (canvasArea) {
+        canvasArea.style.display = "none";
+    }
+    if (businessWorkspaceBody) {
+        businessWorkspaceBody.style.display = "flex";
+    }
+
+    // ==================================================
+    // HIDE PROJECT SIDEBARS
+    // ==================================================
+
+    const homeSidebar =
+        document.getElementById("panel");
+
+    const myWellnessSidebar =
+        document.getElementById("myWellnessSidebar");
+
+    if (homeSidebar) {
+        homeSidebar.style.display = "";
+        homeSidebar.classList.remove("my-wellness-sidebar-hidden");
+    }
+
+    if (myWellnessSidebar) {
+        myWellnessSidebar.classList.remove("is-visible");
+    }
+
+    // ==================================================
+    // DEBUG
+    // ==================================================
+
+    console.log("[HOME START SCREEN]", {
+        mode: window.AppMode?.current,
+        dashboardHidden: dashboard
+            ? getComputedStyle(dashboard).display === "none"
+            : null,
+        startScreenDisplay: startScreen
+            ? getComputedStyle(startScreen).display
+            : null,
+        projectHeaderHidden: projectHeader
+            ? getComputedStyle(projectHeader).display === "none"
+            : null,
+        canvasHidden: canvasArea
+            ? getComputedStyle(canvasArea).display === "none"
+            : null,
+        workspaceHidden: businessWorkspaceBody
+            ? getComputedStyle(businessWorkspaceBody).display === "none"
+            : null
+    });
+}
+
+
+async function openMyWellnessDashboard() {
+    window.myWellnessDashboardOpen = true;
+    if (window.AppMode?.current !== "home") {
+        await window.setAppMode("home");
+    }
+
+    const dashboard =
+        document.getElementById("myWellnessDashboard");
+
+    const startScreen =
+        document.getElementById("projectStartScreen");
+
+    const homeSidebar =
+        document.getElementById("panel");
+
+    const myWellnessSidebar =
+        document.getElementById("myWellnessSidebar");
+
+    if (dashboard) {
+        dashboard.hidden = false;
+        dashboard.style.display = "";
+    }
+
+    if (startScreen) {
+        startScreen.style.display = "none";
+    }
+
+
+
+    const projectHeader =
+        document.getElementById("projectHeader");
+
+    const homeFloorTabsBar =
+        document.getElementById("homeFloorTabsBar");
+
+    const businessWorkspaceBody =
+        document.querySelector(".business-workspace-body");
+
+    if (projectHeader) {
+        projectHeader.style.display = "";
+    }
+
+    const projectMeta =
+        document.querySelector("#projectHeader .project-meta");
+
+    if (projectMeta) {
+        projectMeta.style.display = "none";
+    }
+
+    const projectWorkspaceTitle =
+        document.getElementById("projectWorkspaceTitle");
+
+    if (projectWorkspaceTitle) {
+        projectWorkspaceTitle.textContent = "My Wellness Dashboard";
+    }
+
+    if (homeFloorTabsBar) {
+        homeFloorTabsBar.style.display = "none";
+    }
+
+    const canvasArea =
+        document.querySelector(".canvas-area");
+
+    if (canvasArea) {
+        canvasArea.style.display = "none";
+    }
+
+    if (businessWorkspaceBody) {
+        businessWorkspaceBody.style.display = "none";
+    }
+
+
+    if (homeSidebar) {
+        homeSidebar.classList.add(
+            "my-wellness-sidebar-hidden"
+        );
+    }
+
+    if (myWellnessSidebar) {
+        myWellnessSidebar.classList.add("is-visible");
+    }
+
+    document
+        .querySelectorAll("[data-home-nav]")
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.homeNav === "home"
+            );
+        });
+}
+
+
 
 // ==================================================
 // CONTEXTUAL RETURN — PRIMARY WORKSPACE
@@ -7301,3 +7653,140 @@ window.showPremiumModal =
 window.loadBusinessDemoExperience =
     loadBusinessDemoExperience;
 
+
+
+// MY_WELLNESS_NAV_HOME_HANDLER
+window.openMyWellnessDashboard = openMyWellnessDashboard;
+
+
+function initMyWellnessNavigation() {
+    document.querySelectorAll('[data-home-nav="home"]').forEach(button => {
+        button.addEventListener("click", () => {
+            window.returnToHomeWorkspace?.();
+        });
+    });
+}
+
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMyWellnessNavigation, { once: true });
+} else {
+    initMyWellnessNavigation();
+}
+// END MY_WELLNESS_NAV_HOME_HANDLER
+
+
+// ==================================================
+// RETURN TO HOME WORKSPACE
+// ==================================================
+
+window.returnToHomeWorkspace = async function () {
+
+    const homeProject =
+        window.AppState?.homeProject ||
+        (
+            window.AppMode?.current === "home"
+                ? window.AppState?.project
+                : null
+        );
+
+    // NO ACTIVE PROJECT → show Home start screen.
+    if (!homeProject) {
+        window.myWellnessDashboardOpen = false;
+
+        window.AppState.homeProject = null;
+        window.AppState.project = null;
+        window.project = null;
+        window.currentProjectId = null;
+
+        await openHomeWorkspaceStart();
+
+        // Enforce the intended start-screen state.
+        const dashboard =
+            document.getElementById("myWellnessDashboard");
+
+        const startScreen =
+            document.getElementById("projectStartScreen");
+
+        const workspaceBody =
+            document.querySelector(".business-workspace-body");
+
+        const canvasArea =
+            document.querySelector(".canvas-area");
+
+        if (dashboard) {
+            dashboard.style.display = "none";
+            dashboard.hidden = true;
+        }
+
+        if (startScreen) {
+            startScreen.style.display = "flex";
+            startScreen.hidden = false;
+        }
+        if (workspaceBody) {
+            workspaceBody.style.display = "flex";
+        }
+
+        if (canvasArea) {
+            canvasArea.style.display = "none";
+        }
+
+        window.updateProjectHeader?.();
+
+        // Re-enforce after UI refresh.
+        if (dashboard) {
+            dashboard.style.display = "none";
+            dashboard.hidden = true;
+        }
+
+        if (startScreen) {
+            startScreen.style.display = "flex";
+            startScreen.hidden = false;
+        }
+
+        return;
+    }
+
+    // ACTIVE PROJECT → restore the existing Home project.
+    window.myWellnessDashboardOpen = false;
+
+    await window.setAppMode("home");
+
+    const dashboard =
+        document.getElementById("myWellnessDashboard");
+
+    const startScreen =
+        document.getElementById("projectStartScreen");
+
+    const workspaceBody =
+        document.querySelector(".business-workspace-body");
+
+    const canvasArea =
+        document.querySelector(".canvas-area");
+
+    if (dashboard) {
+        dashboard.style.display = "none";
+        dashboard.hidden = true;
+    }
+
+    if (startScreen) {
+        startScreen.style.display = "none";
+    }
+
+    if (workspaceBody) {
+        workspaceBody.style.display = "";
+    }
+
+    if (canvasArea) {
+        canvasArea.style.display = "";
+    }
+
+    window.updateProjectHeader?.();
+    window.updateWorkspaceUI?.();
+
+    // Keep Dashboard hidden after UI refresh.
+    if (dashboard) {
+        dashboard.style.display = "none";
+        dashboard.hidden = true;
+    }
+};

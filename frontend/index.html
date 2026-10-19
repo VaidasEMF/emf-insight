@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -23642,6 +23642,18 @@
       backdrop-filter: none !important;
     }
 
+    /* OPEN PROJECT — hide dashboard behind modal */
+    body.project-popup-open #app>.workspace {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* Keep the modal visible above the hidden workspace */
+    body.project-popup-open #openProjectPopup {
+      visibility: visible !important;
+      pointer-events: auto !important;
+    }
+
     body.project-popup-open #openProjectPopup,
     body.project-popup-open #openProjectPopup .project-popup-card,
     body.project-popup-open #openProjectPopup .project-popup-card * {
@@ -23664,6 +23676,634 @@
     #projectHeader .workspace-selector-direct {
       justify-content: flex-start !important;
     }
+
+
+
+    .my-wellness-sidebar {
+      display: none;
+      flex: 0 0 244px;
+      width: 244px;
+      min-width: 244px;
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      background: #f8fbff;
+      border-right: 1px solid #dce5ef;
+      color: #102347;
+      font-family: inherit;
+    }
+
+
+    .my-wellness-sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 46px;
+      min-height: 46px;
+      padding: 12px 20px;
+      border-bottom: 1px solid #e4ebf3;
+      font-size: 20px;
+      font-weight: 750;
+      letter-spacing: -0.4px;
+    }
+
+
+    .my-wellness-brand-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 40px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #e8f1ff;
+      color: #1764e8;
+      font-size: 26px;
+    }
+
+    .my-wellness-sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 12px 24px;
+    }
+
+    .my-wellness-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 58px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: #102347;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .my-wellness-nav-item:hover {
+      background: #edf4fc;
+    }
+
+    .my-wellness-nav-item.active {
+      background: #e2f6ec;
+      border-color: #d3eee1;
+      box-shadow: inset 4px 0 0 #07966b;
+    }
+
+    .my-wellness-nav-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 38px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #edf4ff;
+      color: #1764e8;
+      font-size: 23px;
+    }
+
+    .my-wellness-nav-item.active .my-wellness-nav-icon {
+      background: #ffffff;
+      color: #07865f;
+    }
+
+    .my-wellness-nav-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .my-wellness-nav-copy strong {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .my-wellness-nav-copy small {
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .my-wellness-nav-divider {
+      height: 1px;
+      margin: 12px 4px 8px;
+      background: #e1e9f2;
+    }
+
+    .my-wellness-nav-heading {
+      padding: 4px 8px 8px;
+      color: #52637b;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.7px;
+    }
+
+    @media (max-width: 760px) {
+      .my-wellness-sidebar {
+        flex-basis: 210px;
+        width: 210px;
+        min-width: 210px;
+      }
+
+      .my-wellness-sidebar-brand {
+        padding-inline: 12px;
+        font-size: 17px;
+      }
+
+      .my-wellness-sidebar-nav {
+        padding-inline: 8px;
+      }
+    }
+
+
+    /* ==================================================
+   MY WELLNESS DASHBOARD
+   ================================================== */
+
+    #myWellnessDashboard {
+      width: 100%;
+      min-width: 0;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px;
+      box-sizing: border-box;
+      color: #102347;
+      font-family: inherit;
+    }
+
+    #myWellnessDashboard *,
+    #myWellnessDashboard *::before,
+    #myWellnessDashboard *::after {
+      box-sizing: border-box;
+    }
+
+    #myWellnessDashboard .my-wellness-hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      align-items: center;
+      gap: 24px;
+      min-height: 250px;
+      padding: 28px;
+      overflow: hidden;
+      border: 1px solid #d5eee5;
+      border-radius: 15px;
+      background:
+        radial-gradient(ellipse at 80% 20%, #d5f2e5 0%, transparent 50%),
+        linear-gradient(115deg, #e4f8ef 0%, #f4fbf8 58%, #e5f4eb 100%);
+    }
+
+    #myWellnessDashboard .my-wellness-hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 650px;
+    }
+
+    #myWellnessDashboard .my-wellness-eyebrow {
+      margin-bottom: 12px;
+      color: #07865d;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .09em;
+    }
+
+    #myWellnessDashboard .my-wellness-hero h1 {
+      max-width: 600px;
+      margin: 0 0 12px;
+      color: #102347;
+      font-size: clamp(28px, 3vw, 43px);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    #myWellnessDashboard .my-wellness-hero-content>p {
+      max-width: 570px;
+      margin: 0 0 20px;
+      color: #435a74;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    #myWellnessDashboard .my-wellness-primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 47px;
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 9px;
+      background: #008d60;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    #myWellnessDashboard .my-wellness-primary-btn:hover {
+      background: #00764f;
+      transform: translateY(-1px);
+    }
+
+    #myWellnessDashboard .my-wellness-primary-btn>span {
+      font-size: 23px;
+      line-height: 1;
+    }
+
+    #myWellnessDashboard .my-wellness-hero-context {
+      position: relative;
+      z-index: 1;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, .85);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .82);
+      box-shadow: 0 8px 24px rgba(35, 75, 62, .07);
+    }
+
+    #myWellnessDashboard .my-wellness-context-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px;
+      color: #203654;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    #myWellnessDashboard .my-wellness-context-item>span:first-child {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      place-items: center;
+      border-radius: 9px;
+      background: #e3f7ed;
+      color: #07865d;
+      font-size: 18px;
+    }
+
+    #myWellnessDashboard .my-wellness-hero-context>p {
+      margin: 6px 0 0;
+      color: #63748a;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    #myWellnessDashboard .my-wellness-section {
+      margin-top: 22px;
+    }
+
+    #myWellnessDashboard .my-wellness-section h2 {
+      margin: 0 0 5px;
+      color: #102347;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.025em;
+    }
+
+    #myWellnessDashboard .my-wellness-section-subtitle {
+      margin: 0;
+      color: #687b92;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #myWellnessDashboard .my-wellness-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    #myWellnessDashboard .my-wellness-action {
+      display: flex;
+      min-width: 0;
+      min-height: 218px;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+      border: 1px solid;
+      border-radius: 13px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    #myWellnessDashboard .my-wellness-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(25, 50, 80, .08);
+    }
+
+    #myWellnessDashboard .my-wellness-action-green {
+      border-color: #d7eee3;
+      background: #f0faf5;
+    }
+
+    #myWellnessDashboard .my-wellness-action-blue {
+      border-color: #dce9fb;
+      background: #f2f7ff;
+    }
+
+    #myWellnessDashboard .my-wellness-action-purple {
+      border-color: #e8defb;
+      background: #f8f4ff;
+    }
+
+    #myWellnessDashboard .my-wellness-action-orange {
+      border-color: #f9e5d6;
+      background: #fff8f1;
+    }
+
+    #myWellnessDashboard .my-wellness-action-icon {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 12px;
+      place-items: center;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .8);
+      color: #07865d;
+      font-size: 32px;
+    }
+
+    #myWellnessDashboard .my-wellness-action-blue .my-wellness-action-icon {
+      color: #2875ed;
+    }
+
+    #myWellnessDashboard .my-wellness-action-purple .my-wellness-action-icon {
+      color: #8050d8;
+    }
+
+    #myWellnessDashboard .my-wellness-action-orange .my-wellness-action-icon {
+      color: #ea772b;
+    }
+
+    #myWellnessDashboard .my-wellness-action>strong {
+      margin-bottom: 7px;
+      color: #172b4b;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    #myWellnessDashboard .my-wellness-action>span:not(.my-wellness-action-icon):not(.my-wellness-action-link) {
+      color: #63748a;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    #myWellnessDashboard .my-wellness-action-link {
+      display: block;
+      width: 100%;
+      margin-top: auto;
+      padding-top: 15px;
+      color: #087a56;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    #myWellnessDashboard .my-wellness-action-blue .my-wellness-action-link {
+      color: #2868d9;
+    }
+
+    #myWellnessDashboard .my-wellness-action-purple .my-wellness-action-link {
+      color: #7545c6;
+    }
+
+    #myWellnessDashboard .my-wellness-action-orange .my-wellness-action-link {
+      color: #d76520;
+    }
+
+    #myWellnessDashboard .my-wellness-section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    #myWellnessDashboard .my-wellness-text-btn {
+      padding: 8px 0;
+      border: 0;
+      background: transparent;
+      color: #1765e8;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    #myWellnessDashboard .my-wellness-projects {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    #myWellnessDashboard .my-wellness-project-placeholder {
+      display: flex;
+      min-height: 100px;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border: 1px dashed #cbd9ed;
+      border-radius: 12px;
+      background: #fbfdff;
+    }
+
+    #myWellnessDashboard .my-wellness-project-placeholder>span {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      place-items: center;
+      border-radius: 50%;
+      background: #edf3ff;
+      color: #2868d9;
+      font-size: 25px;
+    }
+
+    #myWellnessDashboard .my-wellness-project-placeholder>div {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #myWellnessDashboard .my-wellness-project-placeholder strong {
+      color: #172b4b;
+      font-size: 13px;
+    }
+
+    #myWellnessDashboard .my-wellness-project-placeholder p {
+      margin: 5px 0 0;
+      color: #687b92;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    #myWellnessDashboard .my-wellness-project-placeholder button {
+      padding: 8px 10px;
+      border: 1px solid #d6e4fa;
+      border-radius: 8px;
+      background: #fff;
+      color: #2868d9;
+      font-size: 11px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    #myWellnessDashboard .my-wellness-bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(220px, .9fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    #myWellnessDashboard .my-wellness-premium {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      border: 1px solid #e7defb;
+      border-radius: 13px;
+      background: linear-gradient(110deg, #f6f0ff, #fbf9ff);
+    }
+
+    #myWellnessDashboard .my-wellness-premium-icon {
+      display: grid;
+      width: 54px;
+      height: 62px;
+      flex: 0 0 54px;
+      place-items: center;
+      border-radius: 9px;
+      background: #8050d8;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    #myWellnessDashboard .my-wellness-premium>div:nth-child(2) {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #myWellnessDashboard .my-wellness-premium h2 {
+      margin: 0 0 5px;
+      color: #49268f;
+      font-size: 17px;
+    }
+
+    #myWellnessDashboard .my-wellness-premium p,
+    #myWellnessDashboard .my-wellness-professional-help p {
+      margin: 0;
+      color: #72658e;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    #myWellnessDashboard .my-wellness-premium button {
+      padding: 11px 14px;
+      border: 0;
+      border-radius: 8px;
+      background: #8050d8;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    #myWellnessDashboard .my-wellness-professional-help {
+      padding: 18px;
+      border: 1px solid #e0eaf6;
+      border-radius: 13px;
+      background: #fbfdff;
+    }
+
+    #myWellnessDashboard .my-wellness-professional-help h3 {
+      margin: 0 0 7px;
+      color: #172b4b;
+      font-size: 14px;
+    }
+
+    #myWellnessDashboard .my-wellness-professional-help button {
+      margin-top: 12px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #1765e8;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1100px) {
+      #myWellnessDashboard .my-wellness-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #myWellnessDashboard .my-wellness-bottom {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      #myWellnessDashboard {
+        padding: 10px;
+      }
+
+      #myWellnessDashboard .my-wellness-hero {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+
+      #myWellnessDashboard .my-wellness-hero-context {
+        max-width: none;
+      }
+
+      #myWellnessDashboard .my-wellness-actions,
+      #myWellnessDashboard .my-wellness-projects {
+        grid-template-columns: 1fr;
+      }
+
+      #myWellnessDashboard .my-wellness-section-heading {
+        align-items: flex-start;
+      }
+
+      #myWellnessDashboard .my-wellness-premium {
+        flex-wrap: wrap;
+      }
+
+      #myWellnessDashboard .my-wellness-premium button {
+        width: 100%;
+      }
+    }
+
+
+    /* Hide the legacy sidebar only on My Wellness Dashboard */
+    #panel.my-wellness-sidebar-hidden {
+      display: none !important;
+    }
+
+
+    /* Show the new sidebar only on the Home Wellness landing screen */
+    .my-wellness-sidebar.is-visible {
+      display: block;
+    }
+
+    /* Keep the existing sidebar hidden on this screen */
+    #panel.my-wellness-sidebar-hidden {
+      display: none !important;
+    }
+
 
 
 
@@ -24719,12 +25359,95 @@
     <div class="workspace">
 
       <!-- 🔥 LEFT PANEL -->
+      <aside id="myWellnessSidebar" class="my-wellness-sidebar" aria-label="Home Wellness navigation">
+
+        <div class="my-wellness-sidebar-brand">
+          <span class="my-wellness-brand-icon">✳</span>
+          <span>EMF Insight</span>
+        </div>
+
+        <nav class="my-wellness-sidebar-nav" aria-label="Main navigation">
+
+          <button type="button" class="my-wellness-nav-item active" data-home-nav="home">
+            <span class="my-wellness-nav-icon">⌂</span>
+            <span class="my-wellness-nav-copy">
+              <strong>Home</strong>
+              <small>Overview &amp; next steps</small>
+            </span>
+          </button>
+
+          <button type="button" class="my-wellness-nav-item" data-home-nav="projects">
+            <span class="my-wellness-nav-icon">▤</span>
+            <span class="my-wellness-nav-copy">
+              <strong>My Projects</strong>
+              <small>Manage your properties</small>
+            </span>
+          </button>
+
+          <button type="button" class="my-wellness-nav-item" data-home-nav="guides">
+            <span class="my-wellness-nav-icon">▣</span>
+            <span class="my-wellness-nav-copy">
+              <strong>Learn &amp; Guides</strong>
+              <small>EMF knowledge &amp; tips</small>
+            </span>
+          </button>
+
+          <button type="button" class="my-wellness-nav-item" data-home-nav="professionals">
+            <span class="my-wellness-nav-icon">♧</span>
+            <span class="my-wellness-nav-copy">
+              <strong>Find a Professional</strong>
+              <small>Discover specialists</small>
+            </span>
+          </button>
+
+          <button type="button" class="my-wellness-nav-item" data-home-nav="requests">
+            <span class="my-wellness-nav-icon">☏</span>
+            <span class="my-wellness-nav-copy">
+              <strong>My Requests</strong>
+              <small>Track your requests</small>
+            </span>
+          </button>
+
+          <div class="my-wellness-nav-divider"></div>
+          <div class="my-wellness-nav-heading">ACCOUNT</div>
+
+          <button type="button" class="my-wellness-nav-item" data-home-nav="profile">
+            <span class="my-wellness-nav-icon">♙</span>
+            <span class="my-wellness-nav-copy">
+              <strong>My Profile</strong>
+              <small>Personal information</small>
+            </span>
+          </button>
+
+          <button type="button" class="my-wellness-nav-item" data-home-nav="billing">
+            <span class="my-wellness-nav-icon">▣</span>
+            <span class="my-wellness-nav-copy">
+              <strong>Plan &amp; Billing</strong>
+              <small>Manage your plan</small>
+            </span>
+          </button>
+
+          <button type="button" class="my-wellness-nav-item" data-home-nav="notifications">
+            <span class="my-wellness-nav-icon">♢</span>
+            <span class="my-wellness-nav-copy">
+              <strong>Notifications</strong>
+              <small>Messages &amp; updates</small>
+            </span>
+          </button>
+
+        </nav>
+      </aside>
+
       <div id="panel" class="sidebar">
 
         <div class="emf-topbar-logo-slot">
           <span class="logo-slot-mark">✳</span>
           <span class="logo-slot-label">EMF Insight</span>
         </div>
+        <button id="btnOpenMyWellnessDashboard" type="button" onclick="window.openMyWellnessDashboard()"
+          style="display:block;width:100%;margin:8px 0 12px;padding:10px 12px;border:1px solid #cfe8db;border-radius:10px;background:#eaf7f0;color:#176b45;font-weight:600;text-align:left;cursor:pointer;">
+          <span aria-hidden="true">⌂</span> My Wellness Dashboard
+        </button>
 
 
 
@@ -26205,7 +26928,7 @@ return false;
               </div>
 
               <button id="workspaceHomeButton" class="workspace-switcher workspace-mode-btn" type="button"
-                onclick="setAppMode?.('home')" aria-label="Switch to Home Wellness">
+                onclick="returnToHomeWorkspace()" aria-label="Switch to Home Wellness">
 
                 <span class="workspace-mode-icon">🏠</span>
                 <span>Home Wellness</span>
@@ -27990,6 +28713,154 @@ return false;
         <!-- ================================================== -->
         <!-- PROFESSIONAL DASHBOARD -->
         <!-- ================================================== -->
+        <section id="myWellnessDashboard" class="my-wellness-dashboard home-only" style="display:none;"
+          aria-label="My Wellness Dashboard">
+
+          <!-- HERO -->
+          <div class="my-wellness-hero">
+            <div class="my-wellness-hero-content">
+              <div class="my-wellness-eyebrow">HOME WELLNESS MODE</div>
+
+              <h1>A healthier space for a better life.</h1>
+
+              <p>
+                Understand your environment, discover potential EMF sources,
+                and create healthier spaces to live, work and learn —
+                with professional support when you need it.
+              </p>
+
+              <button type="button" class="my-wellness-primary-btn" onclick="openHomeWorkspaceStart()">
+                <span aria-hidden="true">+</span>
+                Create Your Wellness Project
+              </button>
+            </div>
+
+            <div class="my-wellness-hero-context">
+              <div class="my-wellness-context-item">
+                <span aria-hidden="true">⌂</span>
+                <span>Home User</span>
+              </div>
+              <div class="my-wellness-context-item">
+                <span aria-hidden="true">✳</span>
+                <span>Home Wellness</span>
+              </div>
+              <div class="my-wellness-context-item">
+                <span aria-hidden="true">✓</span>
+                <span>Explore at your own pace</span>
+              </div>
+              <p>
+                Understand your environment and discover tools
+                to support your wellness journey.
+              </p>
+            </div>
+          </div>
+
+          <!-- QUICK ACTIONS -->
+          <div class="my-wellness-section">
+            <h2>What would you like to do?</h2>
+            <p class="my-wellness-section-subtitle">
+              Choose a path that matches your needs.
+            </p>
+
+            <div class="my-wellness-actions">
+
+              <button type="button" class="my-wellness-action my-wellness-action-green"
+                onclick="openHomeWorkspaceStart()">
+                <span class="my-wellness-action-icon" aria-hidden="true">⌂</span>
+                <strong>Explore My Environment</strong>
+                <span>Create a project and explore your space.</span>
+                <span class="my-wellness-action-link">Create Project →</span>
+              </button>
+
+              <button type="button" class="my-wellness-action my-wellness-action-blue"
+                onclick="window.location.href='dashboard.html#guides'">
+                <span class="my-wellness-action-icon" aria-hidden="true">▤</span>
+                <strong>Learn &amp; Get Insights</strong>
+                <span>Discover how EMF may relate to your environment.</span>
+                <span class="my-wellness-action-link">Read Guides →</span>
+              </button>
+
+              <button type="button" class="my-wellness-action my-wellness-action-purple"
+                onclick="window.location.href='dashboard.html#professionals'">
+                <span class="my-wellness-action-icon" aria-hidden="true">♧</span>
+                <strong>Find an EMF Professional</strong>
+                <span>Explore professional assessment support.</span>
+                <span class="my-wellness-action-link">Browse Professionals →</span>
+              </button>
+
+              <button type="button" class="my-wellness-action my-wellness-action-orange"
+                onclick="window.location.href='dashboard.html#home-requests'">
+                <span class="my-wellness-action-icon" aria-hidden="true">☏</span>
+                <strong>Request Professional Help</strong>
+                <span>Describe your needs and seek specialist support.</span>
+                <span class="my-wellness-action-link">Submit a Request →</span>
+              </button>
+
+            </div>
+          </div>
+
+          <!-- RECENT PROJECTS -->
+          <div class="my-wellness-section">
+            <div class="my-wellness-section-heading">
+              <div>
+                <h2>My Recent Projects</h2>
+                <p class="my-wellness-section-subtitle">
+                  Continue working on your environmental wellness projects.
+                </p>
+              </div>
+
+              <button type="button" class="my-wellness-text-btn" onclick="openProjectMenu?.()">
+                View All Projects →
+              </button>
+            </div>
+
+            <div class="my-wellness-projects">
+              <div class="my-wellness-project-placeholder">
+                <span aria-hidden="true">+</span>
+                <div>
+                  <strong>Start a New Project</strong>
+                  <p>Create a profile for a home, workplace or another environment.</p>
+                </div>
+                <button type="button" onclick="createProject?.()">
+                  Create Project
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- PREMIUM REPORT -->
+          <div class="my-wellness-bottom">
+            <div class="my-wellness-premium">
+              <div class="my-wellness-premium-icon" aria-hidden="true">PDF</div>
+              <div>
+                <h2>Premium PDF Report</h2>
+                <p>
+                  Get a detailed report with personalized recommendations
+                  for your environment.
+                </p>
+              </div>
+              <button type="button" onclick="window.location.href='dashboard.html#plans'">
+                View Plans →
+              </button>
+            </div>
+
+            <div class="my-wellness-professional-help">
+              <h3>Need professional advice?</h3>
+              <p>
+                Explore support from an EMF specialist for a more detailed assessment.
+              </p>
+              <button type="button" onclick="window.location.href='dashboard.html#professionals'">
+                Find a Professional →
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ================================================== -->
+        <!-- PROFESSIONAL DASHBOARD -->
+        <!-- ================================================== -->
+
         <section id="professionalDashboard" class="professional-dashboard" style="display:none;"
           aria-label="Professional Dashboard">
 

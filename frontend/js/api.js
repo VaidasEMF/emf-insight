@@ -5830,6 +5830,10 @@ async function openProjectMenu() {
         return;
     }
 
+    // Keep the project modal outside the hidden canvas area.
+    if (popup.parentElement !== document.body) {
+        document.body.appendChild(popup);
+    }
 
     // ==================================================
     // HIDE WORKFLOW BEHIND MODAL
