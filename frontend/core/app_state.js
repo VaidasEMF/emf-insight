@@ -645,6 +645,28 @@ if (
 }
 
 // =====================================================
+// LINK CANONICAL PROPERTY IDs TO HOME PROJECT
+// =====================================================
+
+const canonicalProperty = AppState.property;
+
+if (canonicalProperty) {
+    const homeProject =
+        AppState.homeProject ||
+        AppState.project;
+
+    if (homeProject) {
+        // Permanent public Property ID: PHI-PRP-...
+        homeProject.propertyId =
+            canonicalProperty.id;
+
+        // Persistent Property Health Record ID
+        homeProject.propertyHealthRecordId =
+            canonicalProperty.propertyHealthRecordId;
+    }
+}
+
+// =====================================================
 // 🔥 INITIALIZE CANONICAL HOME ASSESSMENT
 // =====================================================
 //

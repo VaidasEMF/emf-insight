@@ -444,23 +444,14 @@ def rename_project(
     project.name = new_name
     project.updated_at = datetime.now(timezone.utc)
 
-
-    # Keep name synchronized
-    # inside project data.
-
-    if isinstance(
-        project.data,
-        dict
-    ):
-
-        project.data["name"] = (
-            new_name
-        )
-
+    if isinstance(project.data, dict):
+        project_data = dict(project.data)
+        project_data["name"] = new_name
+        project.data = project_data
 
     db.commit()
-
     db.refresh(project)
+
 
 
     print(

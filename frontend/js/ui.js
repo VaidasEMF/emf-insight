@@ -240,6 +240,25 @@ function updateProjectHeader() {
         null;
 
 
+
+    // ==================================================
+    // PROJECT HEADER NAME
+    // ==================================================
+
+    window.updateHomeProjectDisplayName?.();
+
+    const projectDisplayName =
+        document.getElementById("homeProjectDisplayName");
+
+    if (projectDisplayName) {
+        const name =
+            project?.name ||
+            AppState?.homeProject?.name ||
+            "";
+
+        projectDisplayName.title = name;
+    }
+
     // ==================================================
     // NO ACTIVE PROJECT
     // ==================================================
@@ -707,44 +726,6 @@ function updateProjectHeader() {
 
                </span>
 
-
-               ${isHomeWorkspace
-            ? `
-                    <!-- PROPERTY HEALTH RECORD -->
-
-                    <span class="project-header-divider property-health-record-divider"></span>
-
-                    <span
-                        class="project-header-control property-health-record-control"
-                        id="propertyHealthRecordHeader"
-                        title="View Property Health Record"
-                    >
-
-                        <span class="property-health-record-header-label">
-                            Property Health Record
-                        </span>
-
-                        <span
-                            class="property-health-record-status-dot"
-                            aria-hidden="true"
-                        ></span>
-
-                        <strong id="propertyHealthRecordHeaderStatus">
-                            Initial record created
-                        </strong>
-
-                        <span
-                            class="property-health-record-chevron"
-                            aria-hidden="true"
-                        >
-                            ▾
-                        </span>
-
-                    </span>
-                `
-            : ""
-        }
-
     `;
 
 
@@ -827,6 +808,14 @@ function updateProjectWorkspaceTitle() {
         window.EMFProductContext?.account?.role === "professional" &&
         !window.AppState?.project &&
         document.getElementById("professionalDashboard")?.style.display === "block";
+
+    const businessFloorHeaderControl =
+        document.getElementById("businessFloorHeaderControl");
+
+    if (businessFloorHeaderControl) {
+        businessFloorHeaderControl.style.display =
+            isProfessionalDashboard ? "none" : "";
+    }
 
     if (isProfessionalDashboard) {
         title.textContent = "Professional Dashboard";

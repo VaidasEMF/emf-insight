@@ -1852,6 +1852,8 @@
       flex-shrink: 0;
     }
 
+
+
     .workspace-selector-direct .workspace-mode-btn {
       min-height: 42px;
       padding: 0 16px;
@@ -5385,17 +5387,12 @@
    ========================================================= */
 
     #projectHeader {
-
+      position: relative;
       width: 100%;
-
       box-sizing: border-box;
-
       padding: 8px 0;
-
       background: #ffffff;
-
       border-bottom: 1px solid #e2e8f0;
-
     }
 
 
@@ -5615,8 +5612,8 @@
       line-height: 1;
 
       white-space: nowrap;
-    }
 
+    }
 
 
     /* =========================================================
@@ -5628,7 +5625,7 @@
       align-items: center;
       flex-wrap: nowrap;
       justify-content: flex-start;
-      gap: 12px;
+      gap: 8px;
 
       margin-top: 5px;
       min-height: 36px;
@@ -8525,19 +8522,16 @@
    ================================================== */
 
     .project-measurement-controls {
-
-      display: inline-flex;
-
-      align-items: center;
-
-      vertical-align: middle;
-
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: max-content;
       margin-left: 8px;
-
+      gap: 2px;
       font-size: 12px;
-
-      line-height: 1;
-
+      line-height: 1.15;
       color: #334155;
     }
 
@@ -8547,16 +8541,11 @@
    ================================================== */
 
     .project-header-divider {
-
       width: 1px;
-
       height: 18px;
-
       background: #d7dee8;
-
-      margin: 0 10px;
-
-      display: inline-block;
+      margin: 0;
+      display: none;
     }
 
 
@@ -8579,16 +8568,12 @@
    ================================================== */
 
     .project-header-control {
-
       display: inline-flex;
-
       align-items: center;
-
       gap: 4px;
-
       white-space: nowrap;
-
-      padding: 3px 0;
+      padding: 2px 0;
+      min-height: 22px;
     }
 
 
@@ -15276,15 +15261,10 @@
       overflow: visible;
     }
 
-    .project-start-icon img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-    }
+
 
     .project-start-icon img {
-      width: 100%;
+      width: 160%;
       height: 100%;
       object-fit: contain;
       display: block;
@@ -23962,6 +23942,144 @@
       font-size: 18px;
     }
 
+
+
+
+
+
+
+
+    #btnOpenMyWellnessDashboard.my-wellness-dashboard-nav-btn {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      width: 100%;
+      height: 42px;
+      min-height: 42px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0 12px;
+      border: none;
+      border-bottom: 1px solid #e1e8ef;
+      border-radius: 0;
+      background: transparent;
+      color: #526780;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 18px;
+      text-align: left;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease;
+      flex-wrap: nowrap !important;
+      white-space: nowrap;
+    }
+
+    #btnOpenMyWellnessDashboard[style*="display: none"] {
+      display: none !important;
+    }
+
+    #btnOpenMyWellnessDashboard.my-wellness-dashboard-nav-btn:hover {
+      background: #f0f6f3;
+      color: #267a5c;
+    }
+
+    #btnOpenMyWellnessDashboard .my-wellness-dashboard-icon {
+      display: block;
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #43866c;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #btnOpenMyWellnessDashboard>span {
+      display: block;
+      flex: 0 1 auto;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      line-height: 18px;
+      white-space: nowrap;
+    }
+
+    #btnOpenMyWellnessDashboard .my-wellness-dashboard-arrow {
+      display: block;
+      flex: 0 0 15px;
+      width: 15px;
+      height: 15px;
+      margin-left: auto;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: .65;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    #btnOpenMyWellnessDashboard:hover .my-wellness-dashboard-arrow {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+
+
+
+
+
+
+    /* FINAL FIX — My Wellness Dashboard sidebar button */
+    .sidebar #btnOpenMyWellnessDashboard.my-wellness-dashboard-nav-btn {
+      display: flex;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 8px !important;
+
+      width: 100% !important;
+      min-width: 0 !important;
+      height: 42px !important;
+      min-height: 42px !important;
+      max-height: 42px !important;
+      box-sizing: border-box !important;
+
+      margin: 0 !important;
+      padding: 0 12px !important;
+
+      white-space: nowrap !important;
+      text-align: left !important;
+      line-height: 18px !important;
+    }
+
+    .sidebar #btnOpenMyWellnessDashboard.my-wellness-dashboard-nav-btn>span {
+      display: block !important;
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    .sidebar #btnOpenMyWellnessDashboard .my-wellness-dashboard-icon {
+      flex: 0 0 18px !important;
+    }
+
+    .sidebar #btnOpenMyWellnessDashboard .my-wellness-dashboard-arrow {
+      flex: 0 0 15px !important;
+      margin-left: auto !important;
+    }
+
+    #btnOpenMyWellnessDashboard[style*="display: none"] {
+      display: none !important;
+    }
+
+
     #myWellnessDashboard .my-wellness-hero-context>p {
       margin: 6px 0 0;
       color: #63748a;
@@ -25234,7 +25352,8 @@
 
     /* Dashboard: keep top header and floor tabs outside scrolling */
     .main-content:has(#professionalDashboard) {
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .main-content:has(#professionalDashboard)>#professionalDashboard {
@@ -25313,6 +25432,1490 @@
       max-height: none;
       overflow-y: auto;
       overflow-x: hidden;
+    }
+
+
+
+    /* ==================================================
+   BUSINESS DASHBOARD — RECENT PROJECTS
+   ================================================== */
+
+    #professionalDashboard .business-recent-projects {
+      margin: 22px 0;
+      padding: 0;
+    }
+
+    #professionalDashboard .business-recent-projects-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    #professionalDashboard .business-recent-projects-heading h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #102b50;
+    }
+
+    #professionalDashboard .business-recent-projects-heading p {
+      margin: 0;
+    }
+
+    #professionalDashboard .business-recent-projects-view-all {
+      border: 0;
+      background: transparent;
+      color: #165dff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    #professionalDashboard .business-recent-projects-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #professionalDashboard .business-recent-project-card,
+    #professionalDashboard .business-recent-projects-empty {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid #d4e2f5;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(20, 50, 90, 0.03);
+    }
+
+    #professionalDashboard .business-recent-project-info {
+      min-width: 0;
+    }
+
+    #professionalDashboard .business-recent-project-info strong,
+    #professionalDashboard .business-recent-projects-empty strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #102b50;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    #professionalDashboard .business-recent-project-info p,
+    #professionalDashboard .business-recent-projects-empty p {
+      margin: 4px 0;
+      color: #62748b;
+      font-size: 11px;
+    }
+
+    #professionalDashboard .business-recent-project-card button,
+    #professionalDashboard .business-recent-projects-empty button {
+      flex-shrink: 0;
+      padding: 7px 10px;
+      border: 1px solid #cbdcff;
+      border-radius: 7px;
+      background: #fff;
+      color: #165dff;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #professionalDashboard .business-recent-project-card button:hover,
+    #professionalDashboard .business-recent-projects-empty button:hover {
+      background: #eff5ff;
+    }
+
+    @media (max-width: 900px) {
+      #professionalDashboard .business-recent-projects-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    /* HOME FLOOR HEADER CONTROL */
+    #projectHeader .project-meta>#homeFloorHeaderControl {
+      order: 2;
+      display: flex;
+      align-items: center;
+      flex: 0 0 220px;
+      width: 220px;
+      min-width: 220px;
+      max-width: 220px;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow: visible;
+    }
+
+    /* HOME FLOOR DROPDOWN */
+    #projectHeader #homeFloorHeaderDropdown {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* COMPACT FLOOR CARD */
+    #homeFloorHeaderDropdown .home-floor-header-card {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      padding: 5px 8px;
+      gap: 6px;
+      box-sizing: border-box;
+    }
+
+    #homeFloorHeaderDropdown .home-floor-list-info,
+    #homeFloorHeaderDropdown .home-floor-list-chevron {
+      display: none;
+    }
+
+    #homeFloorHeaderDropdown .home-floor-list-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+    }
+
+    #homeFloorHeaderDropdown .home-floor-list-name {
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+
+    /* Home floor selector — final compact layout */
+    #projectHeader #homeFloorHeaderDropdown {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    #homeFloorHeaderDropdown .home-floor-header-card {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      padding: 5px 8px;
+      box-sizing: border-box;
+    }
+
+    #homeFloorHeaderDropdown .home-floor-list-content {
+      min-width: 0;
+    }
+
+    #homeFloorHeaderDropdown .home-floor-list-name {
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    /* =========================================================
+   WORKSPACE ACCESS SUMMARY — HEADER
+   ========================================================= */
+
+    #projectHeader .project-header-top {
+      position: relative;
+    }
+
+    #workspaceAccessSummary {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 1 auto;
+      min-width: 0;
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 11px;
+      background: #f8fafc;
+      box-sizing: border-box;
+    }
+
+    .workspace-access-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .workspace-access-icon {
+      flex: 0 0 auto;
+      font-size: 16px;
+    }
+
+    .workspace-access-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .workspace-access-text strong {
+      font-size: 12px;
+      line-height: 1.2;
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .workspace-access-text>span {
+      font-size: 10px;
+      line-height: 1.2;
+      color: #64748b;
+    }
+
+    .workspace-access-divider {
+      width: 1px;
+      align-self: stretch;
+      min-height: 30px;
+      background: #dbe3ee;
+      flex: 0 0 1px;
+    }
+
+    .workspace-access-status {
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .workspace-access-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      padding: 3px 8px;
+      border-radius: 7px;
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .workspace-access-caption {
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1;
+    }
+
+    .workspace-access-info-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      flex: 0 0 auto;
+      min-width: 34px;
+      height: 34px;
+      padding: 0 7px;
+      border: 0;
+      border-radius: 9px;
+      background: #eaf2ff;
+      color: #2563eb;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .workspace-access-info-button:hover,
+    .workspace-access-info-button[aria-expanded="true"] {
+      background: #dbeafe;
+    }
+
+    /* Details panel opens below the summary without changing header height */
+
+    #workspaceAccessPanel {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 100000;
+      width: min(620px, calc(100vw - 32px));
+      padding: 18px;
+      border: 1px solid #d8e2ef;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+      box-sizing: border-box;
+    }
+
+    .workspace-access-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e8edf5;
+    }
+
+    .workspace-access-panel-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #172033;
+    }
+
+    .workspace-access-panel-header button {
+      border: 0;
+      background: transparent;
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .workspace-access-cards {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+      gap: 14px;
+      padding-top: 14px;
+    }
+
+    .workspace-access-card {
+      min-width: 0;
+    }
+
+    .workspace-access-card-divider {
+      width: 1px;
+      background: #e2e8f0;
+    }
+
+    .workspace-access-card-heading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .workspace-access-card-icon {
+      font-size: 25px;
+    }
+
+    .workspace-access-card-heading>div {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .workspace-access-card-heading strong {
+      font-size: 13px;
+      color: #172033;
+    }
+
+    .workspace-access-card-heading>div>span {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .workspace-access-plan-badge {
+      align-self: flex-start;
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: #eaf2ff;
+      color: #2563eb;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .workspace-access-detail {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 8px 0;
+      font-size: 12px;
+    }
+
+    .workspace-access-detail>span {
+      color: #64748b;
+    }
+
+    .workspace-access-detail>strong {
+      text-align: right;
+      color: #172033;
+      font-weight: 600;
+    }
+
+    .workspace-access-open-home,
+    .workspace-access-open-business {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 38px;
+      margin-top: 16px;
+      padding: 8px 10px;
+      border: 1px solid #b9d0ff;
+      border-radius: 9px;
+      background: #fff;
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .workspace-access-open-business {
+      background: #1765ed;
+      border-color: #1765ed;
+      color: #fff;
+    }
+
+    .workspace-access-open-home:hover {
+      background: #f0f6ff;
+    }
+
+    .workspace-access-open-business:hover {
+      background: #1057d5;
+    }
+
+    /* Keep the header usable on narrower screens */
+
+    @media (max-width: 1250px) {
+      #workspaceAccessSummary {
+        gap: 7px;
+        padding: 5px 7px;
+      }
+
+      .workspace-access-text strong {
+        font-size: 11px;
+      }
+
+      .workspace-access-icon {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      #workspaceAccessSummary {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .workspace-access-cards {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .workspace-access-card-divider {
+        width: 100%;
+        height: 1px;
+      }
+    }
+
+
+    /* FIX: prevent workspace access summary from overlapping header controls */
+
+    #projectHeader .project-header-top {
+      gap: 10px;
+    }
+
+
+    #projectHeader .project-meta>#workspaceAccessSummary {
+      flex: 0 0 430px;
+      width: 430px;
+      min-width: 350px;
+      max-width: 430px;
+      margin-left: auto;
+      margin-right: 0;
+      overflow: visible;
+    }
+
+
+    /* Keep each status field readable */
+    #workspaceAccessSummary .workspace-access-item {
+      flex: 0 0 auto;
+    }
+
+    #workspaceAccessSummary .workspace-access-info-button {
+      flex: 0 0 34px;
+    }
+
+    /* Keep help, notifications and account controls intact */
+    #projectHeader .emf-topbar-actions {
+      margin-left: 0 !important;
+      flex: 0 0 auto;
+    }
+
+    #projectHeader .user-selector {
+      margin-left: 0 !important;
+      flex: 0 0 auto;
+    }
+
+
+
+    /* FIX: restore access summary and keep header controls visible */
+
+    #projectHeader .project-header-top>#workspaceAccessSummary {
+      display: flex !important;
+      order: 2;
+      flex: 0 1 auto;
+      width: auto;
+      min-width: 0;
+      max-width: 430px;
+      margin-left: auto;
+    }
+
+    #projectHeader .project-header-top>.workspace-selector {
+      order: 1;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    #projectHeader .project-header-top>.emf-topbar-actions {
+      order: 3;
+      margin-left: 0 !important;
+    }
+
+    #projectHeader .project-header-top>.user-selector {
+      order: 4;
+      margin-left: 0 !important;
+    }
+
+    /* Prevent the summary from forcing other controls off-screen */
+    #workspaceAccessSummary .workspace-access-text strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 105px;
+    }
+
+    #workspaceAccessSummary .workspace-access-divider {
+      flex-shrink: 0;
+    }
+
+
+
+    /* HEADER ACCESS SUMMARY — COMPACT LAYOUT FIX */
+
+    #projectHeader .project-header-top>#workspaceAccessSummary {
+      display: flex !important;
+      align-items: center;
+      gap: 8px;
+      width: 390px;
+      min-width: 390px;
+      max-width: 390px;
+      flex: 0 0 390px;
+      margin-left: auto;
+      padding: 5px 7px;
+      box-sizing: border-box;
+    }
+
+    #workspaceAccessSummary .workspace-access-item {
+      gap: 5px;
+    }
+
+    #workspaceAccessSummary .workspace-access-text strong {
+      max-width: 95px;
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #workspaceAccessSummary .workspace-access-text>span,
+    #workspaceAccessSummary .workspace-access-caption {
+      font-size: 9px;
+    }
+
+    #workspaceAccessSummary .workspace-access-divider {
+      min-height: 28px;
+    }
+
+    #workspaceAccessSummary .workspace-access-status {
+      flex: 0 0 auto;
+    }
+
+    #workspaceAccessSummary .workspace-access-badge {
+      max-width: 76px;
+      padding: 3px 5px;
+      font-size: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #workspaceAccessSummary .workspace-access-info-button {
+      min-width: 28px;
+      width: 28px;
+      height: 30px;
+      padding: 0 3px;
+    }
+
+    /* Prevent the header children from overlapping */
+    #projectHeader .project-header-top {
+      gap: 8px;
+    }
+
+    #projectHeader .project-header-top>.workspace-selector {
+      flex: 0 0 auto;
+      margin: 0 !important;
+    }
+
+    #projectHeader .project-header-top>.emf-topbar-actions,
+    #projectHeader .project-header-top>.user-selector {
+      flex: 0 0 auto;
+      margin: 0 !important;
+    }
+
+
+
+    /* HEADER: move workspace buttons left */
+
+    #projectHeader .project-header-top {
+      justify-content: flex-start !important;
+      gap: 12px;
+    }
+
+    /* Dashboard / project title */
+    #projectHeader .project-header-top>.project-title {
+      flex: 0 0 auto;
+      margin-right: 12px !important;
+    }
+
+    /* Home Wellness + Business Survey */
+    #projectHeader .project-header-top>.workspace-selector-direct {
+      order: 2;
+      flex: 0 0 auto;
+      margin-left: 0 !important;
+      margin-right: auto !important;
+      gap: 8px;
+    }
+
+    /* Remove the old artificial left offset */
+    #projectHeader .workspace-selector-direct #workspaceHomeButton {
+      margin-left: 0 !important;
+    }
+
+
+    /* Access summary belongs to the second header row */
+    #projectHeader .project-meta>#workspaceAccessSummary {
+      order: 5;
+      display: flex !important;
+      align-items: center;
+      flex: 0 0 390px;
+      width: 390px;
+      min-width: 390px;
+      max-width: 390px;
+      margin-left: auto !important;
+      margin-right: 0;
+      padding: 5px 7px;
+      box-sizing: border-box;
+    }
+
+
+    /* Help, notifications, account */
+    #projectHeader .project-header-top>.emf-topbar-actions {
+      order: 4;
+      margin-left: 0 !important;
+      flex: 0 0 auto;
+    }
+
+    #projectHeader .project-header-top>.user-selector {
+      order: 5;
+      margin-left: 0 !important;
+      flex: 0 0 auto;
+    }
+
+    /* BUSINESS FLOOR HEADER — compact two-line layout */
+
+
+    #businessFloorHeaderDropdown {
+      gap: 4px;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-tab {
+      padding-left: 5px;
+      padding-right: 4px;
+    }
+
+    #businessFloorHeaderDropdown .add-floor-tab {
+      margin-left: 0;
+      padding-left: 5px;
+      padding-right: 7px;
+    }
+
+    #businessFloorTabsBar {
+      display: none !important;
+    }
+
+    /* Business floor — compact, left-aligned two-line layout */
+
+    #businessFloorHeaderDropdown .business-floor-selector-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-main {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+      line-height: 16px;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-details {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 3px;
+      padding-left: 0;
+      margin-top: -1px;
+      line-height: 14px;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-meta {
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    #businessFloorHeaderDropdown .floor-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      padding: 0;
+      border: 1px solid #dbe3ef;
+      border-radius: 6px;
+      background: #fff;
+      color: #52627a;
+      font-size: 12px;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    #businessFloorHeaderDropdown .floor-action-btn:hover {
+      background: #f1f5f9;
+      border-color: #b9c7da;
+    }
+
+
+    #businessFloorHeaderDropdown {
+      gap: 3px;
+    }
+
+    #businessFloorHeaderDropdown .add-floor-tab {
+      margin-left: 0;
+      padding-left: 3px;
+    }
+
+
+
+
+    /* PROJECT IDENTITY — compact two-row layout */
+
+    #projectHeader .project-identity {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 0 1 230px;
+      min-width: 150px;
+      max-width: 230px;
+      gap: 3px;
+      overflow: hidden;
+    }
+
+    #projectHeader .project-identity-name {
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    #projectHeader .project-identity-name .project-display-name {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    #projectHeader .project-identity-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    #projectHeader .project-identity-actions button {
+      flex: 0 0 auto;
+    }
+
+    #projectHeader .project-identity-actions .project-header-id {
+      flex: 0 0 auto;
+    }
+
+
+    /* BUSINESS HEADER — consistent compact action buttons */
+
+    #projectHeader .project-identity-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #projectHeader .project-identity-actions .project-display-name-edit,
+    #projectHeader .project-identity-actions .project-display-name-delete {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      min-height: 24px;
+      padding: 0;
+      box-sizing: border-box;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1;
+      flex: 0 0 24px;
+    }
+
+    #projectHeader .project-identity-actions .project-header-id {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 0 7px;
+      box-sizing: border-box;
+      white-space: nowrap;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .project-identity-actions {
+      padding-left: 10px;
+    }
+
+
+    #businessFloorHeaderDropdown {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      width: 100%;
+      min-width: 0;
+      position: relative;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-tab {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+    }
+
+    #businessFloorHeaderDropdown .add-floor-tab {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+
+
+    #businessFloorHeaderDropdown {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      position: relative;
+      width: 100%;
+      gap: 4px;
+    }
+
+    .business-floor-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      min-height: 36px;
+      padding: 4px 8px;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e293b;
+      text-align: left;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    .business-floor-trigger-copy,
+    .business-floor-menu-copy {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      gap: 2px;
+    }
+
+    .business-floor-trigger-name {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .business-floor-menu-name {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      overflow-wrap: anywhere;
+      min-width: 0;
+    }
+
+
+    .business-floor-trigger-meta,
+    .business-floor-menu-meta {
+      font-size: 10px;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    .business-floor-trigger-arrow {
+      flex: 0 0 auto;
+      color: #64748b;
+    }
+
+    .business-floor-menu {
+      position: absolute;
+      top: calc(100% + 3px);
+      left: 0;
+      width: 260px;
+      max-width: min(260px, 80vw);
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 5px;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 10px 28px rgb(15 23 42 / 14%);
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .business-floor-menu[hidden] {
+      display: none !important;
+    }
+
+    .business-floor-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px;
+      border-radius: 7px;
+    }
+
+    .business-floor-menu-item.active {
+      background: #eff6ff;
+    }
+
+    .business-floor-menu-select {
+      display: flex;
+      flex: 1 1 auto;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+      padding: 6px;
+      border: 0;
+      background: transparent;
+      color: #1e293b;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .business-floor-menu-check {
+      color: #2563eb;
+      font-weight: 700;
+      align-self: flex-start;
+      margin-top: -2px;
+    }
+
+    .business-floor-menu-actions {
+      display: flex;
+      flex: 0 0 auto;
+      gap: 3px;
+    }
+
+    .business-floor-menu-actions .floor-action-btn {
+      width: 25px;
+      height: 25px;
+      min-width: 25px;
+      padding: 0;
+      border: 1px solid #dbe3ef;
+      border-radius: 5px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .business-floor-add-button {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 5px;
+      width: 100%;
+      min-height: 25px;
+      margin-top: 5px;
+      padding: 5px 8px;
+      border: 0;
+      border-top: 1px solid #dbe3ef;
+      border-radius: 0;
+      background: transparent;
+      color: #475569;
+      font-size: 11px;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    .business-floor-add-button:hover {
+      background: #f8fafc;
+    }
+
+
+    /* =========================================
+   BUSINESS FLOOR DROPDOWN — FINAL POLISH
+   ========================================= */
+    /* BUSINESS FLOOR HEADER — single control rule */
+    #businessFloorHeaderControl {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-sizing: border-box;
+
+      flex: 0 0 auto;
+      width: 190px;
+      max-width: 190px;
+      min-width: 0;
+
+      margin-left: 2px;
+      padding: 1px;
+      gap: 0;
+
+      background: #f8fafc;
+      border: 1px solid #e8eef6;
+      border-radius: 10px;
+
+      overflow: visible;
+      z-index: 30;
+    }
+
+    body.professional-dashboard-open #businessFloorHeaderControl {
+      display: none !important;
+    }
+
+    .business-floor-trigger {
+      min-height: 36px;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+
+    /* Dropdown menu */
+    .business-floor-menu {
+      top: calc(100% + 5px);
+      width: 260px;
+      padding: 5px;
+      border-radius: 10px;
+    }
+
+    /* Short separator above Add Floor */
+    .business-floor-add-button {
+      position: relative;
+      min-height: 27px;
+      margin-top: 3px;
+      padding: 5px 8px;
+      border: 0;
+      background: transparent;
+    }
+
+    .business-floor-add-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 10px;
+      width: 65px;
+      height: 1px;
+      background: #dbe3ef;
+    }
+
+    .business-floor-add-button:hover {
+      background: #f8fafc;
+    }
+
+    /* Cleaner floor rows */
+    .business-floor-menu-item {
+      gap: 6px;
+      padding: 4px;
+    }
+
+    .business-floor-menu-item+.business-floor-menu-item {
+      margin-top: 2px;
+    }
+
+    .business-floor-menu-select {
+      padding: 6px 7px;
+    }
+
+    .business-floor-menu-actions {
+      gap: 4px;
+    }
+
+    .business-floor-menu-actions .floor-action-btn {
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      border-radius: 6px;
+    }
+
+
+    #businessFloorHeaderDropdown .business-floor-trigger {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 8px !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-trigger-copy {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+    }
+
+    #businessFloorHeaderDropdown .business-floor-trigger-arrow {
+      flex: 0 0 12px !important;
+      width: 12px !important;
+      margin-left: auto !important;
+      transform: none !important;
+    }
+
+
+    .workspace-mode-icon {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 19px;
+      object-fit: contain;
+      display: block;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+
+    .workspace-demo-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 6px;
+      padding: 3px 7px;
+      border-radius: 6px;
+      background: #fff0df;
+      color: #c65d08;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+
+    html:not(.workspace-mode-ready) .workspace-selector-direct .workspace-mode-btn {
+      visibility: hidden;
+    }
+
+
+    /* Home floor dropdown positioning */
+    #projectHeader #homeFloorHeaderDropdown {
+      position: relative;
+      align-items: center;
+      overflow: visible;
+    }
+
+    #homeFloorHeaderDropdown .business-floor-trigger {
+      width: 220px;
+      min-width: 220px;
+      text-align: left;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 1000;
+      width: 300px;
+      max-width: min(300px, 85vw);
+      box-sizing: border-box;
+      background: #fff;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu[hidden] {
+      display: none;
+    }
+
+    #homeFloorHeaderDropdown .business-floor-add-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 12px;
+      border: 0;
+      border-top: 1px solid #e2e8f0;
+      border-radius: 0 0 10px 10px;
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+    }
+
+
+    #projectHeader #homeFloorHeaderDropdown {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: visible;
+    }
+
+    #homeFloorHeaderDropdown .business-floor-add-button {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 0 0 auto;
+      width: auto;
+      min-height: 36px;
+      margin-top: 0;
+      padding: 6px 10px;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      background: #fff;
+      color: #334155;
+      white-space: nowrap;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 1000;
+    }
+
+
+
+    /* HOME WELLNESS — unified floor dropdown card only */
+    #projectHeader #homeFloorHeaderDropdown.home-floor-dropdown-root {
+      align-items: stretch;
+      gap: 0;
+      padding: 4px;
+      box-sizing: border-box;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    /* Floor selector — top part of the card */
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-trigger {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      border: 0;
+      border-radius: 6px 6px 0 0;
+    }
+
+    /* Add Floor — full-width bottom part */
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-add-button {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 0 0 auto;
+      width: 100%;
+      min-width: 0;
+      min-height: 30px;
+      margin: 0;
+      padding: 6px 8px;
+      box-sizing: border-box;
+      border: 0;
+      border-top: 1px solid #e2e8f0;
+      border-radius: 0 0 6px 6px;
+      background: #fff;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+
+    /* HOME WELLNESS — floor dropdown styled like Business Survey */
+    #projectHeader .project-meta>#homeFloorHeaderControl {
+      flex: 0 0 190px;
+      width: 190px;
+      min-width: 190px;
+      max-width: 190px;
+    }
+
+    #projectHeader #homeFloorHeaderDropdown.home-floor-dropdown-root {
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 4px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-trigger {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      border: 1px solid #dbe3ef;
+      border-radius: 7px 7px 0 0;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu {
+      width: 290px;
+      max-width: min(290px, 85vw);
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 7px;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu-item.active {
+      background: #eff6ff;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu-select {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .floor-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 26px;
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      padding: 0;
+      border: 1px solid #dbe3ef;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-menu-check {
+      flex: 0 0 16px;
+      text-align: center;
+      color: #2563eb;
+      font-weight: 700;
+    }
+
+    #homeFloorHeaderDropdown.home-floor-dropdown-root .business-floor-add-button {
+      width: 100%;
+      min-width: 0;
+      min-height: 30px;
+      margin: 0;
+      padding: 6px 8px;
+      border: 0;
+      border-top: 1px solid #e2e8f0;
+      border-radius: 0 0 7px 7px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+
+    /* HOME ONLY — Assessment Setup in project header */
+    #projectHeader .project-meta>#homeAssessmentSetupHeaderCard {
+      order: 3;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 170px;
+      width: 170px;
+      min-width: 170px;
+      max-width: 170px;
+      min-height: 42px;
+      margin: 0;
+      padding: 6px 10px;
+      box-sizing: border-box;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      background: #fff;
+    }
+
+    #projectHeader .project-meta>#homeAssessmentSetupHeaderCard.home-assessment-setup-visible {
+      display: flex;
+    }
+
+    #homeAssessmentSetupHeaderCard .home-assessment-setup-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 26px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #ecfdf5;
+      color: #16a34a;
+      font-weight: 700;
+    }
+
+    #homeAssessmentSetupHeaderCard .home-assessment-setup-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    #homeAssessmentSetupHeaderCard .home-assessment-setup-label {
+      color: #64748b;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    #homeAssessmentSetupHeaderCard strong {
+      color: #1e293b;
+      font-size: 11px;
+      white-space: nowrap;
     }
   </style>
 
@@ -25600,6 +27203,18 @@
             </span>
           </button>
 
+          <button type="button" class="my-wellness-nav-item" data-home-nav="property-record"
+            onclick="window.openPropertyHealthRecord?.()">
+
+            <span class="my-wellness-nav-icon">⌂</span>
+
+            <span class="my-wellness-nav-copy">
+              <strong>Property Health Record</strong>
+              <small>Property profile &amp; history</small>
+            </span>
+
+          </button>
+
           <button type="button" class="my-wellness-nav-item" data-home-nav="guides">
             <span class="my-wellness-nav-icon">▣</span>
             <span class="my-wellness-nav-copy">
@@ -25660,11 +27275,25 @@
           <span class="logo-slot-mark">✳</span>
           <span class="logo-slot-label">EMF Insight</span>
         </div>
-        <button id="btnOpenMyWellnessDashboard" type="button" onclick="window.openMyWellnessDashboard()"
-          style="display:block;width:100%;margin:8px 0 12px;padding:10px 12px;border:1px solid #cfe8db;border-radius:10px;background:#eaf7f0;color:#176b45;font-weight:600;text-align:left;cursor:pointer;">
-          <span aria-hidden="true">⌂</span> My Wellness Dashboard
-        </button>
 
+
+
+        <button id="btnOpenMyWellnessDashboard" type="button" class="my-wellness-dashboard-nav-btn home-only"
+          onclick="window.openMyWellnessDashboard()" aria-label="My Wellness Dashboard" title="My Wellness Dashboard">
+
+          <svg class="my-wellness-dashboard-icon" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M3.5 10.5 12 3.8l8.5 6.7" />
+            <path d="M5.5 9.5v10h13v-10" />
+            <path d="M9.5 19.5v-6h5v6" />
+          </svg>
+
+          <span>My Wellness Dashboard</span>
+
+          <svg class="my-wellness-dashboard-arrow" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M5 12h14" />
+            <path d="m13 6 6 6-6 6" />
+          </svg>
+        </button>
 
 
 
@@ -27139,30 +28768,64 @@ return false;
 
             <!-- WORKSPACE SELECTOR -->
             <div class="workspace-selector workspace-selector-direct">
+
               <div id="projectWorkspaceTitle" class="project-workspace-title">
-                🏢 Business Project
+                🏢 Professional Project
               </div>
 
-              <button id="workspaceHomeButton" class="workspace-switcher workspace-mode-btn" type="button"
-                onclick="returnToHomeWorkspace()" aria-label="Switch to Home Wellness">
+              <!-- ==========================================
+       BUSINESS MODE BUTTONS
+       ========================================== -->
 
-                <span class="workspace-mode-icon">🏠</span>
+              <!-- PRIMARY: Professional Survey -->
+              <button id="workspaceBusinessButton" class="workspace-switcher workspace-mode-btn business-mode-switcher"
+                type="button" onclick="setAppMode?.('business')" aria-label="Switch to Professional Survey">
+
+                <img class="workspace-mode-icon" src="assets/business/professional_survey_icon.png" alt=""
+                  aria-hidden="true">
+
+                <span>Professional Survey</span>
+              </button>
+
+              <!-- DEMO: Explore Home Wellness -->
+              <button id="workspaceHomeButton" class="workspace-switcher workspace-mode-btn business-mode-switcher"
+                type="button" onclick="returnToHomeWorkspace()" aria-label="Explore Home Wellness Demo">
+
+                <img class="workspace-mode-icon" src="assets/home/explore_home_wellness_icon.png" alt=""
+                  aria-hidden="true">
+
+                <span>Explore Home Wellness</span>
+                <span class="workspace-demo-badge">DEMO</span>
+              </button>
+
+              <!-- ==========================================
+       HOME MODE BUTTONS
+       ========================================== -->
+
+              <!-- PRIMARY: Home Wellness -->
+              <button id="workspaceHomeWellnessButton" class="workspace-switcher workspace-mode-btn home-mode-switcher"
+                type="button" onclick="returnToHomeWorkspace()" aria-label="Home Wellness">
+
+                <img class="workspace-mode-icon" src="assets/home/home_wellness_icon.png" alt="" aria-hidden="true">
+
                 <span>Home Wellness</span>
               </button>
 
-              <button id="workspaceBusinessButton" class="workspace-switcher workspace-mode-btn" type="button"
-                onclick="setAppMode?.('business')" aria-label="Switch to Business Survey">
+              <!-- DEMO: Explore Professional Assessments -->
+              <button id="workspaceProfessionalDemoButton"
+                class="workspace-switcher workspace-mode-btn home-mode-switcher" type="button"
+                onclick="openProfessionalAssessmentsDemo()" aria-label="Explore Professional Mode Demo">
 
-                <span class="workspace-mode-icon">🏢</span>
-                <span>Business Survey</span>
+                <img class="workspace-mode-icon" src="assets/business/explore_professional_assessments_icon.png" alt=""
+                  aria-hidden="true">
+
+                <span>Explore Professional Assessments</span>
+                <span class="workspace-demo-badge">DEMO</span>
               </button>
 
             </div>
 
 
-            <!-- ================================================== -->
-            <!-- USER ACCOUNT SELECTOR -->
-            <!-- ================================================== -->
             <!-- HEADER ACTIONS -->
             <div class="emf-topbar-actions">
 
@@ -27543,8 +29206,8 @@ return false;
               </div>
 
               <!-- ==============================
-     USER PROFILE MODAL
-     ============================== -->
+                USER PROFILE MODAL
+                ============================== -->
 
               <div id="userProfileModal" class="modal-overlay" style="display:none;">
 
@@ -27682,38 +29345,177 @@ return false;
 
           </div>
 
-
           <!-- ================================================== -->
           <!-- PROJECT META — SECOND HEADER ROW -->
           <!-- ================================================== -->
 
           <div class="project-meta">
 
-            <span class="project-stats">
-              <span id="projectSessionName">
-                Session 1 · Initial Survey
-              </span>
-            </span>
+            <!-- PROJECT INFORMATION -->
+            <div class="project-identity">
 
-            <div class="project-display-name-wrap">
+              <div class="project-identity-name">
+                <span id="homeProjectDisplayName" class="project-display-name" title=""></span>
+              </div>
 
-              <span id="homeProjectDisplayName" class="project-display-name"></span>
+              <div class="project-identity-actions">
 
-              <button id="homeProjectRenameButton" type="button" class="project-display-name-edit"
-                title="Rename Project" aria-label="Rename Project">✎</button>
+                <span id="projectHeaderId" class="project-header-id"></span>
 
-              <button id="projectHeaderDeleteButton" type="button" class="project-display-name-delete"
-                title="Delete Project" aria-label="Delete Project">🗑</button>
+                <button id="homeProjectRenameButton" type="button" class="project-display-name-edit"
+                  title="Rename Project" aria-label="Rename Project">✎</button>
 
-              <button id="projectHeaderCloseButton" type="button" class="project-display-name-edit"
-                title="Close Project" aria-label="Close Project">✕</button>
+                <button id="projectHeaderDeleteButton" type="button" class="project-display-name-delete"
+                  title="Delete Project" aria-label="Delete Project">🗑</button>
 
-              <span id="projectHeaderId" class="project-header-id"></span>
+                <button id="projectHeaderCloseButton" type="button" class="project-display-name-edit"
+                  title="Close Project" aria-label="Close Project">✕</button>
+
+              </div>
 
             </div>
 
-          </div>
+            <!-- BUSINESS FLOOR SELECTOR — HOME MODE UNTOUCHED -->
+            <div id="businessFloorHeaderControl" class="business-only">
+              <div id="businessFloorHeaderDropdown"></div>
+            </div>
 
+            <!-- HOME FLOOR SELECTOR -->
+            <div id="homeFloorHeaderControl" class="home-only">
+              <div id="homeFloorHeaderDropdown"></div>
+            </div>
+
+
+            <!-- HOME ASSESSMENT SETUP — SECOND HEADER ROW -->
+            <div id="homeAssessmentSetupHeaderCard" class="home-only">
+              <div class="home-assessment-setup-icon">✓</div>
+              <div class="home-assessment-setup-copy">
+                <span class="home-assessment-setup-label">Assessment Setup</span>
+                <strong id="homeAssessmentSetupHeaderStatus">Setup required</strong>
+              </div>
+            </div>
+
+
+            <!-- ACCOUNT TYPE / CURRENT MODE / ACCESS -->
+            <div id="workspaceAccessSummary" class="workspace-access-summary">
+
+              <div class="workspace-access-item">
+                <span class="workspace-access-icon">👤</span>
+                <div class="workspace-access-text">
+                  <strong id="workspaceAccountType">Professional</strong>
+                  <span>Account type</span>
+                </div>
+              </div>
+
+              <div class="workspace-access-divider"></div>
+
+              <div class="workspace-access-item">
+                <span id="workspaceCurrentModeIcon" class="workspace-access-icon">🏢</span>
+                <div class="workspace-access-text">
+                  <strong id="workspaceCurrentMode">Business Survey</strong>
+                  <span>Current mode</span>
+                </div>
+              </div>
+
+              <div class="workspace-access-divider"></div>
+
+              <div class="workspace-access-item workspace-access-status">
+                <span id="workspaceAccessBadge" class="workspace-access-badge">
+                  Checking…
+                </span>
+                <span class="workspace-access-caption">Access</span>
+              </div>
+
+              <button id="workspaceAccessInfoButton" class="workspace-access-info-button" type="button"
+                aria-label="View access and plans" aria-expanded="false" aria-controls="workspaceAccessPanel"
+                onclick="toggleWorkspaceAccessPanel()">
+                <span aria-hidden="true">ⓘ</span>
+                <span id="workspaceAccessChevron" aria-hidden="true">⌃</span>
+              </button>
+
+            </div>
+
+            <!-- ACCESS AND PLANS PANEL -->
+            <div id="workspaceAccessPanel" class="workspace-access-panel" style="display:none;"
+              aria-label="Your access and plans">
+
+              <div class="workspace-access-panel-header">
+                <h3>Your access and plans</h3>
+                <button type="button" onclick="window.location.href='dashboard.html#billing'">
+                  ⚙ Manage plans
+                </button>
+              </div>
+
+              <div class="workspace-access-cards">
+
+                <section class="workspace-access-card">
+                  <div class="workspace-access-card-heading">
+                    <span class="workspace-access-card-icon">🏠</span>
+                    <div>
+                      <strong>Home Wellness</strong>
+                      <span>Personal property assessments</span>
+                    </div>
+                    <span id="homeWellnessPlanBadge" class="workspace-access-plan-badge">
+                      —
+                    </span>
+                  </div>
+
+                  <div class="workspace-access-detail">
+                    <span>Plan:</span>
+                    <strong id="homeWellnessPlan">—</strong>
+                  </div>
+                  <div class="workspace-access-detail">
+                    <span>Status:</span>
+                    <strong id="homeWellnessAccessStatus">—</strong>
+                  </div>
+                  <div class="workspace-access-detail">
+                    <span>Reports:</span>
+                    <strong id="homeWellnessReports">—</strong>
+                  </div>
+
+                  <button type="button" class="workspace-access-open-home" onclick="returnToHomeWorkspace()">
+                    Open Home Wellness <span aria-hidden="true">→</span>
+                  </button>
+                </section>
+
+                <div class="workspace-access-card-divider"></div>
+
+                <section class="workspace-access-card">
+                  <div class="workspace-access-card-heading">
+                    <span class="workspace-access-card-icon">🏢</span>
+                    <div>
+                      <strong>Business Survey</strong>
+                      <span>Professional assessments</span>
+                    </div>
+                    <span id="businessSurveyPlanBadge" class="workspace-access-plan-badge">
+                      —
+                    </span>
+                  </div>
+
+                  <div class="workspace-access-detail">
+                    <span>Plan:</span>
+                    <strong id="businessSurveyPlan">—</strong>
+                  </div>
+                  <div class="workspace-access-detail">
+                    <span>Reports:</span>
+                    <strong id="businessSurveyReports">—</strong>
+                  </div>
+                  <div class="workspace-access-detail">
+                    <span>Next reset:</span>
+                    <strong id="businessSurveyNextReset">—</strong>
+                  </div>
+
+                  <button type="button" class="workspace-access-open-business" onclick="setAppMode?.('business')">
+                    Open Business Survey <span aria-hidden="true">→</span>
+                  </button>
+                </section>
+
+              </div>
+            </div>
+
+
+
+          </div>
 
           <!-- MY PROPERTY HUB -->
           <div id="myPropertyHubModal" class="modal-overlay" style="display:none;">
@@ -27748,296 +29550,7 @@ return false;
             </div>
           </div>
 
-          <!-- ================================================== -->
-          <!-- PROPERTY HEALTH RECORD MODAL -->
-          <!-- ================================================== -->
 
-          <div id="propertyHealthRecordModal" class="modal-overlay" style="display:none;">
-
-            <div class="modal-content property-health-record-modal">
-
-              <div class="property-health-record-modal-header">
-
-                <div>
-                  <div class="property-health-record-modal-eyebrow">
-                    PROPERTY HEALTH RECORD
-                  </div>
-
-                  <h3 id="propertyHealthRecordModalTitle">
-                    My Property
-                  </h3>
-                </div>
-
-                <button type="button" class="property-health-record-modal-close" onclick="closePropertyHealthRecord()"
-                  aria-label="Close">
-                  ×
-                </button>
-
-              </div>
-
-
-              <div class="property-health-record-modal-body">
-
-                <!-- ==========================================
-       PROPERTY + LOCATION
-       ========================================== -->
-
-                <div class="property-health-record-section property-health-record-property-card">
-
-                  <div class="property-health-record-property-grid">
-
-                    <!-- PROPERTY -->
-                    <div class="property-health-record-property-column">
-
-                      <div class="phr-heading-row">
-                        <div class="phr-icon phr-icon-property">⌂</div>
-
-                        <div class="property-health-record-section-title">
-                          PROPERTY
-                        </div>
-                      </div>
-
-                      <div id="propertyHealthRecordPropertyType" class="property-health-record-property-type">
-                        Property
-                      </div>
-
-                      <div class="property-health-record-property-detail">
-                        <span class="property-health-record-property-detail-label">
-                          Floors
-                        </span>
-
-                        <span id="propertyHealthRecordFloors" class="property-health-record-property-detail-value">
-                          1
-                        </span>
-                      </div>
-
-                      <div class="property-health-record-id-label">
-                        Property ID
-                      </div>
-
-                      <div id="propertyHealthRecordId" class="property-health-record-id">
-                        —
-                      </div>
-
-                    </div>
-
-
-                    <!-- LOCATION -->
-                    <div class="property-health-record-property-column">
-
-                      <div class="phr-heading-row">
-                        <div class="phr-icon phr-icon-location">⌖</div>
-
-                        <div class="property-health-record-section-title">
-                          LOCATION
-                        </div>
-                      </div>
-
-                      <div id="propertyHealthRecordAddress" class="property-health-record-address">
-                        Address not yet added
-                      </div>
-
-                      <div id="propertyHealthRecordCity" class="property-health-record-address">
-                        Location not yet added
-                      </div>
-
-                      <div id="propertyHealthRecordCountry" class="property-health-record-address">
-                        Country not yet added
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                <!-- ==========================================
-       ENVIRONMENT + LIFESTYLE
-       ========================================== -->
-
-                <div class="property-health-record-two-column">
-
-
-                  <!-- ENVIRONMENT -->
-                  <div class="property-health-record-section">
-
-                    <div class="phr-heading-row">
-                      <div class="phr-icon phr-icon-environment">◌</div>
-
-                      <div class="property-health-record-section-title">
-                        ENVIRONMENT
-                      </div>
-                    </div>
-
-                    <div id="propertyHealthRecordEnvironment" class="property-health-record-environment-grid">
-
-                      <div class="property-health-record-metric">
-                        <span class="property-health-record-metric-label">
-                          Indoor Sources
-                        </span>
-
-                        <span id="propertyHealthRecordIndoorSources" class="property-health-record-metric-value">
-                          0
-                        </span>
-                      </div>
-
-                      <div class="property-health-record-metric">
-                        <span class="property-health-record-metric-label">
-                          Outdoor Sources
-                        </span>
-
-                        <span id="propertyHealthRecordOutdoorSources" class="property-health-record-metric-value">
-                          0
-                        </span>
-                      </div>
-
-                      <div class="property-health-record-metric">
-                        <span class="property-health-record-metric-label">
-                          Total Sources
-                        </span>
-
-                        <span id="propertyHealthRecordTotalSources" class="property-health-record-metric-value">
-                          0
-                        </span>
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <!-- LIFESTYLE -->
-                  <div class="property-health-record-section">
-
-                    <div class="phr-heading-row">
-                      <div class="phr-icon phr-icon-lifestyle">♧</div>
-
-                      <div class="property-health-record-section-title">
-                        LIFESTYLE
-                      </div>
-                    </div>
-
-                    <div id="propertyHealthRecordLifestyle" class="property-health-record-section-value">
-                      Living areas not yet added
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                <!-- ==========================================
-       CURRENT ASSESSMENT
-       ========================================== -->
-
-                <!-- CURRENT ASSESSMENT -->
-
-                <div class="property-health-record-section property-health-record-current-assessment">
-
-                  <div class="property-health-record-assessment-header">
-
-                    <div class="phr-heading-row">
-
-                      <div class="phr-icon phr-icon-assessment">
-                        ▣
-                      </div>
-
-                      <div class="property-health-record-section-title">
-                        CURRENT ASSESSMENT
-                      </div>
-
-                    </div>
-
-                    <div id="propertyHealthRecordAssessmentStatus" class="property-health-record-assessment-status">
-                      In progress
-                    </div>
-
-                  </div>
-
-                  <div id="propertyHealthRecordAssessment" class="property-health-record-section-value">
-                    Initial Home Assessment
-                  </div>
-
-                </div>
-
-
-                <!-- ==========================================
-       RECORD HISTORY
-       ========================================== -->
-
-                <div class="property-health-record-history">
-
-                  <div class="property-health-record-section-title">
-                    RECORD HISTORY
-                  </div>
-
-                  <div id="propertyHealthRecordHistoryItems">
-
-                    <div class="property-health-record-history-item">
-
-                      <div class="property-health-record-history-dot"></div>
-
-                      <div>
-
-                        <div class="property-health-record-history-title">
-                          Initial record created
-                        </div>
-
-                        <div id="propertyHealthRecordCreatedDate" class="property-health-record-history-date">
-                          —
-                        </div>
-
-                        <div class="property-health-record-history-subtitle">
-                          Your Property Health Record has started.
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                <!-- ==========================================
-       PROPERTY HEALTH DASHBOARD
-       ========================================== -->
-
-                <div class="property-health-record-dashboard-link">
-
-                  <div class="phr-icon phr-icon-dashboard">
-                    ▥
-                  </div>
-
-                  <div class="property-health-record-dashboard-text">
-
-                    <div class="property-health-record-dashboard-title">
-                      Your Property Health Record
-                    </div>
-
-                    <div class="property-health-record-dashboard-subtitle">
-                      View your property's environmental profile, living areas and current assessment in the Property
-                      Health Dashboard.
-                    </div>
-
-                  </div>
-
-                  <button type="button" class="property-health-record-dashboard-btn"
-                    onclick="openPropertyHealthDashboard()">
-                    View Property Health Dashboard
-                    <span aria-hidden="true">→</span>
-
-                  </button>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
 
         </div>
 
@@ -28646,13 +30159,6 @@ return false;
         </section>
 
 
-        <!-- ================================================== -->
-        <!-- HOME FLOOR CONTEXT -->
-        <!-- ================================================== -->
-
-        <div id="homeFloorTabsBar" class="home-only">
-          <div id="homeFloorTabs"></div>
-        </div>
 
 
 
@@ -28926,9 +30432,6 @@ return false;
         </div>
 
 
-        <!-- ================================================== -->
-        <!-- PROFESSIONAL DASHBOARD -->
-        <!-- ================================================== -->
         <section id="myWellnessDashboard" class="my-wellness-dashboard home-only" style="display:none;"
           aria-label="My Wellness Dashboard">
 
@@ -29219,7 +30722,7 @@ return false;
 
                 <button type="button" onclick="setAppMode('business', { showProjectStart: true })">
                   <span aria-hidden="true">▥</span>
-                  Open Business Survey →
+                  Open Professional Survey →
                 </button>
               </div>
             </div>
@@ -29246,6 +30749,34 @@ return false;
               </div>
             </div>
           </div>
+
+
+          <!-- ================================================== -->
+          <!-- BUSINESS — MY RECENT PROJECTS -->
+          <!-- ================================================== -->
+
+          <section id="businessRecentProjectsSection" class="professional-dashboard-section business-recent-projects">
+
+            <div class="business-recent-projects-heading">
+              <div>
+                <h2>My Recent Projects</h2>
+                <p class="professional-dashboard-section-subtitle">
+                  Continue working on your business assessments.
+                </p>
+              </div>
+              <button type="button" class="business-recent-projects-view-all" onclick="openProjectMenu?.()">
+                View All Projects →
+              </button>
+            </div>
+
+            <div id="businessRecentProjectsList" class="business-recent-projects-list">
+
+              <p>Loading business projects...</p>
+
+            </div>
+
+          </section>
+
 
 
           <!-- QUICK ACTIONS -->
@@ -29280,11 +30811,11 @@ return false;
               <button type="button" class="professional-dashboard-action"
                 onclick="setAppMode('business', { showProjectStart: true })">
                 <span class="professional-dashboard-action-icon">▦</span>
-                <span class="professional-dashboard-action-title">Business Survey</span>
+                <span class="professional-dashboard-action-title">Professional Property Survey</span>
                 <span class="professional-dashboard-action-description">
                   Create a new assessment or continue your existing projects.
                 </span>
-                <span class="professional-dashboard-action-link">Open Business Survey →</span>
+                <span class="professional-dashboard-action-link">Open Property Survey →</span>
               </button>
 
               <button type="button" class="professional-dashboard-action"
@@ -29382,6 +30913,680 @@ return false;
         </section>
 
         <!-- ================================================== -->
+        <!-- PROPERTY HEALTH RECORD MODAL -->
+        <!-- ================================================== -->
+
+        <div id="propertyHealthRecordModal" class="modal-overlay" style="display:none;">
+
+          <div class="modal-content property-health-record-modal">
+
+            <div class="property-health-record-modal-header">
+
+              <div>
+                <div class="property-health-record-modal-eyebrow">
+                  PROPERTY HEALTH RECORD
+                </div>
+
+                <h3 id="propertyHealthRecordModalTitle">
+                  My Property
+                </h3>
+              </div>
+
+              <button type="button" class="property-health-record-modal-close" onclick="closePropertyHealthRecord()"
+                aria-label="Close">
+                ×
+              </button>
+
+            </div>
+
+
+            <div class="property-health-record-modal-body">
+
+              <!-- ==========================================
+       PROPERTY + LOCATION
+       ========================================== -->
+
+              <div class="property-health-record-section property-health-record-property-card">
+
+                <div class="property-health-record-property-grid">
+
+                  <!-- PROPERTY -->
+                  <div class="property-health-record-property-column">
+
+                    <div class="phr-heading-row">
+                      <div class="phr-icon phr-icon-property">⌂</div>
+
+                      <div class="property-health-record-section-title">
+                        PROPERTY
+                      </div>
+                    </div>
+
+                    <div id="propertyHealthRecordPropertyType" class="property-health-record-property-type">
+                      Property
+                    </div>
+
+                    <div class="property-health-record-property-detail">
+                      <span class="property-health-record-property-detail-label">
+                        Floors
+                      </span>
+
+                      <span id="propertyHealthRecordFloors" class="property-health-record-property-detail-value">
+                        1
+                      </span>
+                    </div>
+
+                    <div class="property-health-record-id-label">
+                      Property ID
+                    </div>
+
+                    <div id="propertyHealthRecordId" class="property-health-record-id">
+                      —
+                    </div>
+
+                  </div>
+
+
+                  <!-- LOCATION -->
+                  <div class="property-health-record-property-column">
+
+                    <div class="phr-heading-row">
+                      <div class="phr-icon phr-icon-location">⌖</div>
+
+                      <div class="property-health-record-section-title">
+                        LOCATION
+                      </div>
+                    </div>
+
+                    <div id="propertyHealthRecordAddress" class="property-health-record-address">
+                      Address not yet added
+                    </div>
+
+                    <div id="propertyHealthRecordCity" class="property-health-record-address">
+                      Location not yet added
+                    </div>
+
+                    <div id="propertyHealthRecordCountry" class="property-health-record-address">
+                      Country not yet added
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+       ENVIRONMENT + LIFESTYLE
+       ========================================== -->
+
+              <div class="property-health-record-two-column">
+
+
+                <!-- ENVIRONMENT -->
+                <div class="property-health-record-section">
+
+                  <div class="phr-heading-row">
+                    <div class="phr-icon phr-icon-environment">◌</div>
+
+                    <div class="property-health-record-section-title">
+                      ENVIRONMENT
+                    </div>
+                  </div>
+
+                  <div id="propertyHealthRecordEnvironment" class="property-health-record-environment-grid">
+
+                    <div class="property-health-record-metric">
+                      <span class="property-health-record-metric-label">
+                        Indoor Sources
+                      </span>
+
+                      <span id="propertyHealthRecordIndoorSources" class="property-health-record-metric-value">
+                        0
+                      </span>
+                    </div>
+
+                    <div class="property-health-record-metric">
+                      <span class="property-health-record-metric-label">
+                        Outdoor Sources
+                      </span>
+
+                      <span id="propertyHealthRecordOutdoorSources" class="property-health-record-metric-value">
+                        0
+                      </span>
+                    </div>
+
+                    <div class="property-health-record-metric">
+                      <span class="property-health-record-metric-label">
+                        Total Sources
+                      </span>
+
+                      <span id="propertyHealthRecordTotalSources" class="property-health-record-metric-value">
+                        0
+                      </span>
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <!-- LIFESTYLE -->
+                <div class="property-health-record-section">
+
+                  <div class="phr-heading-row">
+                    <div class="phr-icon phr-icon-lifestyle">♧</div>
+
+                    <div class="property-health-record-section-title">
+                      LIFESTYLE
+                    </div>
+                  </div>
+
+                  <div id="propertyHealthRecordLifestyle" class="property-health-record-section-value">
+                    Living areas not yet added
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+       CURRENT ASSESSMENT
+       ========================================== -->
+
+              <!-- CURRENT ASSESSMENT -->
+
+              <div class="property-health-record-section property-health-record-current-assessment">
+
+                <div class="property-health-record-assessment-header">
+
+                  <div class="phr-heading-row">
+
+                    <div class="phr-icon phr-icon-assessment">
+                      ▣
+                    </div>
+
+                    <div class="property-health-record-section-title">
+                      CURRENT ASSESSMENT
+                    </div>
+
+                  </div>
+
+                  <div id="propertyHealthRecordAssessmentStatus" class="property-health-record-assessment-status">
+                    In progress
+                  </div>
+
+                </div>
+
+                <div id="propertyHealthRecordAssessment" class="property-health-record-section-value">
+                  Initial Home Assessment
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+       RECORD HISTORY
+       ========================================== -->
+
+              <div class="property-health-record-history">
+
+                <div class="property-health-record-section-title">
+                  RECORD HISTORY
+                </div>
+
+                <div id="propertyHealthRecordHistoryItems">
+
+                  <div class="property-health-record-history-item">
+
+                    <div class="property-health-record-history-dot"></div>
+
+                    <div>
+
+                      <div class="property-health-record-history-title">
+                        Initial record created
+                      </div>
+
+                      <div id="propertyHealthRecordCreatedDate" class="property-health-record-history-date">
+                        —
+                      </div>
+
+                      <div class="property-health-record-history-subtitle">
+                        Your Property Health Record has started.
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+       PROPERTY HEALTH DASHBOARD
+       ========================================== -->
+
+              <div class="property-health-record-dashboard-link">
+
+                <div class="phr-icon phr-icon-dashboard">
+                  ▥
+                </div>
+
+                <div class="property-health-record-dashboard-text">
+
+                  <div class="property-health-record-dashboard-title">
+                    Your Property Health Record
+                  </div>
+
+                  <div class="property-health-record-dashboard-subtitle">
+                    View your property's environmental profile, living areas and current assessment in the Property
+                    Health Dashboard.
+                  </div>
+
+                </div>
+
+                <button type="button" class="property-health-record-dashboard-btn"
+                  onclick="openPropertyHealthDashboard()">
+                  View Property Health Dashboard
+                  <span aria-hidden="true">→</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ================================================== -->
+        <!-- PROPERTY HEALTH DASHBOARD -->
+        <!-- ================================================== -->
+
+        <div id="propertyHealthDashboardView" class="home-only property-health-dashboard-view" style="display:none;">
+
+          <div class="property-health-dashboard-header">
+
+            <div>
+              <div class="property-health-dashboard-eyebrow">
+                PROPERTY HEALTH RECORD
+              </div>
+
+              <h2 id="propertyHealthDashboardViewTitle">
+                My Property
+              </h2>
+
+              <div id="propertyHealthDashboardViewSubtitle" class="property-health-dashboard-subtitle">
+                Your property's personal health record
+              </div>
+            </div>
+
+            <button type="button" class="property-health-dashboard-back-btn" onclick="closePropertyHealthDashboard()">
+              ← Back to Property
+            </button>
+
+          </div>
+
+
+          <!-- PROPERTY OVERVIEW -->
+
+          <section class="property-health-dashboard-section">
+
+            <div class="property-health-dashboard-section-title">
+              PROPERTY OVERVIEW
+            </div>
+
+            <div class="property-health-dashboard-grid">
+
+              <div class="property-health-dashboard-card">
+                <span>Property Type</span>
+                <strong id="dashboardPropertyType">—</strong>
+              </div>
+
+              <div class="property-health-dashboard-card">
+                <span>Location</span>
+                <strong id="dashboardPropertyLocation">—</strong>
+              </div>
+
+              <div class="property-health-dashboard-card">
+                <span>Floors</span>
+                <strong id="dashboardPropertyFloors">—</strong>
+              </div>
+
+              <div class="property-health-dashboard-card">
+                <span>Property ID</span>
+                <strong id="dashboardPropertyId">—</strong>
+              </div>
+
+
+            </div>
+
+          </section>
+
+
+
+
+
+          <!-- ENVIRONMENT + LIFESTYLE -->
+          <section class="property-health-dashboard-section property-health-dashboard-lifestyle">
+
+            <div class="property-health-dashboard-section-title">
+              LIFESTYLE
+            </div>
+
+            <div class="phr-lifestyle-subtitle">
+              Areas where your daily activities take place
+            </div>
+
+            <div class="phr-lifestyle-grid">
+
+              <div class="phr-lifestyle-card">
+                <div class="phr-simple-icon phr-icon-sleep">🛏</div>
+                <span>Sleep</span>
+              </div>
+
+              <div class="phr-lifestyle-card">
+                <div class="phr-simple-icon phr-icon-work">💻</div>
+                <span>Work</span>
+              </div>
+
+              <div class="phr-lifestyle-card">
+                <div class="phr-simple-icon phr-icon-rest">🛋</div>
+                <span>Rest</span>
+              </div>
+
+              <div class="phr-lifestyle-card">
+                <div class="phr-simple-icon phr-icon-child">👶</div>
+                <span>Child</span>
+              </div>
+
+            </div>
+
+
+          </section>
+
+
+          <!-- CURRENT ASSESSMENT -->
+
+          <section class="property-health-dashboard-section">
+
+            <div class="property-health-dashboard-section-title">
+              CURRENT ASSESSMENT
+            </div>
+
+            <div class="property-health-dashboard-assessment">
+
+              <div class="phr-assessment-content">
+
+                <div class="phr-simple-icon phr-icon-assessment">
+                  📄
+                </div>
+
+                <div class="phr-assessment-main">
+
+                  <div class="phr-assessment-title">
+                    Initial Home Assessment
+                  </div>
+
+                  <div class="phr-assessment-subtitle">
+                    Your initial assessment of the environmental
+                    conditions associated with your property.
+                  </div>
+
+                </div>
+
+
+              </div>
+
+              <div id="dashboardAssessmentStatus" class="property-health-dashboard-status">
+                In progress
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- FULL PROPERTY INSIGHTS -->
+          <section class="property-health-dashboard-section phr-full-insights">
+
+            <div class="property-health-dashboard-section-title">
+              FULL PROPERTY INSIGHTS
+            </div>
+
+            <div class="phr-full-insights-layout">
+
+              <!-- ILLUSTRATIVE PROPERTY VISUAL -->
+              <div class="phr-full-insights-visual">
+
+                <img src="assets/phr/house_infographic.png" alt="Illustrative property environment example" />
+
+                <div class="phr-example-badge">
+                  Illustrative Example
+                </div>
+
+              </div>
+
+
+              <!-- EXPLANATION -->
+              <div class="phr-full-insights-info">
+
+                <h2>
+                  How Property Insights Work
+                </h2>
+
+                <p class="phr-full-insights-intro">
+                  See how EMF Insights connects environmental sources,
+                  your surroundings and the areas of your home that
+                  matter to you.
+                </p>
+
+
+                <div class="phr-insight-item">
+
+                  <div class="phr-insight-icon phr-icon-sources">
+                    📡
+                  </div>
+
+                  <div>
+                    <strong>Sources</strong>
+                    <span>
+                      Indoor and outdoor environmental sources.
+                    </span>
+                  </div>
+
+                </div>
+
+
+                <div class="phr-insight-item">
+
+                  <div class="phr-insight-icon phr-icon-context">
+                    📍
+                  </div>
+
+                  <div>
+                    <strong>Context</strong>
+                    <span>
+                      Property location and surrounding environment.
+                    </span>
+                  </div>
+
+                </div>
+
+
+                <div class="phr-insight-item">
+
+                  <div class="phr-insight-icon phr-icon-lifestyle">
+                    🏠
+                  </div>
+
+                  <div>
+                    <strong>Lifestyle</strong>
+                    <span>
+                      How your daily life connects with your environment.
+                    </span>
+                  </div>
+
+                </div>
+
+
+                <div class="phr-insight-item">
+
+                  <div class="phr-insight-icon phr-icon-assessment">
+                    📄
+                  </div>
+
+                  <div>
+                    <strong>Assessment</strong>
+                    <span>
+                      Insights, priorities and recommendations.
+                    </span>
+                  </div>
+
+                </div>
+
+
+                <div class="phr-full-insights-note">
+                  <strong>Illustrative example</strong>
+
+                  <span>
+                    The property shown is a demonstration example and
+                    does not represent your actual home. Your Full Property
+                    Insights are generated from information associated
+                    with your property.
+                  </span>
+                </div>
+
+
+                <button type="button" class="phr-full-insights-button"
+                  onclick="window.location.href='/dashboard.html#billing';">
+                  🔒 Unlock Full Property Insights →
+                </button>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- WHAT CAN YOU DO NEXT? -->
+
+          <section class="property-health-dashboard-section">
+
+            <div class="property-health-dashboard-section-title">
+              WHAT CAN YOU DO NEXT?
+            </div>
+
+            <div class="property-health-dashboard-next-grid">
+
+
+
+              <button type="button" id="phrProfessionalRequestCard" class="property-health-dashboard-next-card">
+                <div class="phr-next-icon phr-next-icon-professional">
+                  👥
+                </div>
+
+                <div class="phr-next-content">
+                  <strong id="phrProfessionalRequestTitle">
+                    Get Professional Assessment
+                  </strong>
+
+                  <span id="phrProfessionalRequestSubtitle">
+                    Connect with a qualified EMF professional
+                  </span>
+                </div>
+
+                <span class="phr-next-arrow">→</span>
+              </button>
+
+
+              <div class="property-health-dashboard-next-card is-locked">
+
+                <div class="phr-next-icon phr-next-icon-muted">
+                  🌿
+                </div>
+
+                <div class="phr-next-content">
+                  <strong>Improve Your Environment</strong>
+                  <span>Coming soon</span>
+                </div>
+
+              </div>
+
+
+              <div class="property-health-dashboard-next-card is-locked">
+
+                <div class="phr-next-icon phr-next-icon-muted">
+                  ◷
+                </div>
+
+                <div class="phr-next-content">
+                  <strong>Track Changes</strong>
+                  <span>Property Health History will grow over time</span>
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- PROPERTY HEALTH HISTORY -->
+
+          <section class="property-health-dashboard-section">
+
+            <div class="property-health-dashboard-section-title">
+              PROPERTY HEALTH HISTORY
+            </div>
+
+            <div class="phr-history">
+
+              <div class="phr-history-item">
+
+                <div class="phr-history-marker">
+                  <div class="phr-history-dot"></div>
+                </div>
+
+                <div class="phr-history-content">
+
+                  <div class="phr-history-top">
+
+                    <strong>
+                      Property Health Record created
+                    </strong>
+
+                    <span id="dashboardPropertyCreatedDate" class="phr-history-date">
+                      —
+                    </span>
+
+                  </div>
+
+                  <div class="phr-history-subtitle">
+                    Your property's health record has started.
+                  </div>
+
+                  <div class="phr-history-description">
+                    Property information, lifestyle areas and environmental
+                    context are now part of your property's record.
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+        <!-- ================================================== -->
         <!-- 🔥 BUSINESS WORKSPACE BODY -->
         <!-- ================================================== -->
 
@@ -29470,11 +31675,12 @@ return false;
                 </div>
 
                 <div id="projectStartTitle" class="project-start-title">
-                  My Home
+                  My Home Wellness
                 </div>
 
                 <div id="projectStartSubtitle" class="project-start-subtitle">
-                  Create your home environment profile or open an existing property.
+                  Understand your home environment, explore potential EMF sources, and discover practical ways to create
+                  healthier spaces for living, sleeping and working.
                 </div>
 
                 <div class="project-start-actions">
@@ -29484,8 +31690,8 @@ return false;
                     <span class="project-start-btn-icon">+</span>
 
                     <span>
-                      <strong>New Property</strong>
-                      <small>Start building your property's environmental profile</small>
+                      <strong>Create Home Profile</strong>
+                      <small>Start exploring your home's environment.</small>
                     </span>
                   </button>
 
@@ -29609,390 +31815,6 @@ return false;
 
             <div id="homeCurrentFloorCard" class="home-only"></div>
 
-            <!-- ================================================== -->
-            <!-- PROPERTY HEALTH DASHBOARD -->
-            <!-- ================================================== -->
-
-            <div id="propertyHealthDashboardView" class="home-only property-health-dashboard-view"
-              style="display:none;">
-
-              <div class="property-health-dashboard-header">
-
-                <div>
-                  <div class="property-health-dashboard-eyebrow">
-                    PROPERTY HEALTH RECORD
-                  </div>
-
-                  <h2 id="propertyHealthDashboardViewTitle">
-                    My Property
-                  </h2>
-
-                  <div id="propertyHealthDashboardViewSubtitle" class="property-health-dashboard-subtitle">
-                    Your property's personal health record
-                  </div>
-                </div>
-
-                <button type="button" class="property-health-dashboard-back-btn"
-                  onclick="closePropertyHealthDashboard()">
-                  ← Back to Property
-                </button>
-
-              </div>
-
-
-              <!-- PROPERTY OVERVIEW -->
-
-              <section class="property-health-dashboard-section">
-
-                <div class="property-health-dashboard-section-title">
-                  PROPERTY OVERVIEW
-                </div>
-
-                <div class="property-health-dashboard-grid">
-
-                  <div class="property-health-dashboard-card">
-                    <span>Property Type</span>
-                    <strong id="dashboardPropertyType">—</strong>
-                  </div>
-
-                  <div class="property-health-dashboard-card">
-                    <span>Location</span>
-                    <strong id="dashboardPropertyLocation">—</strong>
-                  </div>
-
-                  <div class="property-health-dashboard-card">
-                    <span>Floors</span>
-                    <strong id="dashboardPropertyFloors">—</strong>
-                  </div>
-
-                  <div class="property-health-dashboard-card">
-                    <span>Property ID</span>
-                    <strong id="dashboardPropertyId">—</strong>
-                  </div>
-
-
-                </div>
-
-              </section>
-
-
-
-
-
-              <!-- ENVIRONMENT + LIFESTYLE -->
-              <section class="property-health-dashboard-section property-health-dashboard-lifestyle">
-
-                <div class="property-health-dashboard-section-title">
-                  LIFESTYLE
-                </div>
-
-                <div class="phr-lifestyle-subtitle">
-                  Areas where your daily activities take place
-                </div>
-
-                <div class="phr-lifestyle-grid">
-
-                  <div class="phr-lifestyle-card">
-                    <div class="phr-simple-icon phr-icon-sleep">🛏</div>
-                    <span>Sleep</span>
-                  </div>
-
-                  <div class="phr-lifestyle-card">
-                    <div class="phr-simple-icon phr-icon-work">💻</div>
-                    <span>Work</span>
-                  </div>
-
-                  <div class="phr-lifestyle-card">
-                    <div class="phr-simple-icon phr-icon-rest">🛋</div>
-                    <span>Rest</span>
-                  </div>
-
-                  <div class="phr-lifestyle-card">
-                    <div class="phr-simple-icon phr-icon-child">👶</div>
-                    <span>Child</span>
-                  </div>
-
-                </div>
-
-
-              </section>
-
-
-              <!-- CURRENT ASSESSMENT -->
-
-              <section class="property-health-dashboard-section">
-
-                <div class="property-health-dashboard-section-title">
-                  CURRENT ASSESSMENT
-                </div>
-
-                <div class="property-health-dashboard-assessment">
-
-                  <div class="phr-assessment-content">
-
-                    <div class="phr-simple-icon phr-icon-assessment">
-                      📄
-                    </div>
-
-                    <div class="phr-assessment-main">
-
-                      <div class="phr-assessment-title">
-                        Initial Home Assessment
-                      </div>
-
-                      <div class="phr-assessment-subtitle">
-                        Your initial assessment of the environmental
-                        conditions associated with your property.
-                      </div>
-
-                    </div>
-
-
-                  </div>
-
-                  <div id="dashboardAssessmentStatus" class="property-health-dashboard-status">
-                    In progress
-                  </div>
-
-                </div>
-
-              </section>
-
-
-              <!-- FULL PROPERTY INSIGHTS -->
-              <section class="property-health-dashboard-section phr-full-insights">
-
-                <div class="property-health-dashboard-section-title">
-                  FULL PROPERTY INSIGHTS
-                </div>
-
-                <div class="phr-full-insights-layout">
-
-                  <!-- ILLUSTRATIVE PROPERTY VISUAL -->
-                  <div class="phr-full-insights-visual">
-
-                    <img src="assets/phr/house_infographic.png" alt="Illustrative property environment example" />
-
-                    <div class="phr-example-badge">
-                      Illustrative Example
-                    </div>
-
-                  </div>
-
-
-                  <!-- EXPLANATION -->
-                  <div class="phr-full-insights-info">
-
-                    <h2>
-                      How Property Insights Work
-                    </h2>
-
-                    <p class="phr-full-insights-intro">
-                      See how EMF Insights connects environmental sources,
-                      your surroundings and the areas of your home that
-                      matter to you.
-                    </p>
-
-
-                    <div class="phr-insight-item">
-
-                      <div class="phr-insight-icon phr-icon-sources">
-                        📡
-                      </div>
-
-                      <div>
-                        <strong>Sources</strong>
-                        <span>
-                          Indoor and outdoor environmental sources.
-                        </span>
-                      </div>
-
-                    </div>
-
-
-                    <div class="phr-insight-item">
-
-                      <div class="phr-insight-icon phr-icon-context">
-                        📍
-                      </div>
-
-                      <div>
-                        <strong>Context</strong>
-                        <span>
-                          Property location and surrounding environment.
-                        </span>
-                      </div>
-
-                    </div>
-
-
-                    <div class="phr-insight-item">
-
-                      <div class="phr-insight-icon phr-icon-lifestyle">
-                        🏠
-                      </div>
-
-                      <div>
-                        <strong>Lifestyle</strong>
-                        <span>
-                          How your daily life connects with your environment.
-                        </span>
-                      </div>
-
-                    </div>
-
-
-                    <div class="phr-insight-item">
-
-                      <div class="phr-insight-icon phr-icon-assessment">
-                        📄
-                      </div>
-
-                      <div>
-                        <strong>Assessment</strong>
-                        <span>
-                          Insights, priorities and recommendations.
-                        </span>
-                      </div>
-
-                    </div>
-
-
-                    <div class="phr-full-insights-note">
-                      <strong>Illustrative example</strong>
-
-                      <span>
-                        The property shown is a demonstration example and
-                        does not represent your actual home. Your Full Property
-                        Insights are generated from information associated
-                        with your property.
-                      </span>
-                    </div>
-
-
-                    <button type="button" class="phr-full-insights-button"
-                      onclick="window.location.href='/dashboard.html#billing';">
-                      🔒 Unlock Full Property Insights →
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </section>
-
-
-              <!-- WHAT CAN YOU DO NEXT? -->
-
-              <section class="property-health-dashboard-section">
-
-                <div class="property-health-dashboard-section-title">
-                  WHAT CAN YOU DO NEXT?
-                </div>
-
-                <div class="property-health-dashboard-next-grid">
-
-
-
-                  <button type="button" id="phrProfessionalRequestCard" class="property-health-dashboard-next-card">
-                    <div class="phr-next-icon phr-next-icon-professional">
-                      👥
-                    </div>
-
-                    <div class="phr-next-content">
-                      <strong id="phrProfessionalRequestTitle">
-                        Get Professional Assessment
-                      </strong>
-
-                      <span id="phrProfessionalRequestSubtitle">
-                        Connect with a qualified EMF professional
-                      </span>
-                    </div>
-
-                    <span class="phr-next-arrow">→</span>
-                  </button>
-
-
-                  <div class="property-health-dashboard-next-card is-locked">
-
-                    <div class="phr-next-icon phr-next-icon-muted">
-                      🌿
-                    </div>
-
-                    <div class="phr-next-content">
-                      <strong>Improve Your Environment</strong>
-                      <span>Coming soon</span>
-                    </div>
-
-                  </div>
-
-
-                  <div class="property-health-dashboard-next-card is-locked">
-
-                    <div class="phr-next-icon phr-next-icon-muted">
-                      ◷
-                    </div>
-
-                    <div class="phr-next-content">
-                      <strong>Track Changes</strong>
-                      <span>Property Health History will grow over time</span>
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </section>
-
-
-              <!-- PROPERTY HEALTH HISTORY -->
-
-              <section class="property-health-dashboard-section">
-
-                <div class="property-health-dashboard-section-title">
-                  PROPERTY HEALTH HISTORY
-                </div>
-
-                <div class="phr-history">
-
-                  <div class="phr-history-item">
-
-                    <div class="phr-history-marker">
-                      <div class="phr-history-dot"></div>
-                    </div>
-
-                    <div class="phr-history-content">
-
-                      <div class="phr-history-top">
-
-                        <strong>
-                          Property Health Record created
-                        </strong>
-
-                        <span id="dashboardPropertyCreatedDate" class="phr-history-date">
-                          —
-                        </span>
-
-                      </div>
-
-                      <div class="phr-history-subtitle">
-                        Your property's health record has started.
-                      </div>
-
-                      <div class="phr-history-description">
-                        Property information, lifestyle areas and environmental
-                        context are now part of your property's record.
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </section>
-
-            </div>
 
             <!-- ===================== -->
             <!-- 🔥 HOME WORKFLOW -->
@@ -33536,6 +35358,7 @@ return false;
 
     <script src="js/api.js"></script>
     <script src="js/home_wellness_projects.js"></script>
+    <script src="js/business_recent_projects.js"></script>
     <script src="js/professional_profile.js"></script>
     <script src="js/professional_demo_feedback.js"></script>
 
@@ -36201,6 +38024,75 @@ return false;
   }
 
 
+  function toggleWorkspaceAccessPanel() {
+    const panel = document.getElementById("workspaceAccessPanel");
+    const button = document.getElementById("workspaceAccessInfoButton");
+    const chevron = document.getElementById("workspaceAccessChevron");
+
+    if (!panel || !button) {
+      return;
+    }
+
+    const isOpen = panel.style.display === "block";
+
+    panel.style.display = isOpen ? "none" : "block";
+    button.setAttribute("aria-expanded", String(!isOpen));
+
+    if (chevron) {
+      chevron.textContent = isOpen ? "⌃" : "⌄";
+    }
+  }
+
+
+  // Close access panel when clicking outside it
+  document.addEventListener("click", (event) => {
+    const panel = document.getElementById("workspaceAccessPanel");
+    const summary = document.getElementById("workspaceAccessSummary");
+
+    if (!panel || !summary || panel.style.display !== "block") {
+      return;
+    }
+
+    if (
+      !panel.contains(event.target) &&
+      !summary.contains(event.target)
+    ) {
+      panel.style.display = "none";
+
+      const button = document.getElementById("workspaceAccessInfoButton");
+      const chevron = document.getElementById("workspaceAccessChevron");
+
+      button?.setAttribute("aria-expanded", "false");
+
+      if (chevron) {
+        chevron.textContent = "⌃";
+      }
+    }
+  });
+
+  // Close access panel with Escape
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    const panel = document.getElementById("workspaceAccessPanel");
+    const button = document.getElementById("workspaceAccessInfoButton");
+    const chevron = document.getElementById("workspaceAccessChevron");
+
+    if (!panel || panel.style.display !== "block") {
+      return;
+    }
+
+    panel.style.display = "none";
+    button?.setAttribute("aria-expanded", "false");
+
+    if (chevron) {
+      chevron.textContent = "⌃";
+    }
+  });
+
+
   // ==================================================
   // CLOSE USER MENU WHEN CLICKING OUTSIDE
   // ==================================================
@@ -36482,6 +38374,8 @@ return false;
 
 
 
+
+
   function returnToProfessionalDashboard() {
     const role = window.EMFProductContext?.account?.role;
 
@@ -36491,11 +38385,189 @@ return false;
 
     sessionStorage.setItem("professionalDashboardRequested", "true");
 
-    setAppMode("business", {
-      forceProfessionalDashboard: true,
-      skipProjectRestore: true
+    const dashboard = document.getElementById("professionalDashboard");
+    const projectStart = document.getElementById("projectStartScreen");
+    const projectHeader = document.getElementById("projectHeader");
+    const professionalSidebarMenu =
+      document.getElementById("professionalSidebarMenu");
+
+    // SHOW PROFESSIONAL DASHBOARD
+    if (dashboard) dashboard.style.display = "block";
+    if (projectStart) projectStart.style.display = "none";
+    if (professionalSidebarMenu) {
+      professionalSidebarMenu.style.display = "block";
+    }
+
+    // KEEP ACCOUNT SWITCHER VISIBLE
+    const userSelector = document.querySelector(".user-selector");
+    const headerActions = document.querySelector(".emf-topbar-actions");
+    const workspaceSelector = document.querySelector(".workspace-selector");
+
+    if (projectHeader) {
+      projectHeader.style.display = "";
+    }
+
+    // Move account controls into a standalone visible dashboard header.
+    let dashboardHeader = document.getElementById("professionalDashboardTopbar");
+
+    if (!dashboardHeader) {
+      dashboardHeader = document.createElement("div");
+      dashboardHeader.id = "professionalDashboardTopbar";
+      dashboardHeader.style.cssText =
+        "display:flex; align-items:center; justify-content:flex-end; " +
+        "gap:12px; width:100%; box-sizing:border-box; padding:12px 24px;";
+
+      const dashboardContainer = dashboard?.parentElement;
+
+      if (dashboardContainer) {
+        dashboardContainer.insertBefore(
+          dashboardHeader,
+          dashboardContainer.firstChild
+        );
+      }
+    }
+
+    if (headerActions && headerActions.parentElement !== dashboardHeader) {
+      dashboardHeader.appendChild(headerActions);
+    }
+
+    if (userSelector && userSelector.parentElement !== dashboardHeader) {
+      dashboardHeader.appendChild(userSelector);
+    }
+
+    // Hide project-specific workspace areas.
+    [
+      document.getElementById("homeFloorTabsBar"),
+      document.querySelector(".business-workspace-body"),
+      document.querySelector(".canvas-area"),
+      document.getElementById("businessWorkflowBar"),
+      document.querySelector(".workflow-bar"),
+      document.getElementById("businessProjectActions"),
+      document.getElementById("businessPlanActions"),
+      document.getElementById("businessOutputActions")
+    ].forEach(element => {
+      if (element) element.style.display = "none";
     });
+
+    // Hide only the Assessment Workspace and Sources sections.
+    // Hide project-specific sidebar sections on Professional Dashboard.
+    document.querySelectorAll("#panel .sidebar-section").forEach(section => {
+      const text = (section.innerText || "").trim();
+
+      if (
+        text.startsWith("Assessment Workspace") ||
+        text.startsWith("Sources") ||
+        text.startsWith("Output") ||
+        text.startsWith("DISCOVER YOUR ENVIRONMENT")
+      ) {
+        section.style.display = "none";
+      }
+    });
+
+    // Hide project workflow controls while keeping the account header visible.
+    [
+      document.getElementById("homeFloorTabsBar"),
+      document.querySelector(".workflow-bar"),
+      document.getElementById("businessWorkflowBar")
+    ].forEach(element => {
+      if (element) element.style.display = "none";
+    });
+
+    // Hide the sidebar link to the dashboard while already on it.
+    document.querySelectorAll(
+      "#panel button, #panel a, #panel [role='button']"
+    ).forEach(element => {
+      const text = (element.innerText || "").trim();
+
+      if (
+        text === "Professional Dashboard →" ||
+        text === "Professional Dashboard"
+      ) {
+        element.style.display = "none";
+      }
+    });
+    // Hide Sources button on Professional Dashboard
+    const sourcesButton = document.getElementById("btnAddSources");
+
+    if (sourcesButton) {
+      sourcesButton.style.display = "none";
+    }
+
+    // Hide Professional Dashboard button while dashboard is open
+    const dashboardNavButton = document.getElementById(
+      "btnOpenProfessionalDashboard"
+    );
+
+    if (dashboardNavButton) {
+      dashboardNavButton.style.display = "none";
+    }
+
+    // Hide project controls on Professional Dashboard
+    [
+      document.getElementById("businessProjectToggles"),
+      document.getElementById("businessFloorTabs")
+    ].forEach(element => {
+      if (element) {
+        element.style.display = "none";
+      }
+    });
+
+    // Hide the entire Business Floor Tabs container
+    const businessFloorTabs = document.getElementById("businessFloorTabs");
+
+    if (businessFloorTabs) {
+      businessFloorTabs.style.setProperty("display", "none", "important");
+    }
+
+    // Hide Business Floor Tabs Bar on Professional Dashboard
+    const floorTabsBar = document.getElementById("businessFloorTabsBar");
+
+    if (floorTabsBar) {
+      floorTabsBar.style.setProperty("display", "none", "important");
+    }
+
+
+    // Restore account controls to the main header
+    const dashboardTopbar =
+      document.getElementById("professionalDashboardTopbar");
+
+    const projectHeaderTop =
+      document.querySelector("#projectHeader .project-header-top");
+
+    if (dashboardTopbar && projectHeaderTop) {
+      const headerActions =
+        dashboardTopbar.querySelector(".emf-topbar-actions");
+
+      const userSelector =
+        dashboardTopbar.querySelector(".user-selector");
+
+      if (headerActions) {
+        projectHeaderTop.appendChild(headerActions);
+      }
+
+      if (userSelector) {
+        projectHeaderTop.appendChild(userSelector);
+      }
+
+      dashboardTopbar.remove();
+    }
+
+    const projectMeta =
+      document.querySelector("#projectHeader .project-meta");
+
+    if (projectMeta) {
+      projectMeta.style.setProperty("display", "none", "important");
+    }
+
+    // Hide room progress cards on Professional Dashboard
+    document.querySelectorAll(".room-progress-item").forEach(element => {
+      element.style.setProperty("display", "none", "important");
+    });
+
+    window.updateBusinessRecentProjects?.();
   }
+
+
 
 
   // Hide Demo Feedback in Professional Dashboard
@@ -45354,7 +47426,7 @@ z-index:2;
         ctx.restore();
       };
 
-    updateModeUI();
+    window.updateModeUI?.();
 
   };
 

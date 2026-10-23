@@ -2170,127 +2170,40 @@ function renderHomeCurrentFloorCard() {
             : "Setup required";
 
 
+    const setupHeaderCard = document.getElementById(
+        "homeAssessmentSetupHeaderCard"
+    );
+
+    const setupHeaderStatus = document.getElementById(
+        "homeAssessmentSetupHeaderStatus"
+    );
+
+    if (setupHeaderStatus) {
+        setupHeaderStatus.textContent = assessmentStatus;
+    }
+
+    console.log("[HOME ASSESSMENT HEADER UPDATE]", {
+        assessmentStatus,
+        headerStatusAfterUpdate: setupHeaderStatus?.textContent,
+        floorIndex,
+        floorName,
+        hasPlan,
+        lifestyleCount
+    });
+
+    if (setupHeaderCard) {
+        setupHeaderCard.classList.add(
+            "home-assessment-setup-visible"
+        );
+    }
+
+
     // ==================================================
     // RENDER
     // ==================================================
 
-    wrap.innerHTML = `
-
-        <div class="home-floor-card">
-
-            <div class="home-floor-card-header">
-
-                <div class="home-floor-card-title">
-                    ${floorName}
-                </div>
-
-                <div class="home-floor-card-context">
-                    Current Floor
-                </div>
-
-            </div>
-
-
-            <div class="home-floor-card-stats">
-
-
-                <!-- LIFESTYLE AREAS -->
-
-                <div class="home-floor-stat">
-
-                    <div class="home-floor-stat-icon lifestyle">
-                        🎯
-                    </div>
-
-                    <div class="home-floor-stat-content">
-
-                        <div class="home-floor-stat-label">
-                            Lifestyle Areas
-                        </div>
-
-                        <div class="home-floor-stat-value">
-                            ${lifestyleCount}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- INDOOR SOURCES -->
-
-                <div class="home-floor-stat">
-
-                    <div class="home-floor-stat-icon sources">
-                        📡
-                    </div>
-
-                    <div class="home-floor-stat-content">
-
-                        <div class="home-floor-stat-label">
-                            Indoor Sources
-                        </div>
-
-                        <div class="home-floor-stat-value">
-                            ${indoorSourceCount}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- LIFESTYLE FOCUS -->
-
-                <div class="home-floor-stat">
-
-                    <div class="home-floor-stat-icon focus">
-                        🛏
-                    </div>
-
-                    <div class="home-floor-stat-content">
-
-                        <div class="home-floor-stat-label">
-                            Lifestyle Focus
-                        </div>
-
-                        <div class="home-floor-stat-value">
-                            ${lifestyleFocusLabel}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- ASSESSMENT SETUP -->
-
-                <div class="home-floor-stat">
-
-                    <div class="home-floor-stat-icon setup">
-                        ✓
-                    </div>
-
-                    <div class="home-floor-stat-content">
-
-                        <div class="home-floor-stat-label">
-                            Assessment Setup
-                        </div>
-
-                        <div class="home-floor-stat-value">
-                            ${assessmentStatus}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-            </div>
-
-        </div>
-
-    `;
+    wrap.innerHTML = "";
+    wrap.style.display = "none";
 
 
     wrap.style.display =
@@ -2620,36 +2533,42 @@ window.updateBusinessEmptyPlanState =
 
 function renderHomeFloorTabs() {
 
-    // Home Demo must not show real Home floor controls
+
+    // Home Demo must not show real Home floor controls.
     if (
         window.EMFHomeDemo === true ||
         window.EMFWorkspaceExperience?.demoType === "home"
     ) {
-        const wrap = document.getElementById("homeFloorTabs");
+        [
+            "homeFloorHeaderDropdown",
+            "homeFloorTabs"
+        ].forEach(id => {
+            const el = document.getElementById(id);
 
-        if (wrap) {
-            wrap.innerHTML = "";
-            wrap.style.display = "none";
-        }
+            if (el) {
+                el.innerHTML = "";
+                el.style.display = "none";
+            }
+        });
 
         return;
     }
+
 
     renderHomeCurrentFloorCard?.();
 
+
     const wrap =
-        document.getElementById(
-            "homeFloorTabs"
-        );
+        document.getElementById("homeFloorHeaderDropdown") ||
+        document.getElementById("homeFloorTabs");
 
     if (!wrap) {
-
         console.warn(
-            "🏠 HOME FLOOR PANEL — WRAP NOT FOUND"
+            "🏠 HOME FLOOR PANEL — NO RENDER CONTAINER FOUND"
         );
-
         return;
     }
+
 
 
     // ==================================================
@@ -2695,24 +2614,6 @@ function renderHomeFloorTabs() {
             : 0;
 
 
-    // ==================================================
-    // PANEL TITLE
-    // ==================================================
-
-    const title =
-        document.createElement(
-            "div"
-        );
-
-    title.className =
-        "home-floors-panel-title";
-
-    title.textContent =
-        "FLOORS";
-
-    wrap.appendChild(
-        title
-    );
 
 
     // ==================================================
@@ -2976,99 +2877,37 @@ function renderHomeFloorTabs() {
             // ==================================================
             // CARD
             // ==================================================
-
             btn.innerHTML = `
 
-                <div class="home-floor-list-card">
+    <div class="home-floor-list-card home-floor-header-card">
 
-                    <div class="home-floor-list-main">
+        <div class="home-floor-list-main">
 
-                        <div class="home-floor-list-icon">
-                            ${icon}
-                        </div>
+            <div class="home-floor-list-icon">
+                ${icon}
+            </div>
 
+            <div class="home-floor-list-content">
 
-                        <div class="home-floor-list-content">
+                <div class="home-floor-list-header">
 
-                            <div class="home-floor-list-header">
-
-                                <div class="home-floor-list-name">
-                                    ${floorName}
-                                </div>
-
-                            </div>
-
-
-                            <div class="home-floor-list-info">
-
-                                <div>
-
-                                    <span
-                                        class="home-floor-info-icon"
-                                    >
-                                        🛏
-                                    </span>
-
-                                    Lifestyle Focus:
-                                    ${lifestyleFocusLabel}
-
-                                </div>
-
-
-                                <div>
-
-                                    <span
-                                        class="home-floor-info-icon"
-                                    >
-                                        ◉
-                                    </span>
-
-                                    Lifestyle Areas:
-                                    ${lifestyleCount}
-
-                                </div>
-
-
-                                <div>
-
-                                    <span
-                                        class="home-floor-info-icon"
-                                    >
-                                        📡
-                                    </span>
-
-                                    Indoor Sources:
-                                    ${indoorSourceCount}
-
-                                </div>
-
-
-                                <div>
-
-                                    <span
-                                        class="home-floor-info-icon"
-                                    >
-                                        ▣
-                                    </span>
-
-                                    ${updatedLabel}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="home-floor-list-chevron">
-                        ›
+                    <div class="home-floor-list-name">
+                        ${floorName}
                     </div>
 
                 </div>
 
-            `;
+            </div>
+
+        </div>
+
+        <div class="home-floor-list-chevron">
+            ›
+        </div>
+
+    </div>
+
+`;
 
 
             // ==================================================
@@ -3210,32 +3049,237 @@ function renderHomeFloorTabs() {
     wrap.style.display =
         "block";
 
-
-    console.log(
-        "🏠 HOME FLOOR PANEL RENDERED",
-        {
-            totalFloors:
-                floors.length,
-
-            currentFloorIndex,
-
-            visibleFloorCards:
-                Math.max(
-                    0,
-                    floors.length - 1
-                ),
-
-            addFloor:
-                true
-        }
-    );
 }
 
 window.renderHomeFloorTabs =
     renderHomeFloorTabs;
 
-window.renderBusinessFloorTabs =
-    renderBusinessFloorTabs;
+
+function renderBusinessFloorHeaderDropdown() {
+    const wrap = document.getElementById("businessFloorHeaderDropdown");
+    const project = window.AppState?.project;
+
+    if (!wrap || !project) return;
+
+    const floors = Array.isArray(project.floors) ? project.floors : [];
+    const activeIndex = Number.isInteger(project.currentFloorIndex)
+        ? project.currentFloorIndex
+        : 0;
+    const activeFloor = floors[activeIndex];
+
+    wrap.innerHTML = "";
+    wrap.style.display = "flex";
+    wrap.style.flexDirection = "column";
+    wrap.style.position = "relative";
+
+    const getStats = floor => {
+        const rooms = Array.isArray(floor?.rooms) ? floor.rooms : [];
+        const zones = Array.isArray(floor?.zones) ? floor.zones : [];
+
+        let totalPoints = 0;
+        let measuredPoints = 0;
+
+        rooms.forEach(room => {
+            const grid = Array.isArray(room?.grid) ? room.grid : [];
+            totalPoints += grid.length;
+            measuredPoints += grid.filter(point =>
+                point?.rf || point?.electric || point?.magnetic
+            ).length;
+        });
+
+        return {
+            rooms: rooms.length,
+            zones: zones.length,
+            coverage: totalPoints
+                ? Math.round(measuredPoints / totalPoints * 100)
+                : 0
+        };
+    };
+
+    const activeStats = getStats(activeFloor);
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "business-floor-trigger";
+    trigger.setAttribute("aria-haspopup", "true");
+    trigger.setAttribute("aria-expanded", "false");
+
+    trigger.innerHTML = `
+        <span class="business-floor-icon">🏢</span>
+        <span class="business-floor-trigger-copy">
+            <span class="business-floor-trigger-name"></span>
+            <span class="business-floor-trigger-meta"></span>
+        </span>
+        <span class="business-floor-trigger-arrow">▾</span>
+    `;
+
+    trigger.querySelector(".business-floor-trigger-name").textContent =
+        activeFloor?.name || "Main Floor";
+
+    trigger.querySelector(".business-floor-trigger-meta").textContent =
+        `${activeStats.rooms} rooms · ${activeStats.zones} zones · ${activeStats.coverage}% Grid`;
+
+    const menu = document.createElement("div");
+    menu.className = "business-floor-menu";
+    menu.hidden = true;
+
+    const closeMenu = () => {
+        menu.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+    };
+
+    trigger.addEventListener("click", event => {
+        event.stopPropagation();
+        menu.hidden = !menu.hidden;
+        trigger.setAttribute("aria-expanded", String(!menu.hidden));
+    });
+
+    floors.forEach((floor, index) => {
+        const stats = getStats(floor);
+
+        const item = document.createElement("div");
+        item.className = "business-floor-menu-item";
+
+        if (index === activeIndex) item.classList.add("active");
+
+        const selectButton = document.createElement("button");
+        selectButton.type = "button";
+        selectButton.className = "business-floor-menu-select";
+
+        const copy = document.createElement("span");
+        copy.className = "business-floor-menu-copy";
+
+        const name = document.createElement("span");
+        name.className = "business-floor-menu-name";
+        name.textContent = floor?.name || `Floor ${index + 1}`;
+
+        const meta = document.createElement("span");
+        meta.className = "business-floor-menu-meta";
+        meta.textContent =
+            `${stats.rooms} rooms · ${stats.zones} zones · ${stats.coverage}% Grid`;
+
+        copy.append(name, meta);
+        selectButton.appendChild(copy);
+
+        if (index === activeIndex) {
+            const check = document.createElement("span");
+            check.className = "business-floor-menu-check";
+            check.textContent = "✓";
+            selectButton.appendChild(check);
+        }
+
+        selectButton.addEventListener("click", event => {
+            event.stopPropagation();
+            closeMenu();
+
+            if (index !== Number(project.currentFloorIndex)) {
+                openFloor?.(index);
+            }
+
+            renderBusinessFloorHeaderDropdown();
+            renderBusinessFloorTabs?.();
+        });
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "floor-action-btn";
+        editButton.title = "Edit floor";
+        editButton.setAttribute("aria-label", "Edit floor");
+        editButton.textContent = "✎";
+
+        editButton.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const oldName = floor?.name || `Floor ${index + 1}`;
+
+            showRenameFloorModal(floor, oldName, newName => {
+                if (!newName) return;
+
+                floor.name = newName;
+                renderBusinessFloorHeaderDropdown();
+                renderBusinessFloorTabs?.();
+                updateProjectHeader?.();
+            });
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "floor-action-btn";
+        deleteButton.title = "Delete floor";
+        deleteButton.setAttribute("aria-label", "Delete floor");
+        deleteButton.textContent = "🗑";
+
+        deleteButton.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeMenu();
+
+            if (floors.length <= 1) {
+                showFloorRequiredAlert();
+                return;
+            }
+
+            const floorName = floor?.name || `Floor ${index + 1}`;
+
+            showDeleteFloorConfirm(floorName, () => {
+                floors.splice(index, 1);
+
+                let nextIndex = Number(project.currentFloorIndex) || 0;
+
+                if (index < nextIndex) nextIndex--;
+                else if (index === nextIndex) {
+                    nextIndex = Math.min(nextIndex, floors.length - 1);
+                }
+
+                nextIndex = Math.max(0, nextIndex);
+                project.currentFloorIndex = nextIndex;
+
+                openFloor?.(nextIndex);
+                renderBusinessFloorHeaderDropdown();
+                renderBusinessFloorTabs?.();
+                updateProjectHeader?.();
+                window.updateWorkflowUI?.();
+            });
+        });
+
+        item.append(selectButton, editButton, deleteButton);
+        menu.appendChild(item);
+    });
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "business-floor-add-button";
+    addButton.innerHTML = `<span aria-hidden="true">＋</span> Add Floor`;
+
+    addButton.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        closeMenu();
+        openNewFloorPopup?.();
+    });
+
+    wrap.append(trigger, menu, addButton);
+
+    if (!window.__businessFloorHeaderOutsideHandler) {
+        window.__businessFloorHeaderOutsideHandler = true;
+
+        document.addEventListener("click", event => {
+            const root = document.getElementById("businessFloorHeaderDropdown");
+
+            if (root && !root.contains(event.target)) {
+                const dropdownMenu = root.querySelector(".business-floor-menu");
+                const dropdownTrigger = root.querySelector(".business-floor-trigger");
+
+                if (dropdownMenu) dropdownMenu.hidden = true;
+                if (dropdownTrigger) {
+                    dropdownTrigger.setAttribute("aria-expanded", "false");
+                }
+            }
+        });
+    }
+}
+
 
 function renderBusinessFloorTabs() {
 
@@ -3249,6 +3293,15 @@ function renderBusinessFloorTabs() {
             "businessFloorTabs"
         );
 
+    const businessHeaderDropdown =
+        document.getElementById(
+            "businessFloorHeaderDropdown"
+        );
+
+
+    const floorContainer = businessTabs;
+
+
 
     // ==================================================
     // BUSINESS MODE VISIBILITY
@@ -3260,20 +3313,23 @@ function renderBusinessFloorTabs() {
             "none";
     }
 
-    if (!businessTabs) {
+    if (!floorContainer) {
 
         console.error(
-            "🔥 BUSINESS FLOOR TABS NOT FOUND"
+            "BUSINESS FLOOR CONTAINER NOT FOUND"
         );
 
         return;
     }
 
-    businessTabs.style.display =
-        "flex";
+    floorContainer.style.display = "flex";
+    floorContainer.innerHTML = "";
 
-    businessTabs.innerHTML =
-        "";
+    floorContainer.classList.add("business-floor-dropdown-root");
+
+    if (businessTabs) {
+        businessTabs.style.display = "none";
+    }
 
 
     // ==================================================
@@ -3282,6 +3338,8 @@ function renderBusinessFloorTabs() {
 
     const project =
         AppState?.project;
+
+    renderBusinessFloorHeaderDropdown();
 
     if (!project) {
 
@@ -3543,56 +3601,42 @@ function renderBusinessFloorTabs() {
                     <!-- FLOOR MAIN CONTENT -->
                     <!-- ============================== -->
 
-                    <div class="business-floor-main">
+                   <div class="business-floor-main">
 
+    <span class="business-floor-icon">🏢</span>
 
-                        <span class="business-floor-icon">
-                            🏢
-                        </span>
+    <span class="business-floor-name">
+        ${floor?.name || "Floor"}
+    </span>
 
+</div>
 
-                        <span class="business-floor-name">
-                            ${floor?.name || "Floor"}
-                        </span>
+<div class="business-floor-details">
 
+    <span class="business-floor-meta">
+        ${roomCount} room${roomCount !== 1 ? "s" : ""}
+        · ${progress}%
+    </span>
 
-                        <span class="business-floor-meta">
-                            ${roomCount}
-                            room${roomCount !== 1 ? "s" : ""}
-                            ·
-                            ${progress}%
-                        </span>
+    <div class="business-floor-actions">
 
+        <button
+            type="button"
+            class="floor-action-btn floor-rename-btn"
+            title="Rename floor"
+            aria-label="Rename floor"
+        >✎</button>
 
-                    </div>
+        <button
+            type="button"
+            class="floor-action-btn floor-delete-btn"
+            title="Delete floor"
+            aria-label="Delete floor"
+        >🗑</button>
 
+    </div>
 
-                    <!-- ============================== -->
-                    <!-- FLOOR ACTIONS -->
-                    <!-- ============================== -->
-
-                    <div class="business-floor-actions">
-
-
-                        <button
-                            type="button"
-                            class="floor-action-btn floor-rename-btn"
-                            title="Rename floor"
-                        >
-                            ✎
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="floor-action-btn floor-delete-btn"
-                            title="Delete floor"
-                        >
-                            🗑
-                        </button>
-
-
-                    </div>
+</div>
 
 
                 </div>
@@ -4054,7 +4098,7 @@ function renderBusinessFloorTabs() {
             // APPEND FLOOR
             // ==================================================
 
-            businessTabs.appendChild(
+            floorContainer.appendChild(
                 cardButton
             );
 
@@ -4119,7 +4163,7 @@ function renderBusinessFloorTabs() {
     );
 
 
-    businessTabs.appendChild(
+    floorContainer.appendChild(
         addBtn
     );
 
@@ -4151,6 +4195,288 @@ function renderBusinessFloorTabs() {
         }
     );
 }
+window.renderBusinessFloorTabs =
+    renderBusinessFloorTabs;
+
+function renderHomeFloorTabs() {
+
+    const wrap =
+        document.getElementById("homeFloorHeaderDropdown") ||
+        document.getElementById("homeFloorTabs");
+
+    if (!wrap) return;
+
+    if (
+        window.EMFHomeDemo === true ||
+        window.EMFWorkspaceExperience?.demoType === "home"
+    ) {
+        wrap.innerHTML = "";
+        wrap.style.display = "none";
+        return;
+    }
+
+    window.renderHomeCurrentFloorCard?.();
+
+
+    const project = window.AppState?.project;
+
+    if (!project) {
+        wrap.innerHTML = "";
+        wrap.style.display = "none";
+        return;
+    }
+
+    const floors = Array.isArray(project.floors)
+        ? project.floors
+        : [];
+
+    if (!floors.length) {
+        wrap.innerHTML = "";
+        wrap.style.display = "none";
+        return;
+    }
+
+    const activeIndex = Math.min(
+        Math.max(Number(project.currentFloorIndex) || 0, 0),
+        floors.length - 1
+    );
+
+    const getHomeStats = floor => {
+        const zones = Array.isArray(floor?.zones)
+            ? floor.zones
+            : [];
+
+        const sources = Array.isArray(floor?.sources)
+            ? floor.sources
+            : [];
+
+        const indoor = sources.filter(
+            source => source &&
+                source.placementType !== "outdoor"
+        ).length;
+
+        const outdoor = sources.filter(
+            source => source &&
+                source.placementType === "outdoor"
+        ).length;
+
+        return {
+            lifestyle: zones.length,
+            indoor,
+            outdoor
+        };
+    };
+
+    wrap.innerHTML = "";
+    wrap.style.display = "flex";
+    wrap.style.flexDirection = "column";
+    wrap.style.position = "relative";
+    wrap.classList.add("home-floor-dropdown-root");
+
+    const closeMenu = () => {
+        const menu = wrap.querySelector(".business-floor-menu");
+        const trigger = wrap.querySelector(".business-floor-trigger");
+
+        if (menu) menu.hidden = true;
+
+        if (trigger) {
+            trigger.setAttribute("aria-expanded", "false");
+        }
+    };
+
+    const activeFloor = floors[activeIndex];
+    const activeStats = getHomeStats(activeFloor);
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "business-floor-trigger";
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("aria-haspopup", "true");
+
+    trigger.innerHTML = `
+        <span class="business-floor-trigger-copy">
+            <span class="business-floor-trigger-name"></span>
+            <span class="business-floor-trigger-meta"></span>
+        </span>
+        <span class="business-floor-trigger-arrow" aria-hidden="true">▾</span>
+    `;
+
+    trigger.querySelector(".business-floor-trigger-name").textContent =
+        activeFloor?.name || "Main Floor";
+
+    trigger.querySelector(".business-floor-trigger-meta").textContent =
+        `${activeStats.lifestyle} Lifestyle · ${activeStats.indoor} Indoor · ${activeStats.outdoor} Outdoor`;
+
+    const menu = document.createElement("div");
+    menu.className = "business-floor-menu";
+    menu.hidden = true;
+
+    trigger.addEventListener("click", event => {
+        event.stopPropagation();
+
+        menu.hidden = !menu.hidden;
+        trigger.setAttribute("aria-expanded", String(!menu.hidden));
+    });
+
+    floors.forEach((floor, index) => {
+        const stats = getHomeStats(floor);
+
+        const item = document.createElement("div");
+        item.className = "business-floor-menu-item";
+
+        if (index === activeIndex) {
+            item.classList.add("active");
+        }
+
+        const selectButton = document.createElement("button");
+        selectButton.type = "button";
+        selectButton.className = "business-floor-menu-select";
+
+        const copy = document.createElement("span");
+        copy.className = "business-floor-menu-copy";
+
+        const name = document.createElement("span");
+        name.className = "business-floor-menu-name";
+        name.textContent = floor?.name || `Floor ${index + 1}`;
+
+        const meta = document.createElement("span");
+        meta.className = "business-floor-menu-meta";
+        meta.textContent =
+            `${stats.lifestyle} Lifestyle · ${stats.indoor} Indoor · ${stats.outdoor} Outdoor`;
+
+        copy.append(name, meta);
+        selectButton.appendChild(copy);
+
+        if (index === activeIndex) {
+            const check = document.createElement("span");
+            check.className = "business-floor-menu-check";
+            check.textContent = "✓";
+            selectButton.appendChild(check);
+        }
+
+
+        selectButton.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeMenu();
+
+            if (index !== Number(project.currentFloorIndex)) {
+                openFloor?.(index);
+            }
+
+            renderHomeFloorTabs();
+        });
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "floor-action-btn";
+        editButton.title = "Edit floor";
+        editButton.setAttribute("aria-label", "Edit floor");
+        editButton.textContent = "✎";
+
+        editButton.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const oldName = floor?.name || `Floor ${index + 1}`;
+
+            showRenameFloorModal(floor, oldName, newName => {
+                if (!newName) return;
+
+                floor.name = newName;
+                renderHomeFloorTabs();
+                updateProjectHeader?.();
+            });
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "floor-action-btn";
+        deleteButton.title = "Delete floor";
+        deleteButton.setAttribute("aria-label", "Delete floor");
+        deleteButton.textContent = "🗑";
+
+        deleteButton.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeMenu();
+
+            if (floors.length <= 1) {
+                showFloorRequiredAlert();
+                return;
+            }
+
+            const floorName = floor?.name || `Floor ${index + 1}`;
+
+            showDeleteFloorConfirm(floorName, () => {
+                floors.splice(index, 1);
+
+                let nextIndex =
+                    Number(project.currentFloorIndex) || 0;
+
+                if (index < nextIndex) {
+                    nextIndex--;
+                } else if (index === nextIndex) {
+                    nextIndex = Math.min(nextIndex, floors.length - 1);
+                }
+
+                nextIndex = Math.max(0, nextIndex);
+                project.currentFloorIndex = nextIndex;
+
+                openFloor?.(nextIndex);
+                renderHomeFloorTabs();
+                updateProjectHeader?.();
+                window.updateWorkflowUI?.();
+            });
+        });
+
+        item.append(selectButton, editButton, deleteButton);
+        menu.appendChild(item);
+
+    });
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "business-floor-add-button";
+    addButton.innerHTML = `<span aria-hidden="true">＋</span> Add Floor`;
+
+    addButton.addEventListener("click", event => {
+        event.stopPropagation();
+        closeMenu();
+        openNewFloorPopup?.();
+    });
+
+    wrap.append(trigger, menu, addButton);
+
+    if (!window.__homeFloorMenuOutsideHandler) {
+        window.__homeFloorMenuOutsideHandler = true;
+
+        document.addEventListener("click", event => {
+            document
+                .querySelectorAll("#homeFloorHeaderDropdown")
+                .forEach(root => {
+                    if (!root.contains(event.target)) {
+                        const dropdownMenu =
+                            root.querySelector(".business-floor-menu");
+
+                        const dropdownTrigger =
+                            root.querySelector(".business-floor-trigger");
+
+                        if (dropdownMenu) dropdownMenu.hidden = true;
+
+                        if (dropdownTrigger) {
+                            dropdownTrigger.setAttribute(
+                                "aria-expanded",
+                                "false"
+                            );
+                        }
+                    }
+                });
+        });
+    }
+}
+
+
 
 function showRenameFloorModal(
     floor,

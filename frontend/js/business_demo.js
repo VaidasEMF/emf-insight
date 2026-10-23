@@ -2820,6 +2820,15 @@ body.business-demo-active
         }
 
 
+        // HIDE WORKSPACE ACCESS SUMMARY DURING DEMO
+        const accessSummary = document.getElementById("workspaceAccessSummary");
+
+        if (accessSummary) {
+            accessSummary.dataset.demoPreviousDisplay = accessSummary.style.display;
+            accessSummary.style.display = "none";
+        }
+
+
         // =========================================================
         // HIDE REAL BUSINESS SIDEBAR ACTIONS
         // =========================================================
@@ -3505,29 +3514,70 @@ body.business-demo-active
         };
 
 
-    window.hideBusinessDemoWorkspace =
-        function () {
-            document.body.classList.remove(
-                "business-demo-active"
-            );
+    window.hideBusinessDemoWorkspace = function () {
+        document.body.classList.remove("business-demo-active");
 
-            const root =
-                document.getElementById(
-                    "businessDemoWorkspace"
-                );
+        const root = document.getElementById("businessDemoWorkspace");
+        if (root) {
+            root.style.display = "none";
+        }
 
-            if (root) {
-                root.style.display =
-                    "none";
+        // RESTORE ELEMENTS HIDDEN WHEN DEMO OPENED
+        const demoHideIds = [
+            "projectStartScreen",
+            "businessWorkflowSection",
+            "businessWorkflowBar",
+            "businessFloorTabs",
+            "businessPlanActions",
+            "businessProjectToggles",
+            "roomProgressTop",
+            "homeWorkflowBar",
+            "homeCurrentFloorCard",
+            "homeEmptyPlanState"
+        ];
+
+        demoHideIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.dataset.demoPreviousDisplay !== undefined) {
+                el.style.display = el.dataset.demoPreviousDisplay;
+                delete el.dataset.demoPreviousDisplay;
             }
+        });
 
-            // RESTORE MAIN CANVAS AREA AFTER BUSINESS DEMO
-            const canvasArea =
-                document.querySelector(".canvas-area");
+        // RESTORE REAL CANVAS
+        const canvasArea = document.querySelector(".canvas-area");
+        if (canvasArea && canvasArea.dataset.demoPreviousDisplay !== undefined) {
+            canvasArea.style.display = canvasArea.dataset.demoPreviousDisplay;
+            delete canvasArea.dataset.demoPreviousDisplay;
+        }
 
-            if (canvasArea) {
-                canvasArea.style.display = "";
+        // RESTORE BUSINESS-ONLY ELEMENTS
+        document.querySelectorAll(".business-only").forEach(el => {
+            if (el.id === "businessDemoWorkspace") return;
+
+            if (el.dataset.demoPreviousDisplay !== undefined) {
+                el.style.display = el.dataset.demoPreviousDisplay;
+                delete el.dataset.demoPreviousDisplay;
             }
-        };
+        });
+
+
+        const accessSummary = document.getElementById("workspaceAccessSummary");
+
+        if (accessSummary && accessSummary.dataset.demoPreviousDisplay !== undefined) {
+            accessSummary.style.display = accessSummary.dataset.demoPreviousDisplay;
+            delete accessSummary.dataset.demoPreviousDisplay;
+        }
+
+
+        const homeSidebar = document.getElementById("myWellnessSidebar");
+
+        if (homeSidebar && homeSidebar.dataset.demoPreviousDisplay !== undefined) {
+            homeSidebar.style.display = homeSidebar.dataset.demoPreviousDisplay;
+            delete homeSidebar.dataset.demoPreviousDisplay;
+        }
+
+    };
+
 
 })();

@@ -320,28 +320,6 @@ async function setAppMode(
     options = {}
 ) {
 
-    console.time("setAppMode TOTAL");
-
-    console.error("🚩 SET APP MODE ENTERED", {
-        mode,
-        options,
-        currentMode: window.AppMode?.current,
-        homeDemo: window.EMFHomeDemo,
-        stack: new Error().stack
-    });
-
-    console.log(
-        "🔥 SET APP MODE START",
-        {
-            requestedMode: mode,
-            currentMode: window.AppMode?.current,
-            workspaceMode:
-                localStorage.getItem("workspaceMode"),
-            experience:
-                resolveWorkspaceExperience(mode)
-        }
-    );
-
     const experience =
         resolveWorkspaceExperience(mode);
 
@@ -350,25 +328,6 @@ async function setAppMode(
 
     window.EMFWorkspaceExperience =
         experience;
-
-    console.log(
-        "[WORKSPACE EXPERIENCE]",
-        {
-            role:
-                window.EMFProductContext?.account?.role,
-            workspace: mode,
-            experience
-        }
-    );
-    console.log(
-        "================================="
-    );
-
-    console.log(
-        "🔥 SET APP MODE:",
-        mode
-    );
-
 
     // ==================================================
     // VALIDATE
@@ -450,16 +409,32 @@ async function setAppMode(
 
 
     // ==================================================
+
     // SET MODE
     // ==================================================
 
-    window.AppMode.current =
-        mode;
+    window.AppMode.current = mode;
 
-    localStorage.setItem(
-        "workspaceMode",
-        mode
-    );
+    const dashboardButton =
+        document.getElementById("btnOpenMyWellnessDashboard");
+
+    if (dashboardButton) {
+        const experience =
+            window.AppState?.workspaceExperience;
+
+        const isHomeDemo =
+            experience?.mode === "demo" &&
+            experience?.demoType === "home";
+
+        const shouldShow =
+            mode === "home" && !isHomeDemo;
+
+        dashboardButton.style.setProperty(
+            "display",
+            shouldShow ? "flex" : "none",
+            "important"
+        );
+    }
 
 
     // ==================================================
@@ -659,6 +634,7 @@ async function setAppMode(
     if (
         mode === "business" &&
         window.EMFProductContext?.account?.role === "professional" &&
+        !options.showProjectStart &&
         !options.skipProjectRestore &&
         !leavingHomeDemo &&
         !targetProjectId &&
@@ -895,6 +871,7 @@ async function setAppMode(
 
                 homeProject.propertyId =
                     AppState.property?.id ||
+                    homeProject.propertyId ||
                     null;
 
 
@@ -1636,26 +1613,19 @@ async function setAppMode(
                 time: new Date().toISOString()
             });
 
-            // ----------------------------------------------
-            // ROOM PROGRESS
-            // ----------------------------------------------
-
+            // CLEAR ALL PREVIOUS ROOM PROGRESS UI
             const roomProgressTop =
-                document.getElementById(
-                    "roomProgressTop"
-                );
+                document.getElementById("roomProgressTop");
 
-
-            if (
-                roomProgressTop
-            ) {
-
-                roomProgressTop.innerHTML =
-                    "";
-
-                roomProgressTop.style.display =
-                    "none";
+            if (roomProgressTop) {
+                roomProgressTop.replaceChildren();
+                roomProgressTop.style.setProperty("display", "none", "important");
             }
+
+            // Clear stale room cards from the previous project.
+            document.querySelectorAll(".room-progress-item").forEach(card => {
+                card.remove();
+            });
 
 
             // ----------------------------------------------
@@ -1950,23 +1920,14 @@ async function setAppMode(
         // FLOOR UI
         // ==================================================
 
-        if (
-            mode === "home"
-        ) {
-
+        if (mode === "home") {
             renderHomeFloorTabs?.();
-
-        }
-
-        else {
-
+            window.renderHomeCurrentFloorCard?.();
+        } else {
             renderBusinessFloorTabs?.();
         }
 
-
         renderFloorTabs?.();
-
-
 
         if (homeCheck) {
 
@@ -2176,6 +2137,13 @@ async function loadBusinessDemoExperience() {
 
     console.log("🏢 Loading Business Demo Experience");
 
+    // If demo data already exists, do not rebuild or switch workspace.
+    if (
+        AppState.businessDemoProject &&
+        AppState.businessDemoAnalysis
+    ) {
+        return;
+    }
 
     // ========================================================
     // DEMO PROJECT
@@ -3094,6 +3062,15 @@ async function loadBusinessDemoExperience() {
 
     document.body.classList.remove("home-demo-active");
     document.body.classList.add("business-demo-active");
+
+
+
+    const homeSidebar = document.getElementById("myWellnessSidebar");
+
+    if (homeSidebar) {
+        homeSidebar.dataset.demoPreviousDisplay = homeSidebar.style.display;
+        homeSidebar.style.display = "none";
+    }
 
     window.EMFWorkspaceExperience = {
 
@@ -4183,24 +4160,105 @@ function updateWorkspaceUI(options = {}) {
         "home";
 
 
+    // ==================================================
+    // WORKSPACE SWITCHER — VISIBILITY + ACTIVE STATE
+    // ==================================================
+
+    const experience =
+        window.EMFWorkspaceExperience || {};
+
+    const role =
+        window.EMFProductContext?.account?.role || "user";
+
+    const isProfessionalHomeDemo =
+        mode === "home" &&
+        experience.mode === "demo" &&
+        experience.demoType === "home" &&
+        role === "professional";
+
+    const isBusinessMode =
+        mode === "business" || isProfessionalHomeDemo;
+
     const homeButton =
         document.getElementById("workspaceHomeButton");
 
     const businessButton =
         document.getElementById("workspaceBusinessButton");
 
-    if (homeButton) {
-        const active = mode === "home";
-        homeButton.classList.toggle("active", active);
-        homeButton.setAttribute("aria-pressed", String(active));
+    const homeWellnessButton =
+        document.getElementById("workspaceHomeWellnessButton");
+
+    const professionalDemoButton =
+        document.getElementById("workspaceProfessionalDemoButton");
+
+    // --------------------------------------------------
+    // VISIBILITY
+    // Home: Home Wellness + Explore Professional Assessments
+    // Business: Professional Survey + Explore Home Wellness
+    // --------------------------------------------------
+
+    if (homeWellnessButton) {
+        homeWellnessButton.style.display =
+            isBusinessMode ? "none" : "";
+    }
+
+    if (professionalDemoButton) {
+        professionalDemoButton.style.display =
+            isBusinessMode ? "none" : "";
     }
 
     if (businessButton) {
+        businessButton.style.display =
+            isBusinessMode ? "" : "none";
+    }
+
+    if (homeButton) {
+        homeButton.style.display =
+            isBusinessMode ? "" : "none";
+    }
+
+    // --------------------------------------------------
+    // ACTIVE STATE
+    // --------------------------------------------------
+
+    // Professional Survey: active only in Business mode.
+    if (businessButton) {
         const active = mode === "business";
+
         businessButton.classList.toggle("active", active);
         businessButton.setAttribute("aria-pressed", String(active));
     }
 
+    // Explore Home Wellness DEMO: active only while its
+    // Home DEMO is open for a professional.
+    if (homeButton) {
+        homeButton.classList.toggle("active", isProfessionalHomeDemo);
+        homeButton.setAttribute(
+            "aria-pressed",
+            String(isProfessionalHomeDemo)
+        );
+    }
+
+    // Home Wellness — active only when explicitly selected
+    if (homeWellnessButton) {
+        const active =
+            mode === "home" &&
+            !isProfessionalHomeDemo &&
+            window.EMFHomeEntrySelected !== "professional-demo";
+
+        homeWellnessButton.classList.toggle("active", active);
+        homeWellnessButton.setAttribute("aria-pressed", String(active));
+    }
+
+    // Explore Professional Assessments DEMO — active when selected
+    if (professionalDemoButton) {
+        const active =
+            mode === "home" &&
+            window.EMFHomeEntrySelected === "professional-demo";
+
+        professionalDemoButton.classList.toggle("active", active);
+        professionalDemoButton.setAttribute("aria-pressed", String(active));
+    }
 
     // ==================================================
     // CONTEXTUAL RETURN ACTION
@@ -4212,11 +4270,6 @@ function updateWorkspaceUI(options = {}) {
     const returnLabel =
         document.getElementById("contextualReturnLabel");
 
-    const experience =
-        window.EMFWorkspaceExperience || {};
-
-    const role =
-        window.EMFProductContext?.account?.role || "user";
 
     const isHome =
         mode === "home";
@@ -4347,14 +4400,14 @@ function updateWorkspaceUI(options = {}) {
         projectStartTitle.textContent =
             mode === "home"
                 ? "My Home"
-                : "Business Survey";
+                : "Professional Property Survey";
     }
 
     if (projectStartSubtitle) {
         projectStartSubtitle.textContent =
             mode === "home"
                 ? "Create your home environment profile or open an existing property."
-                : "Start a professional property assessment or open an existing project.";
+                : "Assess property environments, document EMF measurements, identify exposure concerns, and deliver professional reports to your clients.";
     }
 
 
@@ -4585,27 +4638,6 @@ function updateWorkspaceUI(options = {}) {
         mode === "home" &&
         window.myWellnessDashboardOpen === true;
 
-
-    console.log("MY WELLNESS DASHBOARD CHECK", {
-        mode,
-        hasActiveProject,
-        activeProjectId:
-            activeProject?.project_id ??
-            activeProject?.id ??
-            null,
-        dashboardRequested:
-            window.myWellnessDashboardOpen === true,
-        showMyWellnessDashboard
-    });
-
-    console.log("DASHBOARD DISPLAY DECISION", {
-        mode,
-        hasActiveProject,
-        dashboardOpen: window.myWellnessDashboardOpen,
-        showMyWellnessDashboard,
-        willShow: showMyWellnessDashboard ? "block" : "none"
-    });
-
     if (myWellnessDashboard) {
         const startScreenIsVisible =
             mode === "home" &&
@@ -4656,9 +4688,6 @@ function updateWorkspaceUI(options = {}) {
     }
 
 
-
-
-
     // MY_WELLNESS_DASHBOARD_LAYOUT_FIX
     const projectHeader = document.getElementById("projectHeader");
     const homeFloorTabsBar = document.getElementById("homeFloorTabsBar");
@@ -4697,20 +4726,31 @@ function updateWorkspaceUI(options = {}) {
         options.forceProfessionalDashboard === true &&
         role === "professional";
 
-
     const showProfessionalDashboard =
         mode === "business" &&
         role === "professional" &&
-        (
-            forceProfessionalDashboard ||
-            (
-                !hasActiveProject &&
-                options.showProjectStart !== true &&
-                sessionStorage.getItem("professionalDashboardRequested") === "true"
-            )
-        ) &&
+        forceProfessionalDashboard &&
         !isBusinessDemo &&
         !isProfessionalAssessmentView;
+
+
+    // BUSINESS HEADER META — hide when no Business project is open
+    const businessHeaderMeta = document.querySelector(
+        "#projectHeader > .project-meta"
+    );
+
+    if (businessHeaderMeta) {
+
+        if (mode === "business" && !hasActiveProject) {
+            businessHeaderMeta.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+        } else {
+            businessHeaderMeta.style.removeProperty("display");
+        }
+    }
 
 
     // PROFESSIONAL DASHBOARD
@@ -4719,6 +4759,22 @@ function updateWorkspaceUI(options = {}) {
             showProfessionalDashboard ? "block" : "none";
     }
 
+    document.body.classList.toggle(
+        "professional-dashboard-open",
+        showProfessionalDashboard
+    );
+
+
+    const businessFloorHeaderControl =
+        document.getElementById("businessFloorHeaderControl");
+
+    if (businessFloorHeaderControl) {
+        businessFloorHeaderControl.style.setProperty(
+            "display",
+            showProfessionalDashboard ? "none" : "flex",
+            "important"
+        );
+    }
 
     // PROFESSIONAL SIDEBAR MENU VISIBILITY
     const professionalSidebarMenu =
@@ -4832,32 +4888,14 @@ function updateWorkspaceUI(options = {}) {
         document.querySelector("#projectHeader .project-meta");
 
     if (projectMeta) {
+        const hideBusinessMeta =
+            mode === "business" && !hasActiveProject;
+
         projectMeta.style.display =
-            showProfessionalDashboard ? "none" : "";
+            (showProfessionalDashboard || hideBusinessMeta)
+                ? "none"
+                : "";
     }
-
-    console.error(
-        "🔥 WORKSPACE UI STATE",
-        {
-            mode,
-            hasActiveProject,
-
-            projectId:
-                activeProject
-                    ?.project_id ??
-                activeProject
-                    ?.id ??
-                null,
-
-            projectType:
-                activeProject
-                    ?.projectType ??
-                activeProject
-                    ?.type ??
-                null
-        }
-    );
-
 
     // ==================================================
     // HEADER TITLE
@@ -4962,13 +5000,6 @@ function updateWorkspaceUI(options = {}) {
             "workspaceLabel"
         );
 
-
-    console.error(
-        "WORKSPACE LABEL UPDATE",
-        mode
-    );
-
-
     if (
         workspaceLabel
     ) {
@@ -4978,12 +5009,6 @@ function updateWorkspaceUI(options = {}) {
                 ? "🏠 Home Wellness"
                 : "🏢 Business Survey";
 
-
-        console.error(
-            "LABEL AFTER SET",
-            workspaceLabel.innerText,
-            AppMode.current
-        );
     }
 
 
@@ -5004,8 +5029,14 @@ function updateWorkspaceUI(options = {}) {
                 return;
             }
 
+            const experience = window.AppState?.workspaceExperience;
+
+            const isHomeDemo =
+                experience?.mode === "demo" &&
+                experience?.demoType === "home";
+
             el.style.display =
-                mode === "home"
+                mode === "home" && !isHomeDemo
                     ? "block"
                     : "none";
         });
@@ -5593,6 +5624,35 @@ function updateWorkspaceUI(options = {}) {
     }
 
     updateProfessionalContactsMenu();
+
+    document.documentElement.classList.add(
+        "workspace-mode-ready"
+    );
+
+
+    // Hide project information row when no Business project is open
+    // or in Explore Professional Assessments DEMO.
+    const professionalDemoActive =
+        window.EMFHomeEntrySelected === "professional-demo";
+
+    const finalBusinessMeta =
+        document.querySelector("#projectHeader > .project-meta");
+
+    if (finalBusinessMeta) {
+        const hideMeta =
+            professionalDemoActive ||
+            (mode === "business" && !hasActiveProject);
+
+        if (hideMeta) {
+            finalBusinessMeta.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+        } else {
+            finalBusinessMeta.style.removeProperty("display");
+        }
+    }
 }
 
 
@@ -5782,23 +5842,66 @@ async function openHomeNewProjectStart() {
 window.openHomeNewProjectStart = openHomeNewProjectStart;
 
 
+
 async function openMyWellnessDashboard() {
-    window.myWellnessDashboardOpen = true;
+    const experience = window.AppState?.workspaceExperience;
+
+    // Home Demo mode must not open the personal dashboard.
+    if (
+        experience?.mode === "demo" &&
+        experience?.demoType === "home"
+    ) {
+        const button = document.getElementById(
+            "btnOpenMyWellnessDashboard"
+        );
+
+        if (button) {
+            button.style.display = "none";
+        }
+
+        return;
+    }
+
+    // Ensure Home Wellness mode is active.
     if (window.AppMode?.current !== "home") {
         await window.setAppMode("home");
     }
 
-    const dashboard =
-        document.getElementById("myWellnessDashboard");
+    window.myWellnessDashboardOpen = true;
 
-    const startScreen =
-        document.getElementById("projectStartScreen");
+    // Restore My Wellness Dashboard navigation outside Professional Demo.
+    const dashboardButton =
+        document.getElementById("btnOpenMyWellnessDashboard");
 
-    const homeSidebar =
-        document.getElementById("panel");
+    if (dashboardButton) {
+        dashboardButton.style.display = "";
+    }
 
-    const myWellnessSidebar =
-        document.getElementById("myWellnessSidebar");
+    // Hide the Professional Preview / demo workspace in My Wellness Dashboard.
+    const homeDemoWorkspace =
+        document.getElementById("homeDemoWorkspace");
+
+    if (homeDemoWorkspace) {
+        homeDemoWorkspace.style.display = "none";
+    }
+
+    // Hide the Professional Preview banner in My Wellness Dashboard.
+    document.querySelectorAll(".hd-demo-banner").forEach(banner => {
+        banner.style.display = "none";
+    });
+
+    const dashboard = document.getElementById("myWellnessDashboard");
+    const startScreen = document.getElementById("projectStartScreen");
+    const projectHeader = document.getElementById("projectHeader");
+    const projectMeta = document.querySelector(
+        "#projectHeader .project-meta"
+    );
+    const projectTitle = document.getElementById("projectWorkspaceTitle");
+    const homeFloorTabs = document.getElementById("homeFloorTabsBar");
+    const canvasArea = document.querySelector(".canvas-area");
+    const businessBody = document.querySelector(".business-workspace-body");
+    const homeSidebar = document.getElementById("panel");
+    const wellnessSidebar = document.getElementById("myWellnessSidebar");
 
     if (dashboard) {
         dashboard.hidden = false;
@@ -5806,77 +5909,55 @@ async function openMyWellnessDashboard() {
     }
 
     if (startScreen) {
+        startScreen.hidden = false;
         startScreen.style.display = "none";
     }
-
-
-
-    const projectHeader =
-        document.getElementById("projectHeader");
-
-    const homeFloorTabsBar =
-        document.getElementById("homeFloorTabsBar");
-
-    const businessWorkspaceBody =
-        document.querySelector(".business-workspace-body");
 
     if (projectHeader) {
         projectHeader.style.display = "";
     }
 
-    const projectMeta =
-        document.querySelector("#projectHeader .project-meta");
-
     if (projectMeta) {
         projectMeta.style.display = "none";
     }
 
-    const projectWorkspaceTitle =
-        document.getElementById("projectWorkspaceTitle");
-
-    if (projectWorkspaceTitle) {
-        projectWorkspaceTitle.textContent = "My Wellness Dashboard";
+    if (projectTitle) {
+        projectTitle.textContent = "My Wellness Dashboard";
     }
 
-    if (homeFloorTabsBar) {
-        homeFloorTabsBar.style.display = "none";
+    if (homeFloorTabs) {
+        homeFloorTabs.style.display = "none";
     }
-
-    const canvasArea =
-        document.querySelector(".canvas-area");
 
     if (canvasArea) {
         canvasArea.style.display = "none";
     }
 
-    if (businessWorkspaceBody) {
-        businessWorkspaceBody.style.display = "none";
+    if (businessBody) {
+        businessBody.style.display = "none";
     }
-
 
     if (homeSidebar) {
-        homeSidebar.classList.add(
-            "my-wellness-sidebar-hidden"
+        homeSidebar.classList.add("my-wellness-sidebar-hidden");
+    }
+
+    if (wellnessSidebar) {
+        wellnessSidebar.classList.add("is-visible");
+    }
+
+    document.querySelectorAll("[data-home-nav]").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.homeNav === "home"
         );
-    }
-
-    if (myWellnessSidebar) {
-        myWellnessSidebar.classList.add("is-visible");
-    }
-
-    document
-        .querySelectorAll("[data-home-nav]")
-        .forEach(button => {
-            button.classList.toggle(
-                "active",
-                button.dataset.homeNav === "home"
-            );
-        });
+    });
 
     if (typeof window.loadHomeWellnessRecentProjects === "function") {
         await window.loadHomeWellnessRecentProjects();
     }
 }
+
+window.openMyWellnessDashboard = openMyWellnessDashboard;
 
 
 
@@ -6266,6 +6347,12 @@ function updateWellnessCard() {
 
 function openPropertyHealthRecord() {
 
+    // Open the Property Health Dashboard directly.
+    if (typeof window.openPropertyHealthDashboard === "function") {
+        window.openPropertyHealthDashboard();
+        return;
+    }
+
     const modal =
         document.getElementById(
             "propertyHealthRecordModal"
@@ -6278,10 +6365,15 @@ function openPropertyHealthRecord() {
         return;
     }
 
+    const state = window.AppState || {};
+
     const property =
-        window.AppState?.property ||
-        window.AppState?.homeProject ||
-        window.AppState?.project ||
+        (
+            window.AppMode?.current === "home"
+                ? state.homeProject || state.project
+                : state.project || state.homeProject
+        ) ||
+        state.property ||
         {};
 
     const rawPropertyName =
@@ -6389,16 +6481,28 @@ function openPropertyHealthRecord() {
     }
 
 
+
+    // --------------------------------------------------------
+    // PROPERTY ID — PHI-PRP-XXXXXXXX
+    // --------------------------------------------------------
+
     const propertyIdElement =
-        document.getElementById(
-            "propertyHealthRecordId"
-        );
+        document.getElementById("propertyHealthRecordId");
+
+    const phiPropertyId =
+        property.propertyId ||
+        property.id ||
+        window.AppState?.homeProject?.propertyId ||
+        window.AppState?.project?.propertyId ||
+        window.AppState?.property?.id ||
+        "";
 
     if (propertyIdElement) {
-
         propertyIdElement.textContent =
-            property.id ||
-            "—";
+            typeof phiPropertyId === "string" &&
+                phiPropertyId.startsWith("PHI-PRP-")
+                ? phiPropertyId
+                : "Not assigned";
     }
 
 
@@ -6765,11 +6869,33 @@ function openPropertyHealthRecord() {
     // OPEN
     // --------------------------------------------------------
 
+    // --------------------------------------------------------
+    // OPEN
+    // --------------------------------------------------------
+
     modal.classList.add("active");
 
     document.body.classList.add(
         "property-health-record-open"
     );
+
+    // Activate Property Health Record in the Wellness sidebar.
+    document.querySelectorAll("[data-home-nav]").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.homeNav === "property-record"
+        );
+    });
+
+    console.log(
+        "[PHR ACTIVE CHECK]",
+        [...document.querySelectorAll("[data-home-nav]")].map(button => ({
+            nav: button.dataset.homeNav,
+            active: button.classList.contains("active")
+        }))
+    );
+
+
 }
 
 
@@ -6791,6 +6917,19 @@ function closePropertyHealthRecord() {
     document.body.classList.remove(
         "property-health-record-open"
     );
+
+    // Restore the correct sidebar item based on the current screen.
+    const phrOpen =
+        document.body.classList.contains("property-health-record-open");
+    // Do not force Home active when opening the Property Health Dashboard.
+    if (!document.getElementById("propertyHealthDashboardView")?.checkVisibility()) {
+        document.querySelectorAll("[data-home-nav]").forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.homeNav === "home"
+            );
+        });
+    }
 }
 
 // ============================================================
@@ -6862,16 +7001,6 @@ function populatePropertyHealthDashboard() {
             floors.length;
     }
 
-    const propertyIdElement =
-        document.getElementById(
-            "dashboardPropertyId"
-        );
-
-    if (propertyIdElement) {
-        propertyIdElement.textContent =
-            property.id ||
-            "—";
-    }
 
 
     // --------------------------------------------------------
@@ -7214,13 +7343,19 @@ function openPropertyHealthDashboard() {
 
 
     /*
-     * ----------------------------------------------------
-     * SHOW PROPERTY HEALTH DASHBOARD
-     * ----------------------------------------------------
-     */
+ * SHOW PROPERTY HEALTH DASHBOARD
+ */
 
-    view.style.display =
-        "block";
+    const wellnessDashboard =
+        document.getElementById("myWellnessDashboard");
+
+    if (wellnessDashboard) {
+        wellnessDashboard.style.display = "none";
+        wellnessDashboard.hidden = true;
+    }
+
+    view.hidden = false;
+    view.style.display = "block";
 
 
     /*
@@ -7261,6 +7396,134 @@ function openPropertyHealthDashboard() {
      * SCROLL TO DASHBOARD
      * ----------------------------------------------------
      */
+
+    view.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+function openPropertyHealthDashboard() {
+    const view = document.getElementById(
+        "propertyHealthDashboardView"
+    );
+
+    if (!view) {
+        console.warn(
+            "Property Health Dashboard view not found."
+        );
+        return;
+    }
+
+    // ----------------------------------------------------
+    // CLOSE PROPERTY HEALTH RECORD POPUP
+    // ----------------------------------------------------
+
+    if (typeof closePropertyHealthRecord === "function") {
+        closePropertyHealthRecord();
+    }
+
+    // ----------------------------------------------------
+    // POPULATE DASHBOARD
+    // ----------------------------------------------------
+
+    if (typeof populatePropertyHealthDashboard === "function") {
+        populatePropertyHealthDashboard();
+    }
+
+    // ----------------------------------------------------
+    // HIDE MY WELLNESS DASHBOARD
+    // ----------------------------------------------------
+
+    const wellnessDashboard = document.getElementById(
+        "myWellnessDashboard"
+    );
+
+    if (wellnessDashboard) {
+        wellnessDashboard.hidden = true;
+        wellnessDashboard.style.display = "none";
+    }
+
+    // ----------------------------------------------------
+    // HIDE NORMAL HOME WORKSPACE ELEMENTS
+    // SAVE THEIR PREVIOUS DISPLAY STATE
+    // ----------------------------------------------------
+
+    const elementsToHide = [
+        document.getElementById("homeWorkflowBar"),
+        document.getElementById("homeCurrentFloorCard"),
+        document.getElementById("homeEmptyPlanState"),
+        document.querySelector(".canvas-area")
+    ];
+
+    elementsToHide.forEach(element => {
+        if (!element) {
+            return;
+        }
+
+        if (
+            element.dataset.dashboardPreviousDisplay ===
+            undefined
+        ) {
+            element.dataset.dashboardPreviousDisplay =
+                element.style.display;
+        }
+
+        element.style.display = "none";
+    });
+
+    // ----------------------------------------------------
+    // SHOW PROPERTY HEALTH DASHBOARD
+    // ----------------------------------------------------
+
+    view.hidden = false;
+    view.style.display = "block";
+
+    // ----------------------------------------------------
+    // UPDATE PROPERTY TITLE
+    // ----------------------------------------------------
+
+    const property =
+        window.AppState?.property ||
+        window.AppState?.homeProject ||
+        window.AppState?.project ||
+        {};
+
+    const title = document.getElementById(
+        "propertyHealthDashboardViewTitle"
+    );
+
+    if (title) {
+        title.textContent =
+            property.name ||
+            window.homeProjectDisplayName ||
+            "My Property";
+    }
+
+    const subtitle = document.getElementById(
+        "propertyHealthDashboardViewSubtitle"
+    );
+
+    if (subtitle) {
+        subtitle.textContent =
+            "Your property's personal health record";
+    }
+
+    // ----------------------------------------------------
+    // UPDATE MAIN WORKSPACE HEADER
+    // ----------------------------------------------------
+
+    const projectTitle = document.getElementById(
+        "projectWorkspaceTitle"
+    );
+
+    if (projectTitle) {
+        projectTitle.textContent = "Property Health Record";
+    }
+
+    // ----------------------------------------------------
+    // SCROLL TO DASHBOARD
+    // ----------------------------------------------------
 
     view.scrollIntoView({
         behavior: "smooth",
@@ -7360,6 +7623,7 @@ function closePropertyHealthDashboard() {
         }
     );
 }
+
 
 
 // ============================================================
@@ -7712,6 +7976,109 @@ window.loadBusinessDemoExperience =
 
 
 
+window.openProfessionalAssessmentsDemo = async function () {
+    if (typeof window.loadHomeDemoExperience !== "function") {
+        console.warn("loadHomeDemoExperience() is not available.");
+        return;
+    }
+
+    window.EMFHomeEntrySelected = "professional-demo";
+
+    await window.loadHomeDemoExperience();
+
+    // Hide My Wellness Dashboard navigation in Professional Demo.
+    const dashboardButton =
+        document.getElementById("btnOpenMyWellnessDashboard");
+
+    if (dashboardButton) {
+        dashboardButton.style.display = "none";
+    }
+
+    const homeDemoWorkspace =
+        document.getElementById("homeDemoWorkspace");
+
+    if (homeDemoWorkspace) {
+        homeDemoWorkspace.style.display = "";
+    }
+
+    // Show the Professional Preview banner in demo mode.
+    document.querySelectorAll(".hd-demo-banner").forEach(banner => {
+        banner.style.display = "";
+    });
+
+
+    // Refresh workspace button visibility after the mode switch.
+    if (typeof window.updateWorkspaceUI === "function") {
+        window.updateWorkspaceUI();
+    }
+
+    // Restore the standard Home workspace navigation in Professional Demo.
+    const wellnessSidebar =
+        document.getElementById("myWellnessSidebar");
+
+    const homeSidebar =
+        document.getElementById("panel");
+
+    const projectHeader =
+        document.getElementById("projectHeader");
+
+    if (wellnessSidebar) {
+        wellnessSidebar.classList.remove("is-visible");
+    }
+
+    if (homeSidebar) {
+        homeSidebar.classList.remove("my-wellness-sidebar-hidden");
+        homeSidebar.style.display = "";
+    }
+
+    if (projectHeader) {
+        projectHeader.style.display = "";
+    }
+
+    // Keep My Wellness Dashboard button hidden in Professional Demo.
+    if (
+        window.EMFHomeDemo === true &&
+        window.EMFHomeEntrySelected === "professional-demo"
+    ) {
+        const dashboardButton =
+            document.getElementById("btnOpenMyWellnessDashboard");
+
+        if (dashboardButton) {
+            dashboardButton.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+        }
+    }
+
+    // Apply the correct active state after the workspace UI refresh.
+    document.getElementById("workspaceProfessionalDemoButton")
+        ?.classList.add("active");
+
+    document.getElementById("workspaceProfessionalDemoButton")
+        ?.setAttribute("aria-pressed", "true");
+
+    document.getElementById("workspaceHomeWellnessButton")
+        ?.classList.remove("active");
+
+    document.getElementById("workspaceHomeWellnessButton")
+        ?.setAttribute("aria-pressed", "false");
+
+    document.getElementById("workspaceBusinessButton")
+        ?.classList.remove("active");
+
+    document.getElementById("workspaceBusinessButton")
+        ?.setAttribute("aria-pressed", "false");
+
+    document.getElementById("workspaceHomeButton")
+        ?.classList.remove("active");
+
+    document.getElementById("workspaceHomeButton")
+        ?.setAttribute("aria-pressed", "false");
+};
+
+
 // MY_WELLNESS_NAV_HOME_HANDLER
 window.openMyWellnessDashboard = openMyWellnessDashboard;
 
@@ -7738,6 +8105,10 @@ if (document.readyState === "loading") {
 // ==================================================
 
 window.returnToHomeWorkspace = async function () {
+    window.EMFHomeEntrySelected = "home-wellness";
+
+    // Leaving Professional Demo: restore normal Home floor controls.
+    window.EMFHomeDemo = false;
 
     const homeProject =
         window.AppState?.homeProject ||
@@ -7747,67 +8118,16 @@ window.returnToHomeWorkspace = async function () {
                 : null
         );
 
-    // NO ACTIVE PROJECT → show Home start screen.
-    if (!homeProject) {
-        window.myWellnessDashboardOpen = false;
-
-        window.AppState.homeProject = null;
-        window.AppState.project = null;
-        window.project = null;
-        window.currentProjectId = null;
-
-        await openHomeWorkspaceStart();
-
-        // Enforce the intended start-screen state.
-        const dashboard =
-            document.getElementById("myWellnessDashboard");
-
-        const startScreen =
-            document.getElementById("projectStartScreen");
-
-        const workspaceBody =
-            document.querySelector(".business-workspace-body");
-
-        const canvasArea =
-            document.querySelector(".canvas-area");
-
-        if (dashboard) {
-            dashboard.style.display = "none";
-            dashboard.hidden = true;
-        }
-
-        if (startScreen) {
-            startScreen.style.display = "flex";
-            startScreen.hidden = false;
-        }
-        if (workspaceBody) {
-            workspaceBody.style.display = "flex";
-        }
-
-        if (canvasArea) {
-            canvasArea.style.display = "none";
-        }
-
-        window.updateProjectHeader?.();
-
-        // Re-enforce after UI refresh.
-        if (dashboard) {
-            dashboard.style.display = "none";
-            dashboard.hidden = true;
-        }
-
-        if (startScreen) {
-            startScreen.style.display = "flex";
-            startScreen.hidden = false;
-        }
-
-        return;
+    // Close PHR overlays before restoring the Home workspace.
+    if (typeof window.closePropertyHealthRecord === "function") {
+        window.closePropertyHealthRecord();
     }
 
-    // ACTIVE PROJECT → restore the existing Home project.
-    window.myWellnessDashboardOpen = false;
+    if (typeof window.closePropertyHealthDashboard === "function") {
+        window.closePropertyHealthDashboard();
+    }
 
-    await window.setAppMode("home");
+    window.myWellnessDashboardOpen = false;
 
     const dashboard =
         document.getElementById("myWellnessDashboard");
@@ -7821,6 +8141,46 @@ window.returnToHomeWorkspace = async function () {
     const canvasArea =
         document.querySelector(".canvas-area");
 
+    // Hide My Wellness Dashboard.
+    if (dashboard) {
+        dashboard.style.display = "none";
+        dashboard.hidden = true;
+    }
+
+    if (!homeProject) {
+        // No active project: return to the Home start screen.
+        window.AppState.homeProject = null;
+        window.AppState.project = null;
+        window.project = null;
+        window.currentProjectId = null;
+
+        await openHomeWorkspaceStart();
+
+        if (dashboard) {
+            dashboard.style.display = "none";
+            dashboard.hidden = true;
+        }
+
+        if (startScreen) {
+            startScreen.style.display = "flex";
+            startScreen.hidden = false;
+        }
+
+        if (workspaceBody) {
+            workspaceBody.style.display = "flex";
+        }
+
+        if (canvasArea) {
+            canvasArea.style.display = "none";
+        }
+
+        window.updateProjectHeader?.();
+        return;
+    }
+
+    // Active project: restore the existing Home project.
+    await window.setAppMode("home");
+
     if (dashboard) {
         dashboard.style.display = "none";
         dashboard.hidden = true;
@@ -7828,6 +8188,7 @@ window.returnToHomeWorkspace = async function () {
 
     if (startScreen) {
         startScreen.style.display = "none";
+        startScreen.hidden = false;
     }
 
     if (workspaceBody) {
@@ -7838,12 +8199,24 @@ window.returnToHomeWorkspace = async function () {
         canvasArea.style.display = "";
     }
 
+    // Refresh Home workspace UI.
     window.updateProjectHeader?.();
     window.updateWorkspaceUI?.();
 
-    // Keep Dashboard hidden after UI refresh.
+    window.renderHomeFloorTabs?.();
+    window.renderHomeCurrentFloorCard?.();
+
+    // Keep the Dashboard hidden after UI refresh.
     if (dashboard) {
         dashboard.style.display = "none";
         dashboard.hidden = true;
     }
+    // Refresh Home Assessment only when Home workspace is active.
+    requestAnimationFrame(() => {
+        if (window.AppMode?.current !== "home") {
+            return;
+        }
+
+        window.renderHomeCurrentFloorCard?.();
+    });
 };

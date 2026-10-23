@@ -2955,7 +2955,6 @@ function renameProjectFromList(projectId) {
                         }
                     );
 
-
                 if (!response.ok) {
 
                     let message =
@@ -2999,48 +2998,33 @@ function renameProjectFromList(projectId) {
                 }
 
 
+
                 // ==================================================
                 // UPDATE ACTIVE PROJECT
                 // ==================================================
 
-                if (
-                    AppState?.project &&
-                    String(
-                        AppState.project.id
-                    ) ===
-                    String(projectId)
-                ) {
+                const targetProjectId = String(projectId);
 
-                    AppState.project.name =
-                        newName;
+                const matchesProject = (project) =>
+                    project &&
+                    String(
+                        project.id ??
+                        project.project_id ??
+                        project.projectId ??
+                        ""
+                    ) === targetProjectId;
+
+                if (matchesProject(AppState?.project)) {
+                    AppState.project.name = newName;
                 }
 
-
-                if (
-                    AppState?.homeProject &&
-                    String(
-                        AppState.homeProject.id
-                    ) ===
-                    String(projectId)
-                ) {
-
-                    AppState.homeProject.name =
-                        newName;
+                if (matchesProject(AppState?.homeProject)) {
+                    AppState.homeProject.name = newName;
                 }
 
-
-                if (
-                    AppState?.businessProject &&
-                    String(
-                        AppState.businessProject.id
-                    ) ===
-                    String(projectId)
-                ) {
-
-                    AppState.businessProject.name =
-                        newName;
+                if (matchesProject(AppState?.businessProject)) {
+                    AppState.businessProject.name = newName;
                 }
-
 
                 // ==================================================
                 // REFRESH UI
@@ -3225,38 +3209,38 @@ else {
 // UPDATE HOME PROJECT DISPLAY NAME
 // =====================================================
 
+
 function updateHomeProjectDisplayName() {
+    const displayName = document.getElementById(
+        "homeProjectDisplayName"
+    );
 
-    const displayName =
-        document.getElementById(
-            "homeProjectDisplayName"
-        );
+    if (!displayName) return;
 
-    if (!displayName) {
-        return;
-    }
-
+    const mode = window.AppMode?.current || "home";
 
     const projectName =
-        AppState?.project?.name ||
-        AppState?.homeProject?.name ||
-        "";
+        mode === "business"
+            ? (
+                AppState?.businessProject?.name ||
+                AppState?.project?.name ||
+                AppState?.project?.project_name ||
+                ""
+            )
+            : (
+                AppState?.homeProject?.name ||
+                AppState?.project?.name ||
+                AppState?.project?.project_name ||
+                ""
+            );
 
+    const cleanName = String(projectName).trim();
 
-    const cleanName =
-        String(projectName)
-            .trim();
-
-
-    displayName.textContent =
-        cleanName;
-
-
-    displayName.style.display =
-        cleanName
-            ? "inline-flex"
-            : "none";
+    displayName.textContent = cleanName;
+    displayName.title = cleanName;
+    displayName.style.display = cleanName ? "inline-flex" : "none";
 }
+
 
 // =====================================================
 // CLOSE RENAME PROJECT POPUP
@@ -6538,10 +6522,15 @@ async function loadProject(
                 window.AppState?.property
             ) {
 
+
                 AppState.property.id =
                     project.propertyId ||
                     AppState.property.id ||
+                    window.PhiIdFactory?.createPropertyId?.() ||
                     null;
+
+                project.propertyId =
+                    AppState.property.id;
 
                 AppState.property.propertyHealthRecordId =
                     project.propertyHealthRecordId ||
