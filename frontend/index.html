@@ -5396,6 +5396,196 @@
     }
 
 
+    /* ==================================================
+   EXPLORE WORKSPACE MENU
+   Compact selector inspired by the reference
+   ================================================== */
+
+    #projectHeader .workspace-explore {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      font-family: inherit;
+    }
+
+    /* Main Explore button */
+    #projectHeader #workspaceExploreButton {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 12px;
+      border: 1px solid #dce4ef;
+      border-radius: 10px;
+      background: #fff;
+      color: #24334a;
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    #projectHeader #workspaceExploreButton:hover {
+      background: #f8faff;
+      border-color: #c8d6e9;
+    }
+
+    /* Dropdown panel */
+    #projectHeader .workspace-explore-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 100000;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      width: 250px;
+      min-width: 250px;
+      padding: 7px;
+      border: 1px solid #e1e7f0;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(25, 42, 70, 0.16);
+      box-sizing: border-box;
+    }
+
+    #projectHeader .workspace-explore-menu[hidden] {
+      display: none !important;
+    }
+
+    /* Dropdown options */
+    #projectHeader .workspace-explore-menu button {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #334155;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 550;
+      line-height: 1.3;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    #projectHeader .workspace-explore-menu button:hover {
+      background: #f1f5fb;
+    }
+
+    /* Small screens */
+    @media (max-width: 700px) {
+      #projectHeader .workspace-explore-menu {
+        left: auto;
+        right: 0;
+        width: 240px;
+        min-width: 240px;
+      }
+    }
+
+
+
+
+    /* Explore button content */
+    #projectHeader #workspaceExploreButton {
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 12px;
+    }
+
+    #projectHeader .explore-eye {
+      font-size: 17px;
+      color: #64748b;
+      line-height: 1;
+    }
+
+    #projectHeader .explore-chevron {
+      margin-left: 2px;
+      color: #2563eb;
+      font-size: 15px;
+    }
+
+    /* DEMO badge */
+    #projectHeader .explore-demo-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      padding: 3px 7px;
+      border-radius: 6px;
+      background: #ffedd5;
+      color: #ea580c;
+      font-size: 9px;
+      font-weight: 750;
+      line-height: 1.2;
+      letter-spacing: 0.2px;
+    }
+
+    /* Dropdown options */
+    #projectHeader .workspace-explore-menu button {
+      gap: 9px;
+      min-height: 42px;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    #projectHeader .explore-option-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 20px;
+      font-size: 16px;
+    }
+
+    #projectHeader .explore-option-label {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    #projectHeader .explore-active-check {
+      flex: 0 0 auto;
+      color: #2563eb;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+
+
+    #projectHeader .workspace-explore-menu button.active {
+      background: #eaf2ff;
+      color: #1d4ed8;
+    }
+
+    #projectHeader .workspace-explore-menu button.active .explore-active-check {
+      display: inline-flex;
+      color: #2563eb;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    #projectHeader .workspace-explore-menu button .explore-active-check[hidden] {
+      display: none !important;
+    }
+
+
+    #projectHeader #workspaceExploreButton.active {
+      background: #eaf2ff;
+      border-color: #93b4f5;
+      color: #1d4ed8;
+    }
+
+
     /* =========================================================
    HEADER TOP ROW — SINGLE SOURCE OF TRUTH
    ========================================================= */
@@ -5543,13 +5733,7 @@
       min-width: 0;
     }
 
-    #projectHeader .project-header-top .workspace-selector-direct #workspaceHomeButton {
-      margin-left: 220px;
-    }
 
-    #projectHeader .project-header-top .workspace-selector-direct #workspaceBusinessButton {
-      margin-left: 0;
-    }
 
     #projectHeader .emf-topbar-actions {
       margin-left: 12px;
@@ -25737,9 +25921,10 @@
     /* Details panel opens below the summary without changing header height */
 
     #workspaceAccessPanel {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
+      position: fixed;
+      top: 70px;
+      right: auto;
+      left: auto;
       z-index: 100000;
       width: min(620px, calc(100vw - 32px));
       padding: 18px;
@@ -25867,18 +26052,22 @@
       cursor: pointer;
     }
 
-    .workspace-access-open-business {
-      background: #1765ed;
-      border-color: #1765ed;
-      color: #fff;
-    }
-
-    .workspace-access-open-home:hover {
+    .workspace-access-open-home:hover,
+    .workspace-access-open-business:hover {
       background: #f0f6ff;
     }
 
-    .workspace-access-open-business:hover {
-      background: #1057d5;
+    .workspace-access-open-home.is-current,
+    .workspace-access-open-business.is-current {
+      background: #eef4ff;
+      border-color: #dbe7ff;
+      color: #1d4ed8;
+      cursor: default;
+    }
+
+    .workspace-access-open-home.is-current:hover,
+    .workspace-access-open-business.is-current:hover {
+      background: #eef4ff;
     }
 
     /* Keep the header usable on narrower screens */
@@ -25899,8 +26088,8 @@
     }
 
     @media (max-width: 1000px) {
-      #workspaceAccessSummary {
-        display: none;
+      #projectHeader .project-header-top>#workspaceAccessSummary {
+        display: flex !important;
       }
     }
 
@@ -26098,20 +26287,7 @@
     }
 
 
-    /* Access summary belongs to the second header row */
-    #projectHeader .project-meta>#workspaceAccessSummary {
-      order: 5;
-      display: flex !important;
-      align-items: center;
-      flex: 0 0 390px;
-      width: 390px;
-      min-width: 390px;
-      max-width: 390px;
-      margin-left: auto !important;
-      margin-right: 0;
-      padding: 5px 7px;
-      box-sizing: border-box;
-    }
+
 
 
     /* Help, notifications, account */
@@ -26916,6 +27092,85 @@
       color: #1e293b;
       font-size: 11px;
       white-space: nowrap;
+    }
+
+
+    .account-type-dropdown-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    .workspace-account-type-button {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .workspace-account-type-button .workspace-access-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .workspace-account-type-chevron {
+      margin-left: 2px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .workspace-account-type-menu {
+      position: absolute;
+      top: calc(100% + 12px);
+      left: -10px;
+      z-index: 3000;
+      width: 220px;
+      padding: 7px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+    }
+
+    .workspace-account-type-option {
+      display: grid;
+      grid-template-columns: 22px 1fr 18px;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 11px 10px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #334155;
+      font: inherit;
+      font-size: 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .workspace-account-type-option:hover {
+      background: #f1f5f9;
+    }
+
+    .workspace-account-type-option.active {
+      background: #eaf2ff;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    .workspace-account-type-check {
+      visibility: hidden;
+    }
+
+    .workspace-account-type-option.active .workspace-account-type-check {
+      visibility: visible;
     }
   </style>
 
@@ -28774,53 +29029,152 @@ return false;
               </div>
 
               <!-- ==========================================
-       BUSINESS MODE BUTTONS
-       ========================================== -->
-
-              <!-- PRIMARY: Professional Survey -->
+     PRIMARY: Professional Survey
+========================================== -->
               <button id="workspaceBusinessButton" class="workspace-switcher workspace-mode-btn business-mode-switcher"
-                type="button" onclick="setAppMode?.('business')" aria-label="Switch to Professional Survey">
+                type="button" onclick="
+        window.EMFExploreSelection = null;
+        window.EMFHomeDemo = false;
+        window.EMFBusinessDemo = false;
 
+        document.body.classList.remove(
+            'home-demo-active',
+            'business-demo-active'
+        );
+
+        window.EMFWorkspaceExperience = {
+            mode: 'real',
+            demoType: null
+        };
+
+        window.WorkspaceAccess = window.WorkspaceAccess || {};
+        window.WorkspaceAccess.mode = 'business';
+
+        updateExploreMenuActiveState();
+       setAppMode?.('business', {
+    showProjectStart: true,
+    forceReal: true
+});
+
+    " aria-label="Switch to Professional Survey" aria-pressed="false">
                 <img class="workspace-mode-icon" src="assets/business/professional_survey_icon.png" alt=""
                   aria-hidden="true">
-
                 <span>Professional Survey</span>
               </button>
 
-              <!-- DEMO: Explore Home Wellness -->
-              <button id="workspaceHomeButton" class="workspace-switcher workspace-mode-btn business-mode-switcher"
-                type="button" onclick="returnToHomeWorkspace()" aria-label="Explore Home Wellness Demo">
-
-                <img class="workspace-mode-icon" src="assets/home/explore_home_wellness_icon.png" alt=""
-                  aria-hidden="true">
-
-                <span>Explore Home Wellness</span>
-                <span class="workspace-demo-badge">DEMO</span>
-              </button>
 
               <!-- ==========================================
        HOME MODE BUTTONS
        ========================================== -->
 
+
               <!-- PRIMARY: Home Wellness -->
               <button id="workspaceHomeWellnessButton" class="workspace-switcher workspace-mode-btn home-mode-switcher"
-                type="button" onclick="returnToHomeWorkspace()" aria-label="Home Wellness">
-
+                type="button" onclick="returnToHomeWorkspace()" aria-label="Home Wellness" aria-pressed="false">
                 <img class="workspace-mode-icon" src="assets/home/home_wellness_icon.png" alt="" aria-hidden="true">
-
                 <span>Home Wellness</span>
               </button>
 
-              <!-- DEMO: Explore Professional Assessments -->
-              <button id="workspaceProfessionalDemoButton"
-                class="workspace-switcher workspace-mode-btn home-mode-switcher" type="button"
-                onclick="openProfessionalAssessmentsDemo()" aria-label="Explore Professional Mode Demo">
 
-                <img class="workspace-mode-icon" src="assets/business/explore_professional_assessments_icon.png" alt=""
-                  aria-hidden="true">
 
-                <span>Explore Professional Assessments</span>
-                <span class="workspace-demo-badge">DEMO</span>
+
+              <div class="workspace-explore">
+                <button id="workspaceExploreButton" type="button" aria-expanded="false"
+                  aria-controls="workspaceExploreMenu" onclick="toggleWorkspaceExploreMenu()">
+                  <span class="explore-eye" aria-hidden="true">◉</span>
+                  <span id="workspaceExploreLabel">Explore</span>
+                  <span class="explore-demo-badge">DEMO</span>
+                  <span class="explore-chevron" aria-hidden="true">⌄</span>
+                </button>
+
+                <div id="workspaceExploreMenu" class="workspace-explore-menu" hidden>
+                  <button id="exploreHomeDemoButton" type="button" onclick="selectExploreDemo('home')">
+                    <span class="explore-option-icon" aria-hidden="true">🏠</span>
+                    <span class="explore-option-label">Explore Home Wellness</span>
+                    <span class="explore-demo-badge">DEMO</span>
+                    <span class="explore-active-check" hidden>✓</span>
+                  </button>
+
+                  <button id="exploreBusinessDemoButton" type="button" onclick="selectExploreDemo('business')">
+                    <span class="explore-option-icon" aria-hidden="true">🏢</span>
+                    <span class="explore-option-label">Explore Business Survey</span>
+                    <span class="explore-demo-badge">DEMO</span>
+                    <span class="explore-active-check" hidden>✓</span>
+                  </button>
+                </div>
+              </div>
+
+
+
+            </div>
+
+
+            <!-- ACCOUNT TYPE / CURRENT MODE / ACCESS -->
+            <div id="workspaceAccessSummary" class="workspace-access-summary">
+
+              <div class="workspace-access-item account-type-dropdown-wrap">
+                <button id="workspaceAccountTypeButton" class="workspace-account-type-button" type="button"
+                  aria-expanded="false" aria-controls="workspaceAccountTypeMenu"
+                  onclick="toggleWorkspaceAccountTypeMenu()">
+                  <span class="workspace-access-icon" aria-hidden="true">👤</span>
+
+                  <span class="workspace-access-text">
+                    <strong id="workspaceAccountType">Professional</strong>
+                    <span>Account type</span>
+                  </span>
+
+                  <span class="workspace-account-type-chevron" aria-hidden="true">⌄</span>
+                </button>
+
+                <div id="workspaceAccountTypeMenu" class="workspace-account-type-menu" role="menu"
+                  aria-labelledby="workspaceAccountTypeButton" style="display:none;">
+                  <button type="button" class="workspace-account-type-option" data-account-type="professional"
+                    role="menuitem" onclick="selectWorkspaceAccountType('professional')">
+                    <span aria-hidden="true">🏢</span>
+                    <span>Professional</span>
+                    <span class="workspace-account-type-check" aria-hidden="true">✓</span>
+                  </button>
+
+                  <button type="button" class="workspace-account-type-option" data-account-type="user" role="menuitem"
+                    onclick="selectWorkspaceAccountType('user')">
+                    <span aria-hidden="true">🏠</span>
+                    <span>Home User</span>
+                    <span class="workspace-account-type-check" aria-hidden="true">✓</span>
+                  </button>
+
+                  <button type="button" class="workspace-account-type-option" data-account-type="admin" role="menuitem"
+                    onclick="selectWorkspaceAccountType('admin')">
+                    <span aria-hidden="true">👤</span>
+                    <span>Admin</span>
+                    <span class="workspace-account-type-check" aria-hidden="true">✓</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="workspace-access-divider"></div>
+
+              <div class="workspace-access-item">
+                <span id="workspaceCurrentModeIcon" class="workspace-access-icon">🏢</span>
+                <div class="workspace-access-text">
+                  <strong id="workspaceCurrentMode">Business Survey</strong>
+                  <span>Current mode</span>
+                </div>
+              </div>
+
+              <div class="workspace-access-divider"></div>
+
+              <div class="workspace-access-item workspace-access-status">
+                <span id="workspaceAccessBadge" class="workspace-access-badge">
+                  Checking…
+                </span>
+                <span class="workspace-access-caption">Access</span>
+              </div>
+
+              <button id="workspaceAccessInfoButton" class="workspace-access-info-button" type="button"
+                aria-label="View access and plans" aria-expanded="false" aria-controls="workspaceAccessPanel"
+                onclick="toggleWorkspaceAccessPanel()">
+                <span aria-hidden="true">ⓘ</span>
+                <span id="workspaceAccessChevron" aria-hidden="true">⌃</span>
               </button>
 
             </div>
@@ -29396,44 +29750,7 @@ return false;
             </div>
 
 
-            <!-- ACCOUNT TYPE / CURRENT MODE / ACCESS -->
-            <div id="workspaceAccessSummary" class="workspace-access-summary">
 
-              <div class="workspace-access-item">
-                <span class="workspace-access-icon">👤</span>
-                <div class="workspace-access-text">
-                  <strong id="workspaceAccountType">Professional</strong>
-                  <span>Account type</span>
-                </div>
-              </div>
-
-              <div class="workspace-access-divider"></div>
-
-              <div class="workspace-access-item">
-                <span id="workspaceCurrentModeIcon" class="workspace-access-icon">🏢</span>
-                <div class="workspace-access-text">
-                  <strong id="workspaceCurrentMode">Business Survey</strong>
-                  <span>Current mode</span>
-                </div>
-              </div>
-
-              <div class="workspace-access-divider"></div>
-
-              <div class="workspace-access-item workspace-access-status">
-                <span id="workspaceAccessBadge" class="workspace-access-badge">
-                  Checking…
-                </span>
-                <span class="workspace-access-caption">Access</span>
-              </div>
-
-              <button id="workspaceAccessInfoButton" class="workspace-access-info-button" type="button"
-                aria-label="View access and plans" aria-expanded="false" aria-controls="workspaceAccessPanel"
-                onclick="toggleWorkspaceAccessPanel()">
-                <span aria-hidden="true">ⓘ</span>
-                <span id="workspaceAccessChevron" aria-hidden="true">⌃</span>
-              </button>
-
-            </div>
 
             <!-- ACCESS AND PLANS PANEL -->
             <div id="workspaceAccessPanel" class="workspace-access-panel" style="display:none;"
@@ -29473,7 +29790,7 @@ return false;
                     <strong id="homeWellnessReports">—</strong>
                   </div>
 
-                  <button type="button" class="workspace-access-open-home" onclick="returnToHomeWorkspace()">
+                  <button type="button" class="workspace-access-open-home" onclick="openRealHomeWorkspace()">
                     Open Home Wellness <span aria-hidden="true">→</span>
                   </button>
                 </section>
@@ -36927,7 +37244,7 @@ return false;
 
                                     title="Delete Room"
                                 >
-                                    🗑
+                                    🗑
                                 </span>
 
                             </div>
@@ -38023,6 +38340,139 @@ return false;
     button.setAttribute("aria-expanded", "false");
   }
 
+  function toggleWorkspaceExploreMenu() {
+    const menu = document.getElementById("workspaceExploreMenu");
+    const button = document.getElementById("workspaceExploreButton");
+
+    if (!menu || !button) {
+      return;
+    }
+
+    const isOpen = menu.hidden;
+
+    menu.hidden = !isOpen;
+    button.setAttribute("aria-expanded", String(isOpen));
+  }
+
+
+
+  function updateExploreMenuActiveState() {
+    const selected = window.EMFExploreSelection;
+
+    const items = [
+      {
+        mode: "home",
+        button: document.getElementById("exploreHomeDemoButton"),
+        label: "Explore Home Wellness"
+      },
+      {
+        mode: "business",
+        button: document.getElementById("exploreBusinessDemoButton"),
+        label: "Explore Business Survey"
+      }
+    ];
+
+    const label = document.getElementById("workspaceExploreLabel");
+
+    const exploreButton =
+      document.getElementById("workspaceExploreButton");
+
+    if (exploreButton) {
+      exploreButton.classList.toggle(
+        "active",
+        selected === "home" || selected === "business"
+      );
+    }
+
+    if (label) {
+      label.textContent =
+        items.find(item => item.mode === selected)?.label || "Explore";
+    }
+
+    items.forEach(item => {
+      if (!item.button) return;
+
+      const active = item.mode === selected;
+      item.button.classList.toggle("active", active);
+      item.button.setAttribute("aria-pressed", String(active));
+
+      const check = item.button.querySelector(".explore-active-check");
+      if (check) check.hidden = !active;
+    });
+  }
+
+  function closeWorkspaceDropdowns(except = null) {
+    const exploreMenu = document.getElementById("workspaceExploreMenu");
+    const exploreButton = document.getElementById("workspaceExploreButton");
+    const accountMenu = document.getElementById("workspaceAccountTypeMenu");
+    const accountButton = document.getElementById("workspaceAccountTypeButton");
+
+    if (except !== "explore") {
+      if (exploreMenu) exploreMenu.hidden = true;
+      if (exploreButton) exploreButton.setAttribute("aria-expanded", "false");
+    }
+
+    if (except !== "account") {
+      if (accountMenu) accountMenu.style.display = "none";
+      if (accountButton) accountButton.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  function toggleWorkspaceExploreMenu() {
+    const menu = document.getElementById("workspaceExploreMenu");
+    const button = document.getElementById("workspaceExploreButton");
+
+    if (!menu || !button) return;
+
+    const opening = menu.hidden;
+
+    closeWorkspaceDropdowns(opening ? "explore" : null);
+
+    if (opening) updateExploreMenuActiveState();
+
+    menu.hidden = !opening;
+    button.setAttribute("aria-expanded", String(opening));
+  }
+
+
+
+  async function selectExploreDemo(mode) {
+    if (mode !== "home" && mode !== "business") return;
+
+    const menu = document.getElementById("workspaceExploreMenu");
+    const button = document.getElementById("workspaceExploreButton");
+
+    // Close dropdown.
+    if (menu) menu.hidden = true;
+    if (button) button.setAttribute("aria-expanded", "false");
+    if (mode === "home") {
+      window.EMFExploreSelection = "home";
+
+      // Explicitly select Home Demo before loading it.
+      window.EMFHomeEntrySelected = "home-demo";
+      window.EMFWorkspaceExperience = {
+        mode: "demo",
+        demoType: "home"
+      };
+
+      await window.loadHomeDemoExperience?.();
+    } else {
+      window.EMFExploreSelection = "business";
+
+      // Set the Business Demo experience before loading the workspace.
+      window.EMFWorkspaceExperience = {
+        mode: "demo",
+        demoType: "business"
+      };
+
+      await window.loadBusinessDemoExperience?.();
+    }
+
+    updateExploreMenuActiveState();
+  }
+
+
+
 
   function toggleWorkspaceAccessPanel() {
     const panel = document.getElementById("workspaceAccessPanel");
@@ -38035,13 +38485,104 @@ return false;
 
     const isOpen = panel.style.display === "block";
 
-    panel.style.display = isOpen ? "none" : "block";
-    button.setAttribute("aria-expanded", String(!isOpen));
+    if (isOpen) {
+      panel.style.display = "none";
+      button.setAttribute("aria-expanded", "false");
+
+      if (chevron) {
+        chevron.textContent = "⌃";
+      }
+
+      return;
+    }
+
+    const rect = button.getBoundingClientRect();
+    const panelWidth = Math.min(620, window.innerWidth - 32);
+
+    let left = rect.right - panelWidth;
+
+    left = Math.max(
+      16,
+      Math.min(left, window.innerWidth - panelWidth - 16)
+    );
+
+    panel.style.left = `${left}px`;
+    panel.style.right = "auto";
+    panel.style.top = `${rect.bottom + 8}px`;
+    panel.style.display = "block";
+
+    button.setAttribute("aria-expanded", "true");
 
     if (chevron) {
-      chevron.textContent = isOpen ? "⌃" : "⌄";
+      chevron.textContent = "⌄";
+    }
+
+    if (typeof updateWorkspaceAccessPanel === "function") {
+      updateWorkspaceAccessPanel();
     }
   }
+
+
+  // ==================================================
+  // UPDATE YOUR ACCESS AND PLANS — ACTIVE WORKSPACE
+  // ==================================================
+
+  window.updateWorkspaceAccessActiveState = function () {
+    const mode = window.AppMode?.current;
+
+    const homeButton = document.querySelector(
+      ".workspace-access-open-home"
+    );
+
+    const businessButton = document.querySelector(
+      ".workspace-access-open-business"
+    );
+
+    if (!homeButton || !businessButton) {
+      return;
+    }
+
+    const isHome = mode === "home";
+    const isBusiness = mode === "business";
+
+    homeButton.classList.toggle("is-current", isHome);
+    businessButton.classList.toggle("is-current", isBusiness);
+
+    homeButton.innerHTML = isHome
+      ? 'Current workspace <span aria-hidden="true">✓</span>'
+      : 'Open Home Wellness <span aria-hidden="true">→</span>';
+
+    businessButton.innerHTML = isBusiness
+      ? 'Current workspace <span aria-hidden="true">✓</span>'
+      : 'Open Business Survey <span aria-hidden="true">→</span>';
+
+    homeButton.disabled = isHome;
+    businessButton.disabled = isBusiness;
+
+    homeButton.setAttribute("aria-pressed", String(isHome));
+    businessButton.setAttribute("aria-pressed", String(isBusiness));
+  };
+
+
+  // UPDATE WORKSPACE ACCESS BADGE
+  window.updateWorkspaceAccessBadge = function () {
+    const badge = document.getElementById("workspaceAccessBadge");
+    if (!badge) return;
+
+    const mode = window.AppMode?.current;
+    const experience = window.AppState?.workspaceExperience;
+
+    if (mode !== "home" && mode !== "business") {
+      badge.textContent = "Checking…";
+      return;
+    }
+
+    if (experience?.mode === "demo") {
+      badge.textContent = "Demo";
+    } else {
+      badge.textContent = "Active";
+    }
+  };
 
 
   // Close access panel when clicking outside it
@@ -40257,8 +40798,84 @@ return false;
     }
 
   }
+  function toggleWorkspaceAccountTypeMenu() {
+    const menu = document.getElementById("workspaceAccountTypeMenu");
+    const button = document.getElementById("workspaceAccountTypeButton");
 
+    if (!menu || !button) return;
 
+    const opening = menu.style.display === "none";
+
+    closeWorkspaceDropdowns(opening ? "account" : null);
+
+    menu.style.display = opening ? "block" : "none";
+    button.setAttribute("aria-expanded", String(opening));
+  }
+
+  function updateWorkspaceAccountTypeMenu() {
+    const role = window.EMFProductContext?.account?.role;
+
+    const labels = {
+      professional: "Professional",
+      user: "Home User",
+      admin: "Admin"
+    };
+
+    const label = labels[role] || "Home User";
+    const heading = document.getElementById("workspaceAccountType");
+
+    if (heading) {
+      heading.textContent = label;
+    }
+
+    document.querySelectorAll(
+      "#workspaceAccountTypeMenu .workspace-account-type-option"
+    ).forEach(option => {
+      const active = option.dataset.accountType === role;
+
+      option.classList.toggle("active", active);
+      option.setAttribute("aria-current", active ? "true" : "false");
+    });
+  }
+
+  document.addEventListener("click", function (event) {
+    const explore = document.querySelector(".workspace-explore");
+    const account = document.querySelector(".account-type-dropdown-wrap");
+
+    if (explore?.contains(event.target) || account?.contains(event.target)) {
+      return;
+    }
+
+    closeWorkspaceDropdowns();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeWorkspaceDropdowns();
+    }
+  });
+
+  function selectWorkspaceAccountType(role) {
+    const currentRole = window.EMFProductContext?.account?.role;
+
+    if (role !== currentRole) {
+      // UI pasirinkimas negali suteikti kitų serverio teisių.
+      console.info(
+        "Account type changes require an authorized account switch.",
+        { currentRole, requestedRole: role }
+      );
+
+      return;
+    }
+
+    updateWorkspaceAccountTypeMenu();
+
+    const menu = document.getElementById("workspaceAccountTypeMenu");
+    const button = document.getElementById("workspaceAccountTypeButton");
+
+    if (menu) menu.style.display = "none";
+    if (button) button.setAttribute("aria-expanded", "false");
+  }
 
   function undoLast() {
 
@@ -46157,24 +46774,35 @@ return false;
         isProfessionalAssessment
       }
     );
-
     if (
       window.EMFProductContext?.account?.role === "professional"
     ) {
-      workspaceMode = "business";
+      // Preserve the explicitly selected workspace.
+      // Default to Business only when no valid choice exists.
+      const savedWorkspace =
+        localStorage.getItem("workspaceMode");
 
-      localStorage.setItem(
-        "workspaceMode",
-        "business"
-      );
+      if (
+        savedWorkspace !== "home" &&
+        savedWorkspace !== "business"
+      ) {
+        workspaceMode = "business";
+
+        localStorage.setItem(
+          "workspaceMode",
+          "business"
+        );
+      } else {
+        workspaceMode = savedWorkspace;
+      }
 
       console.log(
-        "🔥 PROFESSIONAL STARTUP → BUSINESS",
+        "🔥 PROFESSIONAL STARTUP → SELECTED WORKSPACE",
         {
           workspaceMode,
           isProfessionalAssessment,
-          businessProjectId:
-            localStorage.getItem("business_project_id")
+          homeProjectId: localStorage.getItem("home_project_id"),
+          businessProjectId: localStorage.getItem("business_project_id")
         }
       );
     }

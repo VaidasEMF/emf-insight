@@ -2820,12 +2820,11 @@ body.business-demo-active
         }
 
 
-        // HIDE WORKSPACE ACCESS SUMMARY DURING DEMO
+        // KEEP WORKSPACE ACCESS SUMMARY VISIBLE DURING DEMO
         const accessSummary = document.getElementById("workspaceAccessSummary");
 
         if (accessSummary) {
-            accessSummary.dataset.demoPreviousDisplay = accessSummary.style.display;
-            accessSummary.style.display = "none";
+            accessSummary.style.setProperty("display", "flex", "important");
         }
 
 
@@ -3560,14 +3559,6 @@ body.business-demo-active
                 delete el.dataset.demoPreviousDisplay;
             }
         });
-
-
-        const accessSummary = document.getElementById("workspaceAccessSummary");
-
-        if (accessSummary && accessSummary.dataset.demoPreviousDisplay !== undefined) {
-            accessSummary.style.display = accessSummary.dataset.demoPreviousDisplay;
-            delete accessSummary.dataset.demoPreviousDisplay;
-        }
 
 
         const homeSidebar = document.getElementById("myWellnessSidebar");

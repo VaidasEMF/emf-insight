@@ -1,0 +1,902 @@
+function renderBusinessFloorTabs() {
+
+    const homeTabs =
+        document.getElementById(
+            "homeFloorTabs"
+        );
+
+    const businessTabs =
+        document.getElementById(
+            "businessFloorTabs"
+        );
+
+    const businessHeaderDropdown =
+        document.getElementById(
+            "businessFloorHeaderDropdown"
+        );
+
+    const floorContainer =
+        businessHeaderDropdown || businessTabs;
+
+
+    // ==================================================
+    // BUSINESS MODE VISIBILITY
+    // ==================================================
+
+    if (homeTabs) {
+
+        homeTabs.style.display =
+            "none";
+    }
+
+    if (!floorContainer) {
+
+        console.error(
+            "BUSINESS FLOOR CONTAINER NOT FOUND"
+        );
+
+        return;
+    }
+
+    floorContainer.style.display = "flex";
+    floorContainer.innerHTML = "";
+    floorContainer.classList.add("business-floor-dropdown-root");
+
+    if (businessTabs) {
+        businessTabs.style.display = "none";
+    }
+
+
+    // ==================================================
+    // ACTIVE PROJECT
+    // ==================================================
+
+    const project =
+        AppState?.project;
+
+    if (!project) {
+
+        console.error(
+            "🔥 NO ACTIVE PROJECT FOR BUSINESS FLOOR TABS"
+        );
+
+        return;
+    }
+
+
+    const floors =
+        Array.isArray(
+            project.floors
+        )
+            ? project.floors
+            : [];
+
+
+    const currentFloorIndex =
+        Number.isInteger(
+            project.currentFloorIndex
+        )
+            ? project.currentFloorIndex
+            : 0;
+
+
+    console.error(
+        "🔥 BUSINESS FLOOR RENDER",
+        {
+            projectId:
+                project.project_id ??
+                project.id ??
+                null,
+
+            projectType:
+                project.type,
+
+            floorCount:
+                floors.length,
+
+            currentFloorIndex,
+
+            floors:
+                floors.map(
+                    (
+                        floor,
+                        index
+                    ) => ({
+
+                        index,
+
+                        id:
+                            floor?.id,
+
+                        name:
+                            floor?.name,
+
+                        rooms:
+                            floor?.rooms?.length ||
+                            0,
+
+                        zones:
+                            floor?.zones?.length ||
+                            0,
+
+                        scaleConfirmed:
+                            !!floor?.scaleConfirmed
+
+                    })
+                )
+        }
+    );
+
+
+    // ==================================================
+    // FLOORS
+    // ==================================================
+
+    floors.forEach(
+        (
+            floor,
+            index
+        ) => {
+
+
+            // ==================================================
+            // OUTER FLOOR ITEM
+            // ==================================================
+
+            const cardButton =
+                document.createElement(
+                    "div"
+                );
+
+
+            /*
+             * BUSINESS FLOOR ITEM
+             *
+             * IMPORTANT:
+             * Do NOT use home-floor-tab.
+             */
+
+            cardButton.className =
+                "business-floor-tab";
+
+
+            cardButton.style.cursor =
+                "pointer";
+
+
+            // ==================================================
+            // ACTIVE FLOOR
+            // ==================================================
+
+            if (
+                index ===
+                currentFloorIndex
+            ) {
+
+                cardButton.classList.add(
+                    "active"
+                );
+            }
+
+
+            // ==================================================
+            // ROOM COUNT
+            // ==================================================
+
+            const rooms =
+                Array.isArray(
+                    floor?.rooms
+                )
+                    ? floor.rooms
+                    : [];
+
+
+            const roomCount =
+                rooms.length;
+
+
+            // ==================================================
+            // GRID PROGRESS
+            // ==================================================
+
+            const totalPoints =
+                rooms.reduce(
+                    (
+                        sum,
+                        room
+                    ) => {
+
+                        return (
+                            sum +
+                            (
+                                room?.grid
+                                    ?.length ||
+                                0
+                            )
+                        );
+
+                    },
+                    0
+                );
+
+
+            const measuredPoints =
+                rooms.reduce(
+                    (
+                        sum,
+                        room
+                    ) => {
+
+                        return (
+                            sum +
+                            (
+                                room?.grid ||
+                                []
+                            ).filter(
+                                point =>
+                                    point?.rf ||
+                                    point?.electric ||
+                                    point?.magnetic
+                            ).length
+                        );
+
+                    },
+                    0
+                );
+
+
+            const progress =
+                totalPoints > 0
+                    ? Math.round(
+                        (
+                            measuredPoints /
+                            totalPoints
+                        ) * 100
+                    )
+                    : 0;
+
+
+            // ==================================================
+            // DEBUG
+            // ==================================================
+
+            console.error(
+                "🔥 BUSINESS FLOOR CARD",
+                {
+                    index,
+
+                    floorId:
+                        floor?.id,
+
+                    floorName:
+                        floor?.name,
+
+                    roomCount,
+
+                    rooms:
+                        rooms.map(
+                            room => ({
+
+                                id:
+                                    room?.id,
+
+                                code:
+                                    room?.code,
+
+                                name:
+                                    room?.name
+
+                            })
+                        ),
+
+                    totalPoints,
+
+                    measuredPoints,
+
+                    progress,
+
+                    scaleConfirmed:
+                        !!floor?.scaleConfirmed
+                }
+            );
+
+
+            // ==================================================
+            // COMPACT FLOOR HTML
+            // ==================================================
+
+            cardButton.innerHTML = `
+
+                <div class="business-floor-selector-inner">
+
+
+                    <!-- ============================== -->
+                    <!-- FLOOR MAIN CONTENT -->
+                    <!-- ============================== -->
+
+                   <div class="business-floor-main">
+
+    <span class="business-floor-icon">🏢</span>
+
+    <span class="business-floor-name">
+        ${floor?.name || "Floor"}
+    </span>
+
+</div>
+
+<div class="business-floor-details">
+
+    <span class="business-floor-meta">
+        ${roomCount} room${roomCount !== 1 ? "s" : ""}
+        · ${progress}%
+    </span>
+
+    <div class="business-floor-actions">
+
+        <button
+            type="button"
+            class="floor-action-btn floor-rename-btn"
+            title="Rename floor"
+            aria-label="Rename floor"
+        >✎</button>
+
+        <button
+            type="button"
+            class="floor-action-btn floor-delete-btn"
+            title="Delete floor"
+            aria-label="Delete floor"
+        >🗑</button>
+
+    </div>
+
+</div>
+
+
+                </div>
+
+            `;
+
+
+            // ==================================================
+            // OPEN FLOOR
+            // ==================================================
+
+            cardButton.addEventListener(
+                "click",
+                () => {
+
+                    console.error(
+                        "🔥 FLOOR CARD CLICK",
+                        {
+                            index,
+
+                            floorId:
+                                floor?.id,
+
+                            floorName:
+                                floor?.name
+                        }
+                    );
+
+
+                    openFloor?.(
+                        index
+                    );
+
+
+                    renderBusinessFloorTabs?.();
+
+                }
+            );
+
+
+            // ==================================================
+            // RENAME
+            // ==================================================
+
+            const renameButton =
+                cardButton.querySelector(
+                    ".floor-rename-btn"
+                );
+
+
+            if (renameButton) {
+
+                renameButton.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        const oldName =
+                            floor?.name ||
+                            `Floor ${index + 1}`;
+
+
+                        showRenameFloorModal(
+                            floor,
+                            oldName,
+                            trimmedName => {
+
+                                // ==========================================
+                                // UPDATE CANONICAL FLOOR STATE
+                                // ==========================================
+
+                                floor.name =
+                                    trimmedName;
+
+                                console.error(
+                                    "🔥 FLOOR RENAMED",
+                                    {
+                                        index,
+
+                                        floorId:
+                                            floor.id,
+
+                                        oldName,
+
+                                        newName:
+                                            trimmedName
+                                    }
+                                );
+
+                                // ==========================================
+                                // REFRESH UI
+                                // ==========================================
+
+                                renderBusinessFloorTabs?.();
+
+                                renderFloorTabs?.();
+
+                                updateProjectHeader?.();
+
+                                window.updateWorkflowUI?.();
+
+                            }
+                        );
+
+
+                        // ==========================================
+                        // UPDATE CANONICAL FLOOR STATE
+                        // ==========================================
+
+                        floor.name =
+                            trimmedName;
+
+
+                        console.error(
+                            "🔥 FLOOR RENAMED",
+                            {
+                                index,
+
+                                floorId:
+                                    floor.id,
+
+                                oldName,
+
+                                newName:
+                                    trimmedName
+                            }
+                        );
+
+
+                        // ==========================================
+                        // REFRESH UI
+                        // ==========================================
+
+                        renderBusinessFloorTabs?.();
+
+                        renderFloorTabs?.();
+
+                        updateProjectHeader?.();
+
+                        window.updateWorkflowUI?.();
+
+                    }
+                );
+
+            }
+
+
+            // ==================================================
+            // DELETE
+            // ==================================================
+
+            const deleteButton =
+                cardButton.querySelector(
+                    ".floor-delete-btn"
+                );
+
+
+            if (deleteButton) {
+
+                deleteButton.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        // ==========================================
+                        // SAFETY
+                        // ==========================================
+
+                        if (
+                            floors.length <= 1
+                        ) {
+
+                            showFloorRequiredAlert();
+
+                            return;
+                        }
+
+
+                        const floorName =
+                            floor?.name ||
+                            `Floor ${index + 1}`;
+
+
+                        showDeleteFloorConfirm(
+                            floorName,
+                            () => {
+
+                                // ==========================================
+                                // DELETE FLOOR
+                                // ==========================================
+
+                                console.error(
+                                    "🔥 DELETE FLOOR",
+                                    {
+                                        index,
+
+                                        floorId:
+                                            floor?.id,
+
+                                        floorName,
+
+                                        currentFloorIndex:
+                                            project.currentFloorIndex
+                                    }
+                                );
+
+                                floors.splice(
+                                    index,
+                                    1
+                                );
+
+                                // ==========================================
+                                // CALCULATE NEW ACTIVE INDEX
+                                // ==========================================
+
+                                let newIndex =
+                                    project.currentFloorIndex;
+
+                                if (
+                                    index <
+                                    newIndex
+                                ) {
+
+                                    newIndex -= 1;
+
+                                }
+                                else if (
+                                    index ===
+                                    newIndex
+                                ) {
+
+                                    newIndex =
+                                        Math.min(
+                                            newIndex,
+                                            floors.length - 1
+                                        );
+                                }
+
+                                newIndex =
+                                    Math.max(
+                                        0,
+                                        newIndex
+                                    );
+
+                                project.currentFloorIndex =
+                                    newIndex;
+
+                                console.error(
+                                    "🔥 FLOOR DELETED",
+                                    {
+                                        deletedIndex:
+                                            index,
+
+                                        newIndex,
+
+                                        remainingFloors:
+                                            floors.map(
+                                                (
+                                                    item,
+                                                    i
+                                                ) => ({
+
+                                                    index:
+                                                        i,
+
+                                                    id:
+                                                        item?.id,
+
+                                                    name:
+                                                        item?.name,
+
+                                                    rooms:
+                                                        item?.rooms?.length ||
+                                                        0,
+
+                                                    scaleConfirmed:
+                                                        !!item?.scaleConfirmed
+
+                                                })
+                                            )
+                                    }
+                                );
+
+                                // ==========================================
+                                // OPEN NEW ACTIVE FLOOR
+                                // ==========================================
+
+                                openFloor?.(
+                                    newIndex
+                                );
+
+                                // ==========================================
+                                // REFRESH UI
+                                // ==========================================
+
+                                renderBusinessFloorTabs?.();
+
+                                renderFloorTabs?.();
+
+                                window.updateWorkflowUI?.();
+
+                                window.updateHomeWorkflow?.();
+
+                                window.updateHomeLocks?.();
+
+                                updateProjectHeader?.();
+
+                                updateCurrentExposure?.();
+
+                            }
+                        );
+
+
+                        // ==========================================
+                        // DELETE FLOOR
+                        // ==========================================
+
+                        console.error(
+                            "🔥 DELETE FLOOR",
+                            {
+                                index,
+
+                                floorId:
+                                    floor?.id,
+
+                                floorName,
+
+                                currentFloorIndex:
+                                    project.currentFloorIndex
+                            }
+                        );
+
+
+                        floors.splice(
+                            index,
+                            1
+                        );
+
+
+                        // ==========================================
+                        // CALCULATE NEW ACTIVE INDEX
+                        // ==========================================
+
+                        let newIndex =
+                            project.currentFloorIndex;
+
+
+                        if (
+                            index <
+                            newIndex
+                        ) {
+
+                            newIndex -= 1;
+
+                        }
+                        else if (
+                            index ===
+                            newIndex
+                        ) {
+
+                            newIndex =
+                                Math.min(
+                                    newIndex,
+                                    floors.length - 1
+                                );
+                        }
+
+
+                        newIndex =
+                            Math.max(
+                                0,
+                                newIndex
+                            );
+
+
+                        project.currentFloorIndex =
+                            newIndex;
+
+
+                        console.error(
+                            "🔥 FLOOR DELETED",
+                            {
+                                deletedIndex:
+                                    index,
+
+                                newIndex,
+
+                                remainingFloors:
+                                    floors.map(
+                                        (
+                                            item,
+                                            i
+                                        ) => ({
+
+                                            index:
+                                                i,
+
+                                            id:
+                                                item?.id,
+
+                                            name:
+                                                item?.name,
+
+                                            rooms:
+                                                item?.rooms?.length ||
+                                                0,
+
+                                            scaleConfirmed:
+                                                !!item?.scaleConfirmed
+
+                                        })
+                                    )
+                            }
+                        );
+
+
+                        // ==========================================
+                        // OPEN NEW ACTIVE FLOOR
+                        // ==========================================
+
+                        openFloor?.(
+                            newIndex
+                        );
+
+
+                        // ==========================================
+                        // REFRESH UI
+                        // ==========================================
+
+                        renderBusinessFloorTabs?.();
+
+                        renderFloorTabs?.();
+
+                        window.updateWorkflowUI?.();
+
+                        window.updateHomeWorkflow?.();
+
+                        window.updateHomeLocks?.();
+
+                        updateProjectHeader?.();
+
+                        updateCurrentExposure?.();
+
+                    }
+                );
+
+            }
+
+
+            // ==================================================
+            // APPEND FLOOR
+            // ==================================================
+
+            floorContainer.appendChild(
+                cardButton
+            );
+
+        }
+    );
+
+
+    // ==================================================
+    // ADD FLOOR
+    // ==================================================
+
+    const addBtn =
+        document.createElement(
+            "div"
+        );
+
+
+    /*
+     * BUSINESS ADD FLOOR
+     *
+     * Small horizontal action.
+     * NOT a large floor card.
+     */
+
+    addBtn.className =
+        "business-floor-tab add-floor-tab";
+
+
+    addBtn.style.cursor =
+        "pointer";
+
+
+    addBtn.innerHTML = `
+
+        <div class="business-floor-add-inner">
+
+            <span class="business-floor-add-icon">
+                ＋
+            </span>
+
+            <span class="business-floor-add-label">
+                Add Floor
+            </span>
+
+        </div>
+
+    `;
+
+
+    addBtn.addEventListener(
+        "click",
+        () => {
+
+            console.error(
+                "🔥 ADD FLOOR CARD CLICK"
+            );
+
+
+            openNewFloorPopup?.();
+
+        }
+    );
+
+
+    floorContainer.appendChild(
+        addBtn
+    );
+
+
+    // ==================================================
+    // COMPLETE
+    // ==================================================
+
+    console.log(
+        "🔥 BUSINESS FLOOR TABS COMPLETE",
+        {
+            projectId:
+                project.project_id ??
+                project.id ??
+                null,
+
+            cards:
+                businessTabs
+                    .children
+                    .length,
+
+            visible:
+                getComputedStyle(

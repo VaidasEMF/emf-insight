@@ -321,7 +321,8 @@ async function setAppMode(
 ) {
 
     const experience =
-        resolveWorkspaceExperience(mode);
+        resolveWorkspaceExperience(mode, options);
+
 
     AppState.workspaceExperience =
         experience;
@@ -485,12 +486,16 @@ async function setAppMode(
         }
     }
 
-    // ==================================================
-    // HOME — HIDE BUSINESS DEMO
-    // ==================================================
+    // HIDE BUSINESS DEMO WHEN LEAVING DEMO EXPERIENCE
 
     if (
-        mode === "home" &&
+        (
+            mode === "home" ||
+            (
+                mode === "business" &&
+                experience.mode === "real"
+            )
+        ) &&
         typeof window.hideBusinessDemoWorkspace === "function"
     ) {
         window.hideBusinessDemoWorkspace();
@@ -633,6 +638,7 @@ async function setAppMode(
 
     if (
         mode === "business" &&
+        sessionStorage.getItem("business_project_closed") !== "true" &&
         window.EMFProductContext?.account?.role === "professional" &&
         !options.showProjectStart &&
         !options.skipProjectRestore &&
@@ -644,18 +650,7 @@ async function setAppMode(
 
         targetProjectId =
             await window.restoreProfessionalBusinessProject();
-
-        console.timeEnd("restoreProfessionalBusinessProject");
     }
-
-    console.error(
-        "🔥 TARGET WORKSPACE",
-        {
-            mode,
-            targetProjectId
-        }
-    );
-
 
     // ==================================================
     // ACTIVE PROJECT
@@ -2124,7 +2119,25 @@ async function setAppMode(
         );
     }
 
+
+    // Update workspace access summary after mode switch
+    const currentModeElement =
+        document.getElementById("workspaceCurrentMode");
+
+    if (currentModeElement) {
+        currentModeElement.textContent =
+            window.AppMode?.current === "home"
+                ? "Home Wellness"
+                : window.AppMode?.current === "business"
+                    ? "Business Survey"
+                    : "Checking…";
+    }
+
+    window.updateWorkspaceAccessBadge?.();
+    window.updateWorkspaceAccessActiveState?.();
+
     console.timeEnd("setAppMode TOTAL");
+
     console.log("✅ SET APP MODE FINISHED");
 }
 
@@ -2135,15 +2148,7 @@ async function setAppMode(
 // ============================================================
 async function loadBusinessDemoExperience() {
 
-    console.log("🏢 Loading Business Demo Experience");
 
-    // If demo data already exists, do not rebuild or switch workspace.
-    if (
-        AppState.businessDemoProject &&
-        AppState.businessDemoAnalysis
-    ) {
-        return;
-    }
 
     // ========================================================
     // DEMO PROJECT
@@ -3763,12 +3768,23 @@ async function loadHomeDemoExperience() {
     window.project =
         demoProject;
 
-    window.EMFHomeDemo =
-        true;
+    window.EMFHomeDemo = true;
+    window.EMFBusinessDemo = false;
 
-    document.body.classList.add(
-        "home-demo-active"
-    );
+    document.body.classList.remove("business-demo-active");
+    document.body.classList.add("home-demo-active");
+
+    // Hide the Business Demo workspace when Home Demo opens.
+    if (typeof window.hideBusinessDemoWorkspace === "function") {
+        window.hideBusinessDemoWorkspace();
+    }
+
+    const businessDemoWorkspace =
+        document.getElementById("businessDemoWorkspace");
+
+    if (businessDemoWorkspace) {
+        businessDemoWorkspace.style.display = "none";
+    }
 
     window.AppMode =
         window.AppMode ||
@@ -3884,15 +3900,9 @@ async function loadHomeDemoExperience() {
 window.loadHomeDemoExperience =
     loadHomeDemoExperience;
 
-function resolveWorkspaceExperience(mode) {
+function resolveWorkspaceExperience(mode, options = {}) {
 
-    console.log("🔥 RESOLVE BUSINESS", {
-        mode,
-        currentMode: window.AppMode?.current,
-        homeDemo: window.EMFHomeDemo,
-        businessProjectId:
-            localStorage.getItem("business_project_id")
-    });
+
 
     const leavingHomeDemo =
         mode === "business" &&
@@ -3906,6 +3916,14 @@ function resolveWorkspaceExperience(mode) {
     const isAdmin =
         window.EMFProductContext?.account?.isAdmin === true;
 
+    // Explicit real-workspace request from the primary workspace button.
+    if (options.forceReal === true) {
+        return {
+            mode: "real",
+            workspace: mode
+        };
+    }
+
     if (isAdmin) {
         return {
             mode: "real"
@@ -3918,11 +3936,17 @@ function resolveWorkspaceExperience(mode) {
 
     if (mode === "business") {
 
-        const businessProjectId =
-            localStorage.getItem("business_project_id") ||
-            window.AppState?.businessProject?.project_id ||
-            window.AppState?.businessProject?.id ||
-            null;
+        const businessProjectClosed =
+            sessionStorage.getItem("business_project_closed") === "true";
+
+        const businessProjectId = businessProjectClosed
+            ? null
+            : (
+                localStorage.getItem("business_project_id") ||
+                window.AppState?.businessProject?.project_id ||
+                window.AppState?.businessProject?.id ||
+                null
+            );
 
         if (
             role === "professional" &&
@@ -4030,23 +4054,14 @@ function resolveWorkspaceExperience(mode) {
 
     // ==================================================
     // PROFESSIONAL → REAL HOME
-    // ONLY AFTER EXPLICIT HOME ACTIVATION
+    // Home and Business are independent workspaces.
+    // A professional can open Home even before a
+    // personal Home project has been created.
     // ==================================================
 
     if (role === "professional") {
 
-        const homeWorkspaceActive =
-            userId
-                ? localStorage.getItem(
-                    `home_workspace_active_${userId}`
-                ) === "true"
-                : false;
-
-        if (
-            homeWorkspaceActive &&
-            homeProjectId
-        ) {
-
+        if (homeProjectId) {
             return {
                 mode: "real",
                 workspace: "home",
@@ -4055,8 +4070,8 @@ function resolveWorkspaceExperience(mode) {
         }
 
         return {
-            mode: "demo",
-            demoType: "home"
+            mode: "real",
+            workspace: "home"
         };
     }
 
@@ -4122,7 +4137,11 @@ async function closeActiveProject() {
         document.body.classList.remove("home-demo-active");
     } else {
         localStorage.removeItem("business_project_id");
+        localStorage.removeItem("businessProjectId");
+
         sessionStorage.setItem("business_project_closed", "true");
+
+        window.AppState.businessProject = null;
     }
 
     window.AppState.project = null;
@@ -4193,71 +4212,100 @@ function updateWorkspaceUI(options = {}) {
 
     // --------------------------------------------------
     // VISIBILITY
-    // Home: Home Wellness + Explore Professional Assessments
-    // Business: Professional Survey + Explore Home Wellness
     // --------------------------------------------------
 
+    const hasProfessionalAccess =
+        role === "professional";
+
+    const isHomeDemo =
+        mode === "home" &&
+        experience.mode === "demo" &&
+        experience.demoType === "home";
+
+    const isBusinessDemo =
+        mode === "business" &&
+        experience.mode === "demo" &&
+        experience.demoType === "business";
+
+    // Real Home Wellness button remains visible.
     if (homeWellnessButton) {
-        homeWellnessButton.style.display =
-            isBusinessMode ? "none" : "";
+        homeWellnessButton.style.display = "";
     }
 
+    // Professional Survey button remains visible.
+    // Actual access is enforced separately.
+    if (businessButton) {
+        businessButton.style.display = "";
+    }
+
+    // Professional Assessments Demo button.
     if (professionalDemoButton) {
         professionalDemoButton.style.display =
             isBusinessMode ? "none" : "";
     }
 
-    if (businessButton) {
-        businessButton.style.display =
-            isBusinessMode ? "" : "none";
-    }
-
+    // Legacy Home button is only for Professional Home Demo.
     if (homeButton) {
         homeButton.style.display =
-            isBusinessMode ? "" : "none";
+            isProfessionalHomeDemo ? "" : "none";
     }
 
     // --------------------------------------------------
     // ACTIVE STATE
     // --------------------------------------------------
 
-    // Professional Survey: active only in Business mode.
+    // Real Business Survey — active only in real Business mode.
     if (businessButton) {
-        const active = mode === "business";
+        const active =
+            mode === "business" &&
+            !isBusinessDemo;
 
         businessButton.classList.toggle("active", active);
         businessButton.setAttribute("aria-pressed", String(active));
     }
 
-    // Explore Home Wellness DEMO: active only while its
-    // Home DEMO is open for a professional.
-    if (homeButton) {
-        homeButton.classList.toggle("active", isProfessionalHomeDemo);
-        homeButton.setAttribute(
-            "aria-pressed",
-            String(isProfessionalHomeDemo)
-        );
-    }
-
-    // Home Wellness — active only when explicitly selected
+    // Real Home Wellness — active only in real Home workspace.
     if (homeWellnessButton) {
         const active =
             mode === "home" &&
-            !isProfessionalHomeDemo &&
+            !isHomeDemo &&
+            !isBusinessDemo &&
+            window.EMFHomeDemo !== true &&
+            window.EMFBusinessDemo !== true &&
             window.EMFHomeEntrySelected !== "professional-demo";
 
         homeWellnessButton.classList.toggle("active", active);
         homeWellnessButton.setAttribute("aria-pressed", String(active));
     }
 
-    // Explore Professional Assessments DEMO — active when selected
+    // Real Home Wellness — inactive in either Explore Demo.
+    if (homeWellnessButton) {
+        const active =
+            mode === "home" &&
+            !isHomeDemo &&
+            !isBusinessDemo &&
+            window.EMFHomeDemo !== true &&
+            window.EMFBusinessDemo !== true &&
+            window.EMFHomeEntrySelected !== "professional-demo";
+
+        homeWellnessButton.classList.toggle("active", active);
+        homeWellnessButton.setAttribute(
+            "aria-pressed",
+            String(active)
+        );
+    }
+
+    // Professional Assessments Demo.
     if (professionalDemoButton) {
         const active =
             mode === "home" &&
             window.EMFHomeEntrySelected === "professional-demo";
 
         professionalDemoButton.classList.toggle("active", active);
-        professionalDemoButton.setAttribute("aria-pressed", String(active));
+        professionalDemoButton.setAttribute(
+            "aria-pressed",
+            String(active)
+        );
     }
 
     // ==================================================
@@ -4270,26 +4318,7 @@ function updateWorkspaceUI(options = {}) {
     const returnLabel =
         document.getElementById("contextualReturnLabel");
 
-
-    const isHome =
-        mode === "home";
-
-    const isBusiness =
-        mode === "business";
-
-    const isBusinessDemo =
-        isBusiness &&
-        experience.mode === "demo" &&
-        experience.demoType === "business";
-
-    const isHomeDemo =
-        isHome &&
-        experience.mode === "demo" &&
-        experience.demoType === "home";
-
-    // Home user exploring Business Demo
     if (isBusinessDemo && role !== "professional") {
-
         if (returnAction) {
             returnAction.style.display = "block";
         }
@@ -4297,36 +4326,16 @@ function updateWorkspaceUI(options = {}) {
         if (returnLabel) {
             returnLabel.textContent = "My Property";
         }
-
-    }
-
-    // Real Business workspace — no contextual return button
-    else if (
-        mode === "business" &&
-        !isHomeDemo
-    ) {
+    } else {
         if (returnAction) {
             returnAction.style.display = "none";
         }
     }
 
-    // Professional exploring Home
-    else if (isHomeDemo && role === "professional") {
-        if (returnAction) {
-            returnAction.style.display = "none";
-        }
-    }
-
-    // Primary workspace / real workspace
-    else {
-
-        if (returnAction) {
-            returnAction.style.display = "none";
-        }
-
-    }
     // ==================================================
     // ACTIVE PROJECT
+    // ==================================================
+
     // ==================================================
 
     const activeProject =
@@ -4410,7 +4419,49 @@ function updateWorkspaceUI(options = {}) {
                 : "Assess property environments, document EMF measurements, identify exposure concerns, and deliver professional reports to your clients.";
     }
 
+    const projectStartNew =
+        document.getElementById("projectStartNew");
 
+    const projectStartOpen =
+        document.getElementById("projectStartOpen");
+
+    if (projectStartNew) {
+        const strong = projectStartNew.querySelector("strong");
+        const small = projectStartNew.querySelector("small");
+
+        if (strong) {
+            strong.textContent =
+                mode === "home"
+                    ? "Create Home Profile"
+                    : "Create Professional Survey";
+        }
+
+        if (small) {
+            small.textContent =
+                mode === "home"
+                    ? "Start exploring your home's environment."
+                    : "Start a new professional property assessment.";
+        }
+    }
+
+    if (projectStartOpen) {
+        const strong = projectStartOpen.querySelector("strong");
+        const small = projectStartOpen.querySelector("small");
+
+        if (strong) {
+            strong.textContent =
+                mode === "home"
+                    ? "Open Property"
+                    : "Open Professional Project";
+        }
+
+        if (small) {
+            small.textContent =
+                mode === "home"
+                    ? "Continue exploring your property."
+                    : "Continue an existing professional assessment.";
+        }
+    }
 
     const projectStartIcon =
         document.getElementById("projectStartIcon");
@@ -8099,12 +8150,46 @@ if (document.readyState === "loading") {
 }
 // END MY_WELLNESS_NAV_HOME_HANDLER
 
+// ==================================================
+// OPEN REAL HOME WORKSPACE
+// Used by "Your access and plans" only.
+// ==================================================
+
+window.openRealHomeWorkspace = async function () {
+    console.log("🏠 OPEN REAL HOME WORKSPACE");
+
+    window.EMFHomeDemo = false;
+    window.EMFHomeEntrySelected = "home-wellness";
+
+    document.body.classList.remove("home-demo-active");
+
+    localStorage.setItem("workspaceMode", "home");
+
+    if (typeof window.setAppMode !== "function") {
+        console.error("setAppMode() is not available.");
+        return;
+    }
+
+    await window.setAppMode("home", {
+        showProjectStart: true,
+        skipProjectRestore: false
+    });
+};
 
 // ==================================================
 // RETURN TO HOME WORKSPACE
 // ==================================================
 
 window.returnToHomeWorkspace = async function () {
+
+
+    // Clear Explore Demo selection when returning to real Home.
+    window.EMFExploreSelection = null;
+    updateExploreMenuActiveState();
+
+    window.EMFHomeEntrySelected = "home-wellness";
+    window.EMFHomeDemo = false;
+    window.EMFBusinessDemo = false;
     window.EMFHomeEntrySelected = "home-wellness";
 
     // Leaving Professional Demo: restore normal Home floor controls.

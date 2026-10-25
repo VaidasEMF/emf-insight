@@ -3930,6 +3930,17 @@ body.business-demo-active #homeDemoWorkspace {
             "home-demo-active"
         );
 
+        // Ensure Business Demo is hidden while Home Demo is active.
+        window.EMFBusinessDemo = false;
+        document.body.classList.remove("business-demo-active");
+
+        const businessDemoWorkspace =
+            document.getElementById("businessDemoWorkspace");
+
+        if (businessDemoWorkspace) {
+            businessDemoWorkspace.style.display = "none";
+        }
+
         const lifestyleAreas =
             analysis?.lifestyleAreas ||
             project?.lifestyleAreas ||

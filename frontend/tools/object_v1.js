@@ -854,15 +854,6 @@ function findNearestLifestyleZoneForOutdoor(
         targetFloor.zones.length === 0
     ) {
 
-        console.warn(
-            "âš ï¸ OUTDOOR CONTEXT: NO LIFESTYLE AREAS",
-            {
-                floorId:
-                    targetFloor?.id ||
-                    null
-            }
-        );
-
         return null;
     }
 
@@ -1656,7 +1647,7 @@ function placeObject(evt) {
         ) {
 
             console.warn(
-                "âš ï¸ OUTDOOR SOURCE MUST BE OUTSIDE FLOOR PLAN"
+                "âš ï¸ OUTDOOR SOURCE MUST BE OUTSIDE FLOOR PLAN"
             );
 
             return;
@@ -4790,7 +4781,7 @@ function showLifestyleAreaPopup(
     if (!floor) {
 
         console.warn(
-            "âš ï¸ LIFESTYLE POPUP â€” NO CURRENT FLOOR"
+            "âš ï¸ LIFESTYLE POPUP â€” NO CURRENT FLOOR"
         );
 
         return;
@@ -8490,23 +8481,23 @@ function updateOutdoorDistanceCategoryLabels() {
 
         "1_3m":
             units === "ft"
-                ? "3â€“10 ft"
-                : "1â€“3 m",
+                ? "3-10 ft"
+                : "1-3 m",
 
         "3_10m":
             units === "ft"
-                ? "10â€“30 ft"
-                : "3â€“10 m",
+                ? "10-30 ft"
+                : "3-10 m",
 
         "10_30m":
             units === "ft"
-                ? "30â€“100 ft"
-                : "10â€“30 m",
+                ? "30-100 ft"
+                : "10-30 m",
 
         "30_100m":
             units === "ft"
-                ? "100â€“300 ft"
-                : "30â€“100 m",
+                ? "100-300 ft"
+                : "30-100 m",
 
         "100m_plus":
             units === "ft"
