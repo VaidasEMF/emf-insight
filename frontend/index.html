@@ -5580,11 +5580,131 @@
 
 
     #projectHeader #workspaceExploreButton.active {
-      background: #eaf2ff;
-      border-color: #93b4f5;
-      color: #1d4ed8;
+      background: #eaf2ff !important;
+      border-color: #93b4f5 !important;
+      box-shadow: 0 0 0 1px rgba(147, 180, 245, 0.18);
     }
 
+    #projectHeader #workspaceExploreButton {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+      padding: 5px 8px;
+    }
+
+    #projectHeader #workspaceExploreLabel {
+      display: block;
+      max-width: 100px;
+      white-space: normal;
+      line-height: 1.15;
+      overflow-wrap: normal;
+    }
+
+    #projectHeader #workspaceExploreButton .explore-demo-badge,
+    #projectHeader #workspaceExploreButton .explore-chevron {
+      flex-shrink: 0;
+    }
+
+
+    #projectHeader .user-account-switcher {
+      min-width: 0;
+      max-width: 190px;
+      padding-left: 8px;
+      padding-right: 8px;
+      gap: 7px;
+    }
+
+    #projectHeader .user-account-info {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    #projectHeader .user-account-email {
+      display: block;
+      max-width: 125px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #projectHeader .user-account-plan {
+      white-space: nowrap;
+    }
+
+    #projectHeader .user-account-icon,
+    #projectHeader .user-account-chevron {
+      flex-shrink: 0;
+    }
+
+    #projectHeader #workspaceExploreButton .explore-button-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      min-width: 0;
+      max-width: 112px;
+    }
+
+    #projectHeader #workspaceExploreLabel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: auto;
+      max-width: none;
+      text-align: center;
+      white-space: nowrap;
+      line-height: 1.05;
+      flex-shrink: 0;
+    }
+
+    #projectHeader #workspaceExploreLabel>span {
+      display: block;
+      white-space: nowrap;
+    }
+
+    #projectHeader #workspaceExploreLabel>span+span {
+      margin-top: 0;
+    }
+
+    #projectHeader #workspaceExploreLabel .explore-second-line {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    #projectHeader #workspaceExploreButton .explore-eye {
+      display: none;
+    }
+
+    #projectHeader #workspaceExploreButton .explore-demo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0px;
+      line-height: 1;
+    }
+
+    #projectHeader #workspaceExploreButton .explore-demo-badge {
+      margin: 0;
+      flex: 0 0 auto;
+    }
+
+    #projectHeader #workspaceExploreButton .explore-chevron {
+      margin: 0;
+      flex: 0 0 auto;
+    }
+
+    #projectHeader #projectWorkspaceTitle {
+      max-width: 145px;
+      font-size: 14px;
+      line-height: 1.1;
+      white-space: normal;
+      overflow-wrap: normal;
+    }
 
     /* =========================================================
    HEADER TOP ROW — SINGLE SOURCE OF TRUTH
@@ -5595,7 +5715,7 @@
       align-items: center;
       justify-content: flex-start;
       flex-wrap: nowrap;
-      gap: 16px;
+      gap: 6px;
       min-height: 46px;
       width: 100%;
       box-sizing: border-box;
@@ -5604,9 +5724,12 @@
 
     #projectWorkspaceTitle {
       flex: 0 0 auto;
-      margin: 0 12px 0 0;
-      white-space: nowrap;
-      font-size: 18px;
+      max-width: 145px;
+      margin: 0 2px 0 0;
+      white-space: normal;
+      overflow-wrap: normal;
+      line-height: 1.1;
+      font-size: 14px;
       font-weight: 700;
       color: #172033;
     }
@@ -5728,7 +5851,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      gap: 10px;
+      gap: 5px;
       width: auto;
       min-width: 0;
     }
@@ -5736,12 +5859,12 @@
 
 
     #projectHeader .emf-topbar-actions {
-      margin-left: 12px;
+      margin-left: 0;
       flex-shrink: 0;
     }
 
     #projectHeader .user-selector {
-      margin-left: 12px;
+      margin-left: 0;
       flex-shrink: 0;
     }
 
@@ -26113,13 +26236,13 @@
 
 
     #projectHeader .project-meta>#workspaceAccessSummary {
-      flex: 0 0 430px;
-      width: 430px;
-      min-width: 350px;
-      max-width: 430px;
+      flex: 0 1 300px;
+      width: 300px;
+      min-width: 0;
+      max-width: 300px;
       margin-left: auto;
       margin-right: 0;
-      overflow: visible;
+      overflow: hidden;
     }
 
 
@@ -26191,23 +26314,33 @@
     #projectHeader .project-header-top>#workspaceAccessSummary {
       display: flex !important;
       align-items: center;
-      gap: 8px;
-      width: 390px;
-      min-width: 390px;
-      max-width: 390px;
-      flex: 0 0 390px;
+      gap: 4px;
+      order: 2;
+      flex: 0 1 300px;
+      width: 300px;
+      min-width: 0;
+      max-width: 300px;
       margin-left: auto;
-      padding: 5px 7px;
+      margin-right: 0;
+      padding: 4px;
       box-sizing: border-box;
+      overflow: hidden;
     }
 
     #workspaceAccessSummary .workspace-access-item {
-      gap: 5px;
+      min-width: 0;
+      flex: 0 1 auto;
+      gap: 4px;
+    }
+
+    #workspaceAccessSummary .workspace-access-text {
+      min-width: 0;
     }
 
     #workspaceAccessSummary .workspace-access-text strong {
-      max-width: 95px;
-      font-size: 11px;
+      display: block;
+      max-width: 85px;
+      font-size: 10px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -26219,25 +26352,32 @@
     }
 
     #workspaceAccessSummary .workspace-access-divider {
-      min-height: 28px;
+      flex: 0 0 1px;
+      min-height: 24px;
     }
 
     #workspaceAccessSummary .workspace-access-status {
-      flex: 0 0 auto;
+      min-width: 0;
+      flex: 0 1 auto;
     }
 
     #workspaceAccessSummary .workspace-access-badge {
-      max-width: 76px;
-      padding: 3px 5px;
-      font-size: 10px;
+      display: block;
+      min-width: 0;
+      max-width: 65px;
+      padding: 3px 4px;
+      font-size: 9px;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     #workspaceAccessSummary .workspace-access-info-button {
+      flex: 0 0 28px;
       min-width: 28px;
       width: 28px;
       height: 30px;
+      margin-left: 0;
       padding: 0 3px;
     }
 
@@ -26275,10 +26415,36 @@
     /* Home Wellness + Business Survey */
     #projectHeader .project-header-top>.workspace-selector-direct {
       order: 2;
-      flex: 0 0 auto;
+      flex: 0 1 auto;
+      min-width: 0;
       margin-left: 0 !important;
-      margin-right: auto !important;
-      gap: 8px;
+      margin-right: 0 !important;
+      gap: 5px;
+    }
+
+    #projectHeader .workspace-selector-direct .workspace-mode-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 0 0 auto;
+      min-width: 0;
+      padding: 5px 9px;
+      gap: 6px;
+      white-space: normal;
+      text-align: left;
+    }
+
+    #projectHeader .workspace-selector-direct .workspace-mode-btn span {
+      display: block;
+      max-width: 86px;
+      line-height: 1.15;
+      white-space: normal;
+    }
+
+
+
+    #projectHeader .workspace-selector-direct .workspace-mode-icon {
+      flex: 0 0 auto;
     }
 
     /* Remove the old artificial left offset */
@@ -29080,11 +29246,19 @@ return false;
 
               <div class="workspace-explore">
                 <button id="workspaceExploreButton" type="button" aria-expanded="false"
-                  aria-controls="workspaceExploreMenu" onclick="toggleWorkspaceExploreMenu()">
+                  aria-controls="workspaceExploreMenu" onclick="toggleWorkspaceExploreMenu()" class="active">
                   <span class="explore-eye" aria-hidden="true">◉</span>
-                  <span id="workspaceExploreLabel">Explore</span>
-                  <span class="explore-demo-badge">DEMO</span>
-                  <span class="explore-chevron" aria-hidden="true">⌄</span>
+
+                  <span class="explore-button-content">
+                    <span id="workspaceExploreLabel">
+                      <span>Explore Home</span>
+                      <span>Wellness</span>
+                    </span>
+                    <span class="explore-demo-row">
+                      <span class="explore-demo-badge">DEMO</span>
+                      <span class="explore-chevron" aria-hidden="true">⌄</span>
+                    </span>
+                  </span>
                 </button>
 
                 <div id="workspaceExploreMenu" class="workspace-explore-menu" hidden>
@@ -38340,23 +38514,26 @@ return false;
     button.setAttribute("aria-expanded", "false");
   }
 
-  function toggleWorkspaceExploreMenu() {
-    const menu = document.getElementById("workspaceExploreMenu");
-    const button = document.getElementById("workspaceExploreButton");
 
-    if (!menu || !button) {
-      return;
-    }
+  // Re-read the final experience after the demo has loaded.
+  const finalExperience = window.EMFWorkspaceExperience;
 
-    const isOpen = menu.hidden;
-
-    menu.hidden = !isOpen;
-    button.setAttribute("aria-expanded", String(isOpen));
+  if (
+    finalExperience?.mode === "demo" &&
+    (
+      finalExperience.demoType === "home" ||
+      finalExperience.demoType === "business"
+    )
+  ) {
+    window.EMFExploreSelection = finalExperience.demoType;
   }
 
+  updateExploreMenuActiveState();
 
 
   function updateExploreMenuActiveState() {
+
+    const currentExperience = window.EMFWorkspaceExperience;
     const selected = window.EMFExploreSelection;
 
     const items = [
@@ -38373,22 +38550,85 @@ return false;
     ];
 
     const label = document.getElementById("workspaceExploreLabel");
+    const exploreButton = document.getElementById("workspaceExploreButton");
+    const menu = document.getElementById("workspaceExploreMenu");
 
-    const exploreButton =
-      document.getElementById("workspaceExploreButton");
+    // Determine the label from the current experience.
+    let displayMode = null;
 
-    if (exploreButton) {
-      exploreButton.classList.toggle(
-        "active",
-        selected === "home" || selected === "business"
-      );
+    if (currentExperience?.mode === "demo") {
+      if (
+        currentExperience.demoType === "home" ||
+        currentExperience.demoType === "business"
+      ) {
+        displayMode = currentExperience.demoType;
+      }
+    } else if (currentExperience?.mode === "real") {
+      if (
+        currentExperience.workspace === "home" ||
+        currentExperience.workspace === "business"
+      ) {
+        displayMode = currentExperience.workspace;
+      }
+    }
+
+    // Fallback to explicit demo selection only if the experience is unavailable.
+    if (!displayMode && !currentExperience) {
+      if (selected === "home" || selected === "business") {
+        displayMode = selected;
+      }
     }
 
     if (label) {
-      label.textContent =
-        items.find(item => item.mode === selected)?.label || "Explore";
+      const matchingItem = items.find(item => item.mode === displayMode);
+      const labelText = matchingItem
+        ? matchingItem.label
+        : (
+          currentExperience?.workspace === "business"
+            ? "Explore Business Survey"
+            : "Explore Home Wellness"
+        );
+
+      const parts = labelText.startsWith("Explore ")
+        ? labelText.slice(8).split(" ")
+        : [];
+
+      const demoRow = document.querySelector(
+        "#workspaceExploreButton .explore-demo-row"
+      );
+
+      label.replaceChildren();
+
+      if (parts.length === 2) {
+        const firstLine = document.createElement("span");
+        firstLine.textContent = "Explore " + parts[0];
+
+        const secondLine = document.createElement("span");
+        secondLine.className = "explore-second-line";
+
+        const secondWord = document.createElement("span");
+        secondWord.textContent = parts[1];
+
+        secondLine.appendChild(secondWord);
+        label.appendChild(firstLine);
+        label.appendChild(secondLine);
+        if (demoRow) {
+          secondLine.appendChild(demoRow);
+        }
+      } else {
+        label.textContent = labelText;
+      }
     }
 
+    // Highlight the main button only while its dropdown is open.
+    if (exploreButton) {
+      const isOpen = Boolean(menu && !menu.hidden);
+
+      exploreButton.classList.toggle("active", isOpen);
+      exploreButton.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    // Keep demo selection highlighting inside the dropdown.
     items.forEach(item => {
       if (!item.button) return;
 
@@ -38400,6 +38640,71 @@ return false;
       if (check) check.hidden = !active;
     });
   }
+
+
+  function syncExploreSelectionFromExperience() {
+    const experience = window.EMFWorkspaceExperience;
+
+    let mode = null;
+
+    if (experience?.mode === "demo") {
+      if (
+        experience.demoType === "home" ||
+        experience.demoType === "business"
+      ) {
+        mode = experience.demoType;
+      }
+    } else if (experience?.mode === "real") {
+      if (experience.workspace === "home") {
+        mode = "home";
+      } else if (experience.workspace === "business") {
+        mode = "business";
+      }
+    }
+
+    if (!mode) {
+      if (window.EMFHomeDemo === true) {
+        mode = "home";
+      } else if (window.EMFBusinessDemo === true) {
+        mode = "business";
+      }
+    }
+
+    window.EMFExploreSelection = mode;
+    updateExploreMenuActiveState();
+  }
+
+  window.syncExploreSelectionFromExperience =
+    syncExploreSelectionFromExperience;
+
+
+
+  function toggleWorkspaceExploreMenu() {
+    const menu = document.getElementById("workspaceExploreMenu");
+    const button = document.getElementById("workspaceExploreButton");
+
+    if (!menu || !button) return;
+
+    const opening = menu.hidden;
+
+    closeWorkspaceDropdowns(opening ? "explore" : null);
+
+    menu.hidden = !opening;
+    button.setAttribute("aria-expanded", String(opening));
+    button.classList.toggle("active", opening);
+
+    console.log("EXPLORE TOGGLE", {
+      opening,
+      hidden: menu.hidden,
+      active: button.classList.contains("active"),
+      expanded: button.getAttribute("aria-expanded")
+    });
+
+    updateExploreMenuActiveState();
+  }
+
+  window.toggleWorkspaceExploreMenu = toggleWorkspaceExploreMenu;
+
 
   function closeWorkspaceDropdowns(except = null) {
     const exploreMenu = document.getElementById("workspaceExploreMenu");
@@ -38418,22 +38723,6 @@ return false;
     }
   }
 
-  function toggleWorkspaceExploreMenu() {
-    const menu = document.getElementById("workspaceExploreMenu");
-    const button = document.getElementById("workspaceExploreButton");
-
-    if (!menu || !button) return;
-
-    const opening = menu.hidden;
-
-    closeWorkspaceDropdowns(opening ? "explore" : null);
-
-    if (opening) updateExploreMenuActiveState();
-
-    menu.hidden = !opening;
-    button.setAttribute("aria-expanded", String(opening));
-  }
-
 
 
   async function selectExploreDemo(mode) {
@@ -38442,34 +38731,45 @@ return false;
     const menu = document.getElementById("workspaceExploreMenu");
     const button = document.getElementById("workspaceExploreButton");
 
-    // Close dropdown.
+    // Select the requested demo immediately.
+    window.EMFExploreSelection = mode;
+    window.EMFWorkspaceExperience = {
+      mode: "demo",
+      demoType: mode
+    };
+
+    // Close the dropdown.
     if (menu) menu.hidden = true;
-    if (button) button.setAttribute("aria-expanded", "false");
+
+    if (button) {
+      button.classList.remove("active");
+      button.setAttribute("aria-expanded", "false");
+    }
+
+    // Load the requested workspace.
     if (mode === "home") {
-      window.EMFExploreSelection = "home";
-
-      // Explicitly select Home Demo before loading it.
       window.EMFHomeEntrySelected = "home-demo";
-      window.EMFWorkspaceExperience = {
-        mode: "demo",
-        demoType: "home"
-      };
-
       await window.loadHomeDemoExperience?.();
     } else {
-      window.EMFExploreSelection = "business";
-
-      // Set the Business Demo experience before loading the workspace.
-      window.EMFWorkspaceExperience = {
-        mode: "demo",
-        demoType: "business"
-      };
-
       await window.loadBusinessDemoExperience?.();
+    }
+
+    // Reconcile the selection with the final loaded experience.
+    const finalExperience = window.EMFWorkspaceExperience;
+
+    if (
+      finalExperience?.mode === "demo" &&
+      (finalExperience.demoType === "home" ||
+        finalExperience.demoType === "business")
+    ) {
+      window.EMFExploreSelection = finalExperience.demoType;
     }
 
     updateExploreMenuActiveState();
   }
+
+  window.selectExploreDemo = selectExploreDemo;
+
 
 
 
@@ -40838,16 +41138,31 @@ return false;
     });
   }
 
+
   document.addEventListener("click", function (event) {
     const explore = document.querySelector(".workspace-explore");
     const account = document.querySelector(".account-type-dropdown-wrap");
 
-    if (explore?.contains(event.target) || account?.contains(event.target)) {
+
+    console.log("EXPLORE CLICK TARGET", {
+      target: event.target,
+      insideExplore: !!explore?.contains(event.target),
+      explore
+    });
+    const path = event.composedPath();
+
+    if (
+      path.includes(explore) ||
+      path.includes(document.getElementById("workspaceExploreButton")) ||
+      path.includes(document.getElementById("workspaceExploreMenu")) ||
+      path.includes(account)
+    ) {
       return;
     }
 
     closeWorkspaceDropdowns();
   });
+
 
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
@@ -47828,6 +48143,10 @@ z-index:2;
           skipProjectRestore: false
         }
       );
+
+      if (typeof window.syncExploreSelectionFromExperience === "function") {
+        window.syncExploreSelectionFromExperience();
+      }
 
       console.log("🚦 DASHBOARD IMMEDIATELY AFTER setAppMode", {
         role: window.EMFProductContext?.account?.role,
