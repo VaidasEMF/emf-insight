@@ -235,14 +235,16 @@ def manage_professional_demo(
     demo = db.execute(
         text(
             """
-            SELECT
-                id,
-                status,
-                duration_days,
-                activated_at,
-                expires_at
-            FROM professional_demo_links
-            WHERE id = :id
+SELECT
+    id,
+    status,
+    duration_days,
+    user_id,
+    activated_at,
+    expires_at
+FROM professional_demo_links
+WHERE id = :id
+
             """
         ),
         {
@@ -258,12 +260,35 @@ def manage_professional_demo(
 
     action = data.action.strip().lower()
     now = datetime.utcnow()
-
     if action == "extend":
+        if demo["status"] != "active":
+            raise HTTPException(
+                status_code=400,
+                detail="Only an active Demo can be extended.",
+            )
+
+        if not demo["user_id"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot extend Demo: no user is linked to this Demo.",
+            )
+
+        professional = (
+            db.query(User)
+            .filter(User.id == int(demo["user_id"]))
+            .first()
+        )
+
+        if not professional:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot extend Demo: linked user does not exist.",
+            )
+
         if not data.days or data.days < 1 or data.days > 365:
             raise HTTPException(
                 status_code=400,
-                detail="Extension must be between 1 and 365 days",
+                detail="Extension must be between 1 and 365 days.",
             )
 
         base_date = demo["expires_at"]
@@ -271,21 +296,17 @@ def manage_professional_demo(
         if base_date is None or base_date < now:
             base_date = now
 
-        new_expiry = base_date + timedelta(
-            days=data.days
-        )
-
-        db.execute(
-            text(
-                """
+        new_expiry = base_date + timedelta(days=data.days)
+        result = db.execute(
+            text("""
                 UPDATE professional_demo_links
                 SET
                     expires_at = :expires_at,
-                    duration_days = duration_days + :days,
-                    status = 'active'
+                    duration_days = duration_days + :days
                 WHERE id = :id
-                """
-            ),
+                  AND status = 'active'
+                  AND user_id IS NOT NULL
+            """),
             {
                 "id": demo_id,
                 "expires_at": new_expiry,
@@ -293,71 +314,134 @@ def manage_professional_demo(
             },
         )
 
+        if result.rowcount != 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Demo status changed. Refresh and try again.",
+            )
+
+
     elif action == "set_expiry":
         if data.expires_at is None:
             raise HTTPException(
                 status_code=400,
-                detail="expires_at is required",
+                detail="expires_at is required.",
             )
 
         if data.expires_at <= now:
             raise HTTPException(
                 status_code=400,
-                detail="Expiry must be in the future",
+                detail="Expiry must be in the future.",
             )
 
-        db.execute(
-            text(
-                """
+        if demo["status"] != "active" or not demo["user_id"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Only an active Demo linked to a user can have its expiry changed.",
+            )
+
+        professional = (
+            db.query(User)
+            .filter(User.id == int(demo["user_id"]))
+            .first()
+        )
+
+        if not professional:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot change expiry: linked user does not exist.",
+            )
+        result = db.execute(
+            text("""
                 UPDATE professional_demo_links
-                SET
-                    expires_at = :expires_at,
-                    status = 'active'
+                SET expires_at = :expires_at
                 WHERE id = :id
-                """
-            ),
+                  AND status = 'active'
+                  AND user_id IS NOT NULL
+            """),
             {
                 "id": demo_id,
                 "expires_at": data.expires_at,
             },
         )
 
+        if result.rowcount != 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Demo status changed. Refresh and try again.",
+            )
+
+
     elif action == "revoke":
-        db.execute(
-            text(
-                """
+        if demo["status"] != "active":
+            raise HTTPException(
+                status_code=400,
+                detail="Only an active Demo can be revoked.",
+            )
+        result = db.execute(
+            text("""
                 UPDATE professional_demo_links
                 SET status = 'revoked'
                 WHERE id = :id
-                """
-            ),
-            {
-                "id": demo_id,
-            },
+                  AND status = 'active'
+            """),
+            {"id": demo_id},
         )
 
+        if result.rowcount != 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Demo status changed. Refresh and try again.",
+            )
+
+
     elif action == "reactivate":
+        if demo["status"] != "revoked":
+            raise HTTPException(
+                status_code=400,
+                detail="Only a revoked Demo can be reactivated.",
+            )
+
+        if not demo["user_id"] or not demo["activated_at"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot reactivate Demo: no previous activation is linked to a user.",
+            )
+
+        professional = (
+            db.query(User)
+            .filter(User.id == int(demo["user_id"]))
+            .first()
+        )
+
+        if not professional:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot reactivate Demo: linked user does not exist.",
+            )
+
         days = data.days or demo["duration_days"] or 7
 
         if days < 1 or days > 365:
             raise HTTPException(
                 status_code=400,
-                detail="Reactivation must be between 1 and 365 days",
+                detail="Reactivation must be between 1 and 365 days.",
             )
 
         new_expiry = now + timedelta(days=days)
 
-        db.execute(
-            text(
-                """
+        result = db.execute(
+            text("""
                 UPDATE professional_demo_links
                 SET
                     status = 'active',
                     expires_at = :expires_at,
                     duration_days = :duration_days
                 WHERE id = :id
-                """
-            ),
+                  AND status = 'revoked'
+                  AND user_id IS NOT NULL
+                  AND activated_at IS NOT NULL
+            """),
             {
                 "id": demo_id,
                 "expires_at": new_expiry,
@@ -365,11 +449,18 @@ def manage_professional_demo(
             },
         )
 
+        if result.rowcount != 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Demo status changed. Refresh and try again.",
+            )
+
     else:
         raise HTTPException(
             status_code=400,
-            detail="Invalid Demo management action",
+            detail="Invalid Demo management action.",
         )
+
 
     db.commit()
 

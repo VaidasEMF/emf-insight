@@ -820,7 +820,7 @@ function updateProjectWorkspaceTitle() {
     if (isProfessionalDashboard) {
         title.textContent = "Professional Dashboard";
     } else if (mode === "home") {
-        title.textContent = "🏠 My Wellness Project";
+        title.textContent = "🏠 Wellness Project";
     } else {
         title.textContent = "🏢 Business Project";
     }

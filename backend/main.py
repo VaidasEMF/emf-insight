@@ -1080,23 +1080,47 @@ async def stripe_webhook(request: Request):
 
                             db.execute(
                                 text("""
-                                    UPDATE professional_entitlements
-                                    SET
+                                    INSERT INTO professional_entitlements (
+                                        user_id,
+                                        plan_code,
+                                        assessment_limit,
+                                        assessments_used,
+                                        contact_opportunity_limit,
+                                        contact_opportunities_used,
+                                        branding_included,
+                                        status,
+                                        stripe_subscription_id,
+                                        period_start,
+                                        period_end
+                                    )
+                                    VALUES (
+                                        :user_id,
+                                        'professional',
+                                        25,
+                                        0,
+                                        10,
+                                        0,
+                                        TRUE,
+                                        'active',
+                                        :stripe_subscription_id,
+                                        CURRENT_TIMESTAMP,
+                                        NULL
+                                    )
+                                    ON CONFLICT (user_id) DO UPDATE SET
                                         plan_code = 'professional',
-                                        stripe_subscription_id = COALESCE(
-                                            :stripe_subscription_id,
-                                            stripe_subscription_id
-                                        ),
                                         assessment_limit = 25,
                                         assessments_used = 0,
                                         contact_opportunity_limit = 10,
                                         contact_opportunities_used = 0,
                                         branding_included = TRUE,
                                         status = 'active',
+                                        stripe_subscription_id = COALESCE(
+                                            EXCLUDED.stripe_subscription_id,
+                                            professional_entitlements.stripe_subscription_id
+                                        ),
                                         period_start = CURRENT_TIMESTAMP,
                                         period_end = NULL,
                                         updated_at = CURRENT_TIMESTAMP
-                                    WHERE user_id = :user_id
                                 """),
                                 {
                                     "user_id": str(user.id),

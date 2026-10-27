@@ -320,6 +320,8 @@ async function setAppMode(
     options = {}
 ) {
 
+    console.log("DEBUG setAppMode START", mode, options);
+    console.trace("DEBUG setAppMode CALL STACK");
     const experience =
         resolveWorkspaceExperience(mode, options);
 
@@ -413,8 +415,20 @@ async function setAppMode(
 
     // SET MODE
     // ==================================================
-
     window.AppMode.current = mode;
+
+    // UPDATE CURRENT WORKSPACE LABEL
+    const currentModeElement =
+        document.getElementById("workspaceCurrentMode");
+
+    if (currentModeElement) {
+        currentModeElement.textContent =
+            mode === "home"
+                ? "Home Wellness"
+                : mode === "business"
+                    ? "Business Survey"
+                    : "Checking…";
+    }
 
     const dashboardButton =
         document.getElementById("btnOpenMyWellnessDashboard");
@@ -2119,19 +2133,12 @@ async function setAppMode(
         );
     }
 
+    console.log("DEBUG: updating workspaceCurrentMode", {
+        mode: window.AppMode?.current,
+        element: document.getElementById("workspaceCurrentMode")?.textContent
+    });
 
-    // Update workspace access summary after mode switch
-    const currentModeElement =
-        document.getElementById("workspaceCurrentMode");
 
-    if (currentModeElement) {
-        currentModeElement.textContent =
-            window.AppMode?.current === "home"
-                ? "Home Wellness"
-                : window.AppMode?.current === "business"
-                    ? "Business Survey"
-                    : "Checking…";
-    }
 
     window.updateWorkspaceAccessBadge?.();
     window.updateWorkspaceAccessActiveState?.();
@@ -5769,7 +5776,7 @@ async function openHomeWorkspaceStart() {
     }
 
     if (projectWorkspaceTitle) {
-        projectWorkspaceTitle.textContent = "My Wellness Project";
+        projectWorkspaceTitle.textContent = "Wellness Project";
     }
 
     // ==================================================
@@ -5872,7 +5879,7 @@ async function openHomeNewProjectStart() {
         document.getElementById("projectWorkspaceTitle");
 
     if (projectWorkspaceTitle) {
-        projectWorkspaceTitle.textContent = "My Wellness Project";
+        projectWorkspaceTitle.textContent = "Wellness Project";
     }
 
     const homeFloorTabsBar =

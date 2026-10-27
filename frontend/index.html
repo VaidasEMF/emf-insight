@@ -29225,7 +29225,7 @@ return false;
     " aria-label="Switch to Professional Survey" aria-pressed="false">
                 <img class="workspace-mode-icon" src="assets/business/professional_survey_icon.png" alt=""
                   aria-hidden="true">
-                <span>Professional Survey</span>
+                <span>Business Survey</span>
               </button>
 
 
@@ -29341,7 +29341,6 @@ return false;
                 <span id="workspaceAccessBadge" class="workspace-access-badge">
                   Checking…
                 </span>
-                <span class="workspace-access-caption">Access</span>
               </div>
 
               <button id="workspaceAccessInfoButton" class="workspace-access-info-button" type="button"
@@ -29986,6 +29985,14 @@ return false;
                   <div class="workspace-access-detail">
                     <span>Plan:</span>
                     <strong id="businessSurveyPlan">—</strong>
+                  </div>
+                  <div class="workspace-access-detail">
+                    <span>Access:</span>
+                    <strong id="businessSurveyAccessStatus">—</strong>
+                  </div>
+                  <div class="workspace-access-detail">
+                    <span>Assessments:</span>
+                    <strong id="businessSurveyAssessments">—</strong>
                   </div>
                   <div class="workspace-access-detail">
                     <span>Reports:</span>
@@ -38775,15 +38782,33 @@ return false;
 
 
   function toggleWorkspaceAccessPanel() {
+
+
+    console.log("ACCESS PANEL TOGGLE CALLED");
     const panel = document.getElementById("workspaceAccessPanel");
     const button = document.getElementById("workspaceAccessInfoButton");
     const chevron = document.getElementById("workspaceAccessChevron");
 
+
+    const projectHeader = document.getElementById("projectHeader");
+
+    if (
+      panel &&
+      projectHeader &&
+      panel.parentElement?.classList.contains("project-meta")
+    ) {
+      projectHeader.appendChild(panel);
+    }
     if (!panel || !button) {
       return;
     }
 
     const isOpen = panel.style.display === "block";
+
+    console.log("ACCESS PANEL BEFORE TOGGLE", {
+      isOpen,
+      display: panel.style.display
+    });
 
     if (isOpen) {
       panel.style.display = "none";
@@ -38799,6 +38824,17 @@ return false;
     const rect = button.getBoundingClientRect();
     const panelWidth = Math.min(620, window.innerWidth - 32);
 
+    console.log("ACCESS PANEL POSITION", {
+      rect: {
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right
+      },
+      panelWidth,
+      innerWidth: window.innerWidth
+    });
+
     let left = rect.right - panelWidth;
 
     left = Math.max(
@@ -38811,16 +38847,23 @@ return false;
     panel.style.top = `${rect.bottom + 8}px`;
     panel.style.display = "block";
 
+    console.log("ACCESS PANEL DISPLAY AFTER SET", panel.style.display);
+
     button.setAttribute("aria-expanded", "true");
 
     if (chevron) {
       chevron.textContent = "⌄";
     }
 
-    if (typeof updateWorkspaceAccessPanel === "function") {
-      updateWorkspaceAccessPanel();
+    if (typeof window.updateWorkspaceAccessPanel === "function") {
+      console.log("ACCESS PANEL: calling update function");
+      window.updateWorkspaceAccessPanel();
+    } else {
+      console.error("ACCESS PANEL: update function NOT FOUND");
     }
+    updateWorkspaceAccessPanel();
   }
+
 
 
   // ==================================================
@@ -38828,7 +38871,11 @@ return false;
   // ==================================================
 
   window.updateWorkspaceAccessActiveState = function () {
-    const mode = window.AppMode?.current;
+    const mode = String(
+      window.AppMode?.current ||
+      localStorage.getItem("workspaceMode") ||
+      ""
+    ).toLowerCase();
 
     const homeButton = document.querySelector(
       ".workspace-access-open-home"
@@ -38861,6 +38908,143 @@ return false;
 
     homeButton.setAttribute("aria-pressed", String(isHome));
     businessButton.setAttribute("aria-pressed", String(isBusiness));
+  };
+
+
+  // ==================================================
+  // UPDATE YOUR ACCESS AND PLANS
+  // ==================================================
+  window.updateWorkspaceAccessPanel = async function () {
+    const setText = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    };
+
+
+    const nextResetRow =
+      document.getElementById("businessSurveyNextReset")
+        ?.closest(".workspace-access-detail");
+
+    if (nextResetRow) {
+      nextResetRow.style.display = "none";
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setText("homeWellnessPlanBadge", "Guest");
+      setText("homeWellnessPlan", "Sign in required");
+      setText("homeWellnessAccessStatus", "Not signed in");
+      setText("homeWellnessReports", "—");
+
+      setText("businessSurveyPlanBadge", "Guest");
+      setText("businessSurveyPlan", "Sign in required");
+      setText("businessSurveyReports", "—");
+      setText("businessSurveyNextReset", "—");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API}/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Account request failed: ${response.status}`);
+      }
+
+      const me = await response.json();
+
+      console.log("WORKSPACE ACCESS PANEL:", me);
+
+      // HOME WELLNESS
+      const homeReportUnlocked =
+        me.home_full_report_unlocked === true;
+
+      setText(
+        "homeWellnessPlanBadge",
+        homeReportUnlocked ? "Full Report" : "Free"
+      );
+
+      setText(
+        "homeWellnessPlan",
+        homeReportUnlocked
+          ? "Full EMF Insight Report"
+          : "Free"
+      );
+
+      setText(
+        "homeWellnessAccessStatus",
+        homeReportUnlocked
+          ? "Full report unlocked"
+          : "Free access"
+      );
+
+      setText(
+        "homeWellnessReports",
+        homeReportUnlocked ? "Unlocked" : "Not included"
+      );
+
+      // BUSINESS SURVEY — PLAN AND ACCESS
+      const normalizedPlan = String(me.plan || "free")
+        .trim()
+        .toLowerCase();
+
+      let planLabel = "Free";
+
+      if (normalizedPlan === "professional") {
+        planLabel = "Professional";
+      } else if (normalizedPlan === "pro") {
+        planLabel = "Pro";
+      } else if (normalizedPlan === "single") {
+        planLabel = "Single";
+      }
+
+      setText("businessSurveyPlanBadge", planLabel);
+      setText("businessSurveyPlan", planLabel);
+
+      // BUSINESS ACCESS STATUS
+      const assessmentLimit = Number(me.assessment_limit ?? 0);
+      const assessmentsUsed = Number(me.assessments_used ?? 0);
+      const isDemo = me.professional_demo_active === true;
+      const hasActiveEntitlement = assessmentLimit > 0;
+
+      setText(
+        "businessSurveyAccessStatus",
+        isDemo
+          ? "Demo"
+          : hasActiveEntitlement
+            ? "Active"
+            : "Not activated"
+      );
+
+      setText(
+        "businessSurveyAssessments",
+        hasActiveEntitlement
+          ? `${assessmentsUsed} / ${assessmentLimit} used`
+          : "Not activated"
+      );
+
+      setText(
+        "businessSurveyReports",
+        me.credits != null
+          ? `${Number(me.credits)} available`
+          : "—"
+      );
+
+      // The API field for the next reset date has not
+      // been confirmed, so do not invent a date.
+      setText("businessSurveyNextReset", "—");
+      console.log("WORKSPACE ACCESS PANEL:", me);
+
+    } catch (error) {
+      console.error(
+        "Failed to update workspace access panel:",
+        error
+      );
+    }
   };
 
 
@@ -39741,21 +39925,19 @@ return false;
         user.email ||
         "Account";
 
-      const rawPlan =
-        String(
-          user.plan ||
-          "free"
-        )
-          .trim()
-          .toLowerCase();
 
-      let planLabel =
-        "Free plan";
+      const rawPlan = String(
+        user.plan || "free"
+      ).trim().toLowerCase();
 
-      if (rawPlan === "pro") {
-        planLabel =
-          "Pro plan";
+      let planLabel = "Free plan";
+
+      if (user.role === "professional") {
+        planLabel = "Professional";
+      } else if (rawPlan === "pro") {
+        planLabel = "Pro plan";
       }
+
 
       const emailElement =
         document.getElementById(
@@ -41155,10 +41337,13 @@ return false;
       path.includes(explore) ||
       path.includes(document.getElementById("workspaceExploreButton")) ||
       path.includes(document.getElementById("workspaceExploreMenu")) ||
-      path.includes(account)
+      path.includes(account) ||
+      path.includes(document.getElementById("workspaceAccessInfoButton")) ||
+      path.includes(document.getElementById("workspaceAccessPanel"))
     ) {
       return;
     }
+
 
     closeWorkspaceDropdowns();
   });
