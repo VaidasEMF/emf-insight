@@ -145,6 +145,14 @@ function createDefaultFloor(
 
         name,
 
+        // ==================================================
+        // FLOOR PLAN VERSION CONTROL
+        // ==================================================
+
+        activePlanVersionId: null,
+
+        planVersions: [],
+
         // =================================================
         // PROFESSIONAL SPATIAL STRUCTURE
         // =================================================

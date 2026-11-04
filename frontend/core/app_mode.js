@@ -6923,9 +6923,6 @@ function openPropertyHealthRecord() {
             historyItems.join("");
     }
 
-    // --------------------------------------------------------
-    // OPEN
-    // --------------------------------------------------------
 
     // --------------------------------------------------------
     // OPEN
@@ -7059,7 +7056,234 @@ function populatePropertyHealthDashboard() {
             floors.length;
     }
 
+    // --------------------------------------------------------
+    // FLOOR PLANS & HISTORY
+    // --------------------------------------------------------
 
+    const floorPlansContainer =
+        document.getElementById(
+            "phrFloorPlansContainer"
+        );
+
+    if (floorPlansContainer) {
+
+        floorPlansContainer.innerHTML = "";
+
+        floors.forEach(floor => {
+
+            const versions =
+                Array.isArray(floor?.planVersions)
+                    ? floor.planVersions
+                    : [];
+
+            const activeVersion =
+                versions.find(
+                    version =>
+                        version.id === floor.activePlanVersionId
+                ) ||
+                versions.find(
+                    version => version.status === "active"
+                );
+
+            const floorCard =
+                document.createElement("div");
+
+            floorCard.className =
+                "phr-floor-plan-card";
+
+            // FLOOR PLAN THUMBNAIL
+
+            const planImage =
+                document.createElement("img");
+
+            planImage.className =
+                "phr-floor-plan-thumbnail";
+
+            planImage.alt =
+                `${floor.name || "Floor"} plan`;
+
+            if (floor.image instanceof HTMLImageElement) {
+
+                planImage.onerror = () => {
+                    console.error("[PHR PLAN IMAGE ERROR]", {
+                        floorName: floor.name,
+                        src: planImage.src,
+                        imageSrc: floor.image?.src,
+                        imageComplete: floor.image?.complete,
+                        naturalWidth: floor.image?.naturalWidth
+                    });
+                };
+
+                planImage.onload = () => {
+                    console.log("[PHR PLAN IMAGE LOADED]", {
+                        floorName: floor.name,
+                        src: planImage.src,
+                        naturalWidth: planImage.naturalWidth
+                    });
+                };
+
+                planImage.src =
+                    floor.image.currentSrc || floor.image.src;
+
+            } else if (
+                typeof floor.imageData === "string" &&
+                floor.imageData.startsWith("data:image/")
+            ) {
+                planImage.src = floor.imageData;
+            } else {
+                console.warn("[PHR PLAN IMAGE MISSING]", {
+                    floorName: floor.name
+                });
+            }
+
+            floorCard.appendChild(planImage);
+
+            // FLOOR PLAN INFORMATION
+
+            const floorDetails =
+                document.createElement("div");
+
+            floorDetails.className =
+                "phr-floor-plan-details";
+
+            const floorMainInfo =
+                document.createElement("div");
+
+            floorMainInfo.className =
+                "phr-floor-plan-main-info";
+
+            const floorTitle =
+                document.createElement("h3");
+
+            floorTitle.textContent =
+                floor.name || "Unnamed Floor";
+
+            const planInfo =
+                document.createElement("p");
+
+            planInfo.textContent =
+                activeVersion
+                    ? `Active plan · Version ${activeVersion.version}`
+                    : "No active plan version";
+
+            const historyInfo =
+                document.createElement("p");
+
+            historyInfo.textContent =
+                `${versions.length} plan version${versions.length === 1 ? "" : "s"} saved`;
+
+            floorMainInfo.append(
+                floorTitle,
+                historyInfo
+            );
+
+            const floorTechnicalInfo =
+                document.createElement("div");
+
+            floorTechnicalInfo.className =
+                "phr-floor-plan-technical-info";
+
+            const calibrationInfo =
+                document.createElement("p");
+
+            calibrationInfo.textContent =
+                `Calibration: ${floor.scaleConfirmed
+                    ? "Confirmed"
+                    : "Not confirmed"
+                }`;
+
+            const fileInfo =
+                document.createElement("p");
+
+            fileInfo.textContent =
+                activeVersion?.plan?.imageFileName ||
+                "Plan file information unavailable";
+
+            floorTechnicalInfo.append(
+                planInfo,
+                calibrationInfo,
+                fileInfo
+            );
+
+            // PLAN RECORDS
+
+            const floorPlanRecords =
+                document.createElement("div");
+
+            floorPlanRecords.className =
+                "phr-floor-plan-records";
+
+            const archivedVersions = versions.filter(
+                version => version.status === "archived"
+            );
+
+            const savedAssessments = versions.filter(
+                version => !!version.assessment
+            );
+
+            const archivedDates = archivedVersions
+                .map(version => version.archivedAt)
+                .filter(Boolean)
+                .map(date => new Date(date))
+                .filter(date => !Number.isNaN(date.getTime()))
+                .sort((a, b) => b - a);
+
+            const lastArchived = archivedDates.length
+                ? archivedDates[0].toLocaleDateString()
+                : "—";
+
+            floorPlanRecords.innerHTML = `
+    <h4>Plan Records</h4>
+
+    <p>
+        <span>Archived versions</span>
+        <strong>${archivedVersions.length}</strong>
+    </p>
+
+    <p>
+        <span>Saved assessments</span>
+        <strong>${savedAssessments.length}</strong>
+    </p>
+
+    <p>
+        <span>Last archived</span>
+        <strong>${lastArchived}</strong>
+    </p>
+`;
+
+            floorDetails.append(
+                floorMainInfo,
+                floorTechnicalInfo,
+                floorPlanRecords
+            );
+
+            const historyButton = document.createElement("button");
+            historyButton.type = "button";
+            historyButton.className = "phr-floor-history-button";
+            historyButton.textContent = "View Plan History →";
+
+            historyButton.addEventListener("click", () => {
+                window.openHomeFloorPlanHistoryInfo?.(floor);
+            });
+
+            floorDetails.appendChild(historyButton);
+
+            floorCard.append(
+                planImage,
+                floorDetails
+            );
+
+            floorPlansContainer.appendChild(
+                floorCard
+            );
+
+        });
+
+        if (floors.length === 0) {
+            floorPlansContainer.textContent =
+                "No floor plans added yet.";
+        }
+    }
 
     // --------------------------------------------------------
     // ENVIRONMENT
@@ -7459,6 +7683,14 @@ function openPropertyHealthDashboard() {
         behavior: "smooth",
         block: "start"
     });
+
+    // Activate Property Health Record in the Wellness sidebar.
+    document.querySelectorAll("[data-home-nav]").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.homeNav === "property-record"
+        );
+    });
 }
 
 function openPropertyHealthDashboard() {
@@ -7536,6 +7768,14 @@ function openPropertyHealthDashboard() {
 
     view.hidden = false;
     view.style.display = "block";
+
+    // Activate Property Health Record navigation.
+    document.querySelectorAll("[data-home-nav]").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.homeNav === "property-record"
+        );
+    });
 
     // ----------------------------------------------------
     // UPDATE PROPERTY TITLE

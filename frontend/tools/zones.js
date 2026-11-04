@@ -4296,26 +4296,12 @@ function updateZoneStatusUI() {
 
 function finishZone() {
 
-    console.error(
-        "FINISH ZONE RUN"
-    );
+    console.log("[FINISH ZONE] Called", {
+        appMode: window.AppMode?.current,
+        zoneDraft: AppState.ui.zoneDraft
+    });
 
-    console.trace("FINISH START");
 
-    console.error(
-        "FINISH CURRENT ZONE",
-        AppState.ui.zoneDraft
-    );
-
-    console.error(
-        "ZONE TYPE AT FINISH",
-        AppState.ui.zoneDraft?.type
-    );
-
-    console.error(
-        "FINISH CURRENT ZONE ID",
-        AppState.ui.zoneDraft?.id
-    );
 
     // 🔥 nothing drawn
     if (
@@ -4563,6 +4549,29 @@ function finishZone() {
 
         zone.hoursPerDay =
             null;
+    }
+
+    // HOME MODE — generate Lifestyle measurement points
+    if (window.AppMode?.current === "home") {
+
+        const measurementPoints =
+            window.HomeMeasurements
+                ?.generateLifestyleMeasurementPoints(
+                    zone,
+                    floor
+                ) || [];
+
+        zone.measurementPoints =
+            measurementPoints;
+
+        console.log(
+            "[HOME ZONE] Measurement points generated",
+            {
+                zoneId: zone.id,
+                count: measurementPoints.length,
+                points: measurementPoints
+            }
+        );
     }
 
     floor.zones.push(

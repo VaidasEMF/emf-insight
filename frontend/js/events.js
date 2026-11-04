@@ -2,6 +2,11 @@
 
 const S = window.AppState.measurement;
 
+// =====================
+// CANVAS NAVIGATION TOOL
+// =====================
+
+window.canvasNavigationMode = "select";
 
 function handleMouseDown(evt) {
 
@@ -205,6 +210,102 @@ function handleMouseDown(evt) {
         return;
     }
 
+    // ==================================================
+    // HOME LIFESTYLE MEASUREMENT POINT CLICK
+    // ==================================================
+
+    if (
+        window.AppMode?.current === "home" &&
+        window.EMFViewport?.worldPoint &&
+        window.canvas
+    ) {
+
+
+        console.log("[HOME POINT CLICK] Handler reached", {
+            p,
+            mode: window.AppMode?.current
+        });
+        let nearestPoint = null;
+        let nearestDistance = 16;
+
+        console.log(
+            "[HOME POINT CLICK] DISTANCE CHECK",
+            (floor.zones || []).flatMap(zone =>
+                (zone.measurementPoints || []).map(point => ({
+                    pointId: point.id,
+                    distance: Math.hypot(
+                        Number(point.x) - p.x,
+                        Number(point.y) - p.y
+                    )
+                }))
+            )
+        );
+
+        (floor.zones || []).forEach(zone => {
+            if (
+                !zone?.zoneType ||
+                !Array.isArray(zone.measurementPoints)
+            ) return;
+
+            zone.measurementPoints.forEach(point => {
+                if (
+                    !Number.isFinite(Number(point.x)) ||
+                    !Number.isFinite(Number(point.y))
+                ) return;
+
+
+                const screen = window.EMFViewport.worldPoint({
+                    x: Number(point.x),
+                    y: Number(point.y)
+                });
+
+                const rect = window.canvas.getBoundingClientRect();
+
+                const clickX = evt.clientX - rect.left;
+                const clickY = evt.clientY - rect.top;
+
+                const distance = Math.hypot(
+                    screen.x - clickX,
+                    screen.y - clickY
+                );
+
+                console.log("[HOME POINT SCREEN HIT TEST]", {
+                    pointId: point.id,
+                    screen,
+                    clickX,
+                    clickY,
+                    distance
+                });
+
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestPoint = { zone, point };
+                }
+            });
+        });
+
+        if (nearestPoint) {
+
+            console.log("[HOME POINT CLICK] HIT", {
+                zoneId: nearestPoint.zone.id,
+                pointId: nearestPoint.point.id,
+                distance: nearestDistance
+            });
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            window.HomeMeasurements?.openCanvasPoint(
+                nearestPoint.zone.id,
+                nearestPoint.point.id
+            );
+
+
+
+            return;
+
+
+        }
+    }
 
     // ==================================================
     // 🔥 CURRENT SESSION
@@ -2242,55 +2343,35 @@ function handleMouseDown(evt) {
             // 🔥 LIFESTYLE AREA
             // ==================================================
 
-            if (
-                clickedLifestyleArea
-            ) {
+            if (clickedLifestyleArea) {
 
-                window.objectTool
-                    .selectedObjectId =
+                window.objectTool.selectedObjectId =
                     clickedLifestyleArea.id;
-
-
-                window.objectTool
-                    .draggingObject =
-                    clickedLifestyleArea;
-
 
                 window.activePopupZone =
                     clickedLifestyleArea;
-
 
                 window.selectedLifestyleArea =
                     clickedLifestyleArea;
 
 
                 // ==================================================
-                // 🔥 DOUBLE CLICK → EDIT POPUP
+                // DOUBLE CLICK → EDIT POPUP
                 // ==================================================
 
-                if (
-                    evt.detail >= 2
-                ) {
+                if (evt.detail >= 2) {
 
-                    window.objectTool
-                        .draggingObject =
-                        null;
+                    window.objectTool.draggingObject = null;
 
+                    window.objectTool.homeMeasurementPointOffsets = null;
 
-                    if (
-                        window.dragState
-                    ) {
-
-                        window.dragState
-                            .isDragging =
-                            false;
+                    if (window.dragState) {
+                        window.dragState.isDragging = false;
                     }
-
 
                     window.showLifestyleAreaPopup?.(
                         clickedLifestyleArea
                     );
-
 
                     requestRender?.();
 
@@ -2299,13 +2380,65 @@ function handleMouseDown(evt) {
 
 
                 // ==================================================
-                // 🔥 SINGLE CLICK → SELECT + DRAG
+                // HOME — BLOCK MOVEMENT AFTER FIRST MEASUREMENT
                 // ==================================================
+
+                if (
+                    window.AppMode?.current === "home" &&
+                    clickedLifestyleArea.measurementLocked === true
+                ) {
+
+                    window.objectTool.draggingObject = null;
+
+                    window.objectTool.homeMeasurementPointOffsets = null;
+
+                    if (window.dragState) {
+                        window.dragState.isDragging = false;
+                    }
+
+                    console.log(
+                        "[HOME ZONE] Movement blocked — measurements are locked",
+                        clickedLifestyleArea.id
+                    );
+
+                    requestRender?.();
+
+                    return;
+                }
+
+
+                // ==================================================
+                // HOME — SAVE ORIGINAL MEASUREMENT POINT OFFSETS
+                // ==================================================
+
+                if (
+                    window.AppMode?.current === "home" &&
+                    Array.isArray(clickedLifestyleArea.measurementPoints)
+                ) {
+
+                    window.objectTool.homeMeasurementPointOffsets =
+                        clickedLifestyleArea.measurementPoints.map(point => ({
+                            id: point.id,
+                            offsetX: Number(point.x) - Number(clickedLifestyleArea.x),
+                            offsetY: Number(point.y) - Number(clickedLifestyleArea.y)
+                        }));
+
+                } else {
+
+                    window.objectTool.homeMeasurementPointOffsets = null;
+                }
+
+
+                // ==================================================
+                // SINGLE CLICK → SELECT + DRAG
+                // ==================================================
+
+                window.objectTool.draggingObject =
+                    clickedLifestyleArea;
 
                 startDrag?.(
                     clickedLifestyleArea
                 );
-
 
                 requestRender?.();
 
@@ -2996,19 +3129,15 @@ function handleMouseDown(evt) {
     const scalePopupOpen =
         document.getElementById("scaleModal")?.style.display !== "none" &&
         !!document.getElementById("scaleModal");
-
     const canPan =
-        spacePressed &&
-        !hasActiveObjectPlacement ||
         (
-            !hasActiveObjectPlacement &&
-            !scalePopupOpen &&
-            (
-                !activeMode ||
-                activeMode === "idle" ||
-                activeMode === "select" ||
-                activeMode === "sources"
-            )
+            spacePressed ||
+            window.canvasNavigationMode === "pan"
+        ) &&
+        !hasActiveObjectPlacement &&
+        (
+            spacePressed ||
+            !scalePopupOpen
         );
 
 
@@ -3221,6 +3350,21 @@ function handleMouseMove(evt) {
             evt,
             canvas
         );
+
+    const pendingLifestyle =
+        window.objectTool?.pendingLifestyleDimensions;
+
+    if (
+        pendingLifestyle &&
+        window.objectTool?.currentType
+    ) {
+        window.objectTool.previewPoint = {
+            x: p.x,
+            y: p.y
+        };
+
+        window.requestRender?.();
+    }
 
 
     if (
@@ -4013,15 +4157,34 @@ function handleMouseMove(evt) {
         }
 
 
+        // HOME — keep measurement points fixed relative to zone
+        if (
+            window.AppMode?.current === "home" &&
+            selectedObject.zoneType &&
+            Array.isArray(selectedObject.measurementPoints)
+        ) {
+            const offsets =
+                window.objectTool.homeMeasurementPointOffsets || [];
+
+            selectedObject.measurementPoints.forEach(point => {
+                const offset = offsets.find(item => item.id === point.id);
+
+                if (!offset) return;
+
+                point.x = p.x + offset.offsetX;
+                point.y = p.y + offset.offsetY;
+            });
+        }
+
+        selectedObject.x = p.x;
+        selectedObject.y = p.y;
+
         // ==================================================
-        // MOVE
+        // MOVE ZONE
         // ==================================================
 
-        selectedObject.x =
-            p.x;
-
-        selectedObject.y =
-            p.y;
+        selectedObject.x = p.x;
+        selectedObject.y = p.y;
 
 
         // ==================================================
@@ -4747,3 +4910,132 @@ window.handleMouseMove =
 
 window.handleMouseUp =
     handleMouseUp;
+
+// ==================================================
+// CANVAS NAVIGATION TOOLBAR
+// ==================================================
+
+const canvasSelectButton =
+    document.getElementById("canvasSelectTool");
+
+const canvasPanButton =
+    document.getElementById("canvasPanTool");
+
+const canvasZoomInButton =
+    document.getElementById("canvasZoomIn");
+
+const canvasZoomOutButton =
+    document.getElementById("canvasZoomOut");
+
+const canvasFitScreenButton =
+    document.getElementById("canvasFitScreen");
+
+const canvasZoom100Button =
+    document.getElementById("canvasZoom100");
+
+
+function setCanvasNavigationMode(mode) {
+
+    window.canvasNavigationMode = mode;
+
+    canvasSelectButton?.classList.toggle(
+        "active",
+        mode === "select"
+    );
+
+    canvasPanButton?.classList.toggle(
+        "active",
+        mode === "pan"
+    );
+
+    console.log(
+        "CANVAS NAVIGATION MODE:",
+        mode
+    );
+}
+
+function zoomCanvas(factor) {
+
+    if (!window.EMFViewport || !window.canvas) {
+        return;
+    }
+
+    const centerX =
+        window.canvas.width / 2;
+
+    const centerY =
+        window.canvas.height / 2;
+
+    window.EMFViewport.zoomAt(
+        centerX,
+        centerY,
+        factor
+    );
+
+    window.requestRender?.();
+}
+
+
+canvasSelectButton?.addEventListener(
+    "click",
+    () => setCanvasNavigationMode("select")
+);
+
+canvasPanButton?.addEventListener(
+    "click",
+    () => setCanvasNavigationMode("pan")
+);
+
+canvasZoomInButton?.addEventListener(
+    "click",
+    () => zoomCanvas(1.2)
+);
+
+canvasZoomOutButton?.addEventListener(
+    "click",
+    () => zoomCanvas(1 / 1.2)
+);
+
+canvasFitScreenButton?.addEventListener(
+    "click",
+    () => {
+
+        window.EMFViewport?.resetZoom();
+
+        window.requestRender?.();
+    }
+);
+
+canvasZoom100Button?.addEventListener(
+    "click",
+    () => {
+
+        const viewport = window.EMFViewport;
+
+        if (!viewport?.baseScale) {
+            return;
+        }
+
+        const targetZoom =
+            1 / viewport.baseScale;
+
+        const centerX =
+            viewport.viewportWidth / 2;
+
+        const centerY =
+            viewport.viewportHeight / 2;
+
+        viewport.zoomAt(
+            centerX,
+            centerY,
+            targetZoom / viewport.zoom
+        );
+
+        window.requestRender?.();
+    }
+);
+
+
+setCanvasNavigationMode(
+    window.canvasNavigationMode || "select"
+);

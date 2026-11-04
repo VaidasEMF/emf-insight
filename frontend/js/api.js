@@ -10,6 +10,14 @@ const API =
         ? "http://127.0.0.1:8000"
         : "https://emf-insight.onrender.com";
 
+
+
+window.getCurrentProjectId = () =>
+    AppState.project?.project_id ??
+    AppState.project?.id ??
+    currentProjectId ??
+    null;
+
 // =====================
 // 🔥 AUTH HEADERS
 // =====================
@@ -29,6 +37,21 @@ function getAuthHeaders() {
 
     if (token) {
 
+        headers.Authorization =
+            `Bearer ${token}`;
+    }
+
+    return headers;
+}
+
+function getAuthHeadersForFormData() {
+
+    const token =
+        localStorage.getItem("token");
+
+    const headers = {};
+
+    if (token) {
         headers.Authorization =
             `Bearer ${token}`;
     }
@@ -1085,10 +1108,106 @@ async function createProject(options = {}) {
 // 🔥 SAVE PROJECT
 // =====================
 
+let projectSaveInFlight = 0;
+let projectSaveBatchFailed = false;
+let projectLastSavedAt = null;
+
+function updateProjectSaveStatus(status) {
+
+    const container = document.getElementById(
+        "projectSaveStatus"
+    );
+
+    const statusText = document.getElementById(
+        "projectSaveStatusText"
+    );
+
+    const lastSaved = document.getElementById(
+        "projectLastSaved"
+    );
+
+    if (!container || !statusText || !lastSaved) return;
+
+    container.style.display = "flex";
+
+    container.classList.remove(
+        "status-saving",
+        "status-dirty",
+        "status-error"
+    );
+
+    if (status === "saving") {
+
+        container.classList.add("status-saving");
+        statusText.textContent = "Saving…";
+        lastSaved.textContent = "";
+
+    } else if (status === "saved") {
+
+        statusText.textContent = "All changes saved";
+
+        lastSaved.textContent = projectLastSavedAt
+            ? `Last saved ${projectLastSavedAt}`
+            : "Last saved just now";
+
+    } else if (status === "error") {
+
+        container.classList.add("status-error");
+        statusText.textContent = "Save failed";
+        lastSaved.textContent = "Please try again";
+
+    }
+}
+
+function startProjectSaveStatus() {
+
+    if (projectSaveInFlight === 0) {
+        projectSaveBatchFailed = false;
+    }
+
+    projectSaveInFlight++;
+
+    updateProjectSaveStatus("saving");
+}
+
+function finishProjectSaveStatus(success) {
+
+    if (!success) {
+        projectSaveBatchFailed = true;
+    }
+
+    projectSaveInFlight = Math.max(
+        0,
+        projectSaveInFlight - 1
+    );
+
+    if (projectSaveInFlight > 0) return;
+
+    if (projectSaveBatchFailed) {
+        updateProjectSaveStatus("error");
+        return;
+    }
+
+    projectLastSavedAt = "just now";
+
+    updateProjectSaveStatus("saved");
+}
+
 async function saveProject() {
 
+    startProjectSaveStatus();
+
+    let saveStatusFinished = false;
+
+    const finishSaveStatus = (success) => {
+        if (saveStatusFinished) return;
+
+        saveStatusFinished = true;
+        finishProjectSaveStatus(success);
+    };
+
     // =====================
-    // 🔥 ACTIVE PROJECT ID
+    // ACTIVE PROJECT ID
     // =====================
 
     const activeProjectId =
@@ -1103,48 +1222,31 @@ async function saveProject() {
         "🔥 SAVE PROJECT",
         {
             activeProjectId,
-
-            globalProjectId:
-                currentProjectId ??
-                null
+            globalProjectId: currentProjectId ?? null
         }
     );
 
     // ==================================================
-    // 🔒 SAVE MUST NEVER CREATE A PROJECT
+    // SAVE MUST NEVER CREATE A PROJECT
     // ==================================================
 
-    if (
-        !activeProjectId
-    ) {
-
-        console.warn(
-            "⚠️ SAVE SKIPPED — NO ACTIVE PROJECT"
-        );
-
+    if (!activeProjectId) {
+        console.warn("⚠️ SAVE SKIPPED — NO ACTIVE PROJECT");
         return false;
     }
 
-    // ==================================================
-    // 🔥 SYNC CURRENT PROJECT ID
-    // ==================================================
-
-    currentProjectId =
-        activeProjectId;
+    currentProjectId = activeProjectId;
 
     try {
-        console.error("SAVE FLOOR OBJECT");
 
-        console.error(
-            AppState.project.floors[0]
-        );
+        console.log("SAVE FLOOR OBJECT");
+        console.log(AppState.project.floors[0]);
 
-        console.log("===== 🔥APPSTATE BEFORE SAVE =====");
+        console.log("===== APPSTATE BEFORE SAVE =====");
 
         const floor = AppState.project.floors[0];
 
         console.log("Floor keys:", Object.keys(floor));
-
         console.log("Canvas:", floor.canvasWidth, floor.canvasHeight);
 
         floor.zones.forEach(z => {
@@ -1157,36 +1259,15 @@ async function saveProject() {
             );
         });
 
-        // =====================================================
-        // 🔥 PHI PROJECT DATA
-        // =====================================================
-        //
-        // Save the complete active project.
-        //
-        // IMPORTANT:
-        // AppState.project already contains the canonical
-        // PHI identity:
-        //
-        //     propertyId
-        //     assessmentId
-        //     assessmentContext
-        //     floors
-        //     etc.
-        //
-        // We must persist the complete project object instead
-        // of rebuilding a reduced legacy object containing only
-        // floors / image / project_id.
-        //
-        // =====================================================
+        // ==================================================
+        // PHI PROJECT DATA
+        // ==================================================
 
         const projectData = {
 
             ...AppState.project,
 
-            // =================================================
             // PROPERTY CONTEXT
-            // =================================================
-
             propertyId:
                 AppState.project.propertyId ||
                 AppState.property?.id ||
@@ -1197,247 +1278,172 @@ async function saveProject() {
                 AppState.property?.propertyHealthRecordId ||
                 null,
 
-            // =================================================
             // PROPERTY LOCATION
-            // =================================================
+            country: AppState.property?.country || "",
+            state: AppState.property?.state || "",
+            region: AppState.property?.region || "",
+            city: AppState.property?.city || "",
+            address: AppState.property?.address || "",
 
-            country:
-                AppState.property?.country ||
-                "",
-
-            state:
-                AppState.property?.state ||
-                "",
-
-            region:
-                AppState.property?.region ||
-                "",
-
-            city:
-                AppState.property?.city ||
-                "",
-
-            address:
-                AppState.property?.address ||
-                "",
-
-            // =================================================
             // ASSESSMENT CONTEXT
-            // =================================================
-
             assessmentId:
-                AppState.project.assessmentId ||
-                null,
+                AppState.project.assessmentId || null,
 
             assessmentContext:
-                AppState.project.assessmentContext ||
-                null,
+                AppState.project.assessmentContext || null,
 
-            // =================================================
             // FLOORS
-            // =================================================
+            floors: Array.isArray(AppState.project.floors)
+                ? AppState.project.floors
+                : [],
 
-            floors:
-                Array.isArray(
-                    AppState.project.floors
-                )
-                    ? AppState.project.floors
-                    : [],
-
-            // =================================================
             // PROJECT ID
-            // =================================================
-
-            project_id:
-                currentProjectId || null
+            project_id: currentProjectId || null
         };
 
+        // ==================================================
+        // DIAGNOSTIC DATA
+        // ==================================================
 
-
-
-
-
-        const room =
-            AppState.project.floors[0]
-                ?.rooms?.[0];
+        const room = AppState.project.floors[0]?.rooms?.[0];
 
         if (room) {
-
-            console.error(
+            console.log(
                 "ROOM BEFORE JSON",
                 JSON.stringify(room.polygon)
             );
-
         }
 
-        console.error(
+        console.log(
             "CANVAS",
             AppState.project.floors[0].canvasWidth,
             AppState.project.floors[0].canvasHeight
         );
 
+        // ==================================================
+        // IMAGE DIAGNOSTICS (NON-BLOCKING)
+        // ==================================================
 
-        console.error(
-            "🔥🔥🔥 SAVE PROJECT DATA",
-            {
-                propertyId:
-                    projectData.propertyId,
-
-                propertyHealthRecordId:
-                    projectData.propertyHealthRecordId,
-
-                assessmentId:
-                    projectData.assessmentId,
-
-                assessmentContext:
-                    projectData.assessmentContext,
-
-                floors:
-                    projectData.floors?.length,
-
-                rooms:
-                    projectData.floors?.[0]?.rooms?.length,
-
-                zones:
-                    projectData.floors?.[0]?.zones?.length,
-
-                zoneIds:
-                    projectData.floors?.[0]?.zones?.map(
-                        z => z?.id
-                    ),
-
-                sources:
-                    projectData.floors?.[0]?.sources?.length
-            }
-        );
-
-        console.error(
-            "🔥🔥🔥 IMAGE DATA AT SAVE",
-            projectData.floors.map(
-                floor => ({
-                    floorId:
-                        floor?.id,
-
-                    floorName:
-                        floor?.name,
-
-                    imageDataExists:
-                        !!floor?.imageData,
-
-                    imageDataLength:
-                        floor?.imageData?.length || 0,
-
-                    imageFileName:
-                        floor?.imageFileName,
-
-                    imageWidth:
-                        floor?.image?.width ?? null,
-
-                    imageHeight:
-                        floor?.image?.height ?? null
-                })
-            )
-        );
-
-        for (
-            const floor of projectData.floors
-        ) {
+        for (const floor of projectData.floors) {
 
             if (!floor?.imageData) {
                 continue;
             }
 
-            const testImg =
-                new Image();
+            const testImg = new Image();
 
             testImg.onload = () => {
-
-                console.error(
-                    "🔥🔥🔥 IMAGE DATA SIZE AT SAVE",
+                console.log(
+                    "[IMAGE DATA SIZE AT SAVE]",
                     {
-                        floor:
-                            floor.name,
-
-                        floorId:
-                            floor.id,
-
-                        width:
-                            testImg.naturalWidth,
-
-                        height:
-                            testImg.naturalHeight,
-
-                        imageDataLength:
-                            floor.imageData.length
+                        floor: floor.name,
+                        floorId: floor.id,
+                        width: testImg.naturalWidth,
+                        height: testImg.naturalHeight,
+                        imageDataLength: floor.imageData.length
                     }
                 );
             };
 
-            testImg.src =
-                floor.imageData;
+            testImg.onerror = () => {
+                console.warn(
+                    "[IMAGE DIAGNOSTIC] Image could not be decoded:",
+                    floor.name
+                );
+            };
+
+            testImg.src = floor.imageData;
         }
 
+        // ==================================================
+        // SERIALIZE REQUEST
+        // ==================================================
+
+        console.time("[SAVE] JSON stringify");
+
+        const requestBody = JSON.stringify({
+            project_id: currentProjectId,
+            data: projectData
+        });
+
+        console.timeEnd("[SAVE] JSON stringify");
+
+        console.log("[SAVE] Request size:", {
+            characters: requestBody.length,
+            megabytes: (
+                requestBody.length * 2 / 1024 / 1024
+            ).toFixed(2)
+        });
+
+        // ==================================================
+        // SEND REQUEST
+        // ==================================================
+
+        console.time("[SAVE] Server request");
+
         const res = await fetch(
-
             `${API}/project/save`,
-
             {
                 method: "POST",
-
-                headers:
-                    getAuthHeaders(),
-
-                body: JSON.stringify({
-
-                    project_id:
-                        currentProjectId,
-
-                    data:
-                        projectData
-                })
+                headers: getAuthHeaders(),
+                body: requestBody
             }
         );
 
-        const data =
-            await res.json();
+        console.timeEnd("[SAVE] Server request");
 
-        if (data.project_id) {
+        console.log("[SAVE] HTTP response:", {
+            status: res.status,
+            ok: res.ok
+        });
 
-            currentProjectId =
-                data.project_id;
+        // ==================================================
+        // PROCESS RESPONSE
+        // ==================================================
+
+        console.time("[SAVE] Response JSON");
+
+        const data = await res.json();
+
+        console.timeEnd("[SAVE] Response JSON");
+
+        if (res.ok && data.project_id) {
+
+            currentProjectId = data.project_id;
 
             localStorage.setItem(
                 "project_id",
                 currentProjectId
             );
 
-            console.log(
-                "PROJECT SAVED"
-            );
+            console.log("PROJECT SAVED");
+
+            finishSaveStatus(true);
 
             return true;
         }
 
-        else {
-
-            console.error(
-                "❌ PROJECT SAVE FAILED",
+        console.error(
+            "❌ PROJECT SAVE FAILED",
+            {
+                status: res.status,
                 data
-            );
+            }
+        );
 
-            return false;
-        }
+        finishSaveStatus(false);
 
-
+        return false;
 
     }
-
     catch (err) {
 
         console.error(
             "❌ SAVE PROJECT ERROR",
             err
         );
+
+        finishSaveStatus(false);
 
         return false;
     }
@@ -2138,621 +2144,6 @@ async function loadProjectList() {
     }
 }
 
-async function openExistingProject(
-    projectId
-) {
-
-    console.log(
-        "================================="
-    );
-
-    console.log(
-        "🔥 OPEN EXISTING PROJECT START",
-        {
-            projectId
-        }
-    );
-
-
-    if (
-        !projectId
-    ) {
-
-        console.error(
-            "❌ INVALID PROJECT ID"
-        );
-
-        return false;
-    }
-
-
-    try {
-
-        // ==================================================
-        // FETCH PROJECT
-        // ==================================================
-
-        const res =
-            await fetch(
-                `${API}/project/${projectId}`,
-                {
-                    method:
-                        "GET",
-
-                    headers:
-                        getAuthHeaders()
-                }
-            );
-
-
-        if (
-            !res.ok
-        ) {
-
-            console.error(
-                "❌ PROJECT FETCH FAILED",
-                {
-                    projectId,
-                    status:
-                        res.status,
-                    statusText:
-                        res.statusText
-                }
-            );
-
-            alert(
-                "Unable to open this project."
-            );
-
-            return false;
-        }
-
-
-        const response =
-            await res.json();
-
-
-        console.log(
-            "🔥 OPEN PROJECT RAW RESPONSE",
-            response
-        );
-
-
-        const project =
-            response.data ||
-            response.project ||
-            response;
-
-
-        if (
-            !project
-        ) {
-
-            console.error(
-                "❌ PROJECT DATA NOT FOUND",
-                {
-                    projectId
-                }
-            );
-
-            return false;
-        }
-
-
-        // ==================================================
-        // PROJECT TYPE
-        // ==================================================
-
-        const projectType =
-            project.type ||
-            project.project_type ||
-            project.projectType ||
-            "";
-
-
-        console.log(
-            "🔥 OPEN PROJECT TYPE",
-            {
-                projectId,
-                projectType
-            }
-        );
-
-
-        // ==================================================
-        // BUSINESS
-        // ==================================================
-
-        if (
-            projectType ===
-            "business"
-        ) {
-
-            localStorage.setItem(
-                "business_project_id",
-                String(projectId)
-            );
-            console.log(
-                "🔥 OPENING BUSINESS PROJECT",
-                {
-                    projectId
-                }
-            );
-
-
-            const loaded =
-                await window.loadProject(
-                    projectId
-                );
-
-
-            if (
-                !loaded
-            ) {
-
-                console.error(
-                    "❌ BUSINESS PROJECT LOAD FAILED",
-                    {
-                        projectId
-                    }
-                );
-
-                // IMPORTANT:
-                // Do NOT close popup here.
-
-                alert(
-                    "Unable to open this Business project."
-                );
-
-                return false;
-            }
-
-
-            // ------------------------------------------------
-            // BUSINESS SUCCESS
-            // ------------------------------------------------
-
-            updateWorkspaceUI?.();
-
-            updateProjectHeader?.();
-
-            updateWorkflowUI?.();
-
-            updateCurrentExposure?.();
-
-            requestRender?.();
-
-
-            const popup =
-                document.getElementById(
-                    "openProjectPopup"
-                );
-
-
-            if (
-                popup
-            ) {
-
-                popup.style.display =
-                    "none";
-            }
-
-
-            console.log(
-                "🔥 BUSINESS PROJECT OPEN COMPLETE",
-                {
-                    projectId
-                }
-            );
-
-
-            console.log(
-                "================================="
-            );
-
-
-            return true;
-        }
-
-
-        // ==================================================
-        // HOME
-        // ==================================================
-
-        if (
-            projectType ===
-            "home"
-        ) {
-
-            console.log(
-                "🔥 OPENING HOME PROJECT",
-                {
-                    projectId
-                }
-            );
-
-
-            const loadedProjectId =
-                project.project_id ??
-                project.id ??
-                projectId;
-
-
-            project.project_id =
-                loadedProjectId;
-
-
-            project.id =
-                loadedProjectId;
-
-
-            // ------------------------------------------------
-            // HOME NORMALIZATION
-            // ------------------------------------------------
-
-            if (
-                !Array.isArray(
-                    project.floors
-                )
-            ) {
-
-                project.floors =
-                    [];
-            }
-
-
-            if (
-                !Array.isArray(
-                    project.outdoorSources
-                )
-            ) {
-
-                project.outdoorSources =
-                    [];
-            }
-
-
-            // ------------------------------------------------
-            // HOME ACTIVE PROJECT
-            // ------------------------------------------------
-
-            AppState.homeProject =
-                project;
-
-
-            AppState.project =
-                project;
-
-
-            window.project =
-                project;
-
-            // ==================================================
-            // 🔥 RESTORE CANONICAL PROPERTY FROM HOME PROJECT
-            // ==================================================
-
-            if (
-                projectType ===
-                "home" &&
-                window.AppState?.property
-            ) {
-
-                AppState.property.id =
-                    project.propertyId ||
-                    AppState.property.id ||
-                    null;
-
-                AppState.property.propertyHealthRecordId =
-                    project.propertyHealthRecordId ||
-                    AppState.property.propertyHealthRecordId ||
-                    null;
-
-                AppState.property.createdAt =
-                    project.propertyCreatedAt ||
-                    AppState.property.createdAt ||
-                    null;
-
-                AppState.property.name =
-                    project.name ||
-                    "";
-
-                AppState.property.propertyType =
-                    project.propertyType ||
-                    "";
-
-                AppState.property.country =
-                    project.country ||
-                    "";
-
-                AppState.property.state =
-                    project.state ||
-                    "";
-
-                AppState.property.region =
-                    project.region ||
-                    "";
-
-                AppState.property.city =
-                    project.city ||
-                    "";
-
-                AppState.property.postalCode =
-                    project.postalCode ||
-                    "";
-
-                AppState.property.address =
-                    project.address ||
-                    "";
-
-                AppState.property.unit =
-                    project.unit ||
-                    "";
-
-                console.log(
-                    "🔥 CANONICAL PROPERTY RESTORED:",
-                    AppState.property
-                );
-            }
-
-
-            currentProjectId =
-                null;
-
-
-            // ------------------------------------------------
-            // HOME PROJECT ID
-            // ------------------------------------------------
-
-            // ------------------------------------------------
-            // HOME PROJECT ID
-            // ------------------------------------------------
-
-            const token =
-                localStorage.getItem("token");
-
-            let userId = null;
-
-            try {
-                userId =
-                    token
-                        ? JSON.parse(
-                            atob(
-                                token.split(".")[1]
-                            )
-                        ).sub
-                        : null;
-            } catch (e) {
-                console.warn(
-                    "⚠️ Could not resolve user ID for Home project restore"
-                );
-            }
-
-            if (userId) {
-
-                localStorage.setItem(
-                    `home_project_id_${userId}`,
-                    String(loadedProjectId)
-                );
-
-            }
-
-
-            // ------------------------------------------------
-            // HOME MODE
-            // ------------------------------------------------
-
-            window.AppMode.current =
-                "home";
-
-
-            localStorage.setItem(
-                "workspaceMode",
-                "home"
-            );
-
-
-            // ------------------------------------------------
-            // CURRENT FLOOR
-            // ------------------------------------------------
-
-            if (
-                project.floors.length >
-                0
-            ) {
-
-                const savedIndex =
-                    project.currentFloorIndex;
-
-
-                if (
-                    savedIndex ===
-                    undefined ||
-                    savedIndex ===
-                    null ||
-                    savedIndex < 0 ||
-                    savedIndex >=
-                    project.floors.length
-                ) {
-
-                    project.currentFloorIndex =
-                        0;
-                }
-
-            }
-            else {
-
-                project.currentFloorIndex =
-                    0;
-            }
-
-
-            // ------------------------------------------------
-            // RESET IMAGE RUNTIME
-            // ------------------------------------------------
-
-            window.planImage =
-                null;
-
-
-            if (
-                typeof planImage !==
-                "undefined"
-            ) {
-
-                planImage =
-                    null;
-            }
-
-
-            // ------------------------------------------------
-            // LOAD CURRENT FLOOR
-            // ------------------------------------------------
-
-            const floor =
-                getCurrentFloor?.();
-
-
-            if (
-                floor
-            ) {
-
-                console.log(
-                    "🔥 HOME FLOOR RESTORE",
-                    {
-                        floorId:
-                            floor.id,
-
-                        floorName:
-                            floor.name,
-
-                        hasImage:
-                            !!floor.image,
-
-                        hasImageData:
-                            !!floor.imageData
-                    }
-                );
-
-
-                loadFloorImage(
-                    floor
-                );
-            }
-
-
-            // ------------------------------------------------
-            // HOME UI
-            // ------------------------------------------------
-
-            updateWorkspaceUI?.();
-
-            updateProjectHeader?.();
-
-            updateWorkflowUI?.();
-
-            updateHomeWorkflow?.();
-
-            updateHomeLocks?.();
-
-            updateHomeEmptyPlanState?.();
-
-            renderHomeFloorTabs?.();
-
-            renderFloorTabs?.();
-
-            updateCurrentExposure?.();
-
-
-            // ------------------------------------------------
-            // RENDER
-            // ------------------------------------------------
-
-            requestRender?.();
-
-
-            // ------------------------------------------------
-            // CLOSE ONLY AFTER SUCCESS
-            // ------------------------------------------------
-
-            const popup =
-                document.getElementById(
-                    "openProjectPopup"
-                );
-
-
-            if (
-                popup
-            ) {
-
-                popup.style.display =
-                    "none";
-            }
-
-
-            console.log(
-                "🔥 HOME PROJECT OPEN COMPLETE",
-                {
-                    projectId:
-                        loadedProjectId,
-
-                    floors:
-                        project.floors.length
-                }
-            );
-
-
-            console.log(
-                "================================="
-            );
-
-
-            return true;
-        }
-
-
-        // ==================================================
-        // UNKNOWN PROJECT TYPE
-        // ==================================================
-
-        console.error(
-            "❌ UNKNOWN PROJECT TYPE",
-            {
-                projectId,
-                projectType,
-                project
-            }
-        );
-
-
-        alert(
-            "This project does not contain a valid project type."
-        );
-
-
-        return false;
-
-    }
-    catch (
-    err
-    ) {
-
-        console.error(
-            "🔥 OPEN EXISTING PROJECT ERROR",
-            err
-        );
-
-
-        // IMPORTANT:
-        // Keep popup open if loading failed.
-
-        alert(
-            "Unable to open this project."
-        );
-
-
-        return false;
-    }
-}
 
 
 // =====================================================
@@ -5306,6 +4697,187 @@ async function performProjectDelete(
             false;
     }
 }
+
+// =================================
+// PROJECT MANAGEMENT DROPDOWN
+// =================================
+
+function initProjectManagementDropdown() {
+
+    const toggle = document.getElementById(
+        "projectManagementToggle"
+    );
+
+    const dropdown = document.getElementById(
+        "projectManagementDropdown"
+    );
+
+    if (!toggle || !dropdown) return;
+
+    if (toggle.dataset.handlerAttached === "true") return;
+
+    toggle.dataset.handlerAttached = "true";
+
+    function closeDropdown() {
+        dropdown.style.display = "none";
+        toggle.setAttribute("aria-expanded", "false");
+    }
+
+    toggle.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Close Floor Plan dropdown
+        const floorPlanDropdown = document.getElementById(
+            "homeFloorPlanDropdown"
+        );
+
+        const floorPlanToggle = document.getElementById(
+            "homeFloorPlanMenuToggle"
+        );
+
+        if (floorPlanDropdown) {
+            floorPlanDropdown.style.display = "none";
+        }
+
+        floorPlanToggle?.setAttribute("aria-expanded", "false");
+
+        const isOpen = dropdown.style.display === "block";
+
+        dropdown.style.display = isOpen ? "none" : "block";
+
+        toggle.setAttribute(
+            "aria-expanded",
+            String(!isOpen)
+        );
+    });
+
+    document.addEventListener("click", event => {
+        if (
+            !dropdown.contains(event.target) &&
+            !toggle.contains(event.target)
+        ) {
+            closeDropdown();
+        }
+    });
+
+    dropdown.addEventListener("click", event => {
+        const button = event.target.closest("button");
+
+        if (button) {
+            closeDropdown();
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener(
+        "DOMContentLoaded",
+        initProjectManagementDropdown
+    );
+} else {
+    initProjectManagementDropdown();
+}
+
+/// =================================
+// FLOOR PLAN DROPDOWN
+// =================================
+
+function initFloorPlanDropdown() {
+
+    if (document.body.dataset.floorPlanHandlerAttached === "true") {
+        return;
+    }
+
+    document.body.dataset.floorPlanHandlerAttached = "true";
+
+    document.addEventListener("click", event => {
+
+        const toggle = event.target.closest(
+            "#homeFloorPlanMenuToggle"
+        );
+
+        const dropdown = document.getElementById(
+            "homeFloorPlanDropdown"
+        );
+
+        const menuToggle = document.getElementById(
+            "homeFloorPlanMenuToggle"
+        );
+
+        if (!dropdown || !menuToggle) return;
+
+        // OPEN / CLOSE
+        if (toggle) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Close Project Actions dropdown
+            const projectDropdown = document.getElementById(
+                "projectManagementDropdown"
+            );
+
+            const projectToggle = document.getElementById(
+                "projectManagementToggle"
+            );
+
+            if (projectDropdown) {
+                projectDropdown.style.display = "none";
+            }
+
+            projectToggle?.setAttribute("aria-expanded", "false");
+
+            const isOpen = dropdown.style.display === "block";
+
+            dropdown.style.display = isOpen ? "none" : "block";
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+
+            return;
+        }
+
+        // CLICK INSIDE DROPDOWN
+        if (dropdown.contains(event.target)) {
+
+            const button = event.target.closest("button");
+
+            if (button) {
+                dropdown.style.display = "none";
+
+                menuToggle.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+
+            return;
+        }
+
+        // CLICK OUTSIDE
+        dropdown.style.display = "none";
+
+        menuToggle.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener(
+        "DOMContentLoaded",
+        initFloorPlanDropdown
+    );
+} else {
+    initFloorPlanDropdown();
+}
+
+
 
 
 function initProjectHeaderCloseButton() {

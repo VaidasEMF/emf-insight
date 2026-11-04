@@ -1471,14 +1471,9 @@ def save_project(
         # =================================================
         # FIND EXISTING PROJECT
         # =================================================
-
         project = (
-            db.query(
-                Project
-            )
-            .filter(
-                Project.id == project_id
-            )
+            db.query(Project)
+            .filter(Project.id == project_id)
             .first()
         )
 
@@ -1581,7 +1576,6 @@ def save_project(
         # =================================================
         # COMMIT
         # =================================================
-
         db.commit()
 
         # =================================================

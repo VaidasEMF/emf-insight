@@ -973,445 +973,229 @@ function loadFloorImage(floor) {
 
     if (!floor) {
 
-        window.planImage =
-            null;
-
-        planImage =
-            null;
+        window.planImage = null;
+        planImage = null;
 
         resizeCanvasSafe?.();
-
         requestRender?.();
 
         return;
     }
 
+    const projectId = AppState.project?.id;
+    const floorId = floor.id;
 
-    console.error(
-        "🔥 LOAD FLOOR IMAGE",
-        {
-            floor:
-                floor.name,
+    const isActiveFloor = () => {
+        const activeFloor =
+            AppState.project?.floors?.[
+            AppState.project.currentFloorIndex
+            ];
 
-            floorId:
-                floor.id,
+        return activeFloor === floor;
+    };
 
-            hasImage:
-                !!floor.image,
+    const updateImageUI = (img) => {
 
-            imageType:
-                typeof floor.image,
+        floor.image = img;
 
-            imageConstructor:
-                floor.image?.constructor?.name,
+        if (isActiveFloor()) {
 
-            imageWidth:
-                floor.image?.width,
+            window.planImage = img;
+            planImage = img;
 
-            imageHeight:
-                floor.image?.height,
+            resizeCanvasSafe?.();
+            requestRender?.();
 
-            naturalWidth:
-                floor.image?.naturalWidth,
+            window.updateHomeEmptyPlanState?.();
+            window.updateBusinessEmptyPlanState?.();
 
-            naturalHeight:
-                floor.image?.naturalHeight,
-
-            hasImageData:
-                !!floor.imageData,
-
-            imageDataType:
-                typeof floor.imageData,
-
-            imageDataLength:
-                floor.imageData?.length || 0,
-
-            imageFileName:
-                floor.imageFileName
+            if (window.AppMode?.current === "business") {
+                window.updateWorkflowUI?.();
+                window.updateNextStepCard?.();
+            }
         }
-    );
+    };
 
+    const clearImageUI = () => {
 
-    // ==================================================
-    // 🔥 CHECK WHETHER IMAGE IS A REAL HTML IMAGE
-    // ==================================================
+        floor.image = null;
+
+        if (isActiveFloor()) {
+
+            window.planImage = null;
+            planImage = null;
+
+            resizeCanvasSafe?.();
+            requestRender?.();
+
+            window.updateHomeEmptyPlanState?.();
+            window.updateBusinessEmptyPlanState?.();
+        }
+    };
+
+    const loadFromBase64 = () => {
+
+        if (!floor.imageData) {
+
+            console.warn(
+                "NO STORAGE PLAN OR BASE64 FALLBACK:",
+                floor.name
+            );
+
+            clearImageUI();
+            return;
+        }
+
+        console.log(
+            "LOADING FLOOR PLAN FROM BASE64:",
+            floor.name
+        );
+
+        const img = new Image();
+
+        img.onload = () => {
+            updateImageUI(img);
+        };
+
+        img.onerror = (error) => {
+
+            console.error(
+                "BASE64 FLOOR PLAN LOAD ERROR:",
+                error
+            );
+
+            clearImageUI();
+        };
+
+        img.src = floor.imageData;
+    };
+
+    // --------------------------------------------------
+    // STORAGE HAS PRIORITY
+    // --------------------------------------------------
+
+    if (floor.imagePath && projectId && floorId) {
+
+        // Reuse an image already loaded from this exact path.
+        if (
+            floor._storageImagePathLoaded === floor.imagePath &&
+            floor.image instanceof HTMLImageElement &&
+            floor.image.complete &&
+            floor.image.naturalWidth > 0
+        ) {
+
+            updateImageUI(floor.image);
+            return;
+        }
+
+        console.log(
+            "LOADING FLOOR PLAN FROM SUPABASE STORAGE:",
+            {
+                projectId,
+                floorId,
+                imagePath: floor.imagePath
+            }
+        );
+
+        const headers = getAuthHeaders();
+        delete headers["Content-Type"];
+
+        fetch(
+            `${API}/project/${projectId}/floors/${encodeURIComponent(floorId)}/plan`,
+            {
+                method: "GET",
+                headers
+            }
+        )
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Storage download failed: HTTP ${response.status}`
+                    );
+                }
+
+                return response.blob();
+            })
+            .then(blob => {
+
+                if (!blob || blob.size === 0) {
+                    throw new Error("Storage returned an empty image");
+                }
+
+                const objectUrl = URL.createObjectURL(blob);
+                const img = new Image();
+
+                img.onload = () => {
+
+                    if (floor._storageObjectUrl) {
+                        URL.revokeObjectURL(
+                            floor._storageObjectUrl
+                        );
+                    }
+
+                    floor._storageObjectUrl = objectUrl;
+                    floor._storageImagePathLoaded = floor.imagePath;
+
+                    updateImageUI(img);
+
+                    console.log(
+                        "FLOOR PLAN LOADED FROM STORAGE:",
+                        {
+                            floor: floor.name,
+                            width: img.naturalWidth,
+                            height: img.naturalHeight
+                        }
+                    );
+                };
+
+                img.onerror = (error) => {
+
+                    URL.revokeObjectURL(objectUrl);
+
+                    console.error(
+                        "STORAGE IMAGE DECODE ERROR:",
+                        error
+                    );
+
+                    loadFromBase64();
+                };
+
+                img.src = objectUrl;
+            })
+            .catch(error => {
+
+                console.warn(
+                    "STORAGE LOAD FAILED — USING BASE64 FALLBACK:",
+                    error
+                );
+
+                loadFromBase64();
+            });
+
+        return;
+    }
+
+    // --------------------------------------------------
+    // LEGACY BASE64 IMAGE
+    // --------------------------------------------------
 
     const imageIsLoaded =
         floor.image instanceof HTMLImageElement &&
         floor.image.complete &&
         floor.image.naturalWidth > 0;
 
+    if (imageIsLoaded) {
 
-    // ==================================================
-    // 🔥 REAL IMAGE ALREADY LOADED
-    // ==================================================
-
-    if (
-        imageIsLoaded
-    ) {
-
-        console.error(
-            "🔥 IMAGE ALREADY VALID AND LOADED",
-            {
-                floor:
-                    floor.name,
-
-                width:
-                    floor.image.naturalWidth,
-
-                height:
-                    floor.image.naturalHeight
-            }
-        );
-
-
-        window.planImage =
-            floor.image;
-
-        planImage =
-            floor.image;
-
-
-        resizeCanvasSafe?.();
-
-        requestRender?.();
-
-
-        window.updateHomeEmptyPlanState?.();
-        window.updateBusinessEmptyPlanState?.();
-
-        if (window.AppMode?.current === "business") {
-            window.updateWorkflowUI?.();
-            window.updateNextStepCard?.();
-        }
-
+        updateImageUI(floor.image);
         return;
     }
 
-
-    // ==================================================
-    // 🔥 INVALID IMAGE OBJECT
-    // ==================================================
-
-    if (
-        floor.image &&
-        !imageIsLoaded
-    ) {
-
-        console.warn(
-            "⚠️ INVALID FLOOR IMAGE OBJECT — RELOADING",
-            {
-                floor:
-                    floor.name,
-
-                image:
-                    floor.image,
-
-                imageType:
-                    typeof floor.image,
-
-                width:
-                    floor.image?.width,
-
-                height:
-                    floor.image?.height
-            }
-        );
-
-
-        floor.image =
-            null;
+    if (floor.image && !imageIsLoaded) {
+        floor.image = null;
     }
 
-
-    // ==================================================
-    // 🔥 NO IMAGE DATA
-    // ==================================================
-
-    if (
-        !floor.imageData
-    ) {
-
-        console.warn(
-            "❌ NO IMAGE DATA FOR FLOOR",
-            {
-                floor:
-                    floor.name,
-
-                floorId:
-                    floor.id,
-
-                imageFileName:
-                    floor.imageFileName
-            }
-        );
-
-
-        // ==================================================
-        // 🔥 IMPORTANT
-        // CLEAR ANY PREVIOUS FLOOR IMAGE
-        // ==================================================
-
-        floor.image =
-            null;
-
-        window.planImage =
-            null;
-
-        planImage =
-            null;
-
-
-        resizeCanvasSafe?.();
-
-        requestRender?.();
-
-
-        window.updateHomeEmptyPlanState?.();
-
-        window.updateBusinessEmptyPlanState?.();
-
-
-        return;
-    }
-
-
-    // ==================================================
-    // 🔥 LOAD REAL IMAGE FROM IMAGE DATA
-    // ==================================================
-
-    console.error(
-        "🔥 REBUILDING FLOOR IMAGE FROM imageData",
-        {
-            floor:
-                floor.name,
-
-            imageDataLength:
-                floor.imageData.length
-        }
-    );
-
-
-    const img =
-        new Image();
-
-
-    // ==================================================
-    // LOAD SUCCESS
-    // ==================================================
-
-    img.onload = () => {
-
-        console.error(
-            "🔥🔥🔥 IMAGE ONLOAD CALLED",
-            {
-                floor:
-                    floor.name,
-
-                floorId:
-                    floor.id,
-
-                width:
-                    img.naturalWidth,
-
-                height:
-                    img.naturalHeight
-            }
-        );
-
-
-        console.trace(
-            "🔥🔥🔥 IMAGE ONLOAD CALL STACK"
-        );
-
-
-        // ==================================================
-        // STORE REAL HTML IMAGE
-        // ==================================================
-
-        floor.image =
-            img;
-
-
-        console.error(
-            "🔥🔥 IMAGE DATA → FINAL IMAGE",
-            {
-                floor:
-                    floor.name,
-
-                floorId:
-                    floor.id,
-
-                imageDataLength:
-                    floor.imageData?.length || 0,
-
-                width:
-                    img.width,
-
-                height:
-                    img.height,
-
-                naturalWidth:
-                    img.naturalWidth,
-
-                naturalHeight:
-                    img.naturalHeight
-            }
-        );
-
-
-        window.planImage =
-            img;
-
-        planImage =
-            img;
-
-
-        // ==================================================
-        // RECALCULATE VIEWPORT
-        // ==================================================
-
-        resizeCanvasSafe?.();
-
-
-        // ==================================================
-        // RENDER
-        // ==================================================
-
-        requestRender?.();
-
-
-        // ==================================================
-        // EMPTY PLAN STATES
-        // ==================================================
-
-        window.updateHomeEmptyPlanState?.();
-        window.updateBusinessEmptyPlanState?.();
-
-        if (window.AppMode?.current === "business") {
-            window.updateWorkflowUI?.();
-            window.updateNextStepCard?.();
-        }
-
-
-        console.error(
-            "🔥🔥🔥 FLOOR IMAGE RENDER REQUESTED",
-            {
-                floor:
-                    floor.name,
-
-                canvasWidth:
-                    window.canvas?.width,
-
-                canvasHeight:
-                    window.canvas?.height
-            }
-        );
-    };
-
-
-    // ==================================================
-    // LOAD ERROR
-    // ==================================================
-
-    img.onerror = (
-        error
-    ) => {
-
-        console.error(
-            "❌❌❌ FLOOR IMAGE LOAD ERROR",
-            {
-                floor:
-                    floor.name,
-
-                floorId:
-                    floor.id,
-
-                imageFileName:
-                    floor.imageFileName,
-
-                imageDataLength:
-                    floor.imageData?.length || 0,
-
-                src:
-                    img.src?.substring(
-                        0,
-                        120
-                    ),
-
-                error
-            }
-        );
-
-
-        floor.image =
-            null;
-
-        window.planImage =
-            null;
-
-        planImage =
-            null;
-
-
-        resizeCanvasSafe?.();
-
-        requestRender?.();
-
-
-        window.updateHomeEmptyPlanState?.();
-
-        window.updateBusinessEmptyPlanState?.();
-    };
-
-
-    // ==================================================
-    // 🔥 SET SOURCE LAST
-    // ==================================================
-
-    console.error(
-        "🔥🔥 IMAGE DATA BEFORE REBUILD",
-        {
-            floor:
-                floor.name,
-
-            floorId:
-                floor.id,
-
-            imageDataLength:
-                floor.imageData?.length || 0,
-
-            imageDataPrefix:
-                floor.imageData?.substring(
-                    0,
-                    80
-                )
-        }
-    );
-
-
-    console.error(
-        "🔥🔥🔥 IMAGE SRC ASSIGNED",
-        {
-            floor:
-                floor.name,
-
-            floorId:
-                floor.id,
-
-            imageDataLength:
-                floor.imageData?.length || 0
-        }
-    );
-
-
-    console.trace(
-        "🔥🔥🔥 WHO ASSIGNED IMAGE SRC"
-    );
-
-
-    img.src =
-        floor.imageData;
+    loadFromBase64();
 }
 
 function deleteFloor(index) {
@@ -4310,12 +4094,47 @@ function renderHomeFloorTabs() {
     const menu = document.createElement("div");
     menu.className = "business-floor-menu";
     menu.hidden = true;
-
     trigger.addEventListener("click", event => {
+        event.preventDefault();
         event.stopPropagation();
 
+        // Close Project Actions dropdown
+        const projectDropdown = document.getElementById(
+            "projectManagementDropdown"
+        );
+
+        const projectToggle = document.getElementById(
+            "projectManagementToggle"
+        );
+
+        if (projectDropdown) {
+            projectDropdown.style.display = "none";
+        }
+
+        projectToggle?.setAttribute("aria-expanded", "false");
+
+        // Close Floor Plan dropdown
+        const floorPlanDropdown = document.getElementById(
+            "homeFloorPlanDropdown"
+        );
+
+        const floorPlanToggle = document.getElementById(
+            "homeFloorPlanMenuToggle"
+        );
+
+        if (floorPlanDropdown) {
+            floorPlanDropdown.style.display = "none";
+        }
+
+        floorPlanToggle?.setAttribute("aria-expanded", "false");
+
+        // Toggle Floor selector
         menu.hidden = !menu.hidden;
-        trigger.setAttribute("aria-expanded", String(!menu.hidden));
+
+        trigger.setAttribute(
+            "aria-expanded",
+            String(!menu.hidden)
+        );
     });
 
     floors.forEach((floor, index) => {
@@ -4446,7 +4265,19 @@ function renderHomeFloorTabs() {
         openNewFloorPopup?.();
     });
 
-    wrap.append(trigger, menu, addButton);
+    // Keep floor selector inside its dropdown container.
+    wrap.append(trigger, menu);
+
+    // Place Add Floor separately, next to the dropdown.
+    const floorControl = document.getElementById("homeFloorHeaderControl");
+
+    // Remove previously rendered external Add Floor button.
+    floorControl?.querySelector(".home-floor-add-external")?.remove();
+
+    if (floorControl) {
+        addButton.classList.add("home-floor-add-external");
+        floorControl.appendChild(addButton);
+    }
 
     if (!window.__homeFloorMenuOutsideHandler) {
         window.__homeFloorMenuOutsideHandler = true;
@@ -5461,6 +5292,8 @@ function switchFloor(index) {
 
         resizeCanvasSafe?.();
 
+        observeCanvasResize();
+
         requestRender?.();
 
     });
@@ -5821,6 +5654,7 @@ function resizeCanvasSafe() {
         canvasWrap ||
         canvasArea;
 
+
     if (
         !container
     ) {
@@ -5954,6 +5788,8 @@ function resizeCanvasSafe() {
             floor
         );
 
+
+
     }
     else {
 
@@ -6037,6 +5873,46 @@ function resizeCanvasSafe() {
     );
 
     return true;
+}
+
+// ==================================================
+// CANVAS CONTAINER AUTO RESIZE
+// ==================================================
+
+let canvasResizeObserver = null;
+
+function observeCanvasResize() {
+
+    const container =
+        document.getElementById("canvasWrap") ||
+        document.querySelector(".canvas-area");
+
+    if (!container) {
+        return;
+    }
+
+    if (canvasResizeObserver) {
+        canvasResizeObserver.disconnect();
+    }
+
+    canvasResizeObserver = new ResizeObserver(() => {
+
+        requestAnimationFrame(() => {
+
+            window.resizeCanvasSafe?.();
+
+            window.requestRender?.();
+
+        });
+
+    });
+
+    canvasResizeObserver.observe(container);
+
+    console.log(
+        "[CANVAS RESIZE OBSERVER] Observing:",
+        container.id || container.className
+    );
 }
 
 function refreshFloorSelect() {

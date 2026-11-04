@@ -390,7 +390,7 @@ window.EMFViewport = {
         // ==================================================
 
         if (
-            this.zoom <= 1
+            this.zoom === 1
         ) {
 
             this.zoom = 1;
@@ -558,7 +558,7 @@ window.EMFViewport = {
 
         const newZoom =
             Math.max(
-                1,
+                0.25,
                 Math.min(
                     5,
                     this.zoom *

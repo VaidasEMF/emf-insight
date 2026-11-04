@@ -674,8 +674,16 @@ function updateProjectHeader() {
     // HEADER CONTROLS
     // ==================================================
 
+
+
     const isHomeWorkspace =
         window.AppMode?.current === "home";
+
+    const hasFloorPlan = !!(
+        floor?.image ||
+        floor?.imagePath ||
+        floor?.imageFileName
+    );
 
     controls.innerHTML = `
 
@@ -725,6 +733,66 @@ function updateProjectHeader() {
             </button>
 
                </span>
+
+               <div class="floor-plan-menu-wrap home-only">
+
+    <button
+        id="homeFloorPlanMenuToggle"
+        type="button"
+        class="floor-plan-menu-toggle"
+        title="Floor Plan"
+        aria-label="Floor Plan"
+        aria-expanded="false">
+        Floor Plan ▾
+    </button>
+<div
+    id="homeFloorPlanDropdown"
+    class="floor-plan-dropdown"
+    style="display:none;">
+
+    <!-- UPLOAD -->
+    <button
+    id="homeFloorPlanUpload"
+    type="button"
+    style="${hasFloorPlan ? 'display:none;' : ''}">
+            <path d="M12 15V3"/>
+            <path d="m7 8 5-5 5 5"/>
+            <path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+            <path d="M8 17h8"/>
+        </svg>
+        <span>Upload Plan</span>
+    </button>
+
+    <!-- REPLACE -->
+    <button
+    id="homeFloorPlanReplace"
+    type="button"
+    style="${hasFloorPlan ? '' : 'display:none;'}">
+            <path d="M20 7v5h-5"/>
+            <path d="M4 17v-5h5"/>
+            <path d="M5.5 9a7 7 0 0 1 11.7-2L20 12"/>
+            <path d="M4 12l2.8 5a7 7 0 0 0 11.7-2"/>
+            <path d="M12 9v6"/>
+            <path d="m9.5 12 2.5 3 2.5-3"/>
+        </svg>
+        <span>Replace Plan</span>
+    </button>
+
+    <div class="project-menu-divider"></div>
+<!-- PLAN HISTORY & INFO -->
+<button id="homeFloorPlanHistoryInfo" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/>
+        <path d="M3 3v5h5"/>
+        <path d="M12 7v5l3.5 2"/>
+        <path d="M12 7h.01"/>
+    </svg>
+    <span>Plan History & Info</span>
+</button>
+
+</div>
+
+</div>
 
     `;
 
@@ -781,20 +849,685 @@ function updateProjectHeader() {
             "#propertyHealthRecordHeader"
         );
 
-    if (
-        propertyHealthRecordHeader
-    ) {
-        propertyHealthRecordHeader.onclick =
-            () => {
-                console.log(
-                    "[PHR] HEADER CLICK"
-                );
+    if (propertyHealthRecordHeader) {
+        propertyHealthRecordHeader.onclick = () => {
+            console.log("[PHR] HEADER CLICK");
 
-                window.openPropertyHealthRecord?.();
-            };
+            window.openPropertyHealthRecord?.();
+
+            requestAnimationFrame(() => {
+                document.querySelectorAll("[data-home-nav]").forEach(button => {
+                    button.classList.toggle(
+                        "active",
+                        button.dataset.homeNav === "property-record"
+                    );
+                });
+            });
+        };
+    }
+    // ==================================================
+    // PLAN HISTORY & INFO
+    // ==================================================
+
+    const planHistoryInfoButton =
+        controls.querySelector(
+            "#homeFloorPlanHistoryInfo"
+        );
+
+    if (planHistoryInfoButton) {
+        planHistoryInfoButton.onclick = () => {
+            console.log(
+                "[HOME PLAN HISTORY & INFO] OPEN PHR"
+            );
+
+            const homeSidebar =
+                document.getElementById("panel");
+
+            const wellnessSidebar =
+                document.getElementById("myWellnessSidebar");
+
+            if (homeSidebar) {
+                homeSidebar.classList.add(
+                    "my-wellness-sidebar-hidden"
+                );
+            }
+
+            if (wellnessSidebar) {
+                wellnessSidebar.classList.add("is-visible");
+            }
+
+            window.openPropertyHealthDashboard?.();
+
+            requestAnimationFrame(() => {
+
+                document.querySelectorAll("[data-home-nav]").forEach(button => {
+                    button.classList.toggle(
+                        "active",
+                        button.dataset.homeNav === "property-record"
+                    );
+                });
+
+                document.getElementById(
+                    "phrFloorPlansHistorySection"
+                )?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            });
+        };
     }
 }
 
+
+// ==================================================
+// RENDER HOME PLAN HISTORY & INFO
+// ==================================================
+
+window.renderHomeFloorPlanHistoryInfo = function (floorOverride = null) {
+
+    const floor =
+        floorOverride ||
+        window.HomeMeasurements?.getHomeFloor?.();
+
+    console.log("[ARCHIVED PLAN IDS]", {
+        floorId: floor?.id,
+        floorName: floor?.name,
+        projectId:
+            window.AppState?.homeProject?.id ||
+            window.AppState?.project?.id
+    });
+
+    if (!floor) {
+        console.warn(
+            "[HOME PLAN HISTORY] Active floor not found."
+        );
+        return;
+    }
+
+    const versions = Array.isArray(floor.planVersions)
+        ? [...floor.planVersions]
+        : [];
+
+    const activeVersion =
+        versions.find(version =>
+            version.id === floor.activePlanVersionId
+        ) ||
+        versions.find(version =>
+            version.status === "active"
+        );
+
+    const preview =
+        document.getElementById(
+            "homeCurrentPlanPreview"
+        );
+
+    const details =
+        document.getElementById(
+            "homeCurrentPlanDetails"
+        );
+
+    const history =
+        document.getElementById(
+            "homePlanVersionList"
+        );
+
+    if (!preview || !details || !history) {
+        console.warn(
+            "[HOME PLAN HISTORY] Modal elements missing."
+        );
+        return;
+    }
+
+    const escapeHtml = value =>
+        String(value ?? "").replace(
+            /[&<>"']/g,
+            char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[char]
+        );
+
+    const formatDate = value => {
+
+        if (!value) return "—";
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return "—";
+        }
+
+        return date.toLocaleString();
+    };
+
+    const formatSize = value => {
+
+        if (value == null) return "—";
+
+        return (
+            (Number(value) / 1024).toFixed(1) +
+            " KB"
+        );
+    };
+
+    const getScale = version => {
+
+        const isActive =
+            version.id === activeVersion?.id;
+
+        const scale = isActive
+            ? {
+                scaleConfirmed: floor.scaleConfirmed,
+                currentScale: floor.currentScale,
+                scaleReferencePixels: floor.scaleReferencePixels,
+                scaleReferenceMeters: floor.scaleReferenceMeters
+            }
+            : (
+                version.assessment?.scale ||
+                version.scale
+            );
+
+        if (!scale?.scaleConfirmed) {
+            return "Not calibrated";
+        }
+
+        return "Calibrated";
+    };
+
+    // ==========================================
+    // CURRENT PLAN INFO
+    // ==========================================
+
+    if (activeVersion) {
+
+        const plan = activeVersion.plan || {};
+
+        const floorImage = floor.image;
+
+        const previewImage = document.createElement("img");
+
+        previewImage.alt = "Current floor plan";
+
+        if (
+            floorImage instanceof HTMLImageElement &&
+            floorImage.complete &&
+            floorImage.naturalWidth > 0
+        ) {
+            previewImage.src =
+                floorImage.currentSrc || floorImage.src;
+
+        } else if (
+            typeof floor.imageData === "string" &&
+            floor.imageData.startsWith("data:image/")
+        ) {
+            previewImage.src = floor.imageData;
+
+        } else {
+            preview.innerHTML = `
+        <span>No plan preview available</span>
+    `;
+            return;
+        }
+
+        preview.replaceChildren(previewImage);
+
+        details.innerHTML = `
+
+            <div class="home-plan-detail-row">
+                <span>Floor</span>
+                <strong>${escapeHtml(floor.name || "—")}</strong>
+            </div>
+
+            <div class="home-plan-detail-row">
+                <span>Plan Version</span>
+                <strong>v${escapeHtml(activeVersion.version)} (Active)</strong>
+            </div>
+
+            <div class="home-plan-detail-row">
+                <span>File Name</span>
+                <strong>${escapeHtml(plan.imageFileName || "—")}</strong>
+            </div>
+
+            <div class="home-plan-detail-row">
+                <span>Uploaded</span>
+                <strong>${escapeHtml(formatDate(activeVersion.createdAt))}</strong>
+            </div>
+
+            <div class="home-plan-detail-row">
+                <span>File Size</span>
+                <strong>${escapeHtml(formatSize(plan.imageFileSize))}</strong>
+            </div>
+
+            <div class="home-plan-detail-row">
+                <span>Dimensions</span>
+                <strong>${escapeHtml(
+            plan.imageWidth && plan.imageHeight
+                ? `${plan.imageWidth} × ${plan.imageHeight} px`
+                : "—"
+        )}</strong>
+            </div>
+
+            <div class="home-plan-detail-row">
+                <span>Scale</span>
+                <strong>${escapeHtml(getScale(activeVersion))}</strong>
+            </div>
+
+        `;
+
+    } else {
+
+        preview.innerHTML = `
+            <span>No plan preview available</span>
+        `;
+
+        details.textContent =
+            "No active plan version found.";
+    }
+
+    // ==========================================
+    // PLAN HISTORY
+    // ==========================================
+
+    versions.sort(
+        (a, b) => Number(b.version) - Number(a.version)
+    );
+
+    if (!versions.length) {
+
+        history.textContent =
+            "No previous plan versions.";
+
+        return;
+    }
+
+    history.innerHTML = versions.map(version => {
+
+        const plan = version.plan || {};
+
+        const isActive =
+            version.id === activeVersion?.id;
+
+        const status = isActive
+            ? "Active"
+            : "Archived";
+
+        return `
+
+            <div class="home-plan-version-row">
+
+                <div class="home-plan-version-heading">
+
+                    <strong>
+                        v${escapeHtml(version.version)}
+                    </strong>
+
+                    <span class="${isActive
+                ? "home-plan-status-active"
+                : "home-plan-status-archived"}">
+
+                        ${status}
+
+                    </span>
+
+                </div>
+
+                <div class="home-plan-version-file">
+                    ${escapeHtml(plan.imageFileName || "—")}
+                </div>
+
+                ${!isActive ? `
+    <button
+        type="button"
+        class="home-plan-version-view"
+        data-version-id="${escapeHtml(version.id)}">
+        View Plan →
+    </button>
+` : ""}
+
+                <div class="home-plan-version-meta">
+                    Uploaded:
+                    ${escapeHtml(formatDate(version.createdAt))}
+                </div>
+
+                ${!isActive ? `
+                    <div class="home-plan-version-meta">
+                        Archived:
+                        ${escapeHtml(formatDate(version.archivedAt))}
+                    </div>
+                ` : ""}
+
+                <div class="home-plan-version-meta">
+                    Size: ${escapeHtml(formatSize(plan.imageFileSize))}
+                    ·
+                    ${escapeHtml(
+                    plan.imageWidth && plan.imageHeight
+                        ? `${plan.imageWidth} × ${plan.imageHeight} px`
+                        : "—"
+                )}
+                </div>
+
+                <div class="home-plan-version-meta">
+                    Scale: ${escapeHtml(getScale(version))}
+                </div>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+    history.querySelectorAll(
+        ".home-plan-version-view"
+    ).forEach(button => {
+
+        button.addEventListener("click", async () => {
+
+            const versionId = button.dataset.versionId;
+
+            const projectId =
+                window.AppState?.homeProject?.id ||
+                window.AppState?.project?.id;
+
+            const floorId = floor.id;
+
+            if (!projectId || !floorId || !versionId) {
+                console.error("[ARCHIVED PLAN] Missing IDs", {
+                    projectId,
+                    floorId,
+                    versionId
+                });
+                return;
+            }
+
+            try {
+
+                button.disabled = true;
+                button.textContent = "Loading...";
+
+                const headers = getAuthHeaders();
+                delete headers["Content-Type"];
+
+                const response = await fetch(
+                    `${API}/project/${projectId}/floors/${encodeURIComponent(floorId)}/plan-versions/${encodeURIComponent(versionId)}/plan`,
+                    {
+                        method: "GET",
+                        headers
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Historical plan download failed: HTTP ${response.status}`
+                    );
+                }
+
+                const blob = await response.blob();
+
+                if (!blob || blob.size === 0) {
+                    throw new Error("Empty historical plan image");
+                }
+
+                const objectUrl = URL.createObjectURL(blob);
+                const image = new Image();
+
+                image.onload = () => {
+
+                    const preview = document.getElementById(
+                        "homeCurrentPlanPreview"
+                    );
+
+                    const controls = document.getElementById(
+                        "homeArchivedPlanPreviewControls"
+                    );
+
+                    const label = document.getElementById(
+                        "homeArchivedPlanPreviewLabel"
+                    );
+
+                    preview.replaceChildren(image);
+
+                    // Find selected archived version
+                    const selectedVersion = versions.find(
+                        item => item.id === versionId
+                    );
+
+                    if (!selectedVersion) {
+                        throw new Error("Archived version data not found");
+                    }
+
+                    const archivedPlan = selectedVersion.plan || {};
+
+                    // Update section title
+                    const infoTitle = document.getElementById(
+                        "homeCurrentPlanInfoTitle"
+                    );
+
+                    if (infoTitle) {
+                        infoTitle.textContent =
+                            `Archived Plan Info · v${selectedVersion.version}`;
+                    }
+
+                    // Update version label
+                    label.textContent =
+                        `Viewing archived version v${selectedVersion.version}`;
+
+                    // Update details with archived version data
+                    details.innerHTML = `
+
+    <div class="home-plan-detail-row">
+        <span>Floor</span>
+        <strong>${escapeHtml(floor.name || "—")}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Plan Version</span>
+        <strong>v${escapeHtml(selectedVersion.version)} (Archived)</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>File Name</span>
+        <strong>${escapeHtml(archivedPlan.imageFileName || "—")}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Uploaded</span>
+        <strong>${escapeHtml(formatDate(selectedVersion.createdAt))}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Archived</span>
+        <strong>${escapeHtml(formatDate(selectedVersion.archivedAt))}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>File Size</span>
+        <strong>${escapeHtml(formatSize(archivedPlan.imageFileSize))}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Dimensions</span>
+        <strong>${escapeHtml(
+                        archivedPlan.imageWidth && archivedPlan.imageHeight
+                            ? `${archivedPlan.imageWidth} × ${archivedPlan.imageHeight} px`
+                            : "—"
+                    )}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Scale</span>
+        <strong>${escapeHtml(getScale(selectedVersion))}</strong>
+    </div>
+
+`;
+
+                    controls.style.display = "block";
+
+                    window._homeArchivedPlanPreviewUrl = objectUrl;
+
+                    button.disabled = false;
+                    button.textContent = "View Plan →";
+
+                    console.log("[ARCHIVED PLAN LOADED]", {
+                        floor: floor.name,
+                        versionId,
+                        width: image.naturalWidth,
+                        height: image.naturalHeight
+                    });
+                };
+
+                image.onerror = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    throw new Error("Historical plan image decode failed");
+                };
+
+                image.src = objectUrl;
+
+            } catch (error) {
+
+                console.error("[ARCHIVED PLAN ERROR]", error);
+
+                button.disabled = false;
+                button.textContent = "View Plan →";
+            }
+        });
+    });
+
+    const returnButton = document.getElementById(
+        "homeReturnToCurrentPlan"
+    );
+
+    if (returnButton) {
+
+        returnButton.onclick = () => {
+
+            const preview = document.getElementById(
+                "homeCurrentPlanPreview"
+            );
+
+            const controls = document.getElementById(
+                "homeArchivedPlanPreviewControls"
+            );
+
+            // Release archived image URL
+            if (window._homeArchivedPlanPreviewUrl) {
+                URL.revokeObjectURL(
+                    window._homeArchivedPlanPreviewUrl
+                );
+
+                window._homeArchivedPlanPreviewUrl = null;
+            }
+
+            // Restore active plan
+            if (
+                floor.image instanceof HTMLImageElement &&
+                floor.image.complete &&
+                floor.image.naturalWidth > 0
+            ) {
+
+                const image = new Image();
+
+                image.src =
+                    floor.image.currentSrc || floor.image.src;
+
+                image.alt = "Current floor plan";
+
+                preview.replaceChildren(image);
+
+            } else if (
+                typeof floor.imageData === "string" &&
+                floor.imageData.startsWith("data:image/")
+            ) {
+
+                const image = new Image();
+
+                image.src = floor.imageData;
+                image.alt = "Current floor plan";
+
+                preview.replaceChildren(image);
+
+            } else {
+
+                preview.innerHTML =
+                    "<span>No plan preview available</span>";
+            }
+
+            controls.style.display = "none";
+
+            // Restore section title
+            const infoTitle = document.getElementById(
+                "homeCurrentPlanInfoTitle"
+            );
+
+            if (infoTitle) {
+                infoTitle.textContent = "Current Plan Info";
+            }
+
+            // Restore active plan details
+            const activePlan = activeVersion?.plan || {};
+
+            details.innerHTML = `
+
+    <div class="home-plan-detail-row">
+        <span>Floor</span>
+        <strong>${escapeHtml(floor.name || "—")}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Plan Version</span>
+        <strong>v${escapeHtml(activeVersion.version)} (Active)</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>File Name</span>
+        <strong>${escapeHtml(activePlan.imageFileName || "—")}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Uploaded</span>
+        <strong>${escapeHtml(formatDate(activeVersion.createdAt))}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>File Size</span>
+        <strong>${escapeHtml(formatSize(activePlan.imageFileSize))}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Dimensions</span>
+        <strong>${escapeHtml(
+                activePlan.imageWidth && activePlan.imageHeight
+                    ? `${activePlan.imageWidth} × ${activePlan.imageHeight} px`
+                    : "—"
+            )}</strong>
+    </div>
+
+    <div class="home-plan-detail-row">
+        <span>Scale</span>
+        <strong>${escapeHtml(getScale(activeVersion))}</strong>
+    </div>
+
+`;
+
+            console.log(
+                "[RETURNED TO ACTIVE PLAN]",
+                floor.name
+            );
+        };
+    }
+
+    console.log(
+        "[HOME PLAN HISTORY RENDERED]",
+        {
+            floor: floor.name,
+            activeVersion: activeVersion?.version,
+            totalVersions: versions.length
+        }
+    );
+};
 
 
 function updateProjectWorkspaceTitle() {
@@ -826,6 +1559,44 @@ function updateProjectWorkspaceTitle() {
     }
 }
 
+// ==================================================
+// HOME PLAN HISTORY & INFO MODAL
+// ==================================================
+
+window.openHomeFloorPlanHistoryInfo = function (floorOverride = null) {
+
+    if (
+        !floorOverride &&
+        window.AppMode?.current !== "home"
+    ) {
+        return;
+    }
+
+    const modal = document.getElementById(
+        "homeFloorPlanHistoryInfoModal"
+    );
+
+    if (!modal) {
+        console.warn(
+            "[HOME PLAN HISTORY & INFO] Modal not found"
+        );
+        return;
+    }
+
+    window.renderHomeFloorPlanHistoryInfo?.(floorOverride);
+
+    modal.classList.add("active");
+};
+
+
+window.closeHomeFloorPlanHistoryInfo = function () {
+
+    const modal = document.getElementById(
+        "homeFloorPlanHistoryInfoModal"
+    );
+
+    modal?.classList.remove("active");
+};
 window.updateProjectWorkspaceTitle = updateProjectWorkspaceTitle;
 
 function scrollToUnlockReport() {

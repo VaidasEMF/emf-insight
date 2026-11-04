@@ -380,12 +380,21 @@ function renderFrame() {
 
         if (AppMode.current === "home") {
             window.drawScaleTool?.();
+
+            // Home room drawing — reuse the existing room engine.
+            const layers = window.layerVisibility || {};
+
+            if (layers.rooms !== false) {
+                window.drawRoomsLayer?.(currentFloor);
+                window.drawRoomTool?.();
+            }
+
             window.drawSourceLinks?.();
             window.drawSourcesLayer?.(currentFloor);
-
             window.drawOutdoorPlacementGuide?.(ctx);
-
             window.drawObjects?.();
+            window.drawHomeMeasurementPointsLayer?.();
+            window.drawHomeLifestylePlacementPreview?.();
         }
 
         // =====================

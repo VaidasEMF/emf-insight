@@ -1,6 +1,4 @@
-﻿console.log("object_v1.js STARTED");
-
-window.objectTool = {
+﻿window.objectTool = {
 
     active: false,
 
@@ -942,25 +940,6 @@ function findNearestLifestyleZoneForOutdoor(
             );
 
 
-        console.log(
-            "ðŸ”¥ CHECK LIFESTYLE AREA",
-            {
-                id:
-                    zone.id,
-
-                type:
-                    zone.type,
-
-                zoneType:
-                    zone.zoneType,
-
-                x:
-                    zoneX,
-
-                y:
-                    zoneY
-            }
-        );
 
 
         // ==================================================
@@ -976,22 +955,7 @@ function findNearestLifestyleZoneForOutdoor(
             )
         ) {
 
-            console.warn(
-                "âš ï¸ SKIP LIFESTYLE AREA â€” INVALID X/Y",
-                {
-                    id:
-                        zone.id,
 
-                    type:
-                        zone.type,
-
-                    x:
-                        zone.x,
-
-                    y:
-                        zone.y
-                }
-            );
 
             continue;
         }
@@ -1018,18 +982,6 @@ function findNearestLifestyleZoneForOutdoor(
             );
 
 
-        console.log(
-            "ðŸ”¥ LIFESTYLE CONTEXT DISTANCE",
-            {
-                zoneId:
-                    zone.id,
-
-                zoneType:
-                    zone.type,
-
-                distance
-            }
-        );
 
 
         if (
@@ -1450,6 +1402,38 @@ function placeObject(evt) {
             meta?.zoneType ||
             null,
 
+        // Home Wellness — selected Lifestyle dimensions
+        ...(isLifestyle &&
+            window.AppMode?.current === "home" &&
+            window.objectTool?.pendingLifestyleDimensions
+            ? {
+                lifestylePreset:
+                    window.objectTool.pendingLifestyleDimensions.presetKey,
+
+                lifestylePresetLabel:
+                    window.objectTool.pendingLifestyleDimensions.presetLabel,
+
+                lifestylePresetImage:
+                    window.objectTool.pendingLifestyleDimensions.presetImage,
+
+                furnitureDimensions: {
+                    width:
+                        window.objectTool.pendingLifestyleDimensions.furnitureWidth,
+
+                    depth:
+                        window.objectTool.pendingLifestyleDimensions.furnitureDepth
+                },
+
+                measurementZoneDimensions: {
+                    width:
+                        window.objectTool.pendingLifestyleDimensions.measurementZoneWidth,
+
+                    depth:
+                        window.objectTool.pendingLifestyleDimensions.measurementZoneDepth
+                }
+            }
+            : {}),
+
         state:
             "placed",
 
@@ -1522,9 +1506,34 @@ function placeObject(evt) {
             newObject
         );
 
+        // HOME WELLNESS — generate guided measurement points
+        if (window.AppMode?.current === "home") {
 
+            const generatePoints =
+                window.HomeMeasurements?.generateLifestyleMeasurementPoints;
+
+            console.log("[HOME ZONE] Measurement point generator", {
+                available: typeof generatePoints === "function",
+                zoneId: newObject.id,
+                x: newObject.x,
+                y: newObject.y,
+                dimensions: newObject.measurementZoneDimensions,
+                scale: currentFloor.currentScale
+            });
+
+            newObject.measurementPoints =
+                typeof generatePoints === "function"
+                    ? generatePoints(newObject, currentFloor)
+                    : [];
+
+            console.log("[HOME ZONE] Measurement points created", {
+                zoneId: newObject.id,
+                count: newObject.measurementPoints.length,
+                points: newObject.measurementPoints
+            });
+        }
         console.log(
-            "ðŸ”¥ LIFESTYLE AREA ADDED",
+            "🔥 LIFESTYLE AREA ADDED",
             {
                 id:
                     newObject.id,
@@ -1581,6 +1590,14 @@ function placeObject(evt) {
 
         tool.showOutdoorGuide =
             false;
+
+        // Clear pending Home Lifestyle dimensions after successful placement.
+        if (
+            window.AppMode?.current === "home" &&
+            tool.pendingLifestyleDimensions
+        ) {
+            tool.pendingLifestyleDimensions = null;
+        }
 
 
         window.lastPlacedObject =
@@ -2212,6 +2229,88 @@ function drawOutdoorSources() {
     }
 }
 
+function drawHomeMeasurementPointsLayer() {
+    if (window.AppMode?.current !== "home") return;
+
+    const project = window.AppState?.project;
+    const floor = project?.floors?.[project.currentFloorIndex || 0];
+    const canvasCtx = window.ctx;
+
+    if (!floor || !canvasCtx || !window.EMFViewport?.worldPoint) return;
+
+    const zones = Array.isArray(floor.zones) ? floor.zones : [];
+
+    canvasCtx.save();
+
+    let globalPointNumber = 0;
+
+    zones.forEach(zone => {
+        if (
+            !zone?.zoneType ||
+            !zone.measurementZoneDimensions ||
+            !Array.isArray(zone.measurementPoints)
+        ) return;
+
+        zone.measurementPoints.forEach(point => {
+
+            globalPointNumber++;
+            if (
+                !Number.isFinite(Number(point.x)) ||
+                !Number.isFinite(Number(point.y))
+            ) return;
+
+            const screen = window.EMFViewport.worldPoint({
+                x: Number(point.x),
+                y: Number(point.y)
+            });
+
+            const status = point.status ||
+                (point.measured ? "measured" : "pending");
+
+            const isMeasured = status === "measured";
+            const isPartial = status === "partial";
+
+            const color = isMeasured
+                ? "#06b6d4"
+                : isPartial
+                    ? "#8b5cf6"
+                    : "#94a3b8";
+
+            const radius = 10;
+
+            canvasCtx.beginPath();
+            canvasCtx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
+
+            canvasCtx.fillStyle = isMeasured || isPartial
+                ? color
+                : "#ffffff";
+
+            canvasCtx.strokeStyle = color;
+            canvasCtx.lineWidth = 2;
+
+            canvasCtx.fill();
+            canvasCtx.stroke();
+
+            canvasCtx.fillStyle = isMeasured || isPartial
+                ? "#ffffff"
+                : "#64748b";
+
+            canvasCtx.font = "600 11px Arial";
+            canvasCtx.textAlign = "center";
+            canvasCtx.textBaseline = "middle";
+            canvasCtx.fillText(
+                String(globalPointNumber),
+                screen.x,
+                screen.y
+            );
+        });
+    });
+
+    canvasCtx.restore();
+}
+
+window.drawHomeMeasurementPointsLayer = drawHomeMeasurementPointsLayer;
+
 window.drawOutdoorSources = drawOutdoorSources;
 function drawObjects() {
 
@@ -2690,6 +2789,104 @@ function drawObjects() {
 
 
             // ==================================================
+            // HOME WELLNESS — SAVED LIFESTYLE ZONE BOUNDARY
+            // ==================================================
+
+            const isHomeLifestyle =
+                window.AppMode?.current === "home" &&
+                !!obj.zoneType &&
+                obj.measurementZoneDimensions &&
+                Number.isFinite(
+                    Number(obj.measurementZoneDimensions.width)
+                ) &&
+                Number.isFinite(
+                    Number(obj.measurementZoneDimensions.depth)
+                );
+
+            const metersPerPlanPixel =
+                Number(currentFloor.currentScale);
+
+            if (
+                isHomeLifestyle &&
+                metersPerPlanPixel > 0
+            ) {
+                const zoneWidthPlanPx =
+                    Number(obj.measurementZoneDimensions.width) /
+                    metersPerPlanPixel;
+
+                const zoneDepthPlanPx =
+                    Number(obj.measurementZoneDimensions.depth) /
+                    metersPerPlanPixel;
+
+                const leftPoint =
+                    EMFViewport.worldPoint({
+                        x: obj.x - zoneWidthPlanPx / 2,
+                        y: obj.y
+                    });
+
+                const rightPoint =
+                    EMFViewport.worldPoint({
+                        x: obj.x + zoneWidthPlanPx / 2,
+                        y: obj.y
+                    });
+
+                const topPoint =
+                    EMFViewport.worldPoint({
+                        x: obj.x,
+                        y: obj.y - zoneDepthPlanPx / 2
+                    });
+
+                const bottomPoint =
+                    EMFViewport.worldPoint({
+                        x: obj.x,
+                        y: obj.y + zoneDepthPlanPx / 2
+                    });
+
+                const zoneWidth =
+                    Math.abs(rightPoint.x - leftPoint.x);
+
+                const zoneHeight =
+                    Math.abs(bottomPoint.y - topPoint.y);
+
+                ctx.save();
+
+                ctx.beginPath();
+
+                ctx.rect(
+                    p.x - zoneWidth / 2,
+                    p.y - zoneHeight / 2,
+                    zoneWidth,
+                    zoneHeight
+                );
+
+                ctx.fillStyle =
+                    "rgba(37, 99, 235, 0.12)";
+
+                ctx.fill();
+
+                ctx.strokeStyle =
+                    tool?.selectedObjectId === obj.id
+                        ? "#2563eb"
+                        : "rgba(37, 99, 235, 0.85)";
+
+                ctx.lineWidth =
+                    tool?.selectedObjectId === obj.id
+                        ? 2.5
+                        : 1.5;
+
+                ctx.setLineDash(
+                    tool?.selectedObjectId === obj.id
+                        ? []
+                        : [6, 4]
+                );
+
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+
+            // ==================================================
             // HEATMAP
             // ==================================================
 
@@ -2831,9 +3028,30 @@ function drawObjects() {
             // ==================================================
 
             const img =
-                OBJECT_IMAGES?.[
-                configType
-                ];
+                isHomeLifestyle && obj.lifestylePresetImage
+                    ? (
+                        window.homeLifestylePresetImages?.[obj.lifestylePresetImage] ||
+                        OBJECT_IMAGES?.[configType]
+                    )
+                    : OBJECT_IMAGES?.[configType];
+
+            if (
+                isHomeLifestyle &&
+                obj.lifestylePresetImage &&
+                !window.homeLifestylePresetImages?.[obj.lifestylePresetImage]
+            ) {
+                window.homeLifestylePresetImages ??= {};
+
+                const presetImg = new Image();
+
+                presetImg.onload = () => {
+                    window.requestRender?.();
+                };
+
+                presetImg.src = obj.lifestylePresetImage;
+
+                window.homeLifestylePresetImages[obj.lifestylePresetImage] = presetImg;
+            }
 
 
             // ==================================================
@@ -3000,65 +3218,57 @@ function drawObjects() {
             }
 
 
+
             // ==================================================
-            // ðŸ”¥ OBJECT LABEL
-            // ==================================================
-            //
-            // Indoor source artwork already provides its own
-            // visual identification, so do not duplicate the
-            // source name above the icon.
-            //
-            // Lifestyle Areas and Outdoor Sources keep the
-            // canvas label.
+            // OBJECT LABEL
             // ==================================================
 
             const isOutdoorSource =
-                window.OUTDOOR_SOURCE_TYPES?.includes(
-                    obj.type
-                ) ||
-                obj.placementType ===
-                "outdoor";
-
+                window.OUTDOOR_SOURCE_TYPES?.includes(obj.type) ||
+                obj.placementType === "outdoor";
 
             const isIndoorCanvasLabelSource =
-                window.INDOOR_SOURCE_TYPES?.includes(
-                    obj.type
-                ) ||
-                obj.placementType ===
-                "indoor";
+                window.INDOOR_SOURCE_TYPES?.includes(obj.type) ||
+                obj.placementType === "indoor";
 
+            const isHomeLifestyleObject =
+                window.AppMode?.current === "home" &&
+                (
+                    obj.placementType === "zone" ||
+                    obj.placementMode === "zone"
+                ) &&
+                !!(
+                    obj.lifestylePreset ||
+                    obj.lifestylePresetKey
+                );
+
+            const canvasObjectLabel =
+                isHomeLifestyleObject
+                    ? (
+                        obj.lifestylePresetLabel ||
+                        meta.label
+                    )
+                    : meta.label;
 
             const shouldDrawCanvasLabel =
                 !isIndoorCanvasLabelSource ||
                 isOutdoorSource;
 
-
             if (
                 shouldDrawCanvasLabel &&
-                meta.label
+                canvasObjectLabel
             ) {
-
-                ctx.fillStyle =
-                    "#1e293b";
-
-                ctx.textAlign =
-                    "center";
-
-                ctx.font =
-                    "600 10px Inter";
-
+                ctx.fillStyle = "#1e293b";
+                ctx.textAlign = "center";
+                ctx.font = "600 10px Inter";
 
                 ctx.fillText(
-
-                    meta.label,
-
+                    canvasObjectLabel,
                     p.x,
-
-                    p.y -
-                    meta.height / 2 -
-                    8
+                    p.y - meta.height / 2 - 8
                 );
             }
+
 
 
             // ==================================================
@@ -3502,6 +3712,34 @@ function getObjectAtPoint(
             continue;
         }
 
+        // HOME WELLNESS — HIT TEST FOR FULL LIFESTYLE ZONE
+        if (
+            window.AppMode?.current === "home" &&
+            obj.zoneType &&
+            obj.measurementZoneDimensions
+        ) {
+            const scale = Number(currentFloor.currentScale);
+            const width = Number(obj.measurementZoneDimensions.width);
+            const depth = Number(obj.measurementZoneDimensions.depth);
+
+            if (
+                scale > 0 &&
+                width > 0 &&
+                depth > 0
+            ) {
+                const halfWidth = width / scale / 2;
+                const halfDepth = depth / scale / 2;
+
+                if (
+                    p.x >= obj.x - halfWidth &&
+                    p.x <= obj.x + halfWidth &&
+                    p.y >= obj.y - halfDepth &&
+                    p.y <= obj.y + halfDepth
+                ) {
+                    return obj;
+                }
+            }
+        }
 
         const meta =
             window.OBJECT_CONFIGS?.[
@@ -4708,6 +4946,7 @@ function showLifestyleAreaPopup(
     options = {}
 ) {
 
+
     if (!zone) {
 
         console.warn(
@@ -5134,10 +5373,51 @@ function showLifestyleAreaPopup(
 
 
     // ==================================================
-    // REAL ASSET ICON
+    // REAL ASSET ICON + SELECTED PRESET
     // ==================================================
 
+    const rawPresetType = String(
+        zone.zoneType || zone.type || ""
+    ).toLowerCase();
+
+    const presetTypeMap = {
+        bed: "bed",
+        sleep: "bed",
+        work: "work_area",
+        work_area: "work_area",
+        desk: "work_area",
+        sofa: "sofa",
+        relax: "sofa",
+        rest: "sofa",
+        child: "child_area",
+        child_area: "child_area"
+    };
+
+    const presetType =
+        presetTypeMap[rawPresetType] ||
+        (
+            HOME_LIFESTYLE_PRESETS[rawPresetType]
+                ? rawPresetType
+                : null
+        );
+
+    const presetKey =
+        zone.lifestylePreset ||
+        zone.lifestylePresetKey ||
+        zone.presetKey ||
+        "";
+
+    const selectedPreset =
+        HOME_LIFESTYLE_PRESETS[presetType]?.presets?.[presetKey];
+
+    const presetLabel =
+        zone.lifestylePresetLabel ||
+        zone.presetLabel ||
+        selectedPreset?.label ||
+        "";
+
     const zoneImage =
+        selectedPreset?.image ||
         zoneConfig.image ||
         (
             zoneType === "sleep"
@@ -5150,7 +5430,6 @@ function showLifestyleAreaPopup(
                             ? "assets/icons/child.png"
                             : null
         );
-
 
     const zoneLabel =
         zone.name ||
@@ -5167,55 +5446,98 @@ function showLifestyleAreaPopup(
                             : "Lifestyle Area"
         );
 
-
     // ==================================================
     // SUMMARY
     // ==================================================
+    // ==================================================
 
-    if (
-        summary
-    ) {
-
+    if (summary) {
         summary.innerHTML = `
-
-            <div
-                style="
-                    display:flex;
-                    align-items:center;
-                    gap:10px;
-                "
-            >
-
-                ${zoneImage
-                ? `
-                            <img
-                                src="${zoneImage}"
-                                alt=""
-                                style="
-                                    width:30px;
-                                    height:30px;
-                                    object-fit:contain;
-                                    flex:0 0 30px;
-                                "
-                            >
-                        `
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+            width:100%;
+            box-sizing:border-box;
+        ">
+            ${zoneImage
+                ? `<img
+                        src="${zoneImage}"
+                        alt=""
+                        style="
+                            width:36px;
+                            height:36px;
+                            object-fit:contain;
+                            flex:0 0 36px;
+                        "
+                    >`
                 : ""
             }
 
-                <span
-                    style="
-                        font-size:14px;
-                        font-weight:700;
-                        color:#0f172a;
-                    "
-                >
+            <div style="flex:1;min-width:0;">
+                <div style="
+                    font-size:14px;
+                    font-weight:700;
+                    color:#0f172a;
+                ">
                     ${zoneLabel}
-                </span>
+                </div>
 
+                ${presetLabel
+                ? `<div style="
+                            margin-top:3px;
+                            font-size:12px;
+                            color:#64748b;
+                        ">
+                            ${presetLabel}
+                        </div>`
+                : ""
+            }
             </div>
 
-        `;
+            ${presetType
+                ? `<button
+                        type="button"
+                        id="btnEditLifestylePreset"
+                        style="
+                            flex:0 0 auto;
+                            padding:6px 11px;
+                            border:1px solid #cbd5e1;
+                            border-radius:7px;
+                            background:#fff;
+                            color:#334155;
+                            font-size:12px;
+                            font-weight:600;
+                            cursor:pointer;
+                        "
+                    >Edit</button>`
+                : ""
+            }
+        </div>
+    `;
+
+        const editButton = document.getElementById(
+            "btnEditLifestylePreset"
+        );
+
+        if (editButton && presetType) {
+            editButton.addEventListener("click", () => {
+                if (window.AppMode?.current !== "home") return;
+
+                editingLifestyleZone = zone;
+
+                openLifestyleSizeSelector(presetType);
+            });
+        }
     }
+    // ==================================================
+    // HOME WELLNESS — LIFESTYLE DIMENSIONS UI
+    // ==================================================
+
+    document.getElementById(
+        "lifestyleAreaDimensions"
+    )?.remove();
+
 
 
     // ==================================================
@@ -5450,6 +5772,274 @@ function showLifestyleAreaPopup(
             handleHoursKey;
     }
 
+
+
+    if (summary) {
+        summary.insertAdjacentHTML(
+            "afterend",
+            `
+            <div id="lifestyleAreaDimensions" style="
+                margin-top:8px;
+                font-family:inherit;
+            ">
+                <div style="
+                    font-size:12px;
+                    font-weight:700;
+                    color:#334155;
+                    margin-bottom:5px;
+                ">Dimensions</div>
+
+                <div style="
+                    display:grid;
+                    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+                    gap:6px;
+                ">
+                    <div style="
+                        min-width:0;
+                        border:1px solid #e2e8f0;
+                        border-radius:8px;
+                        padding:7px;
+                        background:#f8fafc;
+                    ">
+                        <div style="
+                            font-size:11px;
+                            font-weight:700;
+                            color:#334155;
+                            margin-bottom:6px;
+                        ">Furniture</div>
+
+                        <label for="lifestyleFurnitureWidth" style="
+                            display:block;
+                            font-size:11px;
+                            color:#64748b;
+                            margin-bottom:3px;
+                        ">Width (W), m</label>
+                        <input id="lifestyleFurnitureWidth"
+                               type="number" min="0.1" max="30"
+                               step="0.1" inputmode="decimal"
+                               readonly
+                               style="
+                                   display:block;
+                                   width:100%;
+                                   height:30px;
+                                   box-sizing:border-box;
+                                   padding:4px 6px;
+                                   margin:0 0 7px;
+                                   border:1px solid #cbd5e1;
+                                   border-radius:6px;
+                                   background:#fff;
+                                   color:#0f172a;
+                                   font-size:12px;
+                               ">
+
+                        <label for="lifestyleFurnitureDepth" style="
+                            display:block;
+                            font-size:11px;
+                            color:#64748b;
+                            margin-bottom:3px;
+                        ">Depth (D), m</label>
+                        <input id="lifestyleFurnitureDepth"
+                               type="number" min="0.1" max="30"
+                               step="0.1" inputmode="decimal"
+                               readonly
+                               style="
+                                   display:block;
+                                   width:100%;
+                                   height:30px;
+                                   box-sizing:border-box;
+                                   padding:4px 6px;
+                                   margin:0;
+                                   border:1px solid #cbd5e1;
+                                   border-radius:6px;
+                                   background:#fff;
+                                   color:#0f172a;
+                                   font-size:12px;
+                               ">
+                    </div>
+
+                    <div style="
+                        min-width:0;
+                        border:1px solid #bfdbfe;
+                        border-radius:8px;
+                        padding:7px;
+                        background:#eff6ff;
+                    ">
+                        <div style="
+                            font-size:11px;
+                            font-weight:700;
+                            color:#1e40af;
+                            margin-bottom:6px;
+                        ">Measurement Zone</div>
+
+                        <label for="lifestyleZoneWidth" style="
+                            display:block;
+                            font-size:11px;
+                            color:#64748b;
+                            margin-bottom:3px;
+                        ">Width (W), m</label>
+                        <input id="lifestyleZoneWidth"
+                               type="number" min="0.1" max="50"
+                               step="0.1" inputmode="decimal"
+                               readonly
+                               style="
+                                   display:block;
+                                   width:100%;
+                                   height:30px;
+                                   box-sizing:border-box;
+                                   padding:4px 6px;
+                                   margin:0 0 7px;
+                                   border:1px solid #93c5fd;
+                                   border-radius:6px;
+                                   background:#fff;
+                                   color:#0f172a;
+                                   font-size:12px;
+                               ">
+
+                        <label for="lifestyleZoneDepth" style="
+                            display:block;
+                            font-size:11px;
+                            color:#64748b;
+                            margin-bottom:3px;
+                        ">Depth (D), m</label>
+                        <input id="lifestyleZoneDepth"
+                               type="number" min="0.1" max="50"
+                               step="0.1" inputmode="decimal"
+                               readonly
+                               style="
+                                   display:block;
+                                   width:100%;
+                                   height:30px;
+                                   box-sizing:border-box;
+                                   padding:4px 6px;
+                                   margin:0;
+                                   border:1px solid #93c5fd;
+                                   border-radius:6px;
+                                   background:#fff;
+                                   color:#0f172a;
+                                   font-size:12px;
+                               ">
+                    </div>
+                </div>
+
+                <div
+    id="lifestyleAreaBoundaryWarning"
+    style="
+        display:none;
+        align-items:flex-start;
+        gap:6px;
+        margin-top:7px;
+        padding:7px 8px;
+        border:1px solid #fed7aa;
+        border-radius:7px;
+        background:#fff7ed;
+        color:#9a3412;
+        font-size:11px;
+        line-height:1.35;
+    "
+>
+    <span aria-hidden="true">⚠</span>
+    <span>
+        Measurement zone extends beyond the room.
+        Only the area inside the room counts toward room coverage and analysis.
+    </span>
+</div>
+            </div>
+            `
+        );
+
+        const lifestyleDimensionInputs = [
+            "lifestyleFurnitureWidth",
+            "lifestyleFurnitureDepth",
+            "lifestyleZoneWidth",
+            "lifestyleZoneDepth"
+        ];
+
+        const activePresetKey =
+            zone.lifestylePreset ||
+            zone.lifestylePresetKey ||
+            zone.presetKey ||
+            "";
+
+        const isCustomLifestylePreset = activePresetKey === "custom";
+
+        lifestyleDimensionInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (!input) return;
+
+            input.readOnly = !isCustomLifestylePreset;
+            input.style.background = isCustomLifestylePreset
+                ? "#ffffff"
+                : "#f1f5f9";
+
+            input.style.cursor = isCustomLifestylePreset
+                ? "text"
+                : "default";
+        });
+
+        // ==================================================
+        // INITIALIZE LIFESTYLE DIMENSION INPUTS
+        // Must run AFTER lifestyleAreaDimensions is inserted.
+        // ==================================================
+
+        const furnitureWidthInput =
+            document.getElementById("lifestyleFurnitureWidth");
+
+        const furnitureDepthInput =
+            document.getElementById("lifestyleFurnitureDepth");
+
+        const zoneWidthInput =
+            document.getElementById("lifestyleZoneWidth");
+
+        const zoneDepthInput =
+            document.getElementById("lifestyleZoneDepth");
+
+        const furnitureDims = zone.furnitureDimensions || {};
+        const measurementDims = zone.measurementZoneDimensions || {};
+
+        if (furnitureWidthInput) {
+            furnitureWidthInput.value = furnitureDims.width ?? "";
+        }
+
+        if (furnitureDepthInput) {
+            furnitureDepthInput.value = furnitureDims.depth ?? "";
+        }
+
+        if (zoneWidthInput) {
+            zoneWidthInput.value = measurementDims.width ?? "";
+        }
+
+        if (zoneDepthInput) {
+            zoneDepthInput.value = measurementDims.depth ?? "";
+        }
+
+        updateLifestyleAreaBoundaryWarning(zone, floor);
+
+        [zoneWidthInput, zoneDepthInput].forEach(input => {
+            if (!input || input._boundaryWarningHandlerAttached) {
+                return;
+            }
+
+            input.addEventListener("input", () => {
+                const width = Number(zoneWidthInput?.value);
+                const depth = Number(zoneDepthInput?.value);
+
+                if (
+                    Number.isFinite(width) && width > 0 &&
+                    Number.isFinite(depth) && depth > 0
+                ) {
+                    zone.measurementZoneDimensions = {
+                        ...(zone.measurementZoneDimensions || {}),
+                        width,
+                        depth
+                    };
+
+                    updateLifestyleAreaBoundaryWarning(zone, floor);
+                }
+            });
+
+            input._boundaryWarningHandlerAttached = true;
+        });
+    }
 
     // ==================================================
     // CONTEXTUAL SOURCES
@@ -6417,96 +7007,53 @@ function showLifestyleAreaPopup(
     }
 
 
+
     // ==================================================
     // POSITION POPUP
     // ==================================================
 
-    const rect =
-        canvas.getBoundingClientRect();
+    const rect = canvas.getBoundingClientRect();
 
+    const p = EMFViewport.worldPoint(zone);
 
-    const p =
-        EMFViewport.worldPoint(
-            zone
-        );
+    // Keep the popup within the available viewport.
+    const popupWidth = Math.min(340, window.innerWidth - 24);
 
+    popup.style.width = `${popupWidth}px`;
+    popup.style.maxWidth = "calc(100vw - 24px)";
+    popup.style.maxHeight = "calc(100vh - 24px)";
+    popup.style.overflowY = "auto";
+    popup.style.overflowX = "hidden";
+    popup.style.boxSizing = "border-box";
 
-    const popupWidth =
-        Math.min(
-            360,
-            window.innerWidth - 32
-        );
+    let left = rect.left + p.x + 28;
+    let top = rect.top + p.y - 90;
 
-
-    const popupHeight =
-        Math.min(
-            popup.offsetHeight ||
-            360,
-            window.innerHeight - 32
-        );
-
-
-    let left =
-        rect.left +
-        p.x +
-        28;
-
-
-    let top =
-        rect.top +
-        p.y -
-        90;
-
-
-    if (
-        left +
-        popupWidth >
-        window.innerWidth -
-        16
-    ) {
-
-        left =
-            rect.left +
-            p.x -
-            popupWidth -
-            28;
+    // Prefer the right side of the selected Lifestyle Area.
+    if (left + popupWidth > window.innerWidth - 12) {
+        left = rect.left + p.x - popupWidth - 28;
     }
 
+    // Show first so the browser can measure the actual height.
+    popup.style.display = "block";
 
-    if (
-        top +
-        popupHeight >
-        window.innerHeight -
-        16
-    ) {
+    const popupRect = popup.getBoundingClientRect();
+    const actualWidth = popupRect.width;
+    const actualHeight = popupRect.height;
 
-        top =
-            window.innerHeight -
-            popupHeight -
-            16;
-    }
+    // Keep the entire popup inside the visible viewport.
+    left = Math.max(
+        12,
+        Math.min(left, window.innerWidth - actualWidth - 12)
+    );
 
+    top = Math.max(
+        12,
+        Math.min(top, window.innerHeight - actualHeight - 12)
+    );
 
-    left =
-        Math.max(
-            16,
-            left
-        );
-
-
-    top =
-        Math.max(
-            16,
-            top
-        );
-
-
-    popup.style.left =
-        `${left}px`;
-
-
-    popup.style.top =
-        `${top}px`;
+    popup.style.left = `${left}px`;
+    popup.style.top = `${top}px`;
 
 
     popup.style.display =
@@ -6534,6 +7081,34 @@ function showLifestyleAreaPopup(
 
             requestRender?.();
         };
+
+    // ==================================================
+    // CLOSE ON OUTSIDE CLICK
+    // ==================================================
+
+    if (popup._lifestyleOutsideClickHandler) {
+        document.removeEventListener(
+            "pointerdown",
+            popup._lifestyleOutsideClickHandler,
+            true
+        );
+    }
+
+    popup._lifestyleOutsideClickHandler = event => {
+        if (popup.style.display === "none") {
+            return;
+        }
+
+        if (!popup.contains(event.target)) {
+            closePopup();
+        }
+    };
+
+    document.addEventListener(
+        "pointerdown",
+        popup._lifestyleOutsideClickHandler,
+        true
+    );
 
 
     // ==================================================
@@ -6588,6 +7163,99 @@ function showLifestyleAreaPopup(
                             zone.hours;
                     }
                 }
+
+
+                // Save the edited physical dimensions in meters.
+                const fw = Number(
+                    document.getElementById("lifestyleFurnitureWidth")?.value
+                );
+
+                const fd = Number(
+                    document.getElementById("lifestyleFurnitureDepth")?.value
+                );
+
+                const zw = Number(
+                    document.getElementById("lifestyleZoneWidth")?.value
+                );
+
+                const presetKey =
+                    zone.lifestylePreset ||
+                    zone.lifestylePresetKey ||
+                    zone.presetKey ||
+                    "";
+
+                const isCustom = presetKey === "custom";
+
+                if (!isCustom) {
+                    const presetTypeMap = {
+                        bed: "bed",
+                        sleep: "bed",
+                        work: "work_area",
+                        work_area: "work_area",
+                        desk: "work_area",
+                        sofa: "sofa",
+                        relax: "sofa",
+                        rest: "sofa",
+                        child: "child_area",
+                        child_area: "child_area"
+                    };
+
+                    const rawType = String(
+                        zone.zoneType || zone.type || ""
+                    ).toLowerCase();
+
+                    const presetType =
+                        presetTypeMap[rawType] ||
+                        (HOME_LIFESTYLE_PRESETS[rawType] ? rawType : null);
+
+                    const preset = HOME_LIFESTYLE_PRESETS[presetType]?.presets?.[presetKey];
+
+                    if (preset) {
+                        zone.furnitureDimensions = {
+                            ...(zone.furnitureDimensions || {}),
+                            width: preset.furniture[0],
+                            depth: preset.furniture[1]
+                        };
+
+                        zone.measurementZoneDimensions = {
+                            ...(zone.measurementZoneDimensions || {}),
+                            width: preset.zone[0],
+                            depth: preset.zone[1]
+                        };
+                    }
+                }
+
+                const zd = Number(
+                    document.getElementById("lifestyleZoneDepth")?.value
+                );
+
+                const validDimensions =
+                    [fw, fd, zw, zd].every(
+                        value =>
+                            Number.isFinite(value) &&
+                            value > 0 &&
+                            value <= 50
+                    );
+
+                if (!validDimensions) {
+                    alert(
+                        "Enter valid furniture and measurement zone dimensions in meters."
+                    );
+                    return;
+                }
+
+                zone.furnitureDimensions = {
+                    ...(zone.furnitureDimensions || {}),
+                    width: fw,
+                    depth: fd
+                };
+
+                zone.measurementZoneDimensions = {
+                    ...(zone.measurementZoneDimensions || {}),
+                    width: zw,
+                    depth: zd
+                };
+
 
 
                 zone.hoursConfirmed =
@@ -6986,32 +7654,6 @@ function showLifestyleAreaPopup(
     );
 
 
-    console.log(
-        "ðŸ”¥ LIFESTYLE AREA POPUP OPEN",
-        {
-            id:
-                zone.id,
-
-            type:
-                zone.type,
-
-            zoneType:
-                zone.zoneType,
-
-            hours:
-                currentHours,
-
-            indoorSources:
-                floor.sources?.length ||
-                0,
-
-            outdoorSources:
-                AppState.project
-                    ?.outdoorSources
-                    ?.length ||
-                0
-        }
-    );
 }
 
 // ==================================================
@@ -7435,61 +8077,113 @@ function showHomeIndoorSourcePopup(
     // ==================================================
     // SUMMARY
     // ==================================================
-
     if (summary) {
+        const rawType = String(
+            zone.zoneType || zone.type || ""
+        ).toLowerCase();
+
+        const presetTypeMap = {
+            bed: "bed",
+            sleep: "bed",
+            work: "work_area",
+            desk: "work_area",
+            work_area: "work_area",
+            sofa: "sofa",
+            relax: "sofa",
+            rest: "sofa",
+            child: "child_area",
+            child_area: "child_area"
+        };
+
+        const presetType =
+            presetTypeMap[rawType] ||
+            (HOME_LIFESTYLE_PRESETS[rawType] ? rawType : null);
+
+        const presetKey =
+            zone.lifestylePreset ||
+            zone.lifestylePresetKey ||
+            zone.presetKey ||
+            "";
+
+        const presetConfig = presetType
+            ? HOME_LIFESTYLE_PRESETS[presetType]?.presets?.[presetKey]
+            : null;
+
+        const presetLabel =
+            zone.lifestylePresetLabel ||
+            zone.presetLabel ||
+            presetConfig?.label ||
+            "";
 
         summary.innerHTML = `
-            <div
-                style="
-                    display:flex;
-                    align-items:center;
-                    gap:10px;
-                "
-            >
-
-                ${sourceImage
-                ? `
-                            <img
-                                src="${sourceImage}"
-                                alt=""
-                                style="
-                                    width:30px;
-                                    height:30px;
-                                    object-fit:contain;
-                                    flex:0 0 30px;
-                                "
-                            >
-                        `
-                : `
-                            <div
-                                style="
-                                    width:30px;
-                                    height:30px;
-                                    display:flex;
-                                    align-items:center;
-                                    justify-content:center;
-                                    font-size:20px;
-                                "
-                            >
-                                ðŸ“¡
-                            </div>
-                        `
-            }
-
-                <span
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+            width:100%;
+        ">
+            ${sourceImage ? `
+                <img
+                    src="${sourceImage}"
+                    alt=""
                     style="
-                        font-size:14px;
-                        font-weight:700;
-                        color:#0f172a;
+                        width:36px;
+                        height:36px;
+                        object-fit:contain;
+                        flex:0 0 36px;
                     "
                 >
-                    ${sourceLabel}
-                </span>
+            ` : ""}
 
+            <div style="flex:1;min-width:0;">
+                <div style="
+                    font-size:14px;
+                    font-weight:700;
+                    color:#0f172a;
+                "${zone.lifestylePresetLabel || sourceLabel || "Lifestyle Area"}</div>
+
+                <div style="
+                    margin-top:3px;
+                    font-size:12px;
+                    color:${presetLabel ? "#64748b" : "#b45309"};
+                ">${presetLabel || "Preset not saved"}</div>
             </div>
-        `;
-    }
 
+            ${presetType ? `
+                <button
+                    type="button"
+                    id="btnEditLifestylePreset"
+                    style="
+                        flex:0 0 auto;
+                        padding:6px 11px;
+                        border:1px solid #cbd5e1;
+                        border-radius:7px;
+                        background:#fff;
+                        color:#334155;
+                        font-size:12px;
+                        font-weight:600;
+                        cursor:pointer;
+                    "
+                >Edit</button>
+            ` : ""}
+        </div>
+    `;
+
+        const editButton = document.getElementById(
+            "btnEditLifestylePreset"
+        );
+
+        if (editButton && presetType) {
+            editButton.addEventListener("click", () => {
+                if (window.AppMode?.current !== "home") return;
+
+                editingLifestyleZone = zone;
+                openLifestyleSizeSelector(presetType);
+            });
+        }
+
+
+    }
 
     // ==================================================
     // OPERATING STATE
@@ -8404,6 +9098,48 @@ function showHomeIndoorSourcePopup(
             handleKeydown;
     }
 
+    // ==================================================
+    // GLOBAL LIFESTYLE POPUP KEYBOARD HANDLER
+    // ==================================================
+
+    if (popup._lifestyleGlobalKeyHandler) {
+        document.removeEventListener(
+            "keydown",
+            popup._lifestyleGlobalKeyHandler,
+            true
+        );
+    }
+
+    popup._lifestyleGlobalKeyHandler = event => {
+        if (popup.style.display === "none") {
+            return;
+        }
+
+        if (event.key === "Escape") {
+            event.preventDefault();
+            event.stopPropagation();
+            closePopup();
+            return;
+        }
+
+        if (event.key === "Enter") {
+            // Let Enter work normally inside multiline fields.
+            if (event.target?.tagName === "TEXTAREA") {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            saveBtn?.click();
+        }
+    };
+
+    document.addEventListener(
+        "keydown",
+        popup._lifestyleGlobalKeyHandler,
+        true
+    );
+
 
     // ==================================================
     // FOCUS
@@ -8536,9 +9272,1431 @@ function updateOutdoorDistanceCategoryLabels() {
         });
 }
 
+
+
+/* ==================================================
+   HOME WELLNESS — LIFESTYLE SIZE SELECTOR
+   Home-only. Keeps existing placement mechanism.
+================================================== */
+
+const HOME_LIFESTYLE_PRESETS = {
+    bed: {
+        title: "Sleep Zone",
+        presets: {
+            single: {
+                label: "Single bed",
+                image: "assets/lifestyle-zones/sleep/single-bed.png",
+                furniture: [0.9, 2.0],
+                zone: [1.8, 3.0]
+            },
+            double: {
+                label: "Double bed",
+                image: "assets/lifestyle-zones/sleep/double-bed.png",
+                furniture: [1.6, 2.0],
+                zone: [2.5, 3.0]
+            },
+            king: {
+                label: "King size bed",
+                image: "assets/lifestyle-zones/sleep/king-bed.png",
+                furniture: [1.8, 2.0],
+                zone: [2.7, 3.0]
+            },
+            daybed: {
+                label: "Day bed / sofa bed",
+                image: "assets/lifestyle-zones/sleep/daybed-sofa-bed.png",
+                furniture: [1.0, 2.0],
+                zone: [1.5, 2.5]
+            },
+            custom: {
+                label: "Custom size",
+                image: "assets/lifestyle-zones/sleep/custom.png",
+                furniture: [1.6, 2.0],
+                zone: [2.5, 3.0]
+            }
+        }
+    },
+
+
+    work_area: {
+        title: "Work Zone",
+        presets: {
+            compact: {
+                label: "Compact desk",
+                image: "assets/lifestyle-zones/work/work-compact-desk.png",
+                furniture: [0.8, 0.6],
+                zone: [1.8, 1.6]
+            },
+            standard: {
+                label: "Standard desk",
+                image: "assets/lifestyle-zones/work/work-standard-desk.png",
+                furniture: [1.2, 0.7],
+                zone: [2.2, 1.8]
+            },
+            large: {
+                label: "Large desk (L-shape)",
+                image: "assets/lifestyle-zones/work/work-large-desk.png",
+                furniture: [1.6, 1.4],
+                zone: [2.6, 2.4]
+            },
+            shared: {
+                label: "Shared workspace",
+                image: "assets/lifestyle-zones/work/work-shared-workspace.png",
+                furniture: [2.0, 0.8],
+                zone: [3.0, 2.0]
+            },
+            custom: {
+                label: "Custom size",
+                image: "assets/lifestyle-zones/work/work-custom-size.png",
+                furniture: [1.2, 0.7],
+                zone: [2.2, 1.8]
+            }
+        }
+    },
+
+
+
+    sofa: {
+        title: "Rest Zone",
+        presets: {
+            armchair: {
+                label: "Armchair",
+                image: "assets/lifestyle-zones/rest/rest-armchair.png",
+                furniture: [0.9, 0.9],
+                zone: [1.8, 1.8]
+            },
+            small: {
+                label: "Small sofa",
+                image: "assets/lifestyle-zones/rest/rest-small-sofa.png",
+                furniture: [1.5, 0.9],
+                zone: [2.4, 1.8]
+            },
+            large: {
+                label: "Large sofa",
+                image: "assets/lifestyle-zones/rest/rest-large-sofa.png",
+                furniture: [2.0, 0.9],
+                zone: [2.9, 1.8]
+            },
+            sectional: {
+                label: "Sectional sofa",
+                image: "assets/lifestyle-zones/rest/rest-sectional-sofa.png",
+                furniture: [2.6, 1.8],
+                zone: [3.5, 2.7]
+            },
+            custom: {
+                label: "Custom size",
+                image: "assets/lifestyle-zones/rest/rest-custom-size.png",
+                furniture: [1.5, 0.9],
+                zone: [2.4, 1.8]
+            }
+        }
+    },
+
+
+
+    child_area: {
+        title: "Child Zone",
+        presets: {
+            bed: {
+                label: "Child bed",
+                image: "assets/lifestyle-zones/child/child-bed.png",
+                furniture: [0.9, 1.8],
+                zone: [1.8, 2.8]
+            },
+            play: {
+                label: "Play area",
+                image: "assets/lifestyle-zones/child/child-play-area.png",
+                furniture: [2.0, 2.0],
+                zone: [2.5, 2.5]
+            },
+            study: {
+                label: "Study area",
+                image: "assets/lifestyle-zones/child/child-study-area.png",
+                furniture: [1.0, 0.6],
+                zone: [2.0, 1.8]
+            },
+            combined: {
+                label: "Combined room",
+                image: "assets/lifestyle-zones/child/child-combined-room.png",
+                furniture: [2.5, 2.5],
+                zone: [3.0, 3.0]
+            },
+            custom: {
+                label: "Custom size",
+                image: "assets/lifestyle-zones/child/child-custom-size.png",
+                furniture: [2.0, 2.0],
+                zone: [2.5, 2.5]
+            }
+        }
+    }
+
+};
+
+let pendingLifestyleType = null;
+
+let editingLifestyleZone = null;
+
+function openLifestyleSizeSelector(type) {
+    if (window.AppMode?.current !== "home") {
+        console.warn("Lifestyle size selector is Home Wellness only.");
+        return;
+    }
+
+    const config = HOME_LIFESTYLE_PRESETS[type];
+    const modal = document.getElementById("homeLifestyleSizeModal");
+    const select = document.getElementById("homeLifestylePreset");
+    const title = document.getElementById("homeLifestyleSizeTitle");
+
+    if (!config || !modal || !select || !title) {
+        console.error(
+            "Lifestyle size selector elements/config missing.",
+            { type, config, modal, select, title }
+        );
+        return;
+    }
+
+    pendingLifestyleType = type;
+
+    title.textContent = config.title;
+    select.replaceChildren();
+
+    // Build preset options.
+    Object.entries(config.presets).forEach(([key, preset]) => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = preset.label;
+        select.appendChild(option);
+    });
+
+    const editingZone = editingLifestyleZone;
+
+    // Restore the selected preset for the existing zone.
+    if (editingZone) {
+        const savedKey =
+            editingZone.lifestylePreset ||
+            editingZone.lifestylePresetKey ||
+            editingZone.presetKey;
+
+        if (savedKey && config.presets[savedKey]) {
+            select.value = savedKey;
+        }
+    }
+
+    // Apply the selected preset's dimensions.
+    // Standard presets use fixed dimensions; only Custom is editable.
+    updateLifestylePresetFields();
+
+
+    renderLifestylePresetCards();
+    updateLifestyleDimensionGuidelines();
+
+    modal.style.display = "flex";
+
+
+}
+
+
+function updateLifestylePresetFields() {
+    const config = HOME_LIFESTYLE_PRESETS[pendingLifestyleType];
+    const select = document.getElementById("homeLifestylePreset");
+    const preset = config?.presets?.[select?.value];
+
+    if (!preset || !select) return;
+
+    const isCustom = select.value === "custom";
+
+    const values = isCustom
+        ? null
+        : {
+            homeLifestyleFurnitureWidth: preset.furniture[0],
+            homeLifestyleFurnitureDepth: preset.furniture[1],
+            homeLifestyleZoneWidth: preset.zone[0],
+            homeLifestyleZoneDepth: preset.zone[1]
+        };
+
+    const fields = [
+        "homeLifestyleFurnitureWidth",
+        "homeLifestyleFurnitureDepth",
+        "homeLifestyleZoneWidth",
+        "homeLifestyleZoneDepth"
+    ];
+
+    fields.forEach(id => {
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        input.readOnly = !isCustom;
+
+        if (!isCustom && values) {
+            input.value = values[id];
+        }
+    });
+
+    const customDimensions = document.getElementById(
+        "homeLifestyleCustomDimensions"
+    );
+
+    if (customDimensions) {
+        customDimensions.style.display = isCustom ? "grid" : "none";
+    }
+
+    updateLifestyleDimensionGuidelines();
+}
+
+function updateLifestylePresetOverlay(preset, isCustom) {
+    const overlay = document.getElementById("homeLifestylePresetOverlay");
+    if (!overlay) return;
+
+    if (!preset || isCustom) {
+        overlay.style.display = "none";
+        overlay.innerHTML = "";
+        return;
+    }
+
+    const [fw, fd] = preset.furniture;
+    const [zw, zd] = preset.zone;
+
+    if (![fw, fd, zw, zd].every(Number.isFinite) ||
+        fw <= 0 || fd <= 0 || zw <= 0 || zd <= 0) {
+        overlay.style.display = "none";
+        overlay.innerHTML = "";
+        return;
+    }
+
+    const select = document.getElementById("homeLifestylePreset");
+    const presetKey = select?.value;
+
+    const isPlayArea = presetKey === "play";
+    const isCombined = presetKey === "combined";
+    const isActivityArea = isPlayArea || isCombined;
+
+    const footprintLabel = isPlayArea
+        ? "Play area footprint"
+        : "Combined activity footprint";
+
+    const depthLabel = isPlayArea
+        ? "Play area depth"
+        : "Combined activity depth";
+
+    // Fixed SVG coordinate system.
+    const W = 420;
+    const H = 280;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    const scale = Math.min(
+        220 / Math.max(zw, fw),
+        150 / Math.max(zd, fd)
+    );
+
+    const zoneW = zw * scale;
+    const zoneH = zd * scale;
+    const furnitureW = fw * scale;
+    const furnitureH = fd * scale;
+
+    const zx = cx - zoneW / 2;
+    const zy = cy - zoneH / 2;
+    const fx = cx - furnitureW / 2;
+    const fy = cy - furnitureH / 2;
+
+    const zr = zx + zoneW;
+    const zb = zy + zoneH;
+    const fr = fx + furnitureW;
+    const fb = fy + furnitureH;
+
+    // Dimension line positions.
+    const zoneWidthY = Math.max(26, zy - 28);
+    const zoneDepthX = Math.min(W - 34, zr + 27);
+    const footprintWidthY = Math.min(H - 27, zb + 24);
+    const footprintDepthX = Math.max(34, zx - 27);
+
+    const label = (x, y, text, color, rotate = false) => `
+  <g ${rotate ? `transform="rotate(-90 ${x} ${y})"` : ""}>
+    <text x="${x}" y="${y}"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-family="Arial, sans-serif"
+      font-size="11"
+      font-weight="600"
+      fill="${color}"
+      stroke="#f5f1e9"
+      stroke-width="2.5"
+      paint-order="stroke fill">
+      ${text}
+    </text>
+  </g>
+`;
+
+    overlay.style.display = "block";
+
+    overlay.innerHTML = `
+        <svg
+            viewBox="0 0 ${W} ${H}"
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+            aria-label="Furniture footprint and measurement zone dimensions"
+            style="display:block;width:100%;height:100%;">
+
+            <defs>
+                <marker
+                    id="presetZoneArrow"
+                    markerWidth="7"
+                    markerHeight="7"
+                    refX="3.5"
+                    refY="3.5"
+                    orient="auto-start-reverse">
+                    <path d="M0,0 L7,3.5 L0,7 Z" fill="#1677ee"/>
+                </marker>
+
+                <marker
+                    id="presetFurnitureArrow"
+                    markerWidth="7"
+                    markerHeight="7"
+                    refX="3.5"
+                    refY="3.5"
+                    orient="auto-start-reverse">
+                    <path d="M0,0 L7,3.5 L0,7 Z" fill="#475569"/>
+                </marker>
+            </defs>
+
+            <!-- Measurement zone boundary -->
+            <rect
+                x="${zx}"
+                y="${zy}"
+                width="${zoneW}"
+                height="${zoneH}"
+                rx="2"
+                fill="#60a5fa"
+                fill-opacity="0.08"
+                stroke="#1677ee"
+                stroke-width="2"
+                stroke-dasharray="6 4"/>
+
+            <!-- Activity footprint boundary -->
+            ${isActivityArea ? `
+                <rect
+                    x="${fx}"
+                    y="${fy}"
+                    width="${furnitureW}"
+                    height="${furnitureH}"
+                    rx="3"
+                    fill="#ec4899"
+                    fill-opacity="0.04"
+                    stroke="#db4b91"
+                    stroke-width="1.8"
+                    stroke-dasharray="5 4"/>
+            ` : ""}
+
+            <!-- Measurement zone width -->
+            <line
+                x1="${zx}"
+                y1="${zoneWidthY}"
+                x2="${zr}"
+                y2="${zoneWidthY}"
+                stroke="#1677ee"
+                stroke-width="1.6"
+                marker-start="url(#presetZoneArrow)"
+                marker-end="url(#presetZoneArrow)"/>
+
+            ${label(
+        cx,
+        zoneWidthY - 12,
+        "Measurement zone width",
+        "#1261c9"
+    )}
+
+            <!-- Measurement zone depth -->
+            <line
+                x1="${zoneDepthX}"
+                y1="${zy}"
+                x2="${zoneDepthX}"
+                y2="${zb}"
+                stroke="#1677ee"
+                stroke-width="1.6"
+                marker-start="url(#presetZoneArrow)"
+                marker-end="url(#presetZoneArrow)"/>
+
+            ${label(
+        zoneDepthX + 12,
+        cy,
+        "Measurement zone depth",
+        "#1261c9",
+        true
+    )}
+
+            <!-- Footprint / furniture width -->
+            <line
+                x1="${fx}"
+                y1="${footprintWidthY}"
+                x2="${fr}"
+                y2="${footprintWidthY}"
+                stroke="${isActivityArea ? "#db4b91" : "#475569"}"
+                stroke-width="1.6"
+                marker-start="url(#presetFurnitureArrow)"
+                marker-end="url(#presetFurnitureArrow)"/>
+
+            ${label(
+        cx,
+        footprintWidthY + 13,
+        isActivityArea ? footprintLabel : "Furniture width",
+        isActivityArea ? "#b83280" : "#334155"
+    )}
+
+            <!-- Footprint / furniture depth -->
+            <line
+                x1="${footprintDepthX}"
+                y1="${fy}"
+                x2="${footprintDepthX}"
+                y2="${fb}"
+                stroke="${isActivityArea ? "#db4b91" : "#475569"}"
+                stroke-width="1.6"
+                marker-start="url(#presetFurnitureArrow)"
+                marker-end="url(#presetFurnitureArrow)"/>
+
+            ${label(
+        footprintDepthX - 12,
+        cy,
+        isActivityArea ? depthLabel : "Furniture depth",
+        isActivityArea ? "#b83280" : "#334155",
+        true
+    )}
+
+        </svg>
+    `;
+}
+
+
+function renderLifestylePresetCards() {
+    const type = pendingLifestyleType;
+    const config = HOME_LIFESTYLE_PRESETS[type];
+    const container = document.getElementById("homeLifestylePresetCards");
+    const select = document.getElementById("homeLifestylePreset");
+
+    if (!config || !container || !select) return;
+
+    const presets = config.presets;
+    const selectedKey = select.value;
+
+    container.innerHTML = "";
+    Object.entries(presets).forEach(([key, preset]) => {
+        const isSelected = key === selectedKey;
+
+        const card = document.createElement("button");
+
+        card.type = "button";
+        card.dataset.presetKey = key;
+        card.setAttribute("aria-pressed", String(isSelected));
+        card.setAttribute("aria-label", `${preset.label}${isSelected ? ", selected" : ""}`);
+
+        Object.assign(card.style, {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: "8px",
+            padding: "8px",
+            minWidth: "0",
+            width: "100%",
+            boxSizing: "border-box",
+            border: isSelected ? "2px solid #3985f6" : "1px solid #dbe3ed",
+            borderRadius: "10px",
+            background: isSelected ? "#eff6ff" : "#ffffff",
+            cursor: "pointer",
+            color: "#243247",
+            font: "inherit",
+            textAlign: "left",
+            transition: "border-color 120ms ease, background 120ms ease"
+        });
+
+        // Preset illustration
+        const image = document.createElement("img");
+
+        image.src = preset.image || "";
+        image.alt = preset.label;
+        image.loading = "lazy";
+
+        Object.assign(image.style, {
+            display: "block",
+            width: "100%",
+            aspectRatio: "4 / 3",
+            objectFit: "contain",
+            borderRadius: "6px",
+            background: "#f5f1e9"
+        });
+
+        image.onerror = () => {
+            image.style.visibility = "hidden";
+        };
+
+        // Card information
+        const details = document.createElement("div");
+
+        Object.assign(details.style, {
+            display: "grid",
+            gridTemplateColumns: "20px minmax(0, 1fr)",
+            columnGap: "6px",
+            rowGap: "4px",
+            alignItems: "start",
+            minWidth: "0"
+        });
+
+        // Selection indicator
+        const indicator = document.createElement("span");
+
+        indicator.textContent = isSelected ? "●" : "○";
+
+        Object.assign(indicator.style, {
+            fontSize: "17px",
+            lineHeight: "1.2",
+            color: isSelected ? "#3985f6" : "#94a3b8",
+            textAlign: "center"
+        });
+
+        const textContent = document.createElement("div");
+
+        Object.assign(textContent.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            minWidth: "0"
+        });
+
+        // Preset name
+        const name = document.createElement("strong");
+
+        name.textContent = preset.label;
+
+        Object.assign(name.style, {
+            fontSize: "12px",
+            lineHeight: "1.35",
+            overflowWrap: "anywhere",
+            color: "#172b4d"
+        });
+
+        textContent.appendChild(name);
+
+        // Furniture and measurement-zone dimensions
+        if (key === "custom") {
+            const customText = document.createElement("span");
+
+            customText.textContent = "Set your own dimensions";
+
+            Object.assign(customText.style, {
+                fontSize: "11px",
+                lineHeight: "1.35",
+                color: "#64748b"
+            });
+
+            textContent.appendChild(customText);
+        } else {
+            const [fw, fd] = preset.furniture;
+            const [zw, zd] = preset.zone;
+
+            const furnitureDimensions = document.createElement("span");
+            furnitureDimensions.textContent =
+                `${fw.toFixed(1)} × ${fd.toFixed(1)} m`;
+
+            Object.assign(furnitureDimensions.style, {
+                fontSize: "11px",
+                lineHeight: "1.35",
+                color: "#64748b"
+            });
+
+            const zoneDimensions = document.createElement("span");
+            zoneDimensions.textContent =
+                `Zone: ${zw.toFixed(1)} × ${zd.toFixed(1)} m`;
+
+            Object.assign(zoneDimensions.style, {
+                fontSize: "11px",
+                lineHeight: "1.35",
+                color: "#64748b"
+            });
+
+            textContent.append(furnitureDimensions, zoneDimensions);
+        }
+
+        details.append(indicator, textContent);
+        card.append(image, details);
+
+        // Select preset and refresh dimensions, preview and card states
+        card.addEventListener("click", () => {
+            if (select.value === key) return;
+
+            select.value = key;
+            updateLifestylePresetFields();
+            renderLifestylePresetCards();
+        });
+
+        container.appendChild(card);
+    });
+
+    // Update the main Lifestyle preset preview.
+
+    const previewImage =
+        document.getElementById("homeLifestylePreviewImage");
+
+    const previewTitle =
+        document.getElementById("homeLifestylePreviewTitle");
+
+    const previewDescription =
+        document.getElementById("homeLifestylePreviewDescription");
+
+    const previewDimensions =
+        document.getElementById("homeLifestylePreviewDimensions");
+
+    const customDimensions =
+        document.getElementById("homeLifestyleCustomDimensions");
+
+    const dimensionGuidance =
+        document.getElementById("homeLifestyleDimensionGuidance");
+
+    const selectedPreset = presets[selectedKey];
+    const isCustom = selectedKey === "custom";
+
+    if (selectedPreset) {
+        if (previewImage) {
+            previewImage.src = selectedPreset.image || "";
+            previewImage.alt = selectedPreset.label || "Lifestyle furniture";
+            previewImage.style.display =
+                (!isCustom && selectedPreset.image) ? "block" : "none";
+
+            // Combined room: visually reduce the illustration,
+            // keeping the measurement overlay at its original size.
+            previewImage.style.transform =
+                selectedKey === "combined" ? "scale(0.82)" : "scale(1)";
+
+            previewImage.style.transformOrigin = "center center";
+            previewImage.style.transition = "transform 180ms ease";
+        }
+
+        updateLifestylePresetOverlay(selectedPreset, isCustom);
+        updateLifestyleCustomPreview();
+
+        if (previewTitle) {
+            previewTitle.textContent = selectedPreset.label || "Custom size";
+        }
+
+        if (previewDescription) {
+            previewDescription.textContent = isCustom
+                ? "Enter your furniture and measurement zone dimensions."
+                : "Furniture and measurement zone dimensions.";
+        }
+
+
+        if (previewDimensions) {
+            if (isCustom) {
+                previewDimensions.innerHTML = "";
+                previewDimensions.style.display = "none";
+            } else {
+                const [fw, fd] = selectedPreset.furniture;
+                const [zw, zd] = selectedPreset.zone;
+
+                previewDimensions.style.display = "block";
+
+                const isPlayArea = selectedKey === "play";
+                const isCombinedRoom = selectedKey === "combined";
+
+                const footprintTitle = isPlayArea
+                    ? "Play area footprint (m)"
+                    : isCombinedRoom
+                        ? "Combined activity footprint (m)"
+                        : "Furniture size (m)";
+
+                const footprintDescription = isPlayArea
+                    ? "Defined play area dimensions"
+                    : isCombinedRoom
+                        ? "Combined activity area dimensions"
+                        : "Physical furniture dimensions";
+
+                previewDimensions.innerHTML = `
+            <div style="
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:8px;
+                margin-top:10px;
+            ">
+                <div style="
+                    grid-column:1/-1;
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    padding-bottom:8px;
+                    border-bottom:1px solid #e2e8f0;
+                ">
+                    <span style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        width:32px;
+                        height:32px;
+                        flex-shrink:0;
+                        border-radius:50%;
+                        background:#eff6ff;
+                        color:#2563eb;
+                        font-size:17px;
+                    ">▤</span>
+                    <div>
+                        <div style="
+                            font-size:13px;
+                            font-weight:700;
+                            color:#172b4d;
+                        ">${footprintTitle}</div>
+                        <div style="
+                            font-size:11px;
+                            color:#64748b;
+                        ">${footprintDescription}</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">
+                        Width
+                    </div>
+                    <div style="
+                        padding:8px 10px;
+                        border-radius:7px;
+                        background:#f1f5f9;
+                        color:#172b4d;
+                        font-size:14px;
+                        font-weight:600;
+                    ">${fw.toFixed(1)} m</div>
+                </div>
+
+                <div>
+                    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">
+                        Depth
+                    </div>
+                    <div style="
+                        padding:8px 10px;
+                        border-radius:7px;
+                        background:#f1f5f9;
+                        color:#172b4d;
+                        font-size:14px;
+                        font-weight:600;
+                    ">${fd.toFixed(1)} m</div>
+                </div>
+
+                <div style="
+                    grid-column:1/-1;
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    margin-top:8px;
+                    padding-top:10px;
+                    border-top:1px solid #e2e8f0;
+                ">
+                    <span style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        width:32px;
+                        height:32px;
+                        flex-shrink:0;
+                        border-radius:50%;
+                        background:#eff6ff;
+                        color:#2563eb;
+                        font-size:17px;
+                    ">📏</span>
+                    <div>
+                        <div style="
+                            font-size:13px;
+                            font-weight:700;
+                            color:#172b4d;
+                        ">Measurement zone size (m)</div>
+                        <div style="
+                            font-size:11px;
+                            color:#64748b;
+                        ">EMF measurement area around the furniture</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">
+                        Width
+                    </div>
+                    <div style="
+                        padding:8px 10px;
+                        border-radius:7px;
+                        background:#f1f5f9;
+                        color:#172b4d;
+                        font-size:14px;
+                        font-weight:600;
+                    ">${zw.toFixed(1)} m</div>
+                </div>
+
+                <div>
+                    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">
+                        Depth
+                    </div>
+                    <div style="
+                        padding:8px 10px;
+                        border-radius:7px;
+                        background:#f1f5f9;
+                        color:#172b4d;
+                        font-size:14px;
+                        font-weight:600;
+                    ">${zd.toFixed(1)} m</div>
+                </div>
+            </div>
+        `;
+            }
+        }
+
+
+        if (customDimensions) {
+            customDimensions.style.display = isCustom ? "grid" : "none";
+        }
+
+        if (dimensionGuidance) {
+            dimensionGuidance.style.display = isCustom ? "block" : "none";
+        }
+    }
+
+    updateLifestyleCustomPreview();
+    validateLifestyleCustomDimensions();
+}
+
+
+function updateLifestyleCustomPreview() {
+    const select = document.getElementById("homeLifestylePreset");
+    const image = document.getElementById("homeLifestylePreviewImage");
+    const preview = document.getElementById("homeLifestyleCustomPreview");
+
+    if (!select || !image || !preview) return;
+
+    const isCustom = select.value === "custom";
+
+    image.style.display = isCustom ? "none" : "block";
+    preview.style.display = isCustom ? "flex" : "none";
+
+    if (!isCustom) {
+        preview.innerHTML = "";
+        return;
+    }
+
+    const getNumber = id => {
+        const el = document.getElementById(id);
+        return !el || el.value.trim() === "" ? NaN : Number(el.value);
+    };
+
+    const fw = getNumber("homeLifestyleFurnitureWidth");
+    const fd = getNumber("homeLifestyleFurnitureDepth");
+    const zw = getNumber("homeLifestyleZoneWidth");
+    const zd = getNumber("homeLifestyleZoneDepth");
+
+    if (![fw, fd, zw, zd].every(Number.isFinite) ||
+        fw <= 0 || fd <= 0 || zw <= 0 || zd <= 0) {
+        preview.innerHTML = `
+          <div style="color:#64748b;font-size:13px;text-align:center;padding:20px;">
+            Enter all four dimensions to preview the furniture and zone.
+          </div>`;
+        return;
+    }
+
+    // One shared scale preserves the real proportions.
+    // The complete drawing fits regardless of the entered dimensions.
+    const scale = Math.min(
+        220 / Math.max(fw, zw),
+        145 / Math.max(fd, zd)
+    );
+
+    const zoneW = zw * scale;
+    const zoneH = zd * scale;
+    const furnitureW = fw * scale;
+    const furnitureH = fd * scale;
+
+    const cx = 210;
+    const cy = 145;
+
+    const zx = cx - zoneW / 2;
+    const zy = cy - zoneH / 2;
+    const fx = cx - furnitureW / 2;
+    const fy = cy - furnitureH / 2;
+
+    const zr = zx + zoneW;
+    const zb = zy + zoneH;
+    const fr = fx + furnitureW;
+    const fb = fy + furnitureH;
+
+    const fmt = v => Number(v.toFixed(2)).toString();
+
+    // Place labels outside the drawing to avoid overlap.
+    const zoneWidthY = Math.max(25, zy - 24);
+    const zoneDepthX = Math.min(365, zr + 25);
+    const furnitureDepthX = Math.max(55, fx - 23);
+    const furnitureWidthY = Math.min(255, Math.max(fb + 18, zb + 22));
+
+    preview.innerHTML = `
+      <svg viewBox="0 0 420 280"
+        role="img"
+        aria-label="Proportional furniture and measurement zone preview"
+        style="display:block;width:100%;height:100%;max-height:220px;overflow:visible;">
+
+        <defs>
+          <marker id="lifestyleZoneArrow"
+            markerWidth="6" markerHeight="6" refX="3" refY="3"
+            orient="auto-start-reverse">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#2563eb"/>
+          </marker>
+          <marker id="lifestyleFurnitureArrow"
+            markerWidth="6" markerHeight="6" refX="3" refY="3"
+            orient="auto-start-reverse">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#475569"/>
+          </marker>
+        </defs>
+
+        <!-- Measurement zone -->
+        <rect x="${zx}" y="${zy}" width="${zoneW}" height="${zoneH}"
+          rx="3" fill="#dbeafe" fill-opacity="0.5"
+          stroke="#2563eb" stroke-width="2" stroke-dasharray="6 4"/>
+
+        <!-- Furniture -->
+        <rect x="${fx}" y="${fy}" width="${furnitureW}" height="${furnitureH}"
+          rx="3" fill="#94a3b8" fill-opacity="0.55"
+          stroke="#475569" stroke-width="1.7"/>
+
+        <!-- Zone width -->
+        <line x1="${zx}" y1="${zoneWidthY}"
+          x2="${zr}" y2="${zoneWidthY}"
+          stroke="#2563eb" stroke-width="1.5"
+          marker-start="url(#lifestyleZoneArrow)"
+          marker-end="url(#lifestyleZoneArrow)"/>
+        <text x="${cx}" y="${zoneWidthY - 7}"
+          text-anchor="middle" font-size="11" font-weight="600"
+          fill="#1d4ed8">ZONE WIDTH: ${fmt(zw)} m</text>
+
+        <!-- Zone depth -->
+        <line x1="${zoneDepthX}" y1="${zy}"
+          x2="${zoneDepthX}" y2="${zb}"
+          stroke="#2563eb" stroke-width="1.5"
+          marker-start="url(#lifestyleZoneArrow)"
+          marker-end="url(#lifestyleZoneArrow)"/>
+        <text x="${zoneDepthX + 10}" y="${cy}"
+          text-anchor="middle" font-size="10" font-weight="600"
+          fill="#1d4ed8"
+          transform="rotate(90 ${zoneDepthX + 10} ${cy})">
+          ZONE DEPTH: ${fmt(zd)} m
+        </text>
+
+        <!-- Furniture width -->
+        <line x1="${fx}" y1="${furnitureWidthY}"
+          x2="${fr}" y2="${furnitureWidthY}"
+          stroke="#475569" stroke-width="1.5"
+          marker-start="url(#lifestyleFurnitureArrow)"
+          marker-end="url(#lifestyleFurnitureArrow)"/>
+        <text x="${cx}" y="${furnitureWidthY + 13}"
+          text-anchor="middle" font-size="10" font-weight="600"
+          fill="#334155">
+          FURNITURE WIDTH: ${fmt(fw)} m
+        </text>
+
+        <!-- Furniture depth -->
+        <line x1="${furnitureDepthX}" y1="${fy}"
+          x2="${furnitureDepthX}" y2="${fb}"
+          stroke="#475569" stroke-width="1.5"
+          marker-start="url(#lifestyleFurnitureArrow)"
+          marker-end="url(#lifestyleFurnitureArrow)"/>
+        <text x="${furnitureDepthX - 9}" y="${cy}"
+          text-anchor="middle" font-size="10" font-weight="600"
+          fill="#334155"
+          transform="rotate(-90 ${furnitureDepthX - 9} ${cy})">
+          FURNITURE DEPTH: ${fmt(fd)} m
+        </text>
+      </svg>
+
+      <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:2px;font-size:10px;color:#475569;">
+        <span><span style="color:#2563eb;">━━</span> Measurement zone</span>
+        <span><span style="color:#475569;">━━</span> Furniture</span>
+      </div>
+    `;
+}
+
+
+function updateLifestyleDimensionGuidelines() {
+    const units = window.getProjectUnits?.() ||
+        window.AppState?.project?.units ||
+        "m";
+
+    const isFeet = ["ft", "feet", "foot", "imperial"].includes(
+        String(units).toLowerCase()
+    );
+
+    const convert = value => isFeet
+        ? `${(value * 3.280839895).toFixed(1)} ft`
+        : `${value.toFixed(1)} m`;
+
+    const guidelines = [
+        ["homeLifestyleGuidelineFurnitureWidth", 0.5, 3, "Furniture width"],
+        ["homeLifestyleGuidelineFurnitureDepth", 1.5, 3, "Furniture depth"],
+        ["homeLifestyleGuidelineZoneWidth", 1, 10, "Measurement zone width"],
+        ["homeLifestyleGuidelineZoneDepth", 1, 10, "Measurement zone depth"]
+    ];
+
+    guidelines.forEach(([id, min, max, label]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.innerHTML =
+                `${label}: <strong>${convert(min)}–${convert(max)}</strong>`;
+        }
+    });
+}
+
+
+function validateLifestyleCustomDimensions() {
+    const select = document.getElementById("homeLifestylePreset");
+    const error = document.getElementById("homeLifestyleDimensionError");
+
+    if (!select || select.value !== "custom") {
+        if (error) error.style.display = "none";
+        return true;
+    }
+
+    const fields = [
+        { id: "homeLifestyleFurnitureWidth", label: "Furniture width", min: 0.5, max: 3 },
+        { id: "homeLifestyleFurnitureDepth", label: "Furniture depth", min: 1.5, max: 3 },
+        { id: "homeLifestyleZoneWidth", label: "Measurement zone width", min: 1, max: 10 },
+        { id: "homeLifestyleZoneDepth", label: "Measurement zone depth", min: 1, max: 10 }
+    ];
+
+    let message = "";
+
+    for (const field of fields) {
+        const input = document.getElementById(field.id);
+        const value = Number(input?.value);
+
+        if (!input || input.value.trim() === "" || !Number.isFinite(value)) {
+            message = `${field.label}: enter a valid number.`;
+            break;
+        }
+
+        if (value < field.min || value > field.max) {
+            message = `${field.label} must be between ${field.min} and ${field.max} m.`;
+            break;
+        }
+    }
+
+    if (!message) {
+        const fw = Number(document.getElementById("homeLifestyleFurnitureWidth").value);
+        const fd = Number(document.getElementById("homeLifestyleFurnitureDepth").value);
+        const zw = Number(document.getElementById("homeLifestyleZoneWidth").value);
+        const zd = Number(document.getElementById("homeLifestyleZoneDepth").value);
+
+        if (zw < fw || zd < fd) {
+            message = "The measurement zone must be at least as large as the furniture in both dimensions.";
+        }
+    }
+
+    if (error) {
+        error.textContent = message;
+        error.style.display = message ? "block" : "none";
+    }
+
+    fields.forEach(field => {
+        const input = document.getElementById(field.id);
+        if (input) input.setAttribute("aria-invalid", String(!!message));
+    });
+
+    return !message;
+}
+
+
+
+(function setupLifestyleCustomPreview() {
+    if (window.__lifestyleCustomPreviewReady) return;
+    window.__lifestyleCustomPreviewReady = true;
+
+    const fieldIds = new Set([
+        "homeLifestyleFurnitureWidth",
+        "homeLifestyleFurnitureDepth",
+        "homeLifestyleZoneWidth",
+        "homeLifestyleZoneDepth"
+    ]);
+
+    document.addEventListener("input", event => {
+        if (!fieldIds.has(event.target?.id)) return;
+
+        updateLifestyleCustomPreview();
+        validateLifestyleCustomDimensions();
+    });
+
+    document.addEventListener("change", event => {
+        if (!fieldIds.has(event.target?.id)) return;
+
+        updateLifestyleCustomPreview();
+        validateLifestyleCustomDimensions();
+    });
+})();
+
+
+
+
+function closeLifestyleSizeSelector() {
+    const modal = document.getElementById("homeLifestyleSizeModal");
+    if (modal) modal.style.display = "none";
+
+    pendingLifestyleType = null;
+}
+
+// Home Wellness Lifestyle modal keyboard and backdrop behavior.
+(function setupLifestyleModalInteractions() {
+    if (window.__lifestyleModalInteractionsReady) return;
+    window.__lifestyleModalInteractionsReady = true;
+
+    document.addEventListener("keydown", event => {
+        const modal = document.getElementById("homeLifestyleSizeModal");
+
+        if (!modal || modal.style.display === "none") return;
+
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeLifestyleSizeSelector();
+            return;
+        }
+
+        if (event.key === "Enter") {
+            const target = event.target;
+
+            // Allow Enter to select a card or interact with form controls.
+            if (
+                target?.tagName === "BUTTON" ||
+                target?.tagName === "SELECT" ||
+                target?.tagName === "TEXTAREA"
+            ) {
+                return;
+            }
+
+            // Do not trigger placement while the user is editing a number.
+            if (target?.tagName === "INPUT") return;
+
+            event.preventDefault();
+            confirmLifestyleSizeSelector();
+        }
+    });
+
+    document.addEventListener("click", event => {
+        const modal = document.getElementById("homeLifestyleSizeModal");
+
+        if (!modal || modal.style.display === "none") return;
+
+        // Close only when the backdrop itself is clicked.
+        if (event.target === modal) {
+            closeLifestyleSizeSelector();
+        }
+    });
+})();
+function confirmLifestyleSizeSelector() {
+    if (window.AppMode?.current !== "home") return;
+
+    const type = pendingLifestyleType;
+    if (!type) return;
+
+    const select = document.getElementById("homeLifestylePreset");
+    const presetKey = select?.value;
+    const preset = HOME_LIFESTYLE_PRESETS[type]?.presets?.[presetKey];
+
+    if (!preset) {
+        console.error("[LIFESTYLE EDIT] Preset not found", {
+            type,
+            presetKey
+        });
+        return;
+    }
+
+    const isCustom = presetKey === "custom";
+
+    // Read the dimensions currently displayed in the selector.
+    const readDimension = id =>
+        Number(document.getElementById(id)?.value);
+
+    const furnitureWidth = readDimension("homeLifestyleFurnitureWidth");
+    const furnitureDepth = readDimension("homeLifestyleFurnitureDepth");
+    const zoneWidth = readDimension("homeLifestyleZoneWidth");
+    const zoneDepth = readDimension("homeLifestyleZoneDepth");
+
+    if (isCustom && !validateLifestyleCustomDimensions()) {
+        return;
+    }
+
+    if (
+        ![furnitureWidth, furnitureDepth, zoneWidth, zoneDepth].every(
+            value => Number.isFinite(value) && value > 0
+        )
+    ) {
+        alert("Enter valid dimensions greater than zero.");
+        return;
+    }
+
+    if (zoneWidth < furnitureWidth || zoneDepth < furnitureDepth) {
+        alert(
+            "The measurement zone must be at least as large as the furniture footprint."
+        );
+        return;
+    }
+
+    // Standard presets must always use their configured dimensions.
+    const dimensions = isCustom
+        ? {
+            furnitureWidth,
+            furnitureDepth,
+            measurementZoneWidth: zoneWidth,
+            measurementZoneDepth: zoneDepth
+        }
+        : {
+            furnitureWidth: preset.furniture[0],
+            furnitureDepth: preset.furniture[1],
+            measurementZoneWidth: preset.zone[0],
+            measurementZoneDepth: preset.zone[1]
+        };
+
+    const selectedData = {
+        presetKey,
+        presetLabel: preset.label,
+        presetImage: preset.image,
+        ...dimensions
+    };
+
+    // EDIT EXISTING ZONE — do not start a new placement.
+    if (editingLifestyleZone) {
+        const zone = editingLifestyleZone;
+
+        // Keep both preset keys in sync for existing readers.
+        zone.lifestylePreset = presetKey;
+        zone.lifestylePresetKey = presetKey;
+        zone.lifestylePresetLabel = preset.label;
+
+        zone.furnitureDimensions = {
+            ...(zone.furnitureDimensions || {}),
+            width: dimensions.furnitureWidth,
+            depth: dimensions.furnitureDepth
+        };
+
+        zone.measurementZoneDimensions = {
+            ...(zone.measurementZoneDimensions || {}),
+            width: dimensions.measurementZoneWidth,
+            depth: dimensions.measurementZoneDepth
+        };
+
+        // Update the preset image if this preset defines one.
+        if (preset.image) {
+            zone.lifestylePresetImage = preset.image;
+        }
+
+        editingLifestyleZone = null;
+
+        closeLifestyleSizeSelector();
+
+        // Persist and redraw the same zone.
+        window.saveProject?.();
+        window.requestRender?.();
+
+        if (typeof showLifestyleAreaPopup === "function") {
+            showLifestyleAreaPopup(zone);
+        } else {
+            window.showLifestyleAreaPopup?.(zone);
+        }
+
+        console.log("[LIFESTYLE EDIT SAVED]", {
+            id: zone.id,
+            presetKey: zone.lifestylePreset,
+            presetLabel: zone.lifestylePresetLabel,
+            furnitureDimensions: zone.furnitureDimensions,
+            measurementZoneDimensions: zone.measurementZoneDimensions
+        });
+
+        return;
+    }
+
+    // CREATE NEW ZONE — preserve the existing placement workflow.
+    window.objectTool ??= {};
+    window.objectTool.pendingLifestyleDimensions = selectedData;
+
+    closeLifestyleSizeSelector();
+    window.startObjectPlacement(type);
+}
+
+window.openLifestyleSizeSelector = openLifestyleSizeSelector;
+window.closeLifestyleSizeSelector = closeLifestyleSizeSelector;
+window.confirmLifestyleSizeSelector = confirmLifestyleSizeSelector;
+
+
 window.updateOutdoorDistanceCategoryLabels =
     updateOutdoorDistanceCategoryLabels;
 
+
+// ==================================================
+// HOME WELLNESS — LIFESTYLE ZONE ROOM BOUNDARY CHECK
+// ==================================================
+
+function isLifestyleMeasurementZoneInsideRoom(zone, floor) {
+    if (!zone || !floor || !Array.isArray(floor.rooms)) {
+        return null;
+    }
+
+    const scale = Number(floor.currentScale);
+    const widthM = Number(zone.measurementZoneDimensions?.width);
+    const depthM = Number(zone.measurementZoneDimensions?.depth);
+
+    if (
+        !Number.isFinite(scale) || scale <= 0 ||
+        !Number.isFinite(widthM) || widthM <= 0 ||
+        !Number.isFinite(depthM) || depthM <= 0
+    ) {
+        return null;
+    }
+
+    const widthPx = widthM / scale;
+    const depthPx = depthM / scale;
+
+    const corners = [
+        { x: zone.x - widthPx / 2, y: zone.y - depthPx / 2 },
+        { x: zone.x + widthPx / 2, y: zone.y - depthPx / 2 },
+        { x: zone.x + widthPx / 2, y: zone.y + depthPx / 2 },
+        { x: zone.x - widthPx / 2, y: zone.y + depthPx / 2 }
+    ];
+
+    const pointInsidePolygon = (point, polygon) => {
+        if (!Array.isArray(polygon) || polygon.length < 3) {
+            return false;
+        }
+
+        let inside = false;
+
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const a = polygon[i];
+            const b = polygon[j];
+
+            const intersects =
+                ((a.y > point.y) !== (b.y > point.y)) &&
+                (point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x);
+
+            if (intersects) inside = !inside;
+        }
+
+        return inside;
+    };
+
+    const candidateRooms = floor.rooms.filter(room =>
+        Array.isArray(room.polygon) &&
+        room.polygon.length >= 3 &&
+        pointInsidePolygon({ x: zone.x, y: zone.y }, room.polygon)
+    );
+
+    if (!candidateRooms.length) {
+        return false;
+    }
+
+    return candidateRooms.some(room =>
+        corners.every(corner => pointInsidePolygon(corner, room.polygon))
+    );
+}
+
+function updateLifestyleAreaBoundaryWarning(zone, floor) {
+    const warning = document.getElementById("lifestyleAreaBoundaryWarning");
+    if (!warning) return;
+
+    const result = isLifestyleMeasurementZoneInsideRoom(zone, floor);
+
+    // Unknown geometry should not show a potentially false warning.
+    warning.style.display = result === false ? "flex" : "none";
+}
 
 window.showLifestyleAreaPopup =
     showLifestyleAreaPopup;
@@ -8562,6 +10720,128 @@ window.placeObject =
 window.drawObjects =
     drawObjects;
 
+
+/* HOME WELLNESS — LIFESTYLE PLACEMENT PREVIEW */
+window.drawHomeLifestylePlacementPreview = function () {
+    const tool = window.objectTool;
+    const pending = tool?.pendingLifestyleDimensions;
+    const floor = window.AppState?.project?.floors?.[
+        window.AppState?.project?.currentFloorIndex || 0
+    ];
+    const canvas = window.canvas;
+
+    if (
+        !pending ||
+        !tool?.currentType ||
+        !tool?.previewPoint ||
+        !floor ||
+        !canvas ||
+        !Number.isFinite(floor.currentScale) ||
+        floor.currentScale <= 0
+    ) {
+        return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Load the exact selected Lifestyle preset image.
+    window.homeLifestylePresetImages ??= {};
+
+    let img = null;
+
+    if (pending.presetImage) {
+        img = window.homeLifestylePresetImages[pending.presetImage];
+
+        if (!img) {
+            img = new Image();
+            img.src = pending.presetImage;
+
+            window.homeLifestylePresetImages[pending.presetImage] = img;
+        }
+    }
+    const center = window.EMFViewport?.worldPoint?.(tool.previewPoint);
+
+    if (!center) return;
+
+    // currentScale = meters per floor-plan pixel.
+    const furnitureWidthPx =
+        pending.furnitureWidth / floor.currentScale;
+    const furnitureDepthPx =
+        pending.furnitureDepth / floor.currentScale;
+
+    const zoneWidthPx =
+        pending.measurementZoneWidth / floor.currentScale;
+    const zoneDepthPx =
+        pending.measurementZoneDepth / floor.currentScale;
+
+    // Project world dimensions into canvas/screen coordinates.
+    const projectPoint = (x, y) =>
+        window.EMFViewport.worldPoint({ x, y });
+
+    const fw = projectPoint(
+        tool.previewPoint.x + furnitureWidthPx / 2,
+        tool.previewPoint.y
+    );
+    const fd = projectPoint(
+        tool.previewPoint.x,
+        tool.previewPoint.y + furnitureDepthPx / 2
+    );
+    const zw = projectPoint(
+        tool.previewPoint.x + zoneWidthPx / 2,
+        tool.previewPoint.y
+    );
+    const zd = projectPoint(
+        tool.previewPoint.x,
+        tool.previewPoint.y + zoneDepthPx / 2
+    );
+
+    const furnitureW = Math.abs(fw.x - center.x) * 2;
+    const furnitureH = Math.abs(fd.y - center.y) * 2;
+    const zoneW = Math.abs(zw.x - center.x) * 2;
+    const zoneH = Math.abs(zd.y - center.y) * 2;
+
+    ctx.save();
+
+    // Measurement-zone boundary.
+    ctx.beginPath();
+    ctx.setLineDash([7, 5]);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(37,99,235,0.95)";
+    ctx.fillStyle = "rgba(37,99,235,0.09)";
+    ctx.rect(
+        center.x - zoneW / 2,
+        center.y - zoneH / 2,
+        zoneW,
+        zoneH
+    );
+    ctx.fill();
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Furniture preview.
+    ctx.globalAlpha = 0.72;
+
+    if (img?.complete && img.naturalWidth > 0) {
+        ctx.drawImage(
+            img,
+            center.x - furnitureW / 2,
+            center.y - furnitureH / 2,
+            furnitureW,
+            furnitureH
+        );
+    } else {
+        ctx.strokeStyle = "#2563eb";
+        ctx.strokeRect(
+            center.x - furnitureW / 2,
+            center.y - furnitureH / 2,
+            furnitureW,
+            furnitureH
+        );
+    }
+
+    ctx.restore();
+};
 
 
 // =====================

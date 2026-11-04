@@ -348,50 +348,43 @@ function handleImageUpload(evt) {
         outdoorSourcesCount > 0;
 
     // ==================================================
-    // CONFIRM REPLACEMENT
+    // CONTROLLED PLAN REPLACEMENT
     // ==================================================
+
+    let preserveAssessment = true;
 
     if (hasAssessmentData) {
 
-        const confirmed =
-            window.confirm(
-                "Replace Floor Plan?\n\n" +
+        const choice = window.prompt(
+            "REPLACE FLOOR PLAN\n\n" +
 
-                "This floor already contains " +
+            "1 — Create New Plan Version\n" +
+            "    Preserve the existing assessment.\n\n" +
 
-                roomsCount +
-                " room(s), " +
+            "2 — Replace & Reset Assessment\n" +
+            "    Do not preserve the existing assessment.\n\n" +
 
-                zonesCount +
-                " zone(s), and " +
+            "3 — Cancel\n\n" +
 
-                (
-                    sourcesCount +
-                    indoorSourcesCount +
-                    outdoorSourcesCount
-                ) +
-                " source(s).\n\n" +
+            "Enter 1, 2 or 3:"
+        );
 
-                "Replacing the floor plan will remove " +
-                "the existing rooms, zones, sources " +
-                "and their measurement grids.\n\n" +
+        if (choice === "1") {
 
-                "The scale will also need to be set again.\n\n" +
+            preserveAssessment = true;
 
-                "Press OK to replace and reset this floor, " +
-                "or Cancel to keep the current plan."
-            );
+        } else if (choice === "2") {
 
-        if (!confirmed) {
+            preserveAssessment = false;
+
+        } else {
 
             console.log(
-                "🔥 IMAGE REPLACEMENT CANCELLED"
+                "[FLOOR PLAN] Replacement cancelled."
             );
 
-            if (evt.target) {
-
-                evt.target.value =
-                    "";
+            if (evt?.target) {
+                evt.target.value = "";
             }
 
             return;
@@ -439,7 +432,7 @@ function handleImageUpload(evt) {
             const img =
                 new Image();
 
-            img.onload = () => {
+            img.onload = async () => {
 
                 console.log(
                     "🔥 IMAGE OBJECT LOADED",
@@ -453,150 +446,209 @@ function handleImageUpload(evt) {
                 );
 
                 // ==================================================
-                // RESET EXISTING ASSESSMENT DATA
+                // UPLOAD FLOOR PLAN TO SERVER
                 // ==================================================
 
-                if (hasAssessmentData) {
+                const projectId =
+                    window.getCurrentProjectId?.() ||
+                    AppState.project?.project_id ||
+                    AppState.project?.id ||
+                    null;
 
-                    console.log(
-                        "🔥 RESETTING FLOOR ASSESSMENT DATA"
+                if (!projectId || !currentFloor?.id) {
+
+                    console.error(
+                        "[FLOOR PLAN UPLOAD] Missing project or floor ID."
                     );
 
-                    currentFloor.rooms =
-                        [];
+                    alert("Cannot upload floor plan: project or floor ID is missing.");
 
-                    currentFloor.zones =
-                        [];
+                    return;
+                }
 
-                    currentFloor.sources =
-                        [];
+                const planVersionId =
+                    window.PhiIdFactory?.createPhiId?.("plan_version");
 
-                    currentFloor.indoorSources =
-                        [];
+                if (!planVersionId) {
 
-                    currentFloor.outdoorSources =
-                        [];
+                    console.error(
+                        "[FLOOR PLAN UPLOAD] Could not generate plan version ID."
+                    );
 
-                    currentFloor.scaleConfirmed =
-                        false;
+                    return;
+                }
 
-                    currentFloor.currentScale =
-                        null;
+                const formData = new FormData();
 
-                    currentFloor.canvasWidth =
-                        null;
+                formData.append("file", file);
+                formData.append("plan_version_id", planVersionId);
 
-                    currentFloor.canvasHeight =
-                        null;
+                let uploadResponse;
 
-                    AppState.ui.selectedRoom =
-                        null;
+                try {
 
-                    AppState.ui.selectedZone =
-                        null;
+                    uploadResponse = await fetch(
+                        `${API}/project/${projectId}/floors/${currentFloor.id}/plan`,
+                        {
+                            method: "POST",
+                            headers: getAuthHeadersForFormData(),
+                            body: formData
+                        }
+                    );
 
-                    window.selectedRoom =
-                        null;
+                } catch (error) {
 
-                    window.selectedZone =
-                        null;
+                    console.error(
+                        "[FLOOR PLAN UPLOAD] Network error:",
+                        error
+                    );
 
-                    if (
-                        window.scaleTool
-                    ) {
+                    alert("Floor plan upload failed. The existing plan was not changed.");
 
-                        window.scaleTool.active =
-                            false;
+                    return;
+                }
 
-                        window.scaleTool.calibrated =
-                            false;
+                if (!uploadResponse.ok) {
 
-                        window.scaleTool.points =
-                            [];
+                    const errorData = await uploadResponse.json().catch(() => null);
+
+                    console.error(
+                        "[FLOOR PLAN UPLOAD] Server error:",
+                        uploadResponse.status,
+                        errorData
+                    );
+
+                    alert("Floor plan upload failed. The existing plan was not changed.");
+
+                    return;
+                }
+
+                const uploadData = await uploadResponse.json();
+
+                console.log(
+                    "[FLOOR PLAN UPLOAD] Server upload successful:",
+                    uploadData
+                );
+
+                // ==================================================
+                // ACTIVATE NEW FLOOR PLAN VERSION
+                // ==================================================
+
+                const newPlanVersion =
+                    window.activateNewFloorPlanVersion?.(
+                        currentFloor,
+                        {
+                            planVersionId: planVersionId,
+                            imagePath: uploadData.imagePath,
+                            imageFileName: file.name,
+                            imageFileSize: file.size,
+                            imageWidth: img.width,
+                            imageHeight: img.height
+                        },
+                        {
+                            preserveAssessment
+                        }
+                    );
+
+                if (!newPlanVersion) {
+
+                    console.error(
+                        "[FLOOR PLAN] Version activation failed."
+                    );
+
+                    return;
+                }
+
+                console.log(
+                    "[FLOOR PLAN] New version activated",
+                    {
+                        versionId: newPlanVersion.id,
+                        version: newPlanVersion.version,
+                        preserveAssessment
                     }
+                );
 
-                    if (
-                        window.scalePoints
-                    ) {
+                // ==================================================
+                // SAVE NEW PLAN VERSION TO PROJECT
+                // ==================================================
 
-                        window.scalePoints.length =
-                            0;
-                    }
+                const projectSaved =
+                    await window.saveProject?.();
 
-                    if (
-                        typeof roomCreated !==
-                        "undefined"
-                    ) {
+                if (!projectSaved) {
 
-                        roomCreated =
-                            false;
-                    }
+                    console.error(
+                        "[FLOOR PLAN] Project save failed after plan activation.",
+                        {
+                            versionId: newPlanVersion.id
+                        }
+                    );
 
-                    if (
-                        typeof gridCreated !==
-                        "undefined"
-                    ) {
+                    alert(
+                        "The plan was uploaded, but project data could not be saved. Please reload only after resolving this issue."
+                    );
 
-                        gridCreated =
-                            false;
-                    }
+                    return;
+                }
 
-                    if (
-                        typeof scaleSet !==
-                        "undefined"
-                    ) {
+                console.log(
+                    "[FLOOR PLAN] Project version saved successfully."
+                );
 
-                        scaleSet =
-                            false;
-                    }
+                // ==================================================
+                // RESET UI SELECTION AND TOOLS
+                // ==================================================
+
+                AppState.ui.selectedRoom = null;
+                AppState.ui.selectedZone = null;
+
+                window.selectedRoom = null;
+                window.selectedZone = null;
+
+                if (window.scaleTool) {
+                    window.scaleTool.active = false;
+                    window.scaleTool.calibrated = false;
+                    window.scaleTool.points = [];
+                }
+
+                if (window.scalePoints) {
+                    window.scalePoints.length = 0;
+                }
+
+                if (typeof roomCreated !== "undefined") {
+                    roomCreated = false;
+                }
+
+                if (typeof gridCreated !== "undefined") {
+                    gridCreated = false;
+                }
+
+                if (typeof scaleSet !== "undefined") {
+                    scaleSet = false;
                 }
 
                 // ==================================================
-                // 🔥 ASSIGN IMAGE
+                // ASSIGN IMAGE
                 // ==================================================
 
-                currentFloor.image =
-                    img;
+                currentFloor.image = img;
 
-                currentFloor.imageData =
-                    imageData;
+                currentFloor.imageData = null;
 
-                currentFloor.imageFileName =
-                    file.name;
-
-                currentFloor.imageFileSize =
-                    file.size;
+                currentFloor.imageFileName = file.name;
+                currentFloor.imageFileSize = file.size;
 
                 console.log(
-                    "🔥🔥🔥 IMAGE ASSIGNED TO FLOOR",
+                    "[FLOOR PLAN] Image assigned to floor",
                     {
-                        floorId:
-                            currentFloor.id,
-
-                        floorName:
-                            currentFloor.name,
-
-                        image:
-                            !!currentFloor.image,
-
-                        imageData:
-                            !!currentFloor.imageData,
-
-                        imageDataLength:
-                            currentFloor.imageData
-                                ?.length || 0,
-
-                        imageFileName:
-                            currentFloor.imageFileName,
-
-                        imageFileSize:
-                            currentFloor.imageFileSize,
-
-                        width:
-                            img.width,
-
-                        height:
-                            img.height
+                        floorId: currentFloor.id,
+                        floorName: currentFloor.name,
+                        image: !!currentFloor.image,
+                        imageData: !!currentFloor.imageData,
+                        imageFileName: currentFloor.imageFileName,
+                        imageFileSize: currentFloor.imageFileSize,
+                        width: img.width,
+                        height: img.height
                     }
                 );
 
@@ -895,6 +947,40 @@ window.addEventListener(
 
                 fileInput.click();
 
+            }
+        );
+
+        document.addEventListener("click", (event) => {
+            if (
+                event.target.closest("#homeFloorPlanUpload") ||
+                event.target.closest("#homeFloorPlanReplace")
+            ) {
+                event.preventDefault();
+                fileInput.click();
+            }
+        });
+
+        // FLOOR PLAN DROPDOWN — UPLOAD
+
+        const homeFloorPlanUpload =
+            document.getElementById("homeFloorPlanUpload");
+
+        homeFloorPlanUpload?.addEventListener(
+            "click",
+            () => {
+                homeBtnUploadPlan?.click();
+            }
+        );
+
+        // FLOOR PLAN DROPDOWN — REPLACE
+
+        const homeFloorPlanReplace =
+            document.getElementById("homeFloorPlanReplace");
+
+        homeFloorPlanReplace?.addEventListener(
+            "click",
+            () => {
+                homeBtnUploadPlan?.click();
             }
         );
 
