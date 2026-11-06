@@ -234,11 +234,43 @@ STRIPE_BRANDING_PRICE_IDS = {
     },
 }
 
+STRIPE_PRICE_IDS = {
+    "EUR": {
+        "single": os.getenv("STRIPE_EU_BUSINESS_SINGLE_PRICE_ID"),
+        "pro": os.getenv("STRIPE_EU_BUSINESS_PRO_PRICE_ID"),
+        "professional": os.getenv("STRIPE_EU_PROFESSIONAL_PRICE_ID"),
+        "home_full_report": os.getenv("STRIPE_EU_HOME_FULL_REPORT_PRICE_ID"),
+
+        # Home Wellness
+        "home_simple_report": os.getenv("STRIPE_EU_HOME_SIMPLE_REPORT_ONE_TIME_PRICE_ID"),
+        "home_measure_monthly": os.getenv("STRIPE_EU_HOME_MEASURE_MONTHLY_PRICE_ID"),
+        "home_deeper_first": os.getenv("STRIPE_EU_HOME_DEEPER_ANALYSIS_FIRST_ONE_TIME_PRICE_ID"),
+        "home_deeper_repeat": os.getenv("STRIPE_EU_HOME_DEEPER_ANALYSIS_REPEAT_ONE_TIME_PRICE_ID"),
+    },
+    "USD": {
+        "single": os.getenv("STRIPE_US_BUSINESS_SINGLE_PRICE_ID"),
+        "pro": os.getenv("STRIPE_US_BUSINESS_PRO_PRICE_ID"),
+        "professional": os.getenv("STRIPE_US_PROFESSIONAL_PRICE_ID"),
+        "home_full_report": os.getenv("STRIPE_US_HOME_FULL_REPORT_PRICE_ID"),
+
+        # Home Wellness
+        "home_simple_report": os.getenv("STRIPE_US_HOME_SIMPLE_REPORT_ONE_TIME_PRICE_ID"),
+        "home_measure_monthly": os.getenv("STRIPE_US_HOME_MEASURE_MONTHLY_PRICE_ID"),
+        "home_deeper_first": os.getenv("STRIPE_US_HOME_DEEPER_ANALYSIS_FIRST_ONE_TIME_PRICE_ID"),
+        "home_deeper_repeat": os.getenv("STRIPE_US_HOME_DEEPER_ANALYSIS_REPEAT_ONE_TIME_PRICE_ID"),
+    },
+}
+
 STRIPE_ALLOWED_PLANS = {
     "single": "Business Single",
     "pro": "Business Pro",
     "professional": "Professional",
     "home_full_report": "Full EMF Insight Report",
+
+    "home_simple_report": "Simple Property EMF Report",
+    "home_measure_monthly": "EMF Self-Assessment",
+    "home_deeper_first": "Deeper EMF Analysis – First Assessment",
+    "home_deeper_repeat": "Deeper EMF Analysis – Follow-up Assessment",
 }
 
 STRIPE_APP_URL = os.getenv("APP_BASE_URL", "https://app.emfinsight.com").rstrip("/")
@@ -278,6 +310,51 @@ def _ensure_home_project_entitlements_table(db):
             unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """))
+
+def _ensure_home_wellness_entitlements_table(db):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS home_wellness_entitlements (
+            id BIGSERIAL PRIMARY KEY,
+            user_id VARCHAR(255) NOT NULL,
+            project_id VARCHAR(255),
+            entitlement_type VARCHAR(50) NOT NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'active',
+            starts_at TIMESTAMP,
+            expires_at TIMESTAMP,
+            stripe_subscription_id VARCHAR(255),
+            stripe_session_id VARCHAR(255),
+            current_period_start TIMESTAMP,
+            current_period_end TIMESTAMP,
+            cancel_at_period_end BOOLEAN NOT NULL DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
+    db.execute(text("""
+        CREATE UNIQUE INDEX IF NOT EXISTS
+        uq_home_wellness_entitlements_stripe_session_id
+        ON home_wellness_entitlements (stripe_session_id)
+    """))
+
+
+def _ensure_home_wellness_transactions_table(db):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS home_wellness_transactions (
+            id BIGSERIAL PRIMARY KEY,
+            user_id VARCHAR(255) NOT NULL,
+            project_id VARCHAR(255) NOT NULL,
+            product_key VARCHAR(100) NOT NULL,
+            stripe_session_id VARCHAR(255) NOT NULL UNIQUE,
+            stripe_payment_intent_id VARCHAR(255),
+            amount INTEGER,
+            currency VARCHAR(10),
+            status VARCHAR(30) NOT NULL DEFAULT 'completed',
+            purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+
 def _ensure_user_admin_fields(db):
 
     db.execute(text("""
@@ -419,6 +496,18 @@ def _ensure_professional_contact_points_tables(db):
         ON CONFLICT (setting_key) DO NOTHING
     """))
 
+    db.execute(text("""
+        INSERT INTO platform_settings (
+            setting_key,
+            setting_value
+        )
+        VALUES (
+            'home_simple_report_access_days',
+            '60'
+        )
+        ON CONFLICT (setting_key) DO NOTHING
+    """))
+
 
 def _ensure_professional_entitlements_table(db):
     db.execute(text("""
@@ -516,7 +605,10 @@ def create_checkout(
 
         # Home Full Report is project-scoped.
         # The authenticated user must own the Home Project being purchased.
-        if plan == "home_full_report":
+        if plan in {
+            "home_full_report",
+            "home_simple_report",
+        }:
             if not project_id:
                 raise HTTPException(
                     400,
@@ -544,7 +636,11 @@ def create_checkout(
 
         # Business Pro and Professional are recurring subscriptions.
         # Business Single and Home Full Report are one-time payments.
-        mode = "subscription" if plan in {"pro", "professional"} else "payment"
+        mode = "subscription" if plan in {
+            "pro",
+            "professional",
+            "home_measure_monthly",
+        } else "payment"
 
         try:
             session = stripe.checkout.Session.create(
@@ -564,7 +660,10 @@ def create_checkout(
                     "currency": currency,
                     **(
                         {"project_id": str(project_id)}
-                        if plan == "home_full_report"
+                        if plan in {
+                            "home_full_report",
+                            "home_simple_report",
+                        }
                         else {}
                     ),
                 },
@@ -691,6 +790,8 @@ async def stripe_webhook(request: Request):
         _ensure_stripe_events_table(db)
         _ensure_home_entitlements_table(db)
         _ensure_home_project_entitlements_table(db)
+        _ensure_home_wellness_entitlements_table(db)
+        _ensure_home_wellness_transactions_table(db)
         _ensure_user_admin_fields(db)
         if not _claim_stripe_event(db, event_id):
             db.rollback()
@@ -911,6 +1012,132 @@ async def stripe_webhook(request: Request):
                     },
                 )
 
+            elif plan == "home_simple_report":
+                project_id = metadata.get("project_id")
+                stripe_session_id = session.get("id")
+
+                if not project_id:
+                    print(
+                        "CRITICAL: Stripe Simple Report webhook missing project_id:",
+                        stripe_session_id,
+                    )
+                    raise RuntimeError(
+                        f"Simple Report payment has no project_id. "
+                        f"Stripe session: {stripe_session_id}"
+                    )
+
+                project = db.execute(
+                    text("""
+                        SELECT id
+                        FROM projects
+                        WHERE id = :project_id
+                          AND user_id = :user_id
+                    """),
+                    {
+                        "project_id": str(project_id),
+                        "user_id": str(user.id),
+                    },
+                ).first()
+
+                if not project:
+                    print(
+                        "CRITICAL: Stripe Simple Report project not found or not owned:",
+                        project_id,
+                        user.id,
+                    )
+                    raise RuntimeError(
+                        f"Simple Report project not found or not owned. "
+                        f"Project: {project_id}, User: {user.id}"
+                    )
+
+                # Read the current Admin-configured access duration.
+                setting = db.execute(
+                    text("""
+                        SELECT setting_value
+                        FROM platform_settings
+                        WHERE setting_key = 'home_simple_report_access_days'
+                    """)
+                ).first()
+
+                access_days = int(setting[0]) if setting else 60
+
+                now = datetime.utcnow()
+                expires_at = now + timedelta(days=access_days)
+
+               # Create project-scoped Simple Report entitlement.
+                db.execute(
+                    text("""
+                        INSERT INTO home_wellness_entitlements (
+                            user_id,
+                            project_id,
+                            entitlement_type,
+                            status,
+                            starts_at,
+                            expires_at,
+                            stripe_session_id
+                        )
+                        VALUES (
+                            :user_id,
+                            :project_id,
+                            'simple_report',
+                            'active',
+                            :starts_at,
+                            :expires_at,
+                            :stripe_session_id
+                        )
+                        ON CONFLICT (stripe_session_id) DO NOTHING
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "project_id": str(project_id),
+                        "starts_at": now,
+                        "expires_at": expires_at,
+                        "stripe_session_id": stripe_session_id,
+                    },
+                )
+
+                # Record the successful one-time purchase.
+                db.execute(
+                    text("""
+                        INSERT INTO home_wellness_transactions (
+                            user_id,
+                            project_id,
+                            product_key,
+                            stripe_session_id,
+                            stripe_payment_intent_id,
+                            amount,
+                            currency,
+                            status
+                        )
+                               VALUES (
+            :user_id,
+            :project_id,
+            'home_simple_report',
+            :stripe_session_id,
+            :payment_intent_id,
+            :amount,
+            :currency,
+            'completed'
+        )
+        ON CONFLICT (stripe_session_id) DO NOTHING
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "project_id": str(project_id),
+                        "stripe_session_id": stripe_session_id,
+                        "payment_intent_id": session.get("payment_intent"),
+                        "amount": session.get("amount_total"),
+                        "currency": session.get("currency"),
+                    },
+                )
+
+                print(
+                    "HOME SIMPLE REPORT ACTIVATED",
+                    user.email,
+                    project_id,
+                    access_days,
+                    "days",
+                )
 
             elif plan == "home_full_report":
                 # Home Full Report is deliberately separate from Business credits

@@ -1967,7 +1967,15 @@ async function setAppMode(
 
         requestRender?.();
 
+        if (mode === "home") {
+            console.log("[RESTORE CALL]", {
+                mode,
+                homeMeasurements: !!window.HomeMeasurements,
+                restoreFunction: typeof window.HomeMeasurements?.restoreWorkspace
+            });
 
+            window.HomeMeasurements?.restoreWorkspace?.();
+        }
         // ==================================================
         // FINAL DEBUG
         // ==================================================

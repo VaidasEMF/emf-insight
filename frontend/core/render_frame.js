@@ -303,6 +303,29 @@ function renderFrame() {
         const image =
             currentFloor.image;
 
+        console.error("[IMAGE OBJECT TYPE]", {
+            image,
+            type: typeof image,
+            constructor: image?.constructor?.name,
+            tagName: image?.tagName,
+            objectType: Object.prototype.toString.call(image),
+            keys: image ? Object.keys(image) : null,
+
+            isHTMLImage:
+                image instanceof HTMLImageElement,
+
+            sameAsHomeImage:
+                image === window.HomeMeasurements
+                    ?.getHomeFloor?.()
+                    ?.image,
+
+            homeImageConstructor:
+                window.HomeMeasurements
+                    ?.getHomeFloor?.()
+                    ?.image
+                    ?.constructor?.name
+        });
+
         const imageWidth =
             image.naturalWidth ||
             image.width;
@@ -358,15 +381,61 @@ function renderFrame() {
             }
         );
 
-
-
-        ctx.drawImage(
+        console.log("[DRAW IMAGE DIAGNOSTIC]", {
             image,
-            EMFViewport.offsetX,
-            EMFViewport.offsetY,
-            drawWidth,
-            drawHeight
-        );
+            constructor: image?.constructor?.name,
+            isImage: image instanceof HTMLImageElement,
+            complete: image?.complete,
+            naturalWidth: image?.naturalWidth,
+            src: image?.src,
+            currentWorkspace: window.AppMode?.current
+        });
+
+        try {
+            ctx.drawImage(
+                image,
+                EMFViewport.offsetX,
+                EMFViewport.offsetY,
+                drawWidth,
+                drawHeight
+            );
+        } catch (error) {
+            console.error("[DRAW IMAGE FAILED]", {
+                error,
+                image,
+                isImage: image instanceof HTMLImageElement,
+                complete: image?.complete,
+                naturalWidth: image?.naturalWidth,
+                naturalHeight: image?.naturalHeight,
+                drawWidth,
+                drawHeight,
+                canvas: ctx.canvas,
+
+                imageConstructor: image?.constructor?.name,
+                imageKeys: image ? Object.keys(image) : null,
+
+                floorImageConstructor:
+                    currentFloor.image?.constructor?.name,
+
+                floorImageKeys:
+                    currentFloor.image
+                        ? Object.keys(currentFloor.image)
+                        : null,
+
+                imageDataType:
+                    typeof currentFloor.imageData,
+
+                imageDataConstructor:
+                    currentFloor.imageData?.constructor?.name,
+
+                floorIndex,
+                floorId: currentFloor.id
+            });
+
+            throw error;
+        }
+
+        ctx.restore();
 
         ctx.restore();
 
@@ -395,6 +464,7 @@ function renderFrame() {
             window.drawObjects?.();
             window.drawHomeMeasurementPointsLayer?.();
             window.drawHomeLifestylePlacementPreview?.();
+            window.drawHomeGuidedActiveLifestyleArea?.();
         }
 
         // =====================

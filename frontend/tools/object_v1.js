@@ -1613,6 +1613,12 @@ function placeObject(evt) {
 
         requestRender?.();
 
+        const guidedPanel = document.getElementById("homeGuidedRightPanel");
+
+        if (guidedPanel && guidedPanel.offsetParent !== null) {
+            window.HomeMeasurements?.showPage?.("guided");
+        }
+
         return;
     }
 
@@ -2251,9 +2257,32 @@ function drawHomeMeasurementPointsLayer() {
             !Array.isArray(zone.measurementPoints)
         ) return;
 
-        zone.measurementPoints.forEach(point => {
+        const points = [...zone.measurementPoints];
 
+        const presetKey =
+            zone.lifestylePreset ||
+            zone.lifestylePresetKey;
+
+        // Double / King: Centre → Left → Right
+        if (presetKey === "double" || presetKey === "king") {
+            const centerY = Math.max(
+                ...points.map(point => Number(point.y))
+            );
+
+            const getRank = point => {
+                if (Math.abs(Number(point.y) - centerY) < 0.01) {
+                    return 0; // Centre
+                }
+
+                return Number(point.x) < Number(zone.x) ? 1 : 2;
+            };
+
+            points.sort((a, b) => getRank(a) - getRank(b));
+        }
+
+        points.forEach(point => {
             globalPointNumber++;
+
             if (
                 !Number.isFinite(Number(point.x)) ||
                 !Number.isFinite(Number(point.y))
@@ -2298,6 +2327,7 @@ function drawHomeMeasurementPointsLayer() {
             canvasCtx.font = "600 11px Arial";
             canvasCtx.textAlign = "center";
             canvasCtx.textBaseline = "middle";
+
             canvasCtx.fillText(
                 String(globalPointNumber),
                 screen.x,
@@ -5034,8 +5064,8 @@ function showLifestyleAreaPopup(
     window.activePopupZone =
         zone;
 
-    window.selectedLifestyleArea =
-        zone;
+
+    zone;
 
 
     // ==================================================
@@ -7466,6 +7496,13 @@ function showLifestyleAreaPopup(
                         window.selectedLifestyleArea =
                             null;
 
+                        if (
+                            window.HomeMeasurements?.activeLifestyleArea?.id ===
+                            zone.id
+                        ) {
+                            window.HomeMeasurements.activeLifestyleArea = null;
+                        }
+
 
                         popup.style.display =
                             "none";
@@ -7493,6 +7530,12 @@ function showLifestyleAreaPopup(
 
 
                         saveProject?.();
+
+                        const guidedPanel = document.getElementById("homeGuidedRightPanel");
+
+                        if (guidedPanel && guidedPanel.offsetParent !== null) {
+                            window.HomeMeasurements?.showPage?.("guided");
+                        }
 
                         requestRender?.();
 

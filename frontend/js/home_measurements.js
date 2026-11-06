@@ -14,15 +14,6 @@
         const project = window.AppState?.project;
         if (!project) return null;
 
-        // Prefer the application's existing active-floor getter.
-        if (typeof window.getCurrentFloor === "function") {
-            const currentFloor = window.getCurrentFloor();
-
-            if (currentFloor) {
-                return currentFloor;
-            }
-        }
-
         const index = Number.isInteger(project.currentFloorIndex)
             ? project.currentFloorIndex
             : 0;
@@ -395,7 +386,692 @@
         </section>
     `;
 
+    }
 
+
+    function getOrderedGuidedPoints(zones) {
+        console.log("[ORDER HELPER CALLED]", zones);
+
+        return (zones || []).flatMap(currentZone => {
+            const points = [
+                ...(currentZone.measurementPoints || [])
+            ];
+
+            console.log("[BED POINTS BEFORE SORT]", {
+                zoneId: currentZone.id,
+                preset: currentZone.lifestylePreset,
+                presetKey: currentZone.lifestylePresetKey,
+                dimensions: currentZone.measurementZoneDimensions,
+                points: points.map(point => ({
+                    id: point.id,
+                    x: point.x,
+                    y: point.y
+                }))
+            });
+
+            const presetKey =
+                currentZone.lifestylePreset ||
+                currentZone.lifestylePresetKey;
+
+            console.log("[PRESET SORT CHECK]", {
+                presetKey,
+                zoneX: currentZone.x,
+                willSort: presetKey === "double" || presetKey === "king"
+            });
+
+            if (presetKey === "double" || presetKey === "king") {
+                points.sort((a, b) => {
+                    const centerY = Math.max(...points.map(point => point.y));
+
+                    const getRank = point => {
+                        if (Math.abs(point.y - centerY) < 0.01) {
+                            return 0; // Centre
+                        }
+
+                        return point.x < currentZone.x ? 1 : 2;
+                    };
+
+                    return getRank(a) - getRank(b);
+                });
+            }
+
+            if (presetKey === "double" || presetKey === "king") {
+                console.log("[BED POINTS AFTER SORT]", {
+                    preset: presetKey,
+                    orderedPoints: points.map(point => ({
+                        id: point.id,
+                        x: point.x,
+                        y: point.y
+                    }))
+                });
+            }
+
+            return points.map(point => ({
+                zone: currentZone,
+                point
+            }));
+        });
+    }
+
+    function openGuidedLifestyleArea(zone, requestedPointId = null) {
+
+        console.log("[OPEN GUIDED AREA CALLED]", zone?.name, zone?.lifestylePreset);
+
+        if (window.AppMode?.current !== HOME_MODE) return;
+        if (!zone) return;
+
+        const floor = getHomeFloor();
+
+        if (!floor?.image) {
+            console.error("[GUIDED] Floor plan unavailable.");
+            return;
+        }
+
+        // Use existing points only. Never regenerate them here.
+        const orderedZonePoints = getOrderedGuidedPoints([zone]);
+
+        const measurementPoints = orderedZonePoints.map(item => item.point);
+
+        if (!measurementPoints.length) {
+            console.warn("[GUIDED] No existing measurement points.", {
+                zoneId: zone.id
+            });
+            return;
+        }
+
+        const content =
+            document.getElementById("homeGuidedRightPanel");
+
+        if (!content) return;
+
+        const viewport = window.EMFViewport;
+
+        if (!viewport || typeof viewport.worldPoint !== "function") {
+            console.error("[GUIDED] Viewport unavailable.");
+            return;
+        }
+
+        const widthM = Number(zone.measurementZoneDimensions?.width);
+        const depthM = Number(zone.measurementZoneDimensions?.depth);
+        const scale = Number(floor.currentScale);
+
+        if (!widthM || !depthM || !scale) return;
+
+        const widthPx = widthM / scale;
+        const depthPx = depthM / scale;
+
+        const corners = [
+            { x: zone.x - widthPx / 2, y: zone.y - depthPx / 2 },
+            { x: zone.x + widthPx / 2, y: zone.y - depthPx / 2 },
+            { x: zone.x + widthPx / 2, y: zone.y + depthPx / 2 },
+            { x: zone.x - widthPx / 2, y: zone.y + depthPx / 2 }
+        ];
+
+        const screenCorners = corners.map(point =>
+            viewport.worldPoint(point)
+        );
+
+        const polygonPoints = screenCorners
+            .map(point => `${point.x},${point.y}`)
+            .join(" ");
+
+        const canvas = document.getElementById("canvas");
+        const viewWidth = canvas?.width || viewport.drawWidth;
+        const viewHeight = canvas?.height || viewport.drawHeight;
+
+        const cropPadding = 35;
+
+        const minX = Math.min(...screenCorners.map(p => p.x));
+        const maxX = Math.max(...screenCorners.map(p => p.x));
+        const minY = Math.min(...screenCorners.map(p => p.y));
+        const maxY = Math.max(...screenCorners.map(p => p.y));
+
+        const cropX = Math.max(0, minX - cropPadding);
+        const cropY = Math.max(0, minY - cropPadding);
+
+        const cropWidth = Math.min(
+            viewWidth - cropX,
+            maxX - minX + cropPadding * 2
+        );
+
+        const cropHeight = Math.min(
+            viewHeight - cropY,
+            maxY - minY + cropPadding * 2
+        );
+
+
+        const zoneName =
+            zone.lifestylePresetLabel ||
+            zone.name ||
+            "Lifestyle Area";
+
+        window.HomeMeasurements.activeLifestyleArea = zone;
+        window.requestRender?.();
+
+        const requestedIndex = requestedPointId
+            ? measurementPoints.findIndex(
+                point => point.id === requestedPointId
+            )
+            : -1;
+
+        const firstPendingIndex = measurementPoints.findIndex(
+            point => point.status !== "measured"
+        );
+
+        const activePointIndex = requestedIndex >= 0
+            ? requestedIndex
+            : firstPendingIndex >= 0
+                ? firstPendingIndex
+                : 0;
+
+        const activePoint = measurementPoints[activePointIndex];
+
+        const allGuidedPoints = getOrderedGuidedPoints(floor.zones);
+
+        const globalActivePointIndex = allGuidedPoints.findIndex(
+            item =>
+                item.zone.id === zone.id &&
+                item.point.id === activePoint.id
+        );
+
+        const isDoubleKing =
+            ["double", "king"].includes(
+                zone.lifestylePreset || zone.lifestylePresetKey
+            );
+
+
+        const globalPointNumber = globalActivePointIndex + 1;
+        const globalTotalPoints = allGuidedPoints.length;
+
+        // Double / King: identify point by its actual position.
+        let pointInfo = null;
+
+        if (isDoubleKing) {
+            const centerY = Math.max(
+                ...measurementPoints.map(point => Number(point.y))
+            );
+
+            if (Math.abs(Number(activePoint.y) - centerY) < 0.01) {
+                pointInfo = {
+                    label: "Centre",
+                    description:
+                        "Measure in the centre of the bed, below the pillow area."
+                };
+            } else if (Number(activePoint.x) < Number(zone.x)) {
+                pointInfo = {
+                    label: "Left side",
+                    description:
+                        "Measure on the left pillow, close to the left edge of the bed."
+                };
+            } else {
+                pointInfo = {
+                    label: "Right side",
+                    description:
+                        "Measure on the right pillow, close to the right edge of the bed."
+                };
+            }
+        }
+
+        const displayedPointNumber = isDoubleKing
+            ? activePointIndex + 1
+            : globalPointNumber;
+
+        const displayedTotalPoints = isDoubleKing
+            ? measurementPoints.length
+            : globalTotalPoints;
+
+        window.HomeMeasurements.guidedMeasurementState = {
+            zoneId: zone.id,
+            activePointId: activePoint.id,
+            activePointIndex: activePointIndex >= 0 ? activePointIndex : 0
+        };
+
+        const profileTypes =
+            window.AppState?.project
+                ?.homeMeasurementProfile?.measurementTypes || [];
+
+        const allowedTypes = ["rf", "electric", "magnetic"];
+
+        const selectedTypes = allowedTypes.filter(
+            type => profileTypes.includes(type)
+        );
+
+        const measurementFields = {
+            rf: {
+                label: "RF – Wireless Radiation",
+                unit: "µW/m²",
+                icon: "⌁"
+            },
+            electric: {
+                label: "Electric Fields",
+                unit: "V/m",
+                icon: "⚡"
+            },
+            magnetic: {
+                label: "Magnetic Fields",
+                unit: "nT",
+                icon: "🧲"
+            }
+        };
+
+        content.innerHTML = `
+        <section class="home-measurements-placeholder">
+
+            <button type="button" id="homeGuidedBackToAreas">
+                ← Back to Lifestyle Areas
+            </button>
+
+           <h2>${escapeHtml(zoneName)}</h2>
+
+<div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:12px 0;
+">
+    <strong>
+        Point ${displayedPointNumber} of ${displayedTotalPoints}
+    </strong>
+
+    <span style="
+        padding:5px 10px;
+        border-radius:20px;
+        background:#eff6ff;
+        color:#2563eb;
+        font-size:12px;
+        font-weight:700;
+    ">
+        ${activePoint.status === "measured" ? "Measured" : "In progress"}
+    </span>
+</div>
+
+<p style="margin:8px 0 12px;color:#64748b;font-size:12px;">
+    Take a measurement at the highlighted point.
+
+</p>
+
+<div style="
+    display:grid;
+    grid-template-columns:minmax(0, 1.35fr) minmax(0, 0.85fr);
+    gap:8px;
+    align-items:stretch;
+    margin-top:10px;
+">
+    
+
+            <div style="width:100%; overflow:auto;">
+                <svg
+                    viewBox="${cropX} ${cropY} ${cropWidth} ${cropHeight}"
+                    style="width:100%; max-height:${isDoubleKing ? "32vh" : "55vh"}; background:#f8fafc;"
+                >
+                    <image
+                        href="${floor.image.src}"
+                        x="${viewport.offsetX}"
+                        y="${viewport.offsetY}"
+                        width="${viewport.drawWidth}"
+                        height="${viewport.drawHeight}"
+                        preserveAspectRatio="none"
+                    />
+
+                    <polygon
+                        points="${polygonPoints}"
+                        fill="rgba(37,99,235,0.15)"
+                        stroke="#2563eb"
+                        stroke-width="3"
+                    />
+
+                    ${measurementPoints.map((point, index) => {
+            const p = viewport.worldPoint(point);
+
+            return `
+                            <g
+                                data-guided-point-id="${point.id}"
+                                style="cursor:pointer"
+                            >
+                               <circle
+    cx="${p.x}"
+    cy="${p.y}"
+    r="${point.id === activePoint.id ? 19 : 15}"
+    fill="${point.measured ? '#06b6d4' : '#ffffff'}"
+    stroke="${point.id === activePoint.id ? '#f59e0b' : '#2563eb'}"
+    stroke-width="${point.id === activePoint.id ? 5 : 3}"
+/>
+                                <text
+                                    x="${p.x}"
+                                    y="${p.y}"
+                                    text-anchor="middle"
+                                    dominant-baseline="central"
+                                    font-size="13"
+                                    font-weight="700"
+                                    fill="#1f2937"
+                                >${allGuidedPoints.findIndex(
+                item => item.zone.id === zone.id && item.point.id === point.id
+            ) + 1}</text>
+                            </g>
+                        `;
+        }).join("")}
+                </svg>
+            </div>
+
+            
+    ${isDoubleKing && pointInfo ? `
+        <div style="
+            display:flex;
+            align-items:center;
+            padding:10px;
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:10px;
+            min-width:0;
+        ">
+            <div>
+                <div style="
+                    font-size:14px;
+                    font-weight:700;
+                    color:#1e293b;
+                    margin-bottom:6px;
+                ">
+                    ${pointInfo.label}
+                </div>
+
+                <div style="
+                    font-size:11px;
+                    line-height:1.5;
+                    color:#475569;
+                ">
+                    ${pointInfo.description}
+                </div>
+            </div>
+        </div>
+    ` : ""}
+
+    </div>
+
+            ${isDoubleKing ? `
+    <div style="
+        margin-top:12px;
+        padding:10px 12px;
+        background:#f8fafc;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        display:flex;
+        flex-direction:column;
+        gap:9px;
+    ">
+        <div style="display:flex;gap:9px;align-items:flex-start;">
+            <span style="font-weight:700;color:#2563eb;">1.</span>
+            <div>
+                <div style="font-size:12px;font-weight:700;color:#1e293b;">Place the EMF meter</div>
+                <div style="font-size:11px;color:#64748b;">Place the meter at the indicated spot.</div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:9px;align-items:flex-start;">
+            <span style="font-weight:700;color:#2563eb;">2.</span>
+            <div>
+                <div style="font-size:12px;font-weight:700;color:#1e293b;">Keep the meter still</div>
+                <div style="font-size:11px;color:#64748b;">Wait 20–30 seconds for a stable reading.</div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:9px;align-items:flex-start;">
+            <span style="font-weight:700;color:#2563eb;">3.</span>
+            <div>
+                <div style="font-size:12px;font-weight:700;color:#1e293b;">Record the reading</div>
+                <div style="font-size:11px;color:#64748b;">Enter the measured values below.</div>
+            </div>
+        </div>
+    </div>
+` : ""}
+
+            <div style="
+   display:flex;
+flex-direction:column;
+gap:3px;
+margin-top:8px;
+">
+    ${selectedTypes.map(type => {
+            const field = measurementFields[type];
+            const value = activePoint.readings?.[type] ?? "";
+
+            return `
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:10px;
+                padding:12px;
+                border:1px solid #dbe3ef;
+                border-radius:10px;
+                background:#ffffff;
+            ">
+                <span style="font-size:19px;">
+                    ${field.icon}
+                </span>
+
+                <span style="
+                    flex:1;
+                    font-size:13px;
+                    font-weight:700;
+                ">
+                    ${field.label}
+                </span>
+
+                <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    inputmode="decimal"
+                    data-guided-reading="${type}"
+                    value="${escapeHtml(value)}"
+                    placeholder="Enter value"
+                    style="
+                        width:105px;
+                        padding:9px 7px;
+                        border:1px solid #cbd5e1;
+                        border-radius:7px;
+                        font-size:14px;
+                        box-sizing:border-box;
+                    "
+                >
+
+                <span style="
+                    width:48px;
+                    color:#64748b;
+                    font-size:11px;
+                ">
+                    ${field.unit}
+                </span>
+            </label>
+        `;
+        }).join("")}
+</div>
+
+<div style="
+    margin-top:12px;
+    font-size:12px;
+    color:#64748b;
+">
+    Measurement Point ${activePointIndex + 1}
+</div>
+
+<div style="
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+">
+    <button
+        type="button"
+        id="homeGuidedSkipPoint"
+        style="
+            flex:1;
+            padding:12px;
+            border:1px solid #cbd5e1;
+            border-radius:9px;
+            background:#ffffff;
+            color:#334155;
+            font-weight:700;
+            cursor:pointer;
+        "
+    >
+        Skip for now
+    </button>
+
+    <button
+        type="button"
+        id="homeGuidedSaveNext"
+        style="
+            flex:1.5;
+            padding:12px;
+            border:0;
+            border-radius:9px;
+            background:#2563eb;
+            color:#ffffff;
+            font-weight:700;
+            cursor:pointer;
+        "
+    >
+        Save & Next Point →
+    </button>
+</div>
+        </section>
+    `;
+
+        content.querySelector("#homeGuidedBackToAreas")
+            ?.addEventListener("click", () => showPage("guided"));
+
+        content.querySelector("#homeGuidedSkipPoint")
+            ?.addEventListener("click", () => {
+                const allPoints = getOrderedGuidedPoints(floor.zones);
+
+                const currentIndex = allPoints.findIndex(
+                    item =>
+                        item.zone.id === zone.id &&
+                        item.point.id === activePoint.id
+                );
+
+                const nextItem = allPoints[currentIndex + 1];
+
+                console.log("[GUIDED NAVIGATION]", {
+                    currentZone: zone.id,
+                    currentPoint: activePoint.id,
+                    currentIndex,
+                    nextZone: nextItem?.zone.id,
+                    nextPoint: nextItem?.point.id,
+                    totalPoints: allPoints.length
+                });
+                if (!nextItem) {
+                    showPage("guided");
+                    return;
+                }
+
+                openGuidedLifestyleArea(
+                    nextItem.zone,
+                    nextItem.point.id
+                );
+            });
+
+        content.querySelector("#homeGuidedSaveNext")
+            ?.addEventListener("click", () => {
+                const newReadings = { ...(activePoint.readings || {}) };
+                let enteredCount = 0;
+
+                for (const type of selectedTypes) {
+                    const input = content.querySelector(
+                        `[data-guided-reading="${type}"]`
+                    );
+
+                    const rawValue = input?.value.trim() ?? "";
+
+                    if (rawValue === "") {
+                        newReadings[type] = null;
+                        continue;
+                    }
+
+                    const value = Number(rawValue);
+
+                    if (!Number.isFinite(value) || value < 0) {
+                        input?.focus();
+                        alert("Please enter a valid non-negative reading.");
+                        return;
+                    }
+
+                    newReadings[type] = value;
+                    enteredCount++;
+                }
+
+                activePoint.readings = newReadings;
+                activePoint.measured =
+                    enteredCount === selectedTypes.length;
+
+                activePoint.status =
+                    enteredCount === 0
+                        ? "pending"
+                        : enteredCount === selectedTypes.length
+                            ? "measured"
+                            : "partial";
+
+                if (activePoint.measured) {
+                    zone.measurementLocked = true;
+                }
+
+                saveHomeProject();
+                window.renderFrame?.();
+
+                console.log("[GUIDED] Measurement saved", {
+                    zoneId: zone.id,
+                    pointId: activePoint.id,
+                    readings: activePoint.readings,
+                    status: activePoint.status
+                });
+
+                const allPoints = getOrderedGuidedPoints(floor.zones);
+
+                const currentIndex = allPoints.findIndex(
+                    item =>
+                        item.zone.id === zone.id &&
+                        item.point.id === activePoint.id
+                );
+
+                const nextItem = allPoints[currentIndex + 1];
+                if (!nextItem) {
+                    const allMeasurementsComplete =
+                        allPoints.length > 0 &&
+                        allPoints.every(
+                            item => item.point.status === "measured"
+                        );
+
+                    const measurementState =
+                        window.AppState?.project?.homeMeasurementState || {};
+
+                    if (
+                        allMeasurementsComplete &&
+                        !measurementState.initialMeasurementCompleted
+                    ) {
+                        window.AppState.project.homeMeasurementState = {
+                            ...measurementState,
+                            initialMeasurementCompleted: true,
+                            status: "completed"
+                        };
+
+                        saveHomeProject();
+                        showPage("completed");
+                    } else {
+                        showPage("guided");
+                    }
+
+                    return;
+                }
+
+                openGuidedLifestyleArea(
+                    nextItem.zone,
+                    nextItem.point.id
+                );
+            });
+
+        console.log("[GUIDED] Lifestyle Area opened", {
+            zoneId: zone.id,
+            pointCount: measurementPoints.length
+        });
     }
 
 
@@ -431,6 +1107,10 @@
                 title: "Guided Measurement",
                 subtitle: "Follow each instruction and enter readings from your meter."
             },
+            completed: {
+                title: "Measurement Completed",
+                subtitle: "All Lifestyle Areas have been successfully measured."
+            },
             results: {
                 title: "Measurement Results",
                 subtitle: "Review your saved readings and measurement progress."
@@ -444,6 +1124,37 @@
         const selected = pages[page] || pages.overview;
         const activePage = pages[page] ? page : "overview";
 
+        const project = window.AppState?.project;
+        const measurementState = project?.homeMeasurementState;
+
+        if (measurementState?.measurementMethod) {
+            window.HomeMeasurements.selectedMethod =
+                measurementState.measurementMethod;
+        }
+
+        if (measurementState?.measurementMode) {
+            window.HomeMeasurements.selectedMeasurementMode =
+                measurementState.measurementMode;
+        }
+
+        if (activePage === "guided") {
+            const project = window.AppState?.project;
+
+            if (project) {
+                const currentState = project.homeMeasurementState || {};
+
+                project.homeMeasurementState = {
+                    ...currentState,
+                    status: currentState.initialMeasurementCompleted
+                        ? "review"
+                        : "guided",
+                    currentPointId: currentState.currentPointId ?? null
+                };
+
+                saveHomeProject();
+            }
+        }
+
         workspace.querySelectorAll("[data-home-measurements-page]")
             .forEach(button => {
                 button.classList.toggle(
@@ -454,7 +1165,14 @@
 
         const title = workspace.querySelector("#homeMeasurementsPageTitle");
         const subtitle = workspace.querySelector("#homeMeasurementsPageSubtitle");
-        const content = ["method", "profile"].includes(activePage)
+        const content = [
+            "method",
+            "profile",
+            "guided",
+            "completed",
+            "results",
+            "report"
+        ].includes(activePage)
             ? document.getElementById("homeGuidedRightPanel")
             : workspace.querySelector("#homeMeasurementsPageContent");
 
@@ -481,6 +1199,47 @@
             // Save default selections
             window.HomeMeasurements.selectedMeasurementMode = currentMode;
             window.HomeMeasurements.selectedMethod = currentMethod;
+
+            // CURRENT HOME MEASUREMENT PROFILE
+            const selectedMeasurementTypes =
+                window.AppState?.project?.homeMeasurementProfile?.measurementTypes || ["rf"];
+
+            const isRecommendedProfile =
+                selectedMeasurementTypes.length === 1 &&
+                selectedMeasurementTypes[0] === "rf";
+            const measurementProfileOptions = [
+                {
+                    id: "rf",
+                    icon: "📶",
+                    label: "RF – Wireless Radiation"
+                },
+                {
+                    id: "electric",
+                    icon: "⚡",
+                    label: "Electric Fields"
+                },
+                {
+                    id: "magnetic",
+                    icon: "🧲",
+                    label: "Magnetic Fields"
+                }
+            ];
+
+            const selectedProfileHtml = measurementProfileOptions
+                .filter(option => selectedMeasurementTypes.includes(option.id))
+                .map(option => `
+        <div class="home-profile-option">
+            <span class="home-profile-icon">${option.icon}</span>
+            <div class="home-profile-info">
+                <strong>${option.label}</strong>
+                <small>
+                    <span class="home-profile-check">✓</span>
+                    Selected
+                </small>
+            </div>
+        </div>
+    `)
+                .join("");
 
             content.innerHTML = `
     <div class="home-measurements-placeholder home-setup-compact">
@@ -584,58 +1343,105 @@ aria-pressed="${currentMethod === "buy_meter"}"
                 </div>
             </section>
 
-            <!-- 3. MEASUREMENT PROFILE -->
+            <!-- 3. DEVICE -->
+
+<section class="home-setup-section">
+
+    <h3>3. Device</h3>
+
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:10px;
+        border:1px solid #dbe3ef;
+        border-radius:9px;
+        background:#ffffff;
+    ">
+
+        <div style="
+            width:42px;
+            height:48px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:7px;
+            background:#eff6ff;
+            font-size:25px;
+        ">
+            📟
+        </div>
+
+        <div style="flex:1;min-width:0;">
+            <strong style="
+                display:block;
+                font-size:12px;
+                color:#1e293b;
+            ">
+                TriField TF2
+            </strong>
+
+            <small style="
+                color:#64748b;
+                font-size:10px;
+            ">
+                RF · Electric · Magnetic
+            </small>
+        </div>
+
+        <button
+            type="button"
+            id="homeMeasurementChangeDevice"
+            style="
+                padding:7px 9px;
+                border:1px solid #bfd5ff;
+                border-radius:7px;
+                background:#f5f9ff;
+                color:#2563eb;
+                font-size:10px;
+                font-weight:600;
+                cursor:pointer;
+            "
+        >
+            Change Device
+        </button>
+
+    </div>
+
+</section>
+
+            <!-- 4. MEASUREMENT PROFILE -->
 
             <section class="home-setup-section">
 
-                <div class="home-measurement-profile-summary">
+               <div class="home-measurement-profile-summary">
 
-                    <div class="home-profile-heading">
-                        <h3>3. Measurement Profile</h3>
-                        <span class="home-profile-recommended">Recommended</span>
-                    </div>
+    <div class="home-profile-heading">
+        <h3>4. Measurement Profile</h3>
+        ${isRecommendedProfile
+                    ? '<span class="home-profile-recommended">Recommended</span>'
+                    : ""}
+    </div>
 
-                    <div class="home-profile-rf">
-                        <span class="home-profile-icon">📶</span>
+    <div class="home-profile-additional">
+        ${selectedProfileHtml}
+    </div>
 
-                        <div class="home-profile-info">
-                            <strong>RF – Wireless Radiation</strong>
-                            <small>
-                                <span class="home-profile-check">✓</span>
-                                Selected by default · Recommended
-                            </small>
-                        </div>
-                    </div>
+    <button
+        type="button"
+        id="homeMeasurementEditProfile"
+        class="home-profile-edit"
+    >
+        Change Profile
+    </button>
 
-                    <div class="home-profile-additional">
-
-                        <div class="home-profile-option">
-                            <span class="home-profile-icon">⚡</span>
-                            <strong>Electric Fields</strong>
-                            <small>Optional</small>
-                        </div>
-
-                        <div class="home-profile-option">
-                            <span class="home-profile-icon">🧲</span>
-                            <strong>Magnetic Fields</strong>
-                            <small>Optional</small>
-                        </div>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        id="homeMeasurementEditProfile"
-                        class="home-profile-edit"
-                    >
-                        Change Profile
-                    </button>
-
-                </div>
+</div>
 
             </section>
 
         </div>
+
+
 
         <p id="homeMeasurementMethodStatus" role="status">
             ${currentMode === "mobile"
@@ -650,13 +1456,15 @@ aria-pressed="${currentMethod === "buy_meter"}"
         </p>
 
         <button
-            type="button"
-            id="homeMeasurementContinue"
-            ${(currentMode === "computer" && currentMethod) ? "" : "hidden"}
-            class="home-measurement-continue"
-        >
-            Continue to Guided Measurement →
-        </button>
+    type="button"
+    id="homeMeasurementContinue"
+    ${currentMethod ? "" : "hidden"}
+    class="home-measurement-continue"
+>
+    ${currentMode === "mobile"
+                    ? "Start Mobile Guided Measurement →"
+                    : "Continue to Guided Measurement →"}
+</button>
 
     </div>
 `;
@@ -668,6 +1476,24 @@ aria-pressed="${currentMethod === "buy_meter"}"
                         const method = button.dataset.measurementMethod;
 
                         window.HomeMeasurements.selectedMethod = method;
+
+                        saveHomeProject().then(saved => {
+                            console.log("[METHOD SAVE CHECK]", {
+                                saved,
+                                state: window.AppState?.project?.homeMeasurementState
+                            });
+                        });
+
+                        const project = window.AppState?.project;
+
+                        if (project) {
+                            project.homeMeasurementState = {
+                                ...(project.homeMeasurementState || {}),
+                                measurementMethod: method
+                            };
+
+                            saveHomeProject();
+                        }
 
                         content.querySelectorAll("[data-measurement-method]")
                             .forEach(option => {
@@ -720,10 +1546,16 @@ aria-pressed="${currentMethod === "buy_meter"}"
                         const continueButton =
                             content.querySelector("#homeMeasurementContinue");
 
+
+
                         if (continueButton) {
                             continueButton.hidden =
-                                mode !== "computer" ||
                                 !window.HomeMeasurements.selectedMethod;
+
+                            continueButton.textContent =
+                                mode === "mobile"
+                                    ? "Start Mobile Guided Measurement →"
+                                    : "Continue to Guided Measurement →";
                         }
                     });
                 });
@@ -737,10 +1569,13 @@ aria-pressed="${currentMethod === "buy_meter"}"
             // CONTINUE TO GUIDED MEASUREMENT
             content.querySelector("#homeMeasurementContinue")
                 ?.addEventListener("click", () => {
-                    if (
-                        window.HomeMeasurements?.selectedMeasurementMode !== "computer" ||
-                        !window.HomeMeasurements?.selectedMethod
-                    ) {
+
+                    console.log("[COMPUTER CONTINUE CHECK]", {
+                        mode: window.HomeMeasurements?.selectedMeasurementMode,
+                        method: window.HomeMeasurements?.selectedMethod,
+                        profile: window.AppState?.project?.homeMeasurementProfile
+                    });
+                    if (!window.HomeMeasurements?.selectedMethod) {
                         return;
                     }
 
@@ -781,12 +1616,11 @@ aria-pressed="${currentMethod === "buy_meter"}"
                         RF is recommended for starting your home assessment.
                     </p>
 
-                    <div style="
-                        padding:16px;
-                        border:1px solid #93c5fd;
-                        border-radius:10px;
-                        background:#eff6ff;
-                    ">
+                   <div style="
+    padding:16px;
+    border:1px solid #dbe3ef;
+    border-radius:10px;
+">
                         <label style="display:flex;gap:12px;align-items:center;">
                             <input type="checkbox"
     id="homeProfileRF"
@@ -853,6 +1687,26 @@ aria-pressed="${currentMethod === "buy_meter"}"
                     </button>
                 </div>
             `;
+
+            // REQUIRE AT LEAST ONE MEASUREMENT TYPE
+            const profileCheckboxes = [
+                content.querySelector("#homeProfileRF"),
+                content.querySelector("#homeProfileElectric"),
+                content.querySelector("#homeProfileMagnetic")
+            ];
+
+            profileCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", () => {
+
+                    const hasSelection = profileCheckboxes.some(
+                        item => item.checked
+                    );
+
+                    if (!hasSelection) {
+                        checkbox.checked = true;
+                    }
+                });
+            });
 
             content.querySelector("#homeProfileContinue")
                 ?.addEventListener("click", async () => {
@@ -924,15 +1778,134 @@ aria-pressed="${currentMethod === "buy_meter"}"
                         Select a Lifestyle Area to begin your guided
                         EMF measurements.
                     </p>
-<div class="home-guided-method-summary">
-    <div>
-        <strong>Measurement mode:</strong>
-        Computer
+<div class="home-guided-method-summary" style="
+    margin:10px 0 14px;
+    padding:10px 12px;
+    background:#f5f9ff;
+    border:1px solid #d8e6ff;
+    border-radius:10px;
+">
+
+    <!-- Measurement Method -->
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-size:12px;
+    ">
+        <span style="
+            width:28px;
+            height:28px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:7px;
+            background:#e5efff;
+            color:#2563eb;
+            font-size:17px;
+        ">▣</span>
+
+        <span style="color:#475569;font-weight:600;">
+            Method
+        </span>
+
+        <strong style="
+            margin-left:auto;
+            color:#1e293b;
+            font-weight:600;
+        ">
+            ${method === "own_meter"
+                    ? "Own EMF meter"
+                    : method === "rent_meter"
+                        ? "Meter rental"
+                        : method === "buy_meter"
+                            ? "Looking to buy an EMF meter"
+                            : "Not selected"}
+        </strong>
     </div>
-    <div style="margin-top:6px;">
-        <strong>Measurement method:</strong>
-        ${method === "own_meter" ? "Own EMF meter" : "Meter rental"}
+
+    <!-- Measurement Profile -->
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-top:8px;
+        font-size:12px;
+    ">
+        <span style="
+            width:28px;
+            height:28px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:7px;
+            background:#f0eaff;
+            color:#7c3aed;
+            font-size:19px;
+            font-weight:700;
+        ">∿</span>
+
+        <span style="color:#475569;font-weight:600;">
+            Profile
+        </span>
+
+        <strong style="
+            margin-left:auto;
+            padding:5px 10px;
+            border-radius:20px;
+            background:#e3efff;
+            color:#2563eb;
+            font-size:11px;
+            font-weight:700;
+        ">
+            ${(() => {
+                    const types =
+                        window.AppState?.project
+                            ?.homeMeasurementProfile?.measurementTypes || [];
+
+                    const labels = {
+                        rf: "RF",
+                        electric: "Electric",
+                        magnetic: "Magnetic"
+                    };
+
+                    return ["rf", "electric", "magnetic"]
+                        .filter(type => types.includes(type))
+                        .map(type => labels[type])
+                        .join(" + ") || "Not selected";
+                })()}
+        </strong>
     </div>
+
+    <div style="
+        margin-top:9px;
+        padding-top:8px;
+        border-top:1px solid #dce8f8;
+        display:flex;
+        justify-content:flex-end;
+    ">
+        <button
+            type="button"
+            id="homeGuidedEditSettings"
+            style="
+                display:flex;
+                align-items:center;
+                gap:7px;
+                padding:6px 11px;
+                border:1px solid #bfd5ff;
+                border-radius:7px;
+                background:#eaf2ff;
+                color:#2563eb;
+                font-size:11px;
+                font-weight:700;
+                cursor:pointer;
+            "
+        >
+            <span style="font-size:14px;">⚙</span>
+            Edit Settings
+        </button>
+    </div>
+
 </div>
 
                     <h3>Select a Lifestyle Area</h3>
@@ -946,12 +1919,23 @@ aria-pressed="${currentMethod === "buy_meter"}"
                             zone.zoneType ||
                             `Lifestyle Area ${index + 1}`;
 
-                        const pointCount =
-                            window.HomeMeasurements
-                                .generateLifestyleMeasurementPoints(
-                                    zone,
-                                    floor
-                                ).length;
+                        const zoneIcon = zone.lifestylePresetImage || "";
+
+                        const pointCount = Array.isArray(zone.measurementPoints)
+                            ? zone.measurementPoints.length
+                            : 0;
+
+                        const measuredCount = (zone.measurementPoints || [])
+                            .filter(point => point.status === "measured")
+                            .length;
+
+                        const remainingCount = pointCount - measuredCount;
+
+                        const progressPercent = pointCount > 0
+                            ? Math.round((measuredCount / pointCount) * 100)
+                            : 0;
+
+                        const isCompleted = pointCount > 0 && measuredCount === pointCount;
 
                         return `
                                     <button
@@ -974,10 +1958,71 @@ aria-pressed="${currentMethod === "buy_meter"}"
                                             cursor:pointer;
                                         "
                                     >
-                                        <strong>${escapeHtml(name)}</strong>
-                                        <span>
-                                            ${pointCount} suggested measurement points
-                                        </span>
+                                      <div style="
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+">
+    <img
+        src="${escapeHtml(zoneIcon)}"
+        alt=""
+        style="
+            width:48px;
+            height:48px;
+            object-fit:contain;
+            flex-shrink:0;
+        "
+    />
+
+    <strong>${escapeHtml(name)}</strong>
+
+    <span style="
+        margin-left:auto;
+        color:#64748b;
+        font-size:20px;
+        font-weight:600;
+    ">›</span>
+</div>
+
+<div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
+    font-size:13px;
+    color:#64748b;
+">
+    <span>
+        ${measuredCount} of ${pointCount} points measured
+    </span>
+
+    <strong style="
+        color:${isCompleted ? '#16a34a' : '#64748b'};
+    ">
+        ${isCompleted ? 'Completed' : `${progressPercent}%`}
+    </strong>
+</div>
+
+<div style="
+    width:100%;
+    height:6px;
+    background:#e5e7eb;
+    border-radius:999px;
+    overflow:hidden;
+">
+    <div style="
+        width:${progressPercent}%;
+        height:100%;
+        background:${isCompleted ? '#16a34a' : '#2563eb'};
+        border-radius:999px;
+        transition:width 0.25s ease;
+    "></div>
+</div>
+
+<span style="font-size:12px;color:#94a3b8;">
+    ${remainingCount} points remaining
+</span>
                                     </button>
                                 `;
                     }).join("")
@@ -990,9 +2035,41 @@ aria-pressed="${currentMethod === "buy_meter"}"
                 }
                     </div>
 
-                    <p id="homeGuidedLifestyleStatus" role="status"></p>
+${window.AppState?.project?.homeMeasurementState
+                    ?.initialMeasurementCompleted ? `
+    <button
+        type="button"
+        id="homeGuidedCompleteContinue"
+        style="
+            width:100%;
+            margin-top:20px;
+            padding:14px;
+            border:0;
+            border-radius:9px;
+            background:#2563eb;
+            color:white;
+            font-weight:700;
+            font-size:15px;
+            cursor:pointer;
+        "
+    >
+        Complete & Continue →
+    </button>
+` : ""}
+
+<p id="homeGuidedLifestyleStatus" role="status"></p>
                 </div>
             `;
+
+            content.querySelector("#homeGuidedEditSettings")
+                ?.addEventListener("click", () => {
+                    showPage("method");
+                });
+
+            content.querySelector("#homeGuidedCompleteContinue")
+                ?.addEventListener("click", () => {
+                    showPage("results");
+                });
 
             content.querySelectorAll("[data-lifestyle-index]")
                 .forEach(button => {
@@ -1002,7 +2079,7 @@ aria-pressed="${currentMethod === "buy_meter"}"
 
                         if (!zone) return;
 
-                        window.HomeMeasurements.openLifestyleArea(zone);
+                        window.HomeMeasurements.openGuidedLifestyleArea(zone);
                     });
                 });
 
@@ -1020,6 +2097,201 @@ aria-pressed="${currentMethod === "buy_meter"}"
         // OVERVIEW, RESULTS AND REPORT PLACEHOLDERS
         // ==================================================
 
+        // ==================================================
+        // ALL LIFESTYLE AREAS COMPLETED
+        // ==================================================
+
+        if (activePage === "completed") {
+            const floor = window.HomeMeasurements?.getHomeFloor?.();
+            const zones = Array.isArray(floor?.zones) ? floor.zones : [];
+
+            const allPoints = getOrderedGuidedPoints(zones);
+            const measuredPoints = allPoints.filter(
+                item => item.point.status === "measured"
+            );
+
+            const measurementTypes =
+                window.AppState?.project?.homeMeasurementProfile
+                    ?.measurementTypes || [];
+
+            content.innerHTML = `
+        <div class="home-measurements-placeholder"
+             style="text-align:center;padding:30px 20px;">
+
+            <div style="
+                width:76px;
+                height:76px;
+                margin:0 auto 18px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:50%;
+                background:#dcfce7;
+                color:#16a34a;
+                font-size:40px;
+            ">✓</div>
+
+            <h2 style="margin-bottom:8px;">
+                All Lifestyle Areas Completed!
+            </h2>
+
+            <p style="color:#64748b;margin-bottom:24px;">
+                You have successfully completed your guided
+                measurements for this floor.
+            </p>
+
+            <div style="
+                padding:18px;
+                border:1px solid #dbe3ef;
+                border-radius:12px;
+                background:#f8fafc;
+                text-align:left;
+            ">
+                <h3 style="margin:0 0 16px;">
+                    Measurement Summary
+                </h3>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    margin-bottom:12px;
+                ">
+                    <span>Lifestyle Areas</span>
+                    <strong>${zones.length}</strong>
+                </div>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    margin-bottom:12px;
+                ">
+                    <span>Measurement Points</span>
+                    <strong>${measuredPoints.length} / ${allPoints.length}</strong>
+                </div>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                ">
+                    <span>Measured EMF Types</span>
+                    <strong>${measurementTypes.length}</strong>
+                </div>
+            </div>
+
+            <button
+                type="button"
+                id="homeCompletedViewResults"
+                style="
+                    width:100%;
+                    margin-top:22px;
+                    padding:14px;
+                    border:0;
+                    border-radius:9px;
+                    background:#2563eb;
+                    color:white;
+                    font-weight:700;
+                    cursor:pointer;
+                "
+            >
+                View Results →
+            </button>
+
+            <button
+                type="button"
+                id="homeCompletedBackToAreas"
+                style="
+                    width:100%;
+                    margin-top:10px;
+                    padding:12px;
+                    border:1px solid #cbd5e1;
+                    border-radius:9px;
+                    background:white;
+                    color:#334155;
+                    font-weight:600;
+                    cursor:pointer;
+                "
+            >
+                Back to Lifestyle Areas
+            </button>
+        </div>
+    `;
+
+            content.querySelector("#homeCompletedViewResults")
+                ?.addEventListener("click", () => showPage("results"));
+
+            content.querySelector("#homeCompletedBackToAreas")
+                ?.addEventListener("click", () => showPage("guided"));
+
+            return;
+        }
+
+        const resultsFloor = window.HomeMeasurements?.getHomeFloor?.();
+        const resultsZones = Array.isArray(resultsFloor?.zones)
+            ? resultsFloor.zones
+            : [];
+
+        const resultsPoints = getOrderedGuidedPoints(resultsZones);
+
+        const measuredResultsPoints = resultsPoints.filter(
+            item => item.point.status === "measured"
+        );
+
+        const measurementTypeLabels = {
+            rf: "RF",
+            electric: "Electric",
+            magnetic: "Magnetic"
+        };
+
+
+        // Show only EMF types that have actual saved readings.
+        const resultsMeasurementTypes = ["rf", "electric", "magnetic"]
+            .filter(type =>
+                measuredResultsPoints.some(item => {
+                    const value = item.point.readings?.[type];
+                    return value !== null &&
+                        value !== undefined &&
+                        value !== "" &&
+                        Number.isFinite(Number(value));
+                })
+            );
+
+        const zoneResults = resultsZones.map(zone => {
+            const points = Array.isArray(zone.measurementPoints)
+                ? zone.measurementPoints
+                : [];
+
+            const measuredPoints = points.filter(
+                point => point.status === "measured"
+            );
+
+            const getAverage = type => {
+                const values = measuredPoints
+                    .map(point => point.readings?.[type])
+                    .filter(value =>
+                        value !== null &&
+                        value !== undefined &&
+                        value !== "" &&
+                        Number.isFinite(Number(value))
+                    )
+                    .map(Number);
+
+                return values.length
+                    ? values.reduce((sum, value) => sum + value, 0) / values.length
+                    : null;
+            };
+
+            return {
+                name: zone.lifestylePresetLabel ||
+                    zone.name ||
+                    "Lifestyle Area",
+                pointCount: points.length,
+                measuredCount: measuredPoints.length,
+                averageRF: getAverage("rf"),
+                averageElectric: getAverage("electric"),
+                averageMagnetic: getAverage("magnetic")
+            };
+        });
+
         const pageContent = {
             overview: `
             <h2>Measure Your Home</h2>
@@ -1030,9 +2302,178 @@ aria-pressed="${currentMethod === "buy_meter"}"
             </button>
         `,
             results: `
-            <h2>Measurement Results</h2>
-            <p>Your saved readings and measurement progress will appear here.</p>
-        `,
+    <div style="padding:8px 0;">
+
+        <h2 style="margin:0 0 5px;">
+            Measurement Results
+        </h2>
+
+        <p style="color:#64748b;font-size:13px;margin:0 0 18px;">
+            Overview of EMF measurements in your Lifestyle Areas.
+        </p>
+
+        <!-- MEASUREMENT SUMMARY -->
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:10px;
+            margin-bottom:22px;
+        ">
+            <div style="
+                padding:16px;
+                border:1px solid #dbe3ef;
+                border-radius:10px;
+                background:#ffffff;
+            ">
+                <div style="font-size:12px;color:#64748b;">
+                    Lifestyle Areas
+                </div>
+                <strong style="font-size:25px;">
+                    ${resultsZones.length}
+                </strong>
+            </div>
+
+            <div style="
+                padding:16px;
+                border:1px solid #dbe3ef;
+                border-radius:10px;
+                background:#ffffff;
+            ">
+                <div style="font-size:12px;color:#64748b;">
+                    Measurement Points
+                </div>
+                <strong style="font-size:25px;">
+                    ${measuredResultsPoints.length} / ${resultsPoints.length}
+                </strong>
+            </div>
+
+            <div style="
+                padding:16px;
+                border:1px solid #dbe3ef;
+                border-radius:10px;
+                background:#ffffff;
+                grid-column:1 / -1;
+            ">
+                <div style="font-size:12px;color:#64748b;">
+                    Measured EMF Types
+                </div>
+                <strong style="font-size:15px;">
+                    ${resultsMeasurementTypes.map(type =>
+                type === "rf" ? "RF" :
+                    type === "electric" ? "Electric" :
+                        type === "magnetic" ? "Magnetic" : type
+            ).join(" + ") || "Not selected"}
+                </strong>
+            </div>
+        </div>
+
+        <!-- LIFESTYLE AREA RESULTS -->
+        <h3 style="margin:0 0 12px;">
+            Lifestyle Area Results
+        </h3>
+
+        <div style="
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        ">
+            ${zoneResults.map(zone => `
+                <div style="
+                    padding:14px;
+                    border:1px solid #dbe3ef;
+                    border-radius:10px;
+                    background:#ffffff;
+                ">
+                    <strong style="font-size:14px;">
+                        ${escapeHtml(zone.name)}
+                    </strong>
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:8px;
+                        margin-top:9px;
+                        font-size:12px;
+                        color:#64748b;
+                    ">
+                        <span>
+                            ${zone.measuredCount} of ${zone.pointCount} points measured
+                        </span>
+
+                        <div style="
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:4px;
+    text-align:right;
+    font-size:12px;
+    color:#334155;
+">
+    ${zone.averageRF !== null ? `
+        <strong>RF: ${zone.averageRF.toFixed(1)} µW/m²</strong>
+    ` : ""}
+
+    ${zone.averageElectric !== null ? `
+        <strong>Electric: ${zone.averageElectric.toFixed(1)} V/m</strong>
+    ` : ""}
+
+    ${zone.averageMagnetic !== null ? `
+        <strong>Magnetic: ${zone.averageMagnetic.toFixed(2)} µT</strong>
+    ` : ""}
+
+    ${zone.averageRF === null &&
+                    zone.averageElectric === null &&
+                    zone.averageMagnetic === null
+                    ? "Measurement data unavailable"
+                    : ""}
+</div>
+                    </div>
+                </div>
+            `).join("")}
+        </div>
+
+        <!-- ACTIONS -->
+        <div style="
+            display:flex;
+            gap:10px;
+            margin-top:22px;
+        ">
+            <button
+                type="button"
+                id="homeResultsBack"
+                style="
+                    flex:1;
+                    padding:13px;
+                    border:1px solid #cbd5e1;
+                    border-radius:9px;
+                    background:#ffffff;
+                    font-weight:600;
+                    cursor:pointer;
+                "
+            >
+                Back
+            </button>
+
+            <button
+                type="button"
+                id="homeResultsCreateReport"
+                style="
+                    flex:2;
+                    padding:13px;
+                    border:0;
+                    border-radius:9px;
+                    background:#2563eb;
+                    color:white;
+                    font-weight:700;
+                    cursor:pointer;
+                "
+            >
+                Create Property Health Report →
+            </button>
+        </div>
+
+    </div>
+`,
             report: `
             <h2>Property Health Report</h2>
             <p>
@@ -1049,8 +2490,12 @@ aria-pressed="${currentMethod === "buy_meter"}"
         </div>
     `;
 
-        content.querySelector("#homeOverviewChooseMethod")
-            ?.addEventListener("click", () => showPage("method"));
+        // RESULTS NAVIGATION
+        content.querySelector("#homeResultsBack")
+            ?.addEventListener("click", () => showPage("guided"));
+
+        content.querySelector("#homeResultsCreateReport")
+            ?.addEventListener("click", () => showPage("report"));
     }
 
 
@@ -1063,7 +2508,7 @@ aria-pressed="${currentMethod === "buy_meter"}"
     }
 
 
-    function start() {
+    async function start() {
         if (window.AppMode?.current !== HOME_MODE) {
             console.warn(
                 "[HOME MEASUREMENTS] Available only in Home Wellness mode."
@@ -1076,6 +2521,17 @@ aria-pressed="${currentMethod === "buy_meter"}"
         if (!floor) {
             alert("Open a Home Wellness project first.");
             return;
+        }
+
+        const project = window.AppState?.project;
+
+        if (project && !project.homeMeasurementState) {
+            project.homeMeasurementState = {
+                status: "setup",
+                currentPointId: null
+            };
+
+            await saveHomeProject();
         }
 
         openWorkspace();
@@ -1164,7 +2620,19 @@ aria-pressed="${currentMethod === "buy_meter"}"
             });
         });
 
-        showPage("method");
+        const measurementState =
+            window.AppState?.project?.homeMeasurementState?.status;
+
+        if (measurementState === "completed") {
+            showPage("completed");
+        } else if (
+            measurementState === "guided" ||
+            measurementState === "review"
+        ) {
+            showPage("guided");
+        } else {
+            showPage("method");
+        }
 
         console.log("[HOME MEASUREMENTS] Setup opened in right panel");
     }
@@ -1231,7 +2699,6 @@ aria-pressed="${currentMethod === "buy_meter"}"
     }
 
 
-
     function generateRoomMeasurementPoints(room, count = 3) {
         if (!room || !Array.isArray(room.polygon) || room.polygon.length < 3) {
             return [];
@@ -1282,6 +2749,7 @@ aria-pressed="${currentMethod === "buy_meter"}"
         }));
     }
 
+
     function generateLifestyleMeasurementPoints(zone, floor) {
         if (
             !zone ||
@@ -1307,17 +2775,47 @@ aria-pressed="${currentMethod === "buy_meter"}"
         const widthPx = width / scale;
         const depthPx = depth / scale;
 
-        const positions = [
-            { x: 0, y: 0 },
-            { x: -0.25, y: -0.25 },
-            { x: 0.25, y: -0.25 },
-            { x: -0.25, y: 0.25 },
-            { x: 0.25, y: 0.25 }
-        ];
 
         const presetKey =
             zone.lifestylePreset ||
             zone.lifestylePresetKey;
+
+
+        const furnitureWidth = Number(zone.furnitureDimensions?.width);
+        const furnitureDepth = Number(zone.furnitureDimensions?.depth);
+
+        const isDoubleOrKing =
+            presetKey === "double" || presetKey === "king";
+
+        const hasFurnitureDimensions =
+            Number.isFinite(furnitureWidth) &&
+            furnitureWidth > 0 &&
+            Number.isFinite(furnitureDepth) &&
+            furnitureDepth > 0;
+
+        const positions =
+            isDoubleOrKing && hasFurnitureDimensions
+                ? [
+                    {
+                        x: -(furnitureWidth * 0.38) / width,
+                        y: -(furnitureDepth * 0.28) / depth
+                    },
+                    {
+                        x: (furnitureWidth * 0.38) / width,
+                        y: -(furnitureDepth * 0.28) / depth
+                    },
+                    {
+                        x: 0,
+                        y: (furnitureDepth * 0.15) / depth
+                    }
+                ]
+                : [
+                    { x: 0, y: 0 },
+                    { x: -0.25, y: -0.25 },
+                    { x: 0.25, y: -0.25 },
+                    { x: -0.25, y: 0.25 },
+                    { x: 0.25, y: 0.25 }
+                ];
 
         const pointCount =
             zone.zoneType === "child" &&
@@ -1803,15 +3301,96 @@ aria-pressed="${currentMethod === "buy_meter"}"
     window.HomeMeasurements = window.HomeMeasurements || {};
     window.HomeMeasurements.pointOpeners = new Map();
 
+    function restoreWorkspace() {
+
+        console.log("[RESTORE CHECK]", {
+            appMode: window.AppMode?.current,
+            status: window.AppState?.project?.homeMeasurementState?.status,
+            project: !!window.AppState?.project
+        });
+        if (window.AppMode?.current !== HOME_MODE) return;
+
+        const status =
+            window.AppState?.project?.homeMeasurementState?.status;
+
+        if (!["setup", "guided", "review", "completed"].includes(status)) {
+            return;
+        }
+
+        openWorkspace();
+
+        console.log("[HOME MEASUREMENTS] Workspace restored", {
+            status
+        });
+    }
+
+    window.drawHomeGuidedActiveLifestyleArea = function () {
+        if (window.AppMode?.current !== "home") return;
+
+        const zone = window.HomeMeasurements?.activeLifestyleArea;
+        if (!zone) return;
+
+        const floor = getHomeFloor();
+        const canvas = window.canvas;
+        const viewport = window.EMFViewport;
+
+        if (!floor || !canvas || !viewport?.worldPoint) return;
+
+        const widthM = Number(zone.measurementZoneDimensions?.width);
+        const depthM = Number(zone.measurementZoneDimensions?.depth);
+        const scale = Number(floor.currentScale);
+
+        if (!widthM || !depthM || !scale) return;
+
+        const widthPx = widthM / scale;
+        const depthPx = depthM / scale;
+
+        const corners = [
+            { x: zone.x - widthPx / 2, y: zone.y - depthPx / 2 },
+            { x: zone.x + widthPx / 2, y: zone.y - depthPx / 2 },
+            { x: zone.x + widthPx / 2, y: zone.y + depthPx / 2 },
+            { x: zone.x - widthPx / 2, y: zone.y + depthPx / 2 }
+        ];
+
+        const screenCorners = corners.map(point =>
+            viewport.worldPoint(point)
+        );
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.moveTo(screenCorners[0].x, screenCorners[0].y);
+
+        screenCorners.slice(1).forEach(point => {
+            ctx.lineTo(point.x, point.y);
+        });
+
+        ctx.closePath();
+
+        ctx.fillStyle = "rgba(37, 99, 235, 0.18)";
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 4;
+
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.restore();
+    };
+
     window.HomeMeasurements = {
         ...window.HomeMeasurements,
         start,
         openWorkspace,
+        restoreWorkspace,
         showPage,
         saveHomeMeasurementProfile,
         closeWorkspace,
         openRoom,
         openLifestyleArea,
+        openGuidedLifestyleArea,
         openCanvasPoint,
         generateRoomMeasurementPoints,
         generateLifestyleMeasurementPoints,

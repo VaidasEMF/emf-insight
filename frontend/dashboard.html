@@ -2070,6 +2070,67 @@
             color: var(--success);
         }
 
+
+        /* =========================
+   ADMIN PRICING FILTERS
+   ========================= */
+
+        .admin-pricing-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--surface-soft);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+        }
+
+        .admin-pricing-filters select,
+        .admin-pricing-filters input {
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: white;
+            color: #334155;
+            font-family: inherit;
+            font-size: 12px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .admin-pricing-filters select {
+            min-width: 135px;
+            cursor: pointer;
+        }
+
+        .admin-pricing-filters input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .admin-pricing-filters select:focus,
+        .admin-pricing-filters input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+        }
+
+        .admin-pricing-filters input::placeholder {
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+
+            .admin-pricing-filters select,
+            .admin-pricing-filters input {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+        }
+
+
         /* =========================
    ADMIN PRICING MODAL
    ========================= */
@@ -6058,6 +6119,42 @@ ADMIN PAYMENTS
                             </div>
                         </div>
                     </div>
+
+                    <!-- HOME WELLNESS SETTINGS -->
+                    <div class="content-card" style="margin-top: 20px;">
+
+                        <div class="content-card-header">
+                            <div>
+                                <h3>Home Wellness Settings</h3>
+                                <p>
+                                    Configure access duration for the Simple Report.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="content-body">
+
+                            <div class="admin-modal-field" style="max-width: 320px;">
+                                <label for="homeSimpleReportAccessDays">
+                                    Simple Report Access (days)
+                                </label>
+
+                                <input type="number" id="homeSimpleReportAccessDays" min="1" max="3650" step="1"
+                                    value="60">
+                            </div>
+
+                            <div id="homeSimpleReportAccessStatus" class="admin-pricing-status"
+                                style="margin-top: 12px;"></div>
+
+                            <button type="button" class="admin-edit-button" id="saveHomeSimpleReportAccessDays"
+                                onclick="saveHomeSimpleReportAccessDays()">
+                                Save Settings
+                            </button>
+
+                        </div>
+
+                    </div>
+
                 </section>
 
                 <!-- =========================
@@ -11625,6 +11722,86 @@ ADMIN PAYMENTS
             };
         }
 
+        // ============================================================
+        // HOME WELLNESS SETTINGS
+        // ============================================================
+
+        async function loadHomeSimpleReportAccessDays() {
+            const input = document.getElementById("homeSimpleReportAccessDays");
+            const status = document.getElementById("homeSimpleReportAccessStatus");
+
+            if (!input || !status) return;
+
+            try {
+                const response = await fetch(
+                    `${API}/admin/settings/home-simple-report-access-days`,
+                    {
+                        method: "GET",
+                        headers: authHeaders()
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to load settings");
+                }
+
+                const data = await response.json();
+
+                input.value = data.days;
+                status.textContent = "";
+                status.className = "admin-pricing-status";
+
+            } catch (error) {
+                status.textContent = "Could not load access duration.";
+                status.className = "admin-pricing-status error";
+            }
+        }
+
+
+        async function saveHomeSimpleReportAccessDays() {
+            const input = document.getElementById("homeSimpleReportAccessDays");
+            const status = document.getElementById("homeSimpleReportAccessStatus");
+            const button = document.getElementById("saveHomeSimpleReportAccessDays");
+
+            const days = Number(input.value);
+
+            if (!Number.isInteger(days) || days < 1 || days > 3650) {
+                status.textContent = "Enter a whole number between 1 and 3650.";
+                status.className = "admin-pricing-status error";
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const response = await fetch(
+                    `${API}/admin/settings/home-simple-report-access-days`,
+                    {
+                        method: "PUT",
+                        headers: authHeaders(),
+                        body: JSON.stringify({ days })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Failed to save settings");
+                }
+
+                input.value = data.days;
+                status.textContent = `Settings saved. Access duration: ${data.days} days.`;
+                status.className = "admin-pricing-status success";
+
+            } catch (error) {
+                status.textContent = error.message;
+                status.className = "admin-pricing-status error";
+
+            } finally {
+                button.disabled = false;
+            }
+        }
+
         function escapeHtml(value) {
             return String(value ?? "")
                 .replace(/&/g, "&amp;")
@@ -12331,6 +12508,8 @@ ADMIN PAYMENTS
                 maximumFractionDigits: 0
             }).format(value);
         }
+
+
         function setPricingCurrency(currency) {
             if (!window.EMF_PRICING.supportedCurrencies.includes(currency)) return;
 
@@ -12348,6 +12527,8 @@ ADMIN PAYMENTS
                 loadUser();
             }
         }
+
+
 
         function pricingButton(label, plan, enabled = false) {
             if (!enabled) {
@@ -16310,6 +16491,7 @@ ${!isTbd
                 section.style.display = "";
 
                 renderAdminPricing();
+                loadHomeSimpleReportAccessDays();
             } catch (error) {
                 console.error("Unable to load admin pricing:", error);
             }
@@ -18409,105 +18591,261 @@ ${!isTbd
         function renderAdminPricing() {
             const container = document.getElementById("adminPricingContainer");
 
-            if (!container) {
-                return;
-            }
+            if (!container) return;
+
+            // Preserve filter values when re-rendering
+            const filters = {
+                category: document.getElementById("adminPricingCategoryFilter")?.value || "all",
+                region: document.getElementById("adminPricingRegionFilter")?.value || "all",
+                billing: document.getElementById("adminPricingBillingFilter")?.value || "all",
+                availability: document.getElementById("adminPricingAvailabilityFilter")?.value || "all",
+                search: document.getElementById("adminPricingSearch")?.value || ""
+            };
 
             if (!adminPricingEntries.length) {
                 container.innerHTML = `
-                <div class="empty-state">
+            <div class="empty-state">
                 <div class="empty-icon">?</div>
                 <div class="empty-title">No pricing entries</div>
-                <div class="empty-copy">
-                    No pricing configuration entries are available.
-                </div>
+                <div class="empty-copy">No pricing configuration entries are available.</div>
             </div>
-                `;
+        `;
                 return;
             }
 
+            // Group EU and US entries by product key
+            const grouped = new Map();
+
+            adminPricingEntries.forEach(entry => {
+                const key = entry.product_key;
+
+                if (!grouped.has(key)) {
+                    grouped.set(key, {
+                        productKey: key,
+                        name: entry.name,
+                        entries: {}
+                    });
+                }
+
+                const group = grouped.get(key);
+                group.entries[entry.region] = entry;
+            });
+
+            const products = Array.from(grouped.values()).sort((a, b) =>
+                a.productKey.localeCompare(b.productKey)
+            );
+
+            function getCategory(productKey) {
+                if (productKey.startsWith("HOME_")) return "home";
+                if (productKey.startsWith("BUSINESS_")) return "business";
+                if (productKey.startsWith("PROFESSIONAL_") ||
+                    productKey === "PROFESSIONAL") return "professional";
+
+                return "other";
+            }
+
+            function formatPrice(entry) {
+                if (!entry || entry.price === null || entry.price === undefined) {
+                    return "—";
+                }
+
+                return `${escapeHtml(entry.currency)} ${Number(entry.price).toFixed(2)}`;
+            }
+
+            const search = filters.search.trim().toLowerCase();
+
+            const visibleProducts = products.filter(product => {
+                const category = getCategory(product.productKey);
+
+                if (filters.category !== "all" && category !== filters.category) {
+                    return false;
+                }
+
+                if (
+                    search &&
+                    !product.productKey.toLowerCase().includes(search) &&
+                    !String(product.name || "").toLowerCase().includes(search)
+                ) {
+                    return false;
+                }
+
+                let entries = Object.values(product.entries);
+
+                if (filters.region !== "all") {
+                    entries = entries.filter(entry => entry.region === filters.region);
+                }
+
+                if (filters.billing !== "all") {
+                    entries = entries.filter(entry => entry.billing === filters.billing);
+                }
+
+                if (filters.availability !== "all") {
+                    const available = filters.availability === "available";
+                    entries = entries.filter(entry => Boolean(entry.available) === available);
+                }
+
+                return entries.length > 0;
+            });
+
+            function renderAction(entry) {
+                if (!entry) return "—";
+
+                return `
+            <div style="display:flex; gap:5px; align-items:center;">
+                <button
+                    type="button"
+                    class="button button-secondary"
+                    onclick="openAdminPricingEdit(${Number(entry.id)})"
+                >
+                    Edit ${escapeHtml(entry.region)}
+                </button>
+                <button
+                    type="button"
+                    class="button button-danger"
+                    onclick="deleteAdminPricing(${Number(entry.id)})"
+                >
+                    Delete
+                </button>
+            </div>
+        `;
+            }
+
             container.innerHTML = `
-                <div
-            class="admin-pricing-status"
-    id="adminPricingStatus"
-                ></div>
+        <div class="admin-pricing-status" id="adminPricingStatus"></div>
 
-                    <div class="admin-pricing-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Region</th>
-                                    <th>Currency</th>
-                                    <th>Product</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
-                                    <th>Billing</th>
-                                    <th>Credits</th>
-                                    <th>Available</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
+        <div class="admin-pricing-filters">
+            <select
+                id="adminPricingCategoryFilter"
+                onchange="renderAdminPricing()"
+                class="form-control"
+            >
+                <option value="all">All Categories</option>
+                <option value="home">Home Wellness</option>
+                <option value="business">Business</option>
+                <option value="professional">Professional</option>
+                <option value="other">Other</option>
+            </select>
 
-                            <tbody>
-                                ${adminPricingEntries.map((entry) => `
+            <select
+                id="adminPricingRegionFilter"
+                onchange="renderAdminPricing()"
+                class="form-control"
+            >
+                <option value="all">All Regions</option>
+                <option value="EU">EU</option>
+                <option value="US">US</option>
+            </select>
+
+            <select
+                id="adminPricingBillingFilter"
+                onchange="renderAdminPricing()"
+                class="form-control"
+            >
+                <option value="all">All Billing</option>
+                <option value="one_time">One-time</option>
+                <option value="monthly">Monthly</option>
+                <option value="annual">Annual</option>
+            </select>
+
+            <select
+                id="adminPricingAvailabilityFilter"
+                onchange="renderAdminPricing()"
+                class="form-control"
+            >
+                <option value="all">All Statuses</option>
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+            </select>
+
+            <input
+                id="adminPricingSearch"
+                type="text"
+                class="form-control"
+                placeholder="Search product..."
+                value="${escapeHtml(filters.search)}"
+                oninput="renderAdminPricing()"
+                style="min-width:180px;"
+            />
+        </div>
+
+        <div style="margin-bottom:10px; color:#64748b; font-size:12px;">
+            Showing ${visibleProducts.length} of ${products.length} products
+        </div>
+
+        <div class="admin-pricing-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Name</th>
+                        <th>EU Price</th>
+                        <th>US Price</th>
+                        <th>Billing</th>
+                        <th>Credits</th>
+                        <th>Availability</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${visibleProducts.map(product => {
+                const eu = product.entries.EU;
+                const us = product.entries.US;
+
+                const entries = [eu, us].filter(Boolean);
+
+                const billing = [...new Set(entries.map(e => e.billing))].join(" / ");
+                const credits = [...new Set(entries.map(e =>
+                    e.credits === null || e.credits === undefined ? "—" : e.credits
+                ))].join(" / ");
+
+                const availability = entries.every(e => e.available)
+                    ? "Available"
+                    : entries.every(e => !e.available)
+                        ? "Off"
+                        : "Mixed";
+
+                return `
+                            <tr>
+                                <td>
+                                    <span class="admin-product-key">
+                                        ${escapeHtml(product.productKey)}
+                                    </span>
+                                </td>
+                                <td>${escapeHtml(product.name)}</td>
+                                <td class="admin-price">${formatPrice(eu)}</td>
+                                <td class="admin-price">${formatPrice(us)}</td>
+                                <td>${escapeHtml(billing)}</td>
+                                <td>${escapeHtml(credits)}</td>
+                                <td>${escapeHtml(availability)}</td>
+                                <td>
+                                    <div style="display:flex; flex-direction:column; gap:5px;">
+                                        ${renderAction(eu)}
+                                        ${renderAction(us)}
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+            }).join("")}
+
+                    ${visibleProducts.length === 0 ? `
                         <tr>
-                            <td>${escapeHtml(entry.region)}</td>
-                            <td>${escapeHtml(entry.currency)}</td>
-                            <td>
-                                <span class="admin-product-key">
-                                    ${escapeHtml(entry.product_key)}
-                                </span>
+                            <td colspan="8" style="text-align:center; padding:24px;">
+                                No matching pricing products found.
                             </td>
-                            <td>${escapeHtml(entry.name)}</td>
-                            <td class="admin-price">
-                                ${entry.price === null ||
-                    entry.price === undefined
-                    ? "TBD"
-                    : escapeHtml(
-                        Number(entry.price).toFixed(2)
-                    )
-                }
-                            </td>
-                            <td>${escapeHtml(entry.billing)}</td>
-                            <td>
-                                ${entry.credits === null ||
-                    entry.credits === undefined
-                    ? "?"
-                    : escapeHtml(entry.credits)
-                }
-                            </td>
-                            <td>
-                                <span class="admin-available ${entry.available ? "on" : "off"
-                }">
-                                    ${entry.available ? "Available" : "Off"}
-                                </span>
-                            </td>
-                           <td>
-    <div style="display:flex; gap:6px; align-items:center;">
-        <button
-            type="button"
-            class="button button-secondary"
-            onclick="openAdminPricingEdit(${entry.id})"
-        >
-            Edit
-        </button>
-
-        <button
-            type="button"
-            class="button button-danger"
-            onclick="deleteAdminPricing(${entry.id})"
-        >
-            Delete
-        </button>
-    </div>
-</td>
                         </tr>
-                    `).join("")}
-                            </tbody>
-                        </table>
-                    </div>
-            `;
+                    ` : ""}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+            // Restore selected filters after rendering
+            document.getElementById("adminPricingCategoryFilter").value = filters.category;
+            document.getElementById("adminPricingRegionFilter").value = filters.region;
+            document.getElementById("adminPricingBillingFilter").value = filters.billing;
+            document.getElementById("adminPricingAvailabilityFilter").value = filters.availability;
         }
+
 
         function openAdminPricingEdit(pricingId) {
             const entry = adminPricingEntries.find(

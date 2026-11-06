@@ -6387,8 +6387,22 @@ async function loadProject(
                     image:
                         !!floor.image,
 
+                    imageConstructor:
+                        floor.image?.constructor?.name,
+
                     imageData:
                         !!floor.imageData,
+
+                    imageDataType:
+                        typeof floor.imageData,
+
+                    imageDataConstructor:
+                        floor.imageData?.constructor?.name,
+
+                    imageDataLength:
+                        typeof floor.imageData === "string"
+                            ? floor.imageData.length
+                            : null,
 
                     imageFileName:
                         floor.imageFileName,
@@ -6516,6 +6530,10 @@ async function loadProject(
         // ==================================================
 
         requestRender?.();
+
+        if (currentWorkspace === "home") {
+            window.HomeMeasurements?.restoreWorkspace?.();
+        }
 
         // ==================================================
         // FINAL DEBUG

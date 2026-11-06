@@ -41920,6 +41920,11 @@ return false;
     "#professionalSidebarMenu [data-professional-view]"
   ).forEach(button => {
     button.addEventListener("click", () => {
+
+      console.log("[LIFESTYLE CARD CLICK]", {
+        index: button.dataset.lifestyleIndex,
+        openFunction: typeof window.HomeMeasurements.openGuidedLifestyleArea
+      });
       const view = button.dataset.professionalView;
 
       // Update active menu item

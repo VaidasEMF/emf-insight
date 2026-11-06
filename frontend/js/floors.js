@@ -1070,6 +1070,18 @@ function loadFloorImage(floor) {
         img.src = floor.imageData;
     };
 
+    // Clear invalid image objects before asynchronous loading.
+    if (
+        floor.image &&
+        (
+            !(floor.image instanceof HTMLImageElement) ||
+            !floor.image.complete ||
+            floor.image.naturalWidth <= 0
+        )
+    ) {
+        clearImageUI();
+    }
+
     // --------------------------------------------------
     // STORAGE HAS PRIORITY
     // --------------------------------------------------

@@ -147,11 +147,26 @@
     }
 
     window.openHomeWellnessProject = async function (projectId) {
+
+        console.log("[HOME PROJECT OPEN START]", projectId);
         if (window.AppMode?.current !== "home") {
             await window.setAppMode("home");
         }
 
         const loaded = await window.loadProject(projectId);
+
+        if (loaded && window.HomeMeasurements) {
+            window.HomeMeasurements.activeLifestyleArea = null;
+            window.HomeMeasurements.guidedMeasurementState = null;
+
+        }
+
+        console.log("[HOME PROJECT LOADED]", {
+            loaded,
+            measurementState: window.AppState?.project?.homeMeasurementState,
+            homeMeasurementsAvailable: !!window.HomeMeasurements,
+            rightPanelAvailable: !!document.getElementById("homeGuidedRightPanel")
+        });
 
         if (loaded) {
             window.myWellnessDashboardOpen = false;
@@ -164,6 +179,8 @@
 
             window.updateWorkspaceUI?.();
             window.requestRender?.();
+
+            await window.HomeMeasurements?.start?.();
         }
     };
 

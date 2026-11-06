@@ -6,6 +6,7 @@ from db.database import SessionLocal
 from models.pricing import Pricing
 from models.user import User
 from routes.auth import get_current_user
+from sqlalchemy import text
 
 
 router = APIRouter(
@@ -264,4 +265,73 @@ def delete_admin_pricing(
     return {
         "status": "ok",
         "deleted_id": pricing_id,
+    }
+
+# ============================================================
+# HOME WELLNESS SETTINGS
+# ============================================================
+
+@router.get("/settings/home-simple-report-access-days")
+def get_home_simple_report_access_days(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    result = db.execute(
+        text("""
+            SELECT setting_value
+            FROM platform_settings
+            WHERE setting_key = 'home_simple_report_access_days'
+        """)
+    ).first()
+
+    return {
+        "days": int(result[0]) if result else 60
+    }
+
+
+@router.put("/settings/home-simple-report-access-days")
+def update_home_simple_report_access_days(
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    try:
+        days = int(data.get("days"))
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=400,
+            detail="Access duration must be a number",
+        )
+
+    if days < 1 or days > 3650:
+        raise HTTPException(
+            status_code=400,
+            detail="Access duration must be between 1 and 3650 days",
+        )
+
+    db.execute(
+        text("""
+            INSERT INTO platform_settings (
+                setting_key,
+                setting_value,
+                updated_at
+            )
+            VALUES (
+                'home_simple_report_access_days',
+                :days,
+                CURRENT_TIMESTAMP
+            )
+            ON CONFLICT (setting_key)
+            DO UPDATE SET
+                setting_value = EXCLUDED.setting_value,
+                updated_at = CURRENT_TIMESTAMP
+        """),
+        {"days": str(days)},
+    )
+
+    db.commit()
+
+    return {
+        "status": "ok",
+        "days": days,
     }

@@ -259,7 +259,56 @@ def init_db():
                     )
                     """
                 )
+)
+                
+            # =====================
+            # HOME WELLNESS ENTITLEMENTS
+            # =====================
+
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS home_wellness_entitlements (
+                        id BIGSERIAL PRIMARY KEY,
+                        user_id VARCHAR(255) NOT NULL,
+                        project_id VARCHAR(255),
+                        entitlement_type VARCHAR(50) NOT NULL,
+                        status VARCHAR(30) NOT NULL DEFAULT 'active',
+                        starts_at TIMESTAMP,
+                        expires_at TIMESTAMP,
+                        stripe_subscription_id VARCHAR(255),
+                        stripe_session_id VARCHAR(255),
+                        current_period_start TIMESTAMP,
+                        current_period_end TIMESTAMP,
+                        cancel_at_period_end BOOLEAN NOT NULL DEFAULT FALSE,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
             )
+
+            connection.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS home_wellness_transactions (
+                        id BIGSERIAL PRIMARY KEY,
+                        user_id VARCHAR(255) NOT NULL,
+                        project_id VARCHAR(255) NOT NULL,
+                        product_key VARCHAR(100) NOT NULL,
+                        stripe_session_id VARCHAR(255) NOT NULL UNIQUE,
+                        stripe_payment_intent_id VARCHAR(255),
+                        amount INTEGER,
+                        currency VARCHAR(10),
+                        status VARCHAR(30) NOT NULL DEFAULT 'completed',
+                        purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
+
+            
 
             # =====================
             # USER LOCATION
