@@ -7,6 +7,15 @@ from db.database import SessionLocal
 from routes.auth import get_current_user
 from models.user import User
 
+import uuid
+
+import engine
+
+from storage import supabase
+
+from models.project import Project
+from models.report import Report
+
 from datetime import datetime, timezone
 
 
@@ -27,38 +36,107 @@ def require_admin(
 
     return current_user
 
-@router.get("/debug/report/{report_id}")
-def debug_report(
+
+@router.post("/reports/{report_id}/restore-pdf")
+def restore_home_report_pdf(
     report_id: int,
     current_user: User = Depends(require_admin),
 ):
     db = SessionLocal()
 
     try:
-        result = db.execute(
-            text("""
-                SELECT
-                    id,
-                    pdf_path,
-                    project_id,
-                    workspace,
-                    preview
-                FROM reports
-                WHERE id = :report_id
-            """),
-            {"report_id": report_id},
-        ).mappings().first()
+        report = db.query(Report).filter(
+            Report.id == report_id
+        ).first()
 
-        if not result:
+        if not report:
+            raise HTTPException(404, "Report not found")
+
+        if report.workspace != "home" or report.preview != 0:
             raise HTTPException(
-                status_code=404,
-                detail="Report not found",
+                400,
+                "Only purchased Home reports can be restored",
             )
 
-        return dict(result)
+        payment = db.execute(
+            text("""
+                SELECT id
+                FROM home_wellness_transactions
+                WHERE user_id = :user_id
+                  AND project_id = :project_id
+                  AND product_key = 'home_simple_report'
+                  AND status = 'completed'
+                  AND usage_status = 'used'
+                  AND report_id = :report_id
+                LIMIT 1
+            """),
+            {
+                "user_id": str(report.project.user_id),
+                "project_id": str(report.project_id),
+                "report_id": report_id,
+            },
+        ).first()
+
+        if not payment:
+            raise HTTPException(
+                403,
+                "No completed €15 purchase linked to this report",
+            )
+
+        project_row = db.query(Project).filter(
+            Project.id == report.project_id
+        ).first()
+
+        if not project_row:
+            raise HTTPException(404, "Project not found")
+
+        project = project_row.data
+
+        pdf_path = engine.build_pdf(
+            project,
+            "session_1",
+            "session_2",
+            report.project_id,
+            plan="premium",
+            preview=False,
+            user=project_row.user,
+            workspace="home",
+            report_type="simple",
+        )
+
+        storage_path = (
+            f"{report.project_id}/"
+            f"{uuid.uuid4().hex}_simple.pdf"
+        )
+
+        with open(pdf_path, "rb") as pdf_file:
+            supabase.storage.from_("reports").upload(
+                storage_path,
+                pdf_file,
+                file_options={
+                    "content-type": "application/pdf",
+                    "upsert": "true",
+                },
+            )
+
+        report.pdf_path = f"supabase://reports/{storage_path}"
+
+        db.commit()
+
+        return {
+            "status": "restored",
+            "report_id": report.id,
+            "project_id": report.project_id,
+            "pdf_path": report.pdf_path,
+        }
+
+    except Exception:
+        db.rollback()
+        raise
 
     finally:
         db.close()
+
 
 def stripe_dashboard_url(object_type, object_id, livemode):
     if not object_id:
