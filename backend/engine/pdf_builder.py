@@ -100,6 +100,7 @@ def build_pdf(
     preview=False,
     user=None,
     workspace="business",
+    report_type="full",
 ):
     """
     Build PHI PDF report.
@@ -130,7 +131,7 @@ def build_pdf(
 
         pdf_path = os.path.join(
             output_dir,
-            f"{pid}.pdf",
+            f"{pid}_{report_type}.pdf",
         )
 
         doc = SimpleDocTemplate(
@@ -149,6 +150,7 @@ def build_pdf(
             analysis=analysis,
             presentation=presentation,
             user=user,
+            report_type=report_type,
         )
 
         def add_preview_watermark(

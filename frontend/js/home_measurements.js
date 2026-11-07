@@ -2478,24 +2478,31 @@ ${window.AppState?.project?.homeMeasurementState
     <h2>Simple Property EMF Report</h2>
 
     <p>
-        Get a clear overview of your property's EMF environment,
-        lifestyle zones and identified indoor and outdoor sources.
+        Get a clear overview of your property's EMF environment.
     </p>
 
     <p>
-        Your report includes a property overview,
-        identified EMF sources and personalised recommendations.
+        Your report includes a property overview
+        with a summary of the measured environment.
     </p>
 
     <div style="margin-top:24px;">
-        <div id="homeSimpleReportPrice"
-             style="font-size:28px;font-weight:700;margin-bottom:16px;">
+
+        <div
+            id="homeSimpleReportPrice"
+            style="font-size:28px;font-weight:700;margin-bottom:16px;"
+        >
             Loading price...
         </div>
 
+        <div
+            id="homeSimpleReportStatus"
+            style="margin-bottom:16px;"
+        ></div>
+
         <button
             type="button"
-            id="homeSimpleReportBuy"
+            id="homeSimpleReportAction"
             style="
                 padding:14px 24px;
                 border:0;
@@ -2508,6 +2515,7 @@ ${window.AppState?.project?.homeMeasurementState
         >
             Purchase Simple Report
         </button>
+
     </div>
 `
         };
@@ -2530,9 +2538,26 @@ ${window.AppState?.project?.homeMeasurementState
             const priceElement = content.querySelector(
                 "#homeSimpleReportPrice"
             );
-            const buyButton = content.querySelector(
-                "#homeSimpleReportBuy"
+            const actionButton = content.querySelector(
+                "#homeSimpleReportAction"
             );
+
+            const statusElement = content.querySelector(
+                "#homeSimpleReportStatus"
+            );
+
+            const isPurchased =
+                window.homeSimpleReportPurchased === true ||
+                window.homeSimpleReportUnlocked === true;
+
+            const isUsed =
+                window.homeSimpleReportUsageStatus === "used";
+
+            const reportId =
+                window.homeSimpleReportId || null;
+
+            const daysRemaining =
+                Number(window.homeSimpleReportDaysRemaining || 0);
 
             const currency = String(
                 window.EMF_SELECTED_CURRENCY ||
@@ -2550,8 +2575,23 @@ ${window.AppState?.project?.homeMeasurementState
 
             console.log("[HOME SIMPLE REPORT] API BASE:", apiBase);
 
-            if (buyButton) {
-                buyButton.disabled = true;
+            if (actionButton) {
+                actionButton.disabled = true;
+
+                if (isPurchased && isUsed && reportId) {
+                    actionButton.textContent = "Download Report";
+                    actionButton.disabled = false;
+                } else if (isPurchased) {
+                    actionButton.textContent = "Generate My Simple Report";
+                    actionButton.disabled = daysRemaining <= 0;
+                } else {
+                    actionButton.textContent = "Purchase Simple Report";
+                }
+            }
+
+            if (statusElement && isPurchased) {
+                statusElement.textContent =
+                    `Property Health Record access: ${daysRemaining} days remaining`;
             }
 
             fetch(`${apiBase}/pricing`)
@@ -2584,8 +2624,8 @@ ${window.AppState?.project?.homeMeasurementState
                             }).format(Number(product.price));
                     }
 
-                    if (buyButton) {
-                        buyButton.disabled = false;
+                    if (actionButton && !isPurchased) {
+                        actionButton.disabled = false;
                     }
                 })
                 .catch(error => {
@@ -2600,13 +2640,63 @@ ${window.AppState?.project?.homeMeasurementState
                     }
                 });
 
-            buyButton?.addEventListener("click", () => {
-                if (typeof window.buyPlan !== "function") {
-                    alert("Payment service is currently unavailable.");
+            actionButton?.addEventListener("click", () => {
+
+                // 1. NOT PURCHASED — OPEN STRIPE CHECKOUT
+                if (!isPurchased) {
+                    if (typeof window.buyPlan !== "function") {
+                        alert("Payment service is currently unavailable.");
+                        return;
+                    }
+
+                    window.buyPlan("home_simple_report");
                     return;
                 }
 
-                window.buyPlan("home_simple_report");
+                // 2. PURCHASED AND NOT USED — GENERATE PDF
+                if (!isUsed) {
+                    if (daysRemaining <= 0) {
+                        alert("Your report generation access has expired.");
+                        return;
+                    }
+
+                    if (typeof window.generatePDF !== "function") {
+                        alert("PDF generation is currently unavailable.");
+                        return;
+                    }
+
+                    window.generatePDF("simple");
+                    return;
+                }
+
+                // 3. ALREADY USED — DOWNLOAD EXISTING PDF
+                if (isUsed && reportId) {
+                    const token = localStorage.getItem("token");
+
+                    fetch(
+                        `${apiBase}/reports/${reportId}/download`,
+                        {
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            }
+                        }
+                    )
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("Unable to download report.");
+                            }
+
+                            return response.blob();
+                        })
+                        .then(blob => {
+                            const pdfUrl = URL.createObjectURL(blob);
+                            window.open(pdfUrl, "_blank");
+                        })
+                        .catch(error => {
+                            console.error("[HOME SIMPLE REPORT] Download error:", error);
+                            alert("Unable to download your report.");
+                        });
+                }
             });
         }
     }

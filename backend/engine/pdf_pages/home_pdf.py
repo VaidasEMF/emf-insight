@@ -25,6 +25,7 @@ def render_home_pdf(
     analysis,
     presentation,
     user=None,
+    report_type="full",
 ):
     """
     Render the Home Premium PDF.
@@ -58,8 +59,9 @@ def render_home_pdf(
     # ------------------------------------------------------
 
     total_pages = (
-        2
-        + len(lifestyle_areas)
+        2 + len(lifestyle_areas)
+        if report_type == "full"
+        else 2
     )
 
     print(
@@ -100,26 +102,28 @@ def render_home_pdf(
         total_pages=total_pages,
     )
 
-    # ------------------------------------------------------
+        # ------------------------------------------------------
     # LIFESTYLE AREAS
     # ------------------------------------------------------
 
-    for lifestyle_area in lifestyle_areas:
+    if report_type == "full":
 
-        print(
-        "🔥 HOME PDF LIFESTYLE AREA:",
-        lifestyle_area,
-        flush=True,
-    )
+        for lifestyle_area in lifestyle_areas:
 
-        page_number += 1
+            print(
+                "🔥 HOME PDF LIFESTYLE AREA:",
+                lifestyle_area,
+                flush=True,
+            )
 
-        render_home_lifestyle(
-            story=story,
-            project=project,
-            analysis=analysis,
-            presentation=presentation,
-            lifestyle_area=lifestyle_area,
-            page_number=page_number,
-            total_pages=total_pages,
-        )
+            page_number += 1
+
+            render_home_lifestyle(
+                story=story,
+                project=project,
+                analysis=analysis,
+                presentation=presentation,
+                lifestyle_area=lifestyle_area,
+                page_number=page_number,
+                total_pages=total_pages,
+            )

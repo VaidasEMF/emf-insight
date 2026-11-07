@@ -44405,7 +44405,7 @@ return false;
   // 🔥 GENERATE PDF
   // =====================
 
-  async function generatePDF() {
+  async function generatePDF(requestedReportType = null) {
 
     try {
 
@@ -44419,25 +44419,39 @@ return false;
       }
 
       // ==================================================
-      // HOME — FULL REPORT ENTITLEMENT
+      // HOME — REPORT ENTITLEMENT
       // ==================================================
 
       const isHomeProject =
         window.AppMode?.current === "home";
 
+      const hasHomeSimpleReport =
+        window.homeSimpleReportUnlocked === true;
+
+      const hasHomeFullReport =
+        window.homeFullReportUnlocked === true;
+
+      const homeReportType =
+        requestedReportType ||
+        (
+          hasHomeFullReport
+            ? "full"
+            : hasHomeSimpleReport
+              ? "simple"
+              : null
+        );
+
       if (
         isHomeProject &&
         window.isAdmin !== true &&
-        window.homeFullReportUnlocked !== true
+        !homeReportType
       ) {
-
         alert(
-          "Unlock the Full EMF Insight Report for this Property before generating the PDF."
+          "Purchase a Simple Report or Full EMF Insight Report for this Property before generating a PDF."
         );
 
         return;
       }
-
 
       const pdfWindow = window.open("", "_blank");
 
@@ -44447,49 +44461,40 @@ return false;
       }
 
       const res = await fetch(
-
         `${API}/generate-pdf`,
-
         {
           method: "POST",
 
           headers: {
-            "Content-Type":
-              "application/json",
-            "Authorization":
-              `Bearer ${token}`
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
           },
 
           body: JSON.stringify({
+            project_id: currentProjectId,
 
-            project_id:
-              currentProjectId,
+            sessionA: "session_1",
 
-            sessionA:
-              "session_1",
+            sessionB: "session_2",
 
-            sessionB:
-              "session_2",
-
-            plan:
-              "premium",
+            plan: "premium",
 
             workspace:
-              window.AppMode?.current ||
-              "business"
+              window.AppMode?.current || "business",
+
+            report_type:
+              isHomeProject
+                ? (homeReportType || "full")
+                : "full"
           })
         }
       );
 
-      // 🔥 server down
-      const data =
-        await res.json();
+      const data = await res.json();
 
       if (!res.ok) {
-
         if (data.detail === "No measurement data found") {
           showPDFMeasurementWarning();
-
           return;
         }
 
@@ -44499,38 +44504,33 @@ return false;
       }
 
       if (data.pdf_url) {
-        const pdfUrl = `${API}${data.pdf_url}`;
 
-        setTimeout(function () {
-          window.maybePromptProfessionalDemoFeedback?.();
-        }, 3000);
+        if (
+          isHomeProject &&
+          homeReportType === "simple" &&
+          !data.preview
+        ) {
+          window.homeSimpleReportUsageStatus = "used";
 
-        if (pdfWindow) {
-          pdfWindow.location.href = pdfUrl;
-        } else {
-          window.open(pdfUrl, "_blank");
+          if (data.report_id) {
+            window.homeSimpleReportId = data.report_id;
+          }
         }
-      }
 
-      else {
 
+      } else {
         console.error(data);
 
-        alert(
-          "PDF generation failed"
-        );
+        alert("PDF generation failed");
       }
 
     }
 
     catch (err) {
-
       console.error("PDF generation error:", err);
 
       if (String(err?.message || "").includes("No measurement data found")) {
-
         showPDFMeasurementWarning();
-
         return;
       }
 
@@ -44538,7 +44538,10 @@ return false;
         err?.message || "PDF generation failed"
       );
     }
+
   }
+
+  window.generatePDF = generatePDF;
 
   async function loadProfessionalAssessmentRequest() {
 
@@ -50733,6 +50736,27 @@ z-index:2;
 
             window.homeFullReportUnlocked =
               me.home_full_report_unlocked === true;
+
+            window.homeSimpleReportUnlocked =
+              me.home_simple_report_unlocked === true;
+
+            window.homeSimpleReportUsageStatus =
+              me.home_simple_report_usage_status || "not_used";
+
+            window.homeSimpleReportPurchased =
+              me.home_simple_report_purchased === true;
+
+            window.homeSimpleReportId =
+              me.home_simple_report_id || null;
+
+            window.homeSimpleReportUsedAt =
+              me.home_simple_report_used_at || null;
+
+            window.homeSimpleReportExpiresAt =
+              me.home_simple_report_expires_at || null;
+
+            window.homeSimpleReportDaysRemaining =
+              Number(me.home_simple_report_days_remaining || 0);
 
             if (
               window.homeFullReportUnlocked === true &&

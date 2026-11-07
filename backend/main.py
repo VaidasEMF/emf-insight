@@ -355,6 +355,22 @@ def _ensure_home_wellness_transactions_table(db):
         )
     """))
 
+    db.execute(text("""
+        ALTER TABLE home_wellness_transactions
+        ADD COLUMN IF NOT EXISTS usage_status VARCHAR(30)
+        NOT NULL DEFAULT 'not_used'
+    """))
+
+    db.execute(text("""
+        ALTER TABLE home_wellness_transactions
+        ADD COLUMN IF NOT EXISTS report_id INTEGER
+    """))
+
+    db.execute(text("""
+        ALTER TABLE home_wellness_transactions
+        ADD COLUMN IF NOT EXISTS used_at TIMESTAMP
+    """))
+
 def _ensure_user_admin_fields(db):
 
     db.execute(text("""
@@ -1981,6 +1997,8 @@ def generate_pdf(
 
         workspace = data.get("workspace") or "business"
 
+        report_type = data.get("report_type") or "full"
+
         plan = "premium"
 
         # =====================
@@ -2284,23 +2302,57 @@ def generate_pdf(
 
         elif workspace == "home":
 
-            entitlement = db.execute(
-                text("""
-                    SELECT full_report_unlocked
-                    FROM home_project_entitlements
-                    WHERE project_id = :project_id
-                    AND user_id = :user_id
-                """),
-                {
-                    "project_id": str(project_row.id),
-                    "user_id": str(user.id),
-                },
-            ).scalar()
+            if report_type == "simple":
 
-            if not entitlement:
+                entitlement = db.execute(
+                    text("""
+                        SELECT 1
+                        FROM home_wellness_entitlements
+                        WHERE project_id = :project_id
+                        AND user_id = :user_id
+                        AND entitlement_type = 'simple_report'
+                        AND status = 'active'
+                        AND (starts_at IS NULL OR starts_at <= CURRENT_TIMESTAMP)
+                        AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+                        LIMIT 1
+                    """),
+                    {
+                        "project_id": str(project_row.id),
+                        "user_id": str(user.id),
+                    },
+                ).first()
+
+                if not entitlement:
+                    raise HTTPException(
+                        status_code=403,
+                        detail="Active Simple Report purchase required for this Home project.",
+                    )
+
+            elif report_type == "full":
+
+                entitlement = db.execute(
+                    text("""
+                        SELECT full_report_unlocked
+                        FROM home_project_entitlements
+                        WHERE project_id = :project_id
+                        AND user_id = :user_id
+                    """),
+                    {
+                        "project_id": str(project_row.id),
+                        "user_id": str(user.id),
+                    },
+                ).scalar()
+
+                if not entitlement:
+                    raise HTTPException(
+                        status_code=403,
+                        detail="Full EMF Insight Report purchase required for this Home project.",
+                    )
+
+            else:
                 raise HTTPException(
-                    status_code=403,
-                    detail="Full EMF Insight Report purchase required for this Home project.",
+                    status_code=400,
+                    detail="Invalid Home report type.",
                 )
 
         elif active_demo:
@@ -2339,14 +2391,12 @@ def generate_pdf(
         # =====================
 
         pdf_path = engine.build_pdf(
-            project,
-            sessionA,
-            sessionB,
-            pid,
+            project, sessionA, sessionB, pid,
             plan=plan,
             preview=is_preview,
             user=user,
             workspace=workspace,
+            report_type=report_type,
         )
 
         if (
@@ -2387,6 +2437,32 @@ def generate_pdf(
 
         db.refresh(report)
 
+        if (
+            workspace == "home"
+            and report_type == "simple"
+            and not is_preview
+        ):
+            db.execute(
+                text("""
+                    UPDATE home_wellness_transactions
+                    SET
+                        usage_status = 'used',
+                        report_id = :report_id,
+                        used_at = CURRENT_TIMESTAMP
+                    WHERE user_id = :user_id
+                      AND project_id = :project_id
+                      AND product_key = 'home_simple_report'
+                      AND status = 'completed'
+                      AND usage_status = 'not_used'
+                """),
+                {
+                    "report_id": report.id,
+                    "user_id": str(current_user.id),
+                    "project_id": str(pid),
+                },
+            )
+            db.commit()
+
         # =====================
         # 🔥 RESPONSE
         # =====================
@@ -2396,6 +2472,7 @@ def generate_pdf(
         return {
             "status": "ok",
             "pdf_url": f"/output/{filename}",
+            "report_id": report.id,
             "preview": is_preview,
         }
 

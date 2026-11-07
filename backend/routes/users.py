@@ -48,6 +48,13 @@ def me(
     home_full_report_unlocked = False
     home_simple_report_unlocked = False
 
+    home_simple_report_usage_status = None
+    home_simple_report_purchased = False
+    home_simple_report_id = None
+    home_simple_report_used_at = None
+    home_simple_report_expires_at = None
+    home_simple_report_days_remaining = 0
+
     professional_demo_active = False
     professional_demo_expires_at = None
 
@@ -179,42 +186,85 @@ def me(
             print("HOME ENTITLEMENT CHECK FAILED:", repr(e))
             home_full_report_unlocked = False
 
-                # -----------------------------------------------
+                   # -----------------------------------------------
     # HOME SIMPLE REPORT ENTITLEMENT
     # -----------------------------------------------
     if project_id is not None:
         try:
             from sqlalchemy import text
+            from datetime import datetime, timezone
 
             result = db.execute(
                 text("""
-                    SELECT EXISTS (
-                        SELECT 1
-                        FROM home_wellness_entitlements
-                        WHERE project_id = :project_id
-                          AND user_id = :user_id
-                          AND entitlement_type = 'simple_report'
-                          AND status = 'active'
-                          AND (
-                              starts_at IS NULL
-                              OR starts_at <= CURRENT_TIMESTAMP
-                          )
-                          AND (
-                              expires_at IS NULL
-                              OR expires_at > CURRENT_TIMESTAMP
-                          )
-                    )
+                    SELECT
+    e.expires_at,
+    t.id AS transaction_id,
+    t.usage_status,
+    t.report_id,
+    t.used_at
+                    FROM home_wellness_entitlements e
+                    LEFT JOIN home_wellness_transactions t
+    ON t.user_id = e.user_id
+    AND t.project_id = e.project_id
+    AND t.product_key = 'home_simple_report'
+    AND t.status = 'completed'
+                    WHERE e.project_id = :project_id
+                      AND e.user_id = :user_id
+                      AND e.entitlement_type = 'simple_report'
+                      AND e.status = 'active'
+                      AND (
+                          e.starts_at IS NULL
+                          OR e.starts_at <= CURRENT_TIMESTAMP
+                      )
+                    ORDER BY
+    e.created_at DESC,
+    t.created_at DESC
+LIMIT 1
                 """),
                 {
                     "project_id": str(project_id),
                     "user_id": str(current_user.id),
                 },
-            ).scalar()
+            ).first()
 
-            home_simple_report_unlocked = bool(result)
+            if result:
+                home_simple_report_purchased = (
+                    result.transaction_id is not None
+                )
+
+                now = datetime.now(timezone.utc)
+
+                expires_at = result.expires_at
+
+                if expires_at and expires_at.tzinfo is None:
+                    expires_at = expires_at.replace(
+                        tzinfo=timezone.utc
+                    )
+
+                home_simple_report_expires_at = expires_at
+
+                home_simple_report_unlocked = (
+                    expires_at is None or expires_at > now
+                )
+
+                home_simple_report_usage_status = (
+                    result.usage_status or "not_used"
+                )
+
+                home_simple_report_id = result.report_id
+                home_simple_report_used_at = result.used_at
+
+                if expires_at:
+                    home_simple_report_days_remaining = max(
+                        0,
+                        (expires_at - now).days
+                    )
 
         except Exception as e:
-            print("HOME SIMPLE REPORT ENTITLEMENT CHECK FAILED:", repr(e))
+            print(
+                "HOME SIMPLE REPORT ENTITLEMENT CHECK FAILED:",
+                repr(e)
+            )
             home_simple_report_unlocked = False
 
     # IMPORTANT:
@@ -272,6 +322,19 @@ def me(
         "is_admin": current_user.is_admin,
         "home_full_report_unlocked": home_full_report_unlocked,
         "home_simple_report_unlocked": home_simple_report_unlocked,
+        "home_simple_report_purchased": home_simple_report_purchased,
+
+        "home_simple_report_usage_status": home_simple_report_usage_status,
+        "home_simple_report_id": home_simple_report_id,
+        "home_simple_report_used_at": (
+            home_simple_report_used_at.isoformat()
+            if home_simple_report_used_at else None
+        ),
+        "home_simple_report_expires_at": (
+            home_simple_report_expires_at.isoformat()
+            if home_simple_report_expires_at else None
+        ),
+        "home_simple_report_days_remaining": home_simple_report_days_remaining,
         "professional_demo_active": professional_demo_active,
         "professional_demo_expires_at": (
             professional_demo_expires_at.isoformat()
