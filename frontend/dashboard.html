@@ -19825,7 +19825,19 @@ ${request.has_active_unlock
 
         async function loadUser() {
             try {
-                const res = await fetch(`${API}/me`, {
+                const workspaceMode =
+                    localStorage.getItem("workspaceMode") || "business";
+
+                const projectId =
+                    workspaceMode === "home"
+                        ? localStorage.getItem("home_project_id")
+                        : null;
+
+                const userUrl = projectId
+                    ? `${API}/me?project_id=${encodeURIComponent(projectId)}`
+                    : `${API}/me`;
+
+                const res = await fetch(userUrl, {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
