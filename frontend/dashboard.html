@@ -12567,6 +12567,17 @@ ADMIN PAYMENTS
                     ? homeCheckoutPlans[key]
                     : key;
 
+            const isSimpleReportPurchased =
+                workspace === "home" &&
+                key === "simpleReport" &&
+                window.currentUser?.home_simple_report_purchased === true;
+
+            const simpleReportUsed =
+                window.currentUser?.home_simple_report_usage_status === "used";
+
+            const simpleReportId =
+                window.currentUser?.home_simple_report_id || null;
+
             const description = workspace === "home"
                 ? key === "simpleReport"
                     ? "Get a clear overview of your property's EMF environment, lifestyle zones and identified sources."
@@ -12601,7 +12612,23 @@ ${!isTbd
                     : ""}
 
                             <div class="price-actions">
-    ${pricingButton(
+    ${workspace === "home" && key === "simpleReport" && isSimpleReportPurchased
+                    ? simpleReportUsed && simpleReportId
+                        ? `<button
+            type="button"
+            class="btn-primary"
+            onclick="downloadReport('${simpleReportId}')"
+        >
+            Download Report
+        </button>`
+                        : `<button
+            type="button"
+            class="btn-primary"
+            onclick="localStorage.setItem('openHomeSimpleReport', '1'); openWorkspace('home')"
+        >
+            Generate My Simple Report
+        </button>`
+                    : pricingButton(
                         isTbd
                             ? "Coming later"
                             : workspace === "home"
@@ -12617,7 +12644,8 @@ ${!isTbd
                                         : "Choose Professional",
                         checkoutPlan,
                         !isTbd
-                    )}
+                    )
+                }
 </div>
         </article>
     `;
@@ -20244,6 +20272,15 @@ ${request.has_active_unlock
                 updateProfessionalHomeProjectsAccess();
                 const homeFullReportUnlocked = data.home_full_report_unlocked === true;
                 const homeSimpleReportUnlocked = data.home_simple_report_unlocked === true;
+
+                const homeSimpleReportPurchased =
+                    data.home_simple_report_purchased === true;
+
+                const homeSimpleReportUsed =
+                    data.home_simple_report_usage_status === "used";
+
+                const homeSimpleReportId =
+                    data.home_simple_report_id || null;
 
                 const professionalDemoActive =
                     data.professional_demo_active === true;
@@ -28225,6 +28262,7 @@ ${request.contact_expires_at
 
             console.time("loadUser");
             await loadUser();
+            renderPricing();
             console.timeEnd("loadUser");
             console.timeLog("Dashboard initialization", "loadUser completed");
 

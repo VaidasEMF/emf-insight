@@ -2151,6 +2151,17 @@ async function setAppMode(
     window.updateWorkspaceAccessBadge?.();
     window.updateWorkspaceAccessActiveState?.();
 
+    if (
+        window.AppMode?.current === "home" &&
+        localStorage.getItem("openHomeSimpleReport") === "1"
+    ) {
+        localStorage.removeItem("openHomeSimpleReport");
+
+        await window.HomeMeasurements?.start();
+
+        window.HomeMeasurements?.showPage("report");
+    }
+
     console.timeEnd("setAppMode TOTAL");
 
     console.log("✅ SET APP MODE FINISHED");
