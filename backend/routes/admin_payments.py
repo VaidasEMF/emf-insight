@@ -27,6 +27,38 @@ def require_admin(
 
     return current_user
 
+@router.get("/debug/report/{report_id}")
+def debug_report(
+    report_id: int,
+    current_user: User = Depends(require_admin),
+):
+    db = SessionLocal()
+
+    try:
+        result = db.execute(
+            text("""
+                SELECT
+                    id,
+                    pdf_path,
+                    project_id,
+                    workspace,
+                    preview
+                FROM reports
+                WHERE id = :report_id
+            """),
+            {"report_id": report_id},
+        ).mappings().first()
+
+        if not result:
+            raise HTTPException(
+                status_code=404,
+                detail="Report not found",
+            )
+
+        return dict(result)
+
+    finally:
+        db.close()
 
 def stripe_dashboard_url(object_type, object_id, livemode):
     if not object_id:

@@ -39,6 +39,7 @@ from engine.analysis.business.analysis import (
 )
 
 from db.database import SessionLocal
+from storage import supabase
 
 from models.user import User
 from models.project import Project
@@ -2423,6 +2424,27 @@ def generate_pdf(
         # 🔥 SAVE REPORT
         # =====================
 
+                # =====================
+        # STORE HOME PDF IN SUPABASE
+        # =====================
+
+        if workspace == "home":
+            storage_path = (
+                f"{pid}/{uuid.uuid4().hex}_{report_type}.pdf"
+            )
+
+            with open(pdf_path, "rb") as pdf_file:
+                supabase.storage.from_("reports").upload(
+                    storage_path,
+                    pdf_file,
+                    file_options={
+                        "content-type": "application/pdf",
+                        "upsert": "true",
+                    },
+                )
+
+            pdf_path = f"supabase://reports/{storage_path}"
+
         report = Report(
             pdf_path=pdf_path,
             preview=1 if is_preview else 0,
@@ -2481,10 +2503,8 @@ def generate_pdf(
         raise
 
     except Exception as e:
-
-        print(traceback.format_exc())
-
-        raise HTTPException(500, str(e))
+        print("SUPABASE REPORT DOWNLOAD ERROR:", repr(e))
+        raise HTTPException(404, "PDF file missing")
 
     finally:
 
