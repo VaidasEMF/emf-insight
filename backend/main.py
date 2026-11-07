@@ -644,7 +644,6 @@ def create_checkout(
 
         try:
             session = stripe.checkout.Session.create(
-                payment_method_types=["card"],
                 line_items=[
                     {
                         "price": price_id,
@@ -724,7 +723,6 @@ def create_branding_checkout(
 
     try:
         session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
             line_items=[
                 {
                     "price": price_id,
