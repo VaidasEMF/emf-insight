@@ -85,6 +85,8 @@ def render_home_pdf(
         analysis=analysis,
         presentation=presentation,
         user=user,
+        report_type=report_type,
+       
     )
 
     # ------------------------------------------------------

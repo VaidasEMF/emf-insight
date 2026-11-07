@@ -36,6 +36,7 @@ def render_home_cover(
     analysis,
     presentation,
     user=None,
+    report_type="full",
 ):
     """
     Render the Home Premium PDF cover.
@@ -88,8 +89,8 @@ def render_home_cover(
         project=project,
         analysis=analysis,
         fonts=fonts,
+        report_type=report_type,
     )
-
     # ------------------------------------------------------
     # FINISH
     # ------------------------------------------------------

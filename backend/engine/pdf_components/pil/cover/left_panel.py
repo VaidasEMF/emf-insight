@@ -38,6 +38,7 @@ def draw_cover_left_panel(
     project,
     analysis,
     fonts,
+    report_type="full",
 ):
     """
     Draw Premium Cover left information panel.
@@ -122,7 +123,11 @@ def draw_cover_left_panel(
         draw=draw,
         x=SUBTITLE_X,
         y=SUBTITLE_Y,
-        text="Premium Property Health Report",
+        text=(
+            "Simple Property EMF Report"
+            if report_type == "simple"
+            else "Premium Property Health Report"
+        ),
         font=subtitle_font,
         fill="#D8DFEC",
     )
