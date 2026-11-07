@@ -46,6 +46,7 @@ def me(
 ):
 
     home_full_report_unlocked = False
+    home_simple_report_unlocked = False
 
     professional_demo_active = False
     professional_demo_expires_at = None
@@ -178,6 +179,44 @@ def me(
             print("HOME ENTITLEMENT CHECK FAILED:", repr(e))
             home_full_report_unlocked = False
 
+                # -----------------------------------------------
+    # HOME SIMPLE REPORT ENTITLEMENT
+    # -----------------------------------------------
+    if project_id is not None:
+        try:
+            from sqlalchemy import text
+
+            result = db.execute(
+                text("""
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM home_wellness_entitlements
+                        WHERE project_id = :project_id
+                          AND user_id = :user_id
+                          AND entitlement_type = 'simple_report'
+                          AND status = 'active'
+                          AND (
+                              starts_at IS NULL
+                              OR starts_at <= CURRENT_TIMESTAMP
+                          )
+                          AND (
+                              expires_at IS NULL
+                              OR expires_at > CURRENT_TIMESTAMP
+                          )
+                    )
+                """),
+                {
+                    "project_id": str(project_id),
+                    "user_id": str(current_user.id),
+                },
+            ).scalar()
+
+            home_simple_report_unlocked = bool(result)
+
+        except Exception as e:
+            print("HOME SIMPLE REPORT ENTITLEMENT CHECK FAILED:", repr(e))
+            home_simple_report_unlocked = False
+
     # IMPORTANT:
     # If project_id is not supplied, the Home Full Report
     # remains locked.
@@ -232,6 +271,7 @@ def me(
         "role": current_user.role,
         "is_admin": current_user.is_admin,
         "home_full_report_unlocked": home_full_report_unlocked,
+        "home_simple_report_unlocked": home_simple_report_unlocked,
         "professional_demo_active": professional_demo_active,
         "professional_demo_expires_at": (
             professional_demo_expires_at.isoformat()

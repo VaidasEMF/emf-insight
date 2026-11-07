@@ -817,6 +817,15 @@ async def stripe_webhook(request: Request):
                 db.commit()
                 return {"status": "ok"}
 
+            connection = db.execute(
+                text("SELECT current_database(), current_schema()")
+            ).first()
+
+            print("WEBHOOK DATABASE:", connection)
+            print("WEBHOOK DB URL:", db.get_bind().url.render_as_string(hide_password=True))
+            print("WEBHOOK USER ID:", repr(user_id))
+            print("WEBHOOK USER MODEL TABLE:", User.__table__.fullname)
+
             user = db.query(User).filter(User.id == int(user_id)).first()
 
             if not user:

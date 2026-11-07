@@ -2475,13 +2475,41 @@ ${window.AppState?.project?.homeMeasurementState
     </div>
 `,
             report: `
-            <h2>Property Health Report</h2>
-            <p>
-                Unlock the full property analysis, risk evaluation,
-                personalised recommendations and Premium PDF.
-            </p>
-            <p>Report generation and payment are not connected yet.</p>
-        `
+    <h2>Simple Property EMF Report</h2>
+
+    <p>
+        Get a clear overview of your property's EMF environment,
+        lifestyle zones and identified indoor and outdoor sources.
+    </p>
+
+    <p>
+        Your report includes a property overview,
+        identified EMF sources and personalised recommendations.
+    </p>
+
+    <div style="margin-top:24px;">
+        <div id="homeSimpleReportPrice"
+             style="font-size:28px;font-weight:700;margin-bottom:16px;">
+            Loading price...
+        </div>
+
+        <button
+            type="button"
+            id="homeSimpleReportBuy"
+            style="
+                padding:14px 24px;
+                border:0;
+                border-radius:8px;
+                background:#2563eb;
+                color:white;
+                font-weight:700;
+                cursor:pointer;
+            "
+        >
+            Purchase Simple Report
+        </button>
+    </div>
+`
         };
 
         content.innerHTML = `
@@ -2496,7 +2524,93 @@ ${window.AppState?.project?.homeMeasurementState
 
         content.querySelector("#homeResultsCreateReport")
             ?.addEventListener("click", () => showPage("report"));
+
+        // SIMPLE PROPERTY REPORT — PRICING AND CHECKOUT
+        if (activePage === "report") {
+            const priceElement = content.querySelector(
+                "#homeSimpleReportPrice"
+            );
+            const buyButton = content.querySelector(
+                "#homeSimpleReportBuy"
+            );
+
+            const currency = String(
+                window.EMF_SELECTED_CURRENCY ||
+                localStorage.getItem("emf_selected_currency") ||
+                "EUR"
+            ).toUpperCase();
+
+            const region = currency === "USD" ? "US" : "EU";
+
+            const apiBase =
+                window.location.hostname === "localhost" ||
+                    window.location.hostname === "127.0.0.1"
+                    ? "http://127.0.0.1:8000"
+                    : "https://emf-insight.onrender.com";
+
+            console.log("[HOME SIMPLE REPORT] API BASE:", apiBase);
+
+            if (buyButton) {
+                buyButton.disabled = true;
+            }
+
+            fetch(`${apiBase}/pricing`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Unable to load pricing.");
+                    }
+                    return response.json();
+                })
+                .then(pricing => {
+                    const product =
+                        pricing?.regions?.[region]?.products
+                            ?.HOME_SIMPLE_REPORT;
+
+                    if (
+                        !product ||
+                        !product.available ||
+                        !Number.isFinite(Number(product.price))
+                    ) {
+                        throw new Error("Simple Report is unavailable.");
+                    }
+
+                    if (priceElement) {
+                        priceElement.textContent =
+                            new Intl.NumberFormat(undefined, {
+                                style: "currency",
+                                currency,
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2
+                            }).format(Number(product.price));
+                    }
+
+                    if (buyButton) {
+                        buyButton.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error(
+                        "[HOME SIMPLE REPORT] Pricing error:",
+                        error
+                    );
+
+                    if (priceElement) {
+                        priceElement.textContent =
+                            "Price temporarily unavailable";
+                    }
+                });
+
+            buyButton?.addEventListener("click", () => {
+                if (typeof window.buyPlan !== "function") {
+                    alert("Payment service is currently unavailable.");
+                    return;
+                }
+
+                window.buyPlan("home_simple_report");
+            });
+        }
     }
+
 
 
     function closeWorkspace() {

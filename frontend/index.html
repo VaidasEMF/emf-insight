@@ -42060,7 +42060,10 @@ return false;
     // Project-specific entitlement
     // ==================================================
 
-    if (plan === "home_full_report") {
+    if (
+      plan === "home_full_report" ||
+      plan === "home_simple_report"
+    ) {
 
       const homeProject =
         window.AppState?.homeProject ||
@@ -42185,6 +42188,8 @@ return false;
       );
     }
   }
+
+  window.buyPlan = buyPlan;
 
   const ACCOUNT_API =
     window.location.hostname === "localhost" ||

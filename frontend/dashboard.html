@@ -4968,7 +4968,8 @@
                             <div class="section-heading" style="margin-bottom: 10px;">
                                 <div>
                                     <h3 class="section-title" style="font-size: 16px;">Home Wellness</h3>
-                                    <p class="section-description">One-time full report unlock.</p>
+                                    <p class="section-description">Choose how you want to understand and measure your
+                                        property's EMF environment.</p>
                                 </div>
                             </div>
                             <div class="pricing-grid" id="homePricingGrid"></div>
@@ -4984,8 +4985,8 @@
                             <div class="pricing-grid" id="businessPricingGrid"></div>
 
                             <div class="pricing-footnote" id="homePricingFootnote">
-                                Prices are shown in your selected currency.
-                                The Full EMF Insight Report is a one-time purchase.
+                                Prices are shown in your selected currency. One-time purchases and monthly subscription
+                                are available.
                             </div>
 
                             <div class="pricing-footnote" id="businessPricingFootnote">
@@ -12555,19 +12556,28 @@ ADMIN PAYMENTS
                 : "";
             const period = item.type === "monthly" ? "/ month" : "one-time";
 
+            const homeCheckoutPlans = {
+                simpleReport: "home_simple_report",
+                measureMonthly: "home_measure_monthly",
+                deeperUnderstanding: "home_deeper_first"
+            };
+
             const checkoutPlan =
                 workspace === "home"
-                    ? "home_full_report"
+                    ? homeCheckoutPlans[key]
                     : key;
 
             const description = workspace === "home"
-                ? "Unlock the complete EMF Insight report."
+                ? key === "simpleReport"
+                    ? "Get a clear overview of your property's EMF environment, lifestyle zones and identified sources."
+                    : key === "measureMonthly"
+                        ? "Measure your property and monitor changes in your EMF environment."
+                        : "Gain a deeper understanding of your property's EMF environment with an in-depth analysis."
                 : key === "single"
                     ? "1 Professional Assessment, 1 report and 1 Contact Point."
                     : key === "pro"
                         ? "5 Professional Assessments, 5 reports and 3 Contact Points each month."
                         : "25 Professional Assessments, 25 reports and 10 Contact Points each month.";
-
             return `
         <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""}">
             ${featured ? `<span class="price-badge">Current beta offer</span>` : ""}
@@ -12595,7 +12605,11 @@ ${!isTbd
                         isTbd
                             ? "Coming later"
                             : workspace === "home"
-                                ? "Buy Full Report"
+                                ? key === "simpleReport"
+                                    ? "Purchase Simple Report"
+                                    : key === "measureMonthly"
+                                        ? "Subscribe"
+                                        : "Purchase Deeper Understanding"
                                 : key === "single"
                                     ? "Buy Single"
                                     : key === "pro"
@@ -12626,7 +12640,7 @@ ${!isTbd
             const homePrice =
                 window.EMF_PRICING
                     ?.home
-                    ?.fullReport
+                    ?.simpleReport
                     ?.prices
                 ?.[
                 window.EMF_SELECTED_CURRENCY
@@ -12638,10 +12652,7 @@ ${!isTbd
                 )
             ) {
 
-                localStorage.setItem(
-                    "emf_home_full_report_price",
-                    String(homePrice)
-                );
+                localStorage.setItem("emf_home_simple_report_price", String(homePrice));
 
             }
             if (!pricingLoaded || !window.EMF_PRICING) return;
@@ -12656,17 +12667,16 @@ ${!isTbd
                 }).join("");
             }
 
-            const home = window.EMF_PRICING.home.fullReport;
+            const homePricing = window.EMF_PRICING.home;
 
             const homeGrid = document.getElementById("homePricingGrid");
 
-
             if (homeGrid) {
-                homeGrid.innerHTML = renderPriceCard(
-                    home,
-                    "fullReport",
-                    "home"
-                );
+                homeGrid.innerHTML = [
+                    renderPriceCard(homePricing.simpleReport, "simpleReport", "home"),
+                    renderPriceCard(homePricing.measureMonthly, "measureMonthly", "home"),
+                    renderPriceCard(homePricing.deeperUnderstanding, "deeperUnderstanding", "home")
+                ].join("");
             }
 
             const businessGrid = document.getElementById("businessPricingGrid");
@@ -13065,14 +13075,30 @@ ${!isTbd
                     currencies,
 
                     home: {
-                        fullReport: {
-                            name: eu?.products?.HOME_FULL_REPORT?.name
-                                || "Full EMF Insight Report",
-                            type: eu?.products?.HOME_FULL_REPORT?.billing
-                                || "one_time",
+                        simpleReport: {
+                            name: "Simple Property EMF Report",
+                            type: eu?.products?.HOME_SIMPLE_REPORT?.billing || "one_time",
                             prices: {
-                                EUR: eu?.products?.HOME_FULL_REPORT?.price,
-                                USD: us?.products?.HOME_FULL_REPORT?.price
+                                EUR: eu?.products?.HOME_SIMPLE_REPORT?.price,
+                                USD: us?.products?.HOME_SIMPLE_REPORT?.price
+                            }
+                        },
+
+                        measureMonthly: {
+                            name: "Measure My Property",
+                            type: eu?.products?.HOME_MEASURE_MONTHLY?.billing || "monthly",
+                            prices: {
+                                EUR: eu?.products?.HOME_MEASURE_MONTHLY?.price,
+                                USD: us?.products?.HOME_MEASURE_MONTHLY?.price
+                            }
+                        },
+
+                        deeperUnderstanding: {
+                            name: "Deeper Understanding",
+                            type: eu?.products?.HOME_DEEPER_ANALYSIS_FIRST?.billing || "one_time",
+                            prices: {
+                                EUR: eu?.products?.HOME_DEEPER_ANALYSIS_FIRST?.price,
+                                USD: us?.products?.HOME_DEEPER_ANALYSIS_FIRST?.price
                             }
                         }
                     },
@@ -20215,6 +20241,7 @@ ${request.has_active_unlock
                 window.businessReportCredits = credits;
                 updateProfessionalHomeProjectsAccess();
                 const homeFullReportUnlocked = data.home_full_report_unlocked === true;
+                const homeSimpleReportUnlocked = data.home_simple_report_unlocked === true;
 
                 const professionalDemoActive =
                     data.professional_demo_active === true;
@@ -20499,15 +20526,19 @@ ${request.has_active_unlock
                 const homePriceSummary = document.getElementById("homePriceSummary");
 
                 if (homeAccessStatus) {
-                    homeAccessStatus.textContent = homeFullReportUnlocked
-                        ? "Home Wellness · Full EMF Insight Report"
-                        : "Home Wellness · Free";
+                    homeAccessStatus.textContent = homeSimpleReportUnlocked
+                        ? "Home Wellness · Simple Property EMF Report"
+                        : homeFullReportUnlocked
+                            ? "Home Wellness · Full EMF Insight Report"
+                            : "Home Wellness · Free";
                 }
 
                 if (homePriceSummary) {
-                    homePriceSummary.textContent = homeFullReportUnlocked
-                        ? "Your full report is unlocked."
-                        : "One-time purchase available";
+                    homePriceSummary.textContent = homeSimpleReportUnlocked
+                        ? "Your Simple Report is unlocked."
+                        : homeFullReportUnlocked
+                            ? "Your full report is unlocked."
+                            : "One-time purchase available";
                 }
 
                 if (data.company_name !== undefined) {
@@ -25064,7 +25095,10 @@ ${request.contact_expires_at
                     currency: pricingCurrency
                 };
 
-                if (plan === "home_full_report") {
+                if (
+                    plan === "home_full_report" ||
+                    plan === "home_simple_report"
+                ) {
                     const userId =
                         window.currentUser?.id ||
                         window.currentUser?.user_id ||

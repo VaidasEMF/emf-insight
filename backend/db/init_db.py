@@ -678,3 +678,72 @@ def init_db():
                         """
                     )
                 )
+
+                            # Ensure Home Simple Report pricing exists for both regions.
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pricing
+                        (
+                            region,
+                            currency,
+                            product_key,
+                            name,
+                            price,
+                            billing,
+                            credits,
+                            available
+                        )
+                    SELECT
+                        'EU',
+                        'EUR',
+                        'HOME_SIMPLE_REPORT',
+                        'Simple Property EMF Report',
+                        15,
+                        'one_time',
+                        0,
+                        TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM pricing
+                        WHERE region = 'EU'
+                          AND currency = 'EUR'
+                          AND product_key = 'HOME_SIMPLE_REPORT'
+                    )
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pricing
+                        (
+                            region,
+                            currency,
+                            product_key,
+                            name,
+                            price,
+                            billing,
+                            credits,
+                            available
+                        )
+                    SELECT
+                        'US',
+                        'USD',
+                        'HOME_SIMPLE_REPORT',
+                        'Simple Property EMF Report',
+                        15,
+                        'one_time',
+                        0,
+                        TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM pricing
+                        WHERE region = 'US'
+                          AND currency = 'USD'
+                          AND product_key = 'HOME_SIMPLE_REPORT'
+                    )
+                    """
+                )
+            )
