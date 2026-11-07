@@ -12701,17 +12701,7 @@ ${!isTbd
                 ].join("");
             }
 
-            const homePriceSummary =
-                document.getElementById("homePriceSummary");
 
-            if (homePriceSummary) {
-                const price = home.prices[pricingCurrency];
-
-                homePriceSummary.textContent =
-                    typeof price === "number"
-                        ? `Full report unlock: ${formatPrice(price)} one-time`
-                        : "Full report pricing: TBD";
-            }
 
             window.BUSINESS_PLAN_DETAILS = {
                 single: {
