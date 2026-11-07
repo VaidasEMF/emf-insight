@@ -994,6 +994,25 @@
             font-weight: 800;
         }
 
+        /* Purchased Home Simple Report */
+        .price-card.simple-report-purchased .price-badge {
+            background: #dcfce7;
+            color: #15803d;
+            letter-spacing: 0.04em;
+        }
+
+        .price-card.simple-report-purchased .price-amount {
+            color: #15803d;
+            font-size: 22px;
+            letter-spacing: -0.02em;
+        }
+
+        .price-card.simple-report-purchased .price-description {
+            color: #64748b;
+            min-height: auto;
+            margin-top: 8px;
+        }
+
         .price-card .btn-primary[disabled],
         .price-card .btn-secondary[disabled] {
             opacity: .55;
@@ -12590,12 +12609,22 @@ ADMIN PAYMENTS
                         ? "5 Professional Assessments, 5 reports and 3 Contact Points each month."
                         : "25 Professional Assessments, 25 reports and 10 Contact Points each month.";
             return `
-        <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""}">
-            ${featured ? `<span class="price-badge">Current beta offer</span>` : ""}
+         <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""} ${isSimpleReportPurchased ? "simple-report-purchased" : ""}">
+            ${isSimpleReportPurchased
+                    ? `<span class="price-badge">PURCHASED</span>`
+                    : featured
+                        ? `<span class="price-badge">Current beta offer</span>`
+                        : ""}
             <h4>${escapeHtml(item.name)}</h4>
-            <p class="price-description">${description}</p>
+            <p class="price-description">${isSimpleReportPurchased
+                    ? "Your payment has been received. No additional payment is required."
+                    : description}</p>
             <div class="price-amount">
-                ${isTbd ? "TBD" : formatPrice(price)}
+    ${isSimpleReportPurchased
+                    ? `Paid · ${formatPrice(price)}`
+                    : isTbd
+                        ? "TBD"
+                        : formatPrice(price)}
                 ${!isTbd && item.type === "monthly"
                     ? `<span class="price-period">${period}</span>`
                     : ""}
@@ -20574,7 +20603,7 @@ ${request.has_active_unlock
 
                 if (homePriceSummary) {
                     homePriceSummary.textContent = homeSimpleReportUnlocked
-                        ? "Your Simple Report is unlocked."
+                        ? "Your payment has been received. No additional payment is required."
                         : homeFullReportUnlocked
                             ? "Your full report is unlocked."
                             : "One-time purchase available";
