@@ -32197,6 +32197,9 @@ return false;
               </div>
 
 
+
+
+
               <!-- PROPERTY INSIGHTS -->
               <div class="property-health-dashboard-card property-health-dashboard-insights">
 
@@ -33789,6 +33792,59 @@ return false;
 
               <div id="dashboardAssessmentStatus" class="property-health-dashboard-status">
                 In progress
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- REPORTS -->
+          <section class="property-health-dashboard-section">
+
+            <div class="property-health-dashboard-section-title">
+              REPORTS
+            </div>
+
+            <div id="phrReportsContainer">
+              <div class="property-health-dashboard-card">
+                <strong>No reports generated yet</strong>
+                <p>
+                  Your generated property reports will be stored here.
+                </p>
+              </div>
+            </div>
+
+          </section>
+
+
+          <!-- ACCESS & SUBSCRIPTION -->
+          <section class="property-health-dashboard-section">
+
+            <div class="property-health-dashboard-section-title">
+              ACCESS & SUBSCRIPTION
+            </div>
+
+            <div class="property-health-dashboard-grid">
+
+              <div class="property-health-dashboard-card">
+                <span>Access Status</span>
+                <strong id="phrAccessStatus">—</strong>
+              </div>
+
+              <div class="property-health-dashboard-card">
+                <span>Access Type</span>
+                <strong id="phrAccessType">—</strong>
+              </div>
+
+              <div class="property-health-dashboard-card">
+                <span>Subscription Plan</span>
+                <strong id="phrSubscriptionPlan">—</strong>
+              </div>
+
+              <div class="property-health-dashboard-card">
+                <span>Valid Until</span>
+                <strong id="phrAccessValidUntil">—</strong>
               </div>
 
             </div>
@@ -42065,15 +42121,32 @@ return false;
       plan === "home_simple_report"
     ) {
 
+      const workspaceMode = localStorage.getItem("workspaceMode");
+
+      const userId =
+        window.currentUser?.id ||
+        window.currentUser?.user_id ||
+        window.AppState?.user?.id ||
+        window.AppState?.user?.user_id;
+
       const homeProject =
-        window.AppState?.homeProject ||
-        window.AppState?.project ||
-        null;
+        window.AppState?.homeProject || null;
 
       const projectId =
         homeProject?.project_id ??
         homeProject?.id ??
-        null;
+        (
+          workspaceMode === "home"
+            ? (
+              (userId
+                ? localStorage.getItem(`home_project_id_${userId}`)
+                : null
+              ) ||
+              localStorage.getItem("home_project_id") ||
+              localStorage.getItem("homeProjectId")
+            )
+            : null
+        );
 
 
       if (!projectId) {
@@ -48768,10 +48841,17 @@ return false;
     // 🔥 STARTUP WORKSPACE
     // ==================================================
 
+    const requestedHomePropertyId =
+      new URLSearchParams(window.location.search)
+        .get("openHomeProperty");
+
     let workspaceMode =
-      localStorage.getItem(
-        "workspaceMode"
-      ) || "home";
+      requestedHomePropertyId
+        ? "home"
+        : (
+          localStorage.getItem("workspaceMode") ||
+          "home"
+        );
 
     let savedProjectId =
       null;
@@ -48810,6 +48890,27 @@ return false;
       );
     }
 
+    // ==================================================
+    // BILLING → SELECTED HOME PROPERTY
+    // ==================================================
+
+    if (requestedHomePropertyId && userId) {
+
+      localStorage.setItem(
+        `home_project_id_${userId}`,
+        String(requestedHomePropertyId)
+      );
+
+      localStorage.setItem(
+        "home_project_id",
+        String(requestedHomePropertyId)
+      );
+
+      console.log(
+        "🏠 BILLING PROPERTY SELECTED FOR STARTUP:",
+        requestedHomePropertyId
+      );
+    }
 
     const homeProjectId =
       (
@@ -50671,6 +50772,51 @@ z-index:2;
         currentMode: window.AppMode?.current,
         currentProjectId: window.currentProjectId
       });
+
+      // ==================================================
+      // BILLING → OPEN SELECTED PROPERTY IN HOME WORKSPACE
+      // ==================================================
+
+      if (
+        requestedHomePropertyId &&
+        workspaceMode === "home"
+      ) {
+
+        const loadedProjectId = String(
+          window.AppState?.homeProject?.project_id ??
+          window.AppState?.homeProject?.id ??
+          ""
+        );
+
+        if (
+          loadedProjectId === String(requestedHomePropertyId)
+        ) {
+
+          console.log(
+            "✅ BILLING PROPERTY OPENED IN HOME WORKSPACE",
+            loadedProjectId
+          );
+
+          history.replaceState(
+            {},
+            "",
+            window.location.pathname
+          );
+
+          return;
+
+        } else {
+
+          console.error(
+            "❌ BILLING PROPERTY LOAD MISMATCH",
+            {
+              expected: requestedHomePropertyId,
+              loaded: loadedProjectId
+            }
+          );
+
+        }
+      }
 
       if (isProfessionalAssessment) {
         await openProfessionalAssessmentWorkspace();

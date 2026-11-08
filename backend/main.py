@@ -2045,6 +2045,7 @@ def generate_pdf(
 
         project = project_row.data
 
+
         # =====================
         # WORKSPACE
         # =====================

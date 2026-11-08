@@ -1013,6 +1013,52 @@
             margin-top: 8px;
         }
 
+
+        .simple-report-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+            padding: 14px;
+            background: #f5f9fb;
+            border: 1px solid #dce9ee;
+            border-radius: 10px;
+        }
+
+        .simple-report-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .simple-report-detail span {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .simple-report-detail strong {
+            font-size: 13px;
+            color: #173c4b;
+        }
+
+        .simple-report-access {
+            grid-column: 1 / -1;
+            padding-top: 10px;
+            border-top: 1px solid #dce9ee;
+        }
+
+        .simple-report-access strong {
+            color: #16834b;
+            font-size: 15px;
+        }
+
+        .simple-report-access small {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+
         .price-card .btn-primary[disabled],
         .price-card .btn-secondary[disabled] {
             opacity: .55;
@@ -4992,6 +5038,25 @@
                                 </div>
                             </div>
                             <div class="pricing-grid" id="homePricingGrid"></div>
+
+                            <div style="height: 22px;"></div>
+
+                            <div class="section-heading" style="margin-bottom: 10px;">
+                                <div>
+                                    <h3 class="section-title" style="font-size: 16px;">
+                                        My Properties &amp; PHR Access
+                                    </h3>
+                                    <p class="section-description">
+                                        Manage your Home Wellness purchases and Property Health Record access.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div id="homeBillingProperties">
+                                <div style="color:var(--muted);font-size:12px;">
+                                    Loading your properties...
+                                </div>
+                            </div>
 
                             <div style="height: 22px;"></div>
 
@@ -11700,6 +11765,20 @@ ADMIN PAYMENTS
 
 
     <script src="js/professional_profile.js"></script>
+    <script>
+        window.openHomePropertyPHR = function (projectId) {
+
+            if (!projectId) {
+                console.error("PHR NAVIGATION: PROJECT ID MISSING");
+                return;
+            }
+
+            console.log("🏠 BILLING → OPEN HOME PROPERTY", projectId);
+
+            window.location.href =
+                `index.html?openHomeProperty=${encodeURIComponent(projectId)}`;
+        };
+    </script>
 
     <script>
         const API =
@@ -24247,6 +24326,10 @@ ${request.contact_expires_at
                     return getProjectType(project) === currentMode;
                 });
 
+                window.homeBillingProjects = allProjects.filter(project => {
+                    return getProjectType(project) === "home";
+                });
+
                 document.getElementById("businessProjectCount").textContent =
                     currentMode === "business" ? projects.length : "?";
 
@@ -24510,6 +24593,8 @@ ${request.contact_expires_at
 
                 const reports = await res.json();
                 const list = Array.isArray(reports) ? reports : [];
+
+                window.homeBillingReports = list;
 
                 document.getElementById("summaryReports").textContent = list.length;
                 document.getElementById("homeReportCount").textContent = list.length;
@@ -28279,7 +28364,356 @@ ${request.contact_expires_at
                         : "← Back to Business Survey";
         }
 
+        async function loadHomeBillingEntitlements() {
+            const projects = Array.isArray(window.homeBillingProjects)
+                ? window.homeBillingProjects
+                : [];
 
+            const results = await Promise.all(
+                projects.map(async project => {
+                    const projectId = project.id ?? project.project_id;
+
+                    if (!projectId) return null;
+
+                    try {
+                        const res = await fetch(
+                            `${API}/me?project_id=${encodeURIComponent(projectId)}`,
+                            {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            }
+                        );
+
+                        if (!res.ok) {
+                            throw new Error(`HTTP ${res.status}`);
+                        }
+
+                        return {
+                            projectId: String(projectId),
+                            data: await res.json()
+                        };
+                    } catch (error) {
+                        console.error(
+                            "Home billing entitlement error:",
+                            projectId,
+                            error
+                        );
+
+                        return {
+                            projectId: String(projectId),
+                            error: true
+                        };
+                    }
+                })
+            );
+
+            window.homeBillingEntitlements = {};
+
+            results.filter(Boolean).forEach(item => {
+                window.homeBillingEntitlements[item.projectId] = item;
+            });
+
+            console.log(
+                "HOME BILLING ENTITLEMENTS:",
+                window.homeBillingEntitlements
+            );
+        }
+
+        function renderHomeBillingProperties() {
+            const container = document.getElementById("homeBillingProperties");
+            if (!container) return;
+
+            const projects = window.homeBillingProjects || [];
+            const entitlements = window.homeBillingEntitlements || {};
+            const reports = window.homeBillingReports || [];
+
+            const esc = value => escapeHtml(String(value ?? ""));
+
+            function renderRows(search = "", filter = "all") {
+                const query = search.trim().toLowerCase();
+
+                const filtered = projects.filter(project => {
+                    const id = String(project.id ?? project.project_id);
+                    const name = project.name || "Home Wellness Property";
+                    const entitlement = entitlements[id]?.data || {};
+
+                    const projectReports = reports.filter(report =>
+                        String(report.projectId ?? report.project_id) === id &&
+                        !report.preview
+                    );
+
+                    const purchased =
+                        entitlement.home_simple_report_purchased === true;
+
+                    if (query && !`${name} ${id}`.toLowerCase().includes(query)) {
+                        return false;
+                    }
+                    const unlocked =
+                        entitlement.home_simple_report_unlocked === true;
+
+                    if (filter === "purchased" && !purchased) return false;
+                    if (filter === "not-purchased" && purchased) return false;
+
+                    if (filter === "phr-active" && !unlocked) return false;
+
+                    if (
+                        filter === "phr-readonly" &&
+                        !(purchased && !unlocked)
+                    ) return false;
+
+                    if (
+                        filter === "phr-not-purchased" &&
+                        purchased
+                    ) return false;
+
+                    if (
+                        filter === "paid-reports" &&
+                        !projectReports.length
+                    ) return false;
+
+                    if (
+                        filter === "free-previews" &&
+                        !reports.some(report =>
+                            String(report.projectId ?? report.project_id) === id &&
+                            report.preview
+                        )
+                    ) return false;
+
+                    return true;
+                });
+
+                const rows = filtered.map(project => {
+                    const id = String(project.id ?? project.project_id);
+                    const entitlement = entitlements[id]?.data || {};
+
+                    const purchased =
+                        entitlement.home_simple_report_purchased === true;
+
+                    const unlocked =
+                        entitlement.home_simple_report_unlocked === true;
+
+                    const daysRemaining = Math.max(
+                        0,
+                        Number(entitlement.home_simple_report_days_remaining || 0)
+                    );
+
+                    const expiresAt = entitlement.home_simple_report_expires_at || null;
+
+                    const expiryDate = expiresAt
+                        ? new Date(expiresAt).toLocaleDateString()
+                        : "—";
+
+                    const accessLabel = unlocked
+                        ? "Active"
+                        : purchased
+                            ? "Read-only"
+                            : "Not purchased";
+
+                    const projectReports = reports.filter(report =>
+                        String(report.projectId ?? report.project_id) === id &&
+                        !report.preview
+                    );
+
+                    const previewReports = reports.filter(report =>
+                        String(report.projectId ?? report.project_id) === id &&
+                        report.preview
+                    );
+
+                    const totalReports =
+                        projectReports.length + previewReports.length;
+
+                    return `
+        
+<tr style="border-bottom:1px solid var(--border, #e2e8f0);">
+    <td style="padding:13px 10px;min-width:180px;">
+       <button
+    type="button"
+    class="home-billing-property-link"
+    data-home-property-id="${esc(id)}"
+    style="
+        border:0;
+        padding:0;
+        background:none;
+        color:var(--primary, #2563eb);
+        font:inherit;
+        font-weight:600;
+        cursor:pointer;
+        text-align:left;
+        text-decoration:underline;
+        text-underline-offset:3px;
+    "
+>
+    ${esc(project.name || "Home Wellness Property")}
+</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">
+            Project #${esc(id)}
+        </div>
+
+       
+    </td>
+
+    <td style="padding:13px 10px;white-space:nowrap;">
+        <span style="
+            background:${purchased ? "#dcfce7" : "#fff7ed"};
+            color:${purchased ? "#166534" : "#c2410c"};
+            padding:5px 9px;
+            border-radius:20px;
+            font-size:11px;
+            font-weight:600;">
+            ${purchased ? "Purchased" : "Not purchased"}
+        </span>
+    </td>
+
+    <td style="padding:13px 10px;white-space:nowrap;">
+        <span style="
+            background:${unlocked ? "#dcfce7" : purchased ? "#fff7ed" : "#f1f5f9"};
+            color:${unlocked ? "#166534" : purchased ? "#c2410c" : "#475569"};
+            padding:5px 9px;
+            border-radius:20px;
+            font-size:11px;
+            font-weight:600;">
+            ${accessLabel}
+        </span>
+    </td>
+
+    <td style="padding:13px 10px;white-space:nowrap;">
+        ${purchased ? expiryDate : "—"}
+    </td>
+
+    <td style="padding:13px 10px;text-align:center;">
+        <strong>${unlocked ? daysRemaining : "—"}</strong>
+    </td>
+
+    <td style="padding:13px 10px;text-align:center;">
+    <strong>${projectReports.length}</strong>
+</td>
+
+<td style="padding:13px 10px;text-align:center;">
+    <strong>${previewReports.length}</strong>
+</td>
+
+<td style="padding:13px 10px;text-align:center;">
+    <strong style="color:#1d4ed8;">${totalReports}</strong>
+</td>
+</tr>
+
+    `;
+                }).join("");
+
+                const list = container.querySelector("#homeBillingPropertiesList");
+                const count = container.querySelector("#homeBillingPropertiesCount");
+
+                if (list) {
+                    list.innerHTML = rows || `
+                <div class="empty-state">
+                    <div class="empty-title">No matching properties</div>
+                    <div class="empty-copy">Try changing your search or filter.</div>
+                </div>
+            `;
+                }
+
+                if (count) {
+                    count.textContent = `${filtered.length} of ${projects.length} properties`;
+                }
+            }
+
+            container.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+        <input
+            id="homeBillingSearch"
+            type="search"
+            placeholder="Search properties..."
+            style="flex:1;min-width:180px;"
+        />
+
+        <select id="homeBillingFilter" style="min-width:220px;">
+    <option value="all">All properties</option>
+
+    <option value="purchased">Purchase: Purchased</option>
+    <option value="not-purchased">Purchase: Not purchased</option>
+
+    <option value="phr-active">PHR Access: Active</option>
+    <option value="phr-readonly">PHR Access: Read-only</option>
+    <option value="phr-not-purchased">PHR Access: Not purchased</option>
+
+    <option value="paid-reports">Reports: With paid reports</option>
+    <option value="free-previews">Reports: With free previews</option>
+</select>
+    </div>
+
+    <div id="homeBillingPropertiesCount"
+         style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+    </div>
+
+   <div style="width:100%;overflow-x:auto;">
+    <table style="
+        width:100%;
+        border-collapse:collapse;
+        text-align:left;
+        font-size:12px;
+    ">
+        <thead>
+            <tr style="
+                background:var(--surface, #f8fafc);
+                border-bottom:1px solid var(--border, #e2e8f0);
+            ">
+                <th style="padding:11px 10px;">Property</th>
+                <th style="padding:11px 10px;">Purchase</th>
+                <th style="padding:11px 10px;">PHR Access</th>
+                <th style="padding:11px 10px;white-space:nowrap;">Valid Until</th>
+                <th style="padding:11px 10px;text-align:center;white-space:nowrap;">Days Left</th>
+                <th style="padding:11px 10px;text-align:center;min-width:135px;">
+    Paid Complete Reports
+</th>
+
+<th style="padding:11px 10px;text-align:center;min-width:130px;">
+    Free Report Previews
+</th>
+
+<th style="padding:11px 10px;text-align:center;min-width:110px;">
+    Total Reports
+</th>
+            </tr>
+        </thead>
+
+        <tbody id="homeBillingPropertiesList"></tbody>
+    </table>
+</div>
+`;
+            const propertiesList =
+                container.querySelector("#homeBillingPropertiesList");
+
+            if (propertiesList) {
+                propertiesList.addEventListener("click", event => {
+                    const propertyLink = event.target.closest(
+                        "[data-home-property-id]"
+                    );
+
+                    if (!propertyLink) return;
+
+                    const projectId =
+                        propertyLink.dataset.homePropertyId;
+
+                    if (!projectId) return;
+
+                    window.openHomePropertyPHR?.(projectId);
+                });
+            }
+
+            const searchInput = container.querySelector("#homeBillingSearch");
+            const filterSelect = container.querySelector("#homeBillingFilter");
+
+            searchInput.addEventListener("input", () => {
+                renderRows(searchInput.value, filterSelect.value);
+            });
+
+            filterSelect.addEventListener("change", () => {
+                renderRows(searchInput.value, filterSelect.value);
+            });
+
+            renderRows();
+        }
 
         async function initDashboard() {
             if (!token) return;
@@ -28310,6 +28744,11 @@ ${request.contact_expires_at
                 loadAdminPricing(),
                 loadAdminProfessionals()
             ]);
+
+            await loadHomeBillingEntitlements();
+
+            renderHomeBillingProperties();
+
 
         }
 

@@ -6156,6 +6156,62 @@ async function loadProject(
                     project.unit ||
                     "";
 
+
+                // ==================================================
+                // RESTORE CANONICAL PROPERTY ASSESSMENT
+                // ==================================================
+
+                if (!AppState.propertyAssessment) {
+                    AppState.propertyAssessment = {
+                        id: null,
+                        propertyId: null,
+                        propertyHealthRecordId: null,
+                        type: "property",
+                        assessmentContext: "home",
+                        zones: [],
+                        sources: [],
+                        sessions: [],
+                        workflow: {},
+                        settings: {},
+                        reports: [],
+                        analysis: null
+                    };
+                }
+
+                const assessment =
+                    AppState.propertyAssessment;
+
+                // Restore the assessment identity from this project.
+                if (project.assessmentId) {
+                    assessment.id = project.assessmentId;
+                } else {
+                    assessment.id =
+                        window.PhiIdFactory?.createPropertyAssessmentId?.() ||
+                        `property_assessment_${Date.now()}`;
+
+                    project.assessmentId = assessment.id;
+
+                    console.warn(
+                        "⚠️ HOME PROJECT HAD NO ASSESSMENT ID. CREATED FALLBACK:",
+                        assessment.id
+                    );
+                }
+
+                // Link assessment to the active Property and PHR.
+                assessment.propertyId =
+                    AppState.property.id;
+
+                assessment.propertyHealthRecordId =
+                    AppState.property.propertyHealthRecordId;
+
+                assessment.type = "property";
+                assessment.assessmentContext = "home";
+
+                console.log(
+                    "🏠 CANONICAL HOME ASSESSMENT RESTORED:",
+                    assessment
+                );
+
                 console.log(
                     "🔥 CANONICAL PROPERTY RESTORED:",
                     AppState.property

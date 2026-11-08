@@ -379,7 +379,10 @@ def get_my_payments(
             plan = metadata.get("plan") or ""
             project_id = metadata.get("project_id")
 
-            if plan == "home_full_report":
+            if plan == "home_simple_report":
+                product = "Simple Property EMF Report"
+                workspace = "Home"
+            elif plan == "home_full_report":
                 product = "Full EMF Insight Report"
                 workspace = "Home"
             elif plan == "single":

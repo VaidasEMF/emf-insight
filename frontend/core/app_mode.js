@@ -7027,6 +7027,171 @@ function populatePropertyHealthDashboard() {
         window.AppState?.propertyAssessment ||
         {};
 
+    // ================================
+    // PHR REPORTS
+    // ================================
+
+    const reportsContainer =
+        document.getElementById("phrReportsContainer");
+
+    if (reportsContainer) {
+        reportsContainer.innerHTML = `
+            <div class="property-health-dashboard-card">
+                Loading reports...
+            </div>
+        `;
+
+        (async () => {
+            try {
+                const projectId =
+                    homeProject.project_id ||
+                    homeProject.id;
+
+                if (!projectId) {
+                    throw new Error("Home project ID not found");
+                }
+
+                const token =
+                    localStorage.getItem("token");
+
+                const response = await fetch(
+                    `${window.API || API}/reports/me`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        cache: "no-store"
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Reports request failed: ${response.status}`
+                    );
+                }
+
+                const reports = await response.json();
+
+                console.log("[PHR] ALL REPORTS FROM API:", reports);
+                console.log("[PHR] FILTER VALUES:", {
+                    projectId,
+                    homeProject,
+                    reportProjects: reports.map(r => ({
+                        id: r.id,
+                        project_id: r.project_id,
+                        workspace: r.workspace,
+                        created_at: r.created_at
+                    }))
+                });
+
+                const homeReports = reports.filter(report =>
+                    String(report.project_id) === String(projectId) &&
+                    String(report.workspace || "").toLowerCase() === "home"
+                );
+
+                console.log("[PHR] Home reports:", homeReports);
+                console.log("[PHR] REPORT CONTAINER:", reportsContainer);
+                console.log("[PHR] REPORT COUNT:", homeReports.length);
+
+                if (homeReports.length === 0) {
+                    reportsContainer.innerHTML = `
+        <div class="property-health-dashboard-card">
+            No reports available yet.
+        </div>
+    `;
+                } else {
+                    reportsContainer.innerHTML = homeReports.map(report => `
+        <div class="property-health-dashboard-card"
+             style="margin-bottom: 12px;">
+
+            <div style="display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        gap:16px;">
+
+                <div>
+                    <strong>Property EMF Report</strong>
+
+                    <div style="font-size:13px; margin-top:5px;">
+                        ${report.project_name || "My Property"}
+                    </div>
+
+                    <div style="font-size:12px; color:#64748b; margin-top:4px;">
+                        ${report.created_at
+                            ? new Date(report.created_at).toLocaleDateString()
+                            : ""}
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    class="phr-download-report"
+                    data-report-id="${report.id}">
+                    Download PDF
+                </button>
+
+            </div>
+        </div>
+    `).join("");
+
+                    reportsContainer
+                        .querySelectorAll(".phr-download-report")
+                        .forEach(button => {
+                            button.addEventListener("click", async () => {
+                                try {
+                                    const token = localStorage.getItem("token");
+                                    const reportId = button.dataset.reportId;
+
+                                    const response = await fetch(
+                                        `${window.API || API}/reports/${reportId}/download`,
+                                        {
+                                            headers: {
+                                                Authorization: `Bearer ${token}`
+                                            }
+                                        }
+                                    );
+
+                                    if (!response.ok) {
+                                        throw new Error("PDF download failed");
+                                    }
+
+                                    const blob = await response.blob();
+                                    const url = URL.createObjectURL(blob);
+
+                                    const link = document.createElement("a");
+                                    link.href = url;
+                                    link.download = `property-report-${reportId}.pdf`;
+                                    link.click();
+
+                                    URL.revokeObjectURL(url);
+
+                                } catch (error) {
+                                    console.error("[PHR] Download error:", error);
+                                    alert("Unable to download report.");
+                                }
+                            });
+                        });
+                }
+
+            } catch (error) {
+                console.error("[PHR] Reports loading error:", error);
+                reportsContainer.innerHTML = `
+                    <div class="property-health-dashboard-card">
+                        Reports could not be loaded.
+                    </div>
+                `;
+            }
+        })();
+    }
+
+    console.log("PHR REPORTS DATA CHECK:", {
+        assessmentReports: assessment.reports,
+        projectReports: homeProject.reports,
+        assessmentId: assessment.id,
+        propertyId: property.id
+    });
+
     // --------------------------------------------------------
     // PROPERTY
     // --------------------------------------------------------
@@ -7949,6 +8114,134 @@ function closePropertyHealthDashboard() {
 
 window.openPropertyHealthDashboard =
     openPropertyHealthDashboard;
+
+// ============================================================
+// OPEN PROPERTY HEALTH RECORD FROM BILLING
+// ============================================================
+
+window.openHomePropertyPHR = async function (projectId) {
+
+    if (!projectId) {
+        console.error(
+            "❌ PHR NAVIGATION: PROJECT ID MISSING"
+        );
+        return;
+    }
+
+    const selectedProjectId = String(projectId);
+
+    console.log(
+        "🏠 OPEN PROPERTY PHR FROM BILLING",
+        selectedProjectId
+    );
+
+    try {
+
+        // ----------------------------------------------------
+        // 1. ENSURE HOME WORKSPACE
+        // ----------------------------------------------------
+
+        if (window.AppMode?.current !== "home") {
+
+            await setAppMode("home");
+
+        }
+
+        if (window.AppMode?.current !== "home") {
+
+            throw new Error(
+                "Home Workspace could not be activated."
+            );
+
+        }
+
+        // ----------------------------------------------------
+        // 2. LOAD THE SELECTED PROPERTY PROJECT
+        // ----------------------------------------------------
+
+        const loaded =
+            await window.loadProject(selectedProjectId);
+
+        if (!loaded) {
+
+            throw new Error(
+                `Could not load Home Project ${selectedProjectId}`
+            );
+
+        }
+
+        const homeProject =
+            window.AppState?.homeProject;
+
+        const loadedId = String(
+            homeProject?.project_id ??
+            homeProject?.id ??
+            ""
+        );
+
+        if (loadedId !== selectedProjectId) {
+
+            throw new Error(
+                `Project mismatch. Expected ${selectedProjectId}, loaded ${loadedId}`
+            );
+
+        }
+
+        // ----------------------------------------------------
+        // 3. VERIFY PROPERTY / ASSESSMENT CONTEXT
+        // ----------------------------------------------------
+
+        const property =
+            window.AppState?.property;
+
+        const assessment =
+            window.AppState?.propertyAssessment;
+
+        if (
+            !property?.id ||
+            !property?.propertyHealthRecordId ||
+            !assessment?.id ||
+            assessment.propertyId !== property.id ||
+            assessment.propertyHealthRecordId !==
+            property.propertyHealthRecordId
+        ) {
+
+            throw new Error(
+                "Property / Assessment / PHR relationship is invalid."
+            );
+
+        }
+
+        console.log(
+            "✅ BILLING PROPERTY CONTEXT VERIFIED",
+            {
+                projectId: loadedId,
+                propertyId: property.id,
+                assessmentId: assessment.id,
+                phrId: property.propertyHealthRecordId
+            }
+        );
+
+        // ----------------------------------------------------
+        // 4. OPEN EXISTING PHR SCREEN
+        // ----------------------------------------------------
+
+        window.openPropertyHealthDashboard();
+
+    }
+    catch (error) {
+
+        console.error(
+            "❌ OPEN PROPERTY PHR FAILED",
+            error
+        );
+
+        alert(
+            "Unable to open this Property Health Record. Please try again."
+        );
+
+    }
+};
 
 window.closePropertyHealthDashboard =
     closePropertyHealthDashboard;
