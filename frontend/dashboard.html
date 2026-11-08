@@ -1013,6 +1013,70 @@
             margin-top: 8px;
         }
 
+        .price-card.simple-report-purchased {
+            background: #f2fbf5 !important;
+            border: 1px solid #a7e4bd !important;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .price-card.simple-report-purchased .simple-report-access-info {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #d7eadc;
+        }
+
+        .price-card.simple-report-purchased .simple-report-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .price-card.simple-report-purchased .simple-report-meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .price-card.simple-report-purchased .simple-report-meta-item svg {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            display: inline-block;
+            fill: none;
+            stroke: #176f87;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        .price-card.simple-report-purchased .simple-report-phr {
+            margin-top: 10px;
+            font-size: 11px;
+        }
+
+        .price-card.simple-report-purchased .simple-report-phr strong {
+            display: block;
+            margin-top: 3px;
+            color: #15803d;
+            font-size: 13px;
+        }
+
+        .price-card.simple-report-purchased .simple-report-phr small {
+            display: block;
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 10px;
+        }
+
+        .price-card.simple-report-purchased .price-actions .btn-primary {
+            width: 100%;
+        }
+
 
         .simple-report-details {
             display: grid;
@@ -5047,7 +5111,7 @@
                                         My Properties &amp; PHR Access
                                     </h3>
                                     <p class="section-description">
-                                        Manage your Home Wellness purchases and Property Health Record access.
+                                        Manage your Home Wellness purchases and Property Health Record (PHR) access.
                                     </p>
                                 </div>
                             </div>
@@ -12676,6 +12740,32 @@ ADMIN PAYMENTS
             const simpleReportId =
                 window.currentUser?.home_simple_report_id || null;
 
+            const simpleReportProjectId =
+                window.currentUser?.home_simple_report_project_id ||
+                localStorage.getItem("home_project_id") ||
+                null;
+
+            const simpleReportExpiresAt =
+                window.currentUser?.home_simple_report_expires_at || null;
+
+            const simpleReportExpiresDate = simpleReportExpiresAt
+                ? new Date(simpleReportExpiresAt)
+                : null;
+
+            const simpleReportDaysLeft = simpleReportExpiresDate
+                ? Math.max(
+                    0,
+                    Math.ceil(
+                        (simpleReportExpiresDate.getTime() - Date.now()) /
+                        (1000 * 60 * 60 * 24)
+                    )
+                )
+                : null;
+
+            const simpleReportExpiryLabel = simpleReportExpiresDate
+                ? simpleReportExpiresDate.toLocaleDateString()
+                : "Not available";
+
             const description = workspace === "home"
                 ? key === "simpleReport"
                     ? "Get a clear overview of your property's EMF environment, lifestyle zones and identified sources."
@@ -12695,6 +12785,44 @@ ADMIN PAYMENTS
                         ? `<span class="price-badge">Current beta offer</span>`
                         : ""}
             <h4>${escapeHtml(item.name)}</h4>
+           ${isSimpleReportPurchased ? `
+    <div class="simple-report-access-info">
+
+        <div class="simple-report-meta-row">
+            <span class="simple-report-meta-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 10.5L12 3l9 7.5"/>
+                    <path d="M5 9.5V21h14V9.5"/>
+                    <path d="M9 21v-7h6v7"/>
+                </svg>
+                <span>Project <strong>#${escapeHtml(String(simpleReportProjectId || "—"))}</strong></span>
+            </span>
+
+            <span class="simple-report-meta-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <path d="M14 2v6h6"/>
+                    <path d="M8 13h8M8 17h8"/>
+                </svg>
+                <span>Report <strong>#${simpleReportId ? escapeHtml(String(simpleReportId)) : "—"}</strong></span>
+            </span>
+        </div>
+
+        <div class="simple-report-phr">
+            <div class="simple-report-meta-item">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="16" rx="2"/>
+                    <path d="M16 3v4M8 3v4M3 10h18"/>
+                </svg>
+                <span>Property Health Record (PHR)</span>
+            </div>
+
+            <strong>${simpleReportDaysLeft !== null ? `${simpleReportDaysLeft} days remaining` : "Not available"}</strong>
+            <small>Access expires: ${escapeHtml(simpleReportExpiryLabel)}</small>
+        </div>
+
+    </div>
+` : ""}
             <p class="price-description">${isSimpleReportPurchased
                     ? "Your payment has been received. No additional payment is required."
                     : description}</p>
@@ -12709,7 +12837,7 @@ ADMIN PAYMENTS
                     : ""}
             </div>
 
-${!isTbd
+${!isTbd && !isSimpleReportPurchased
                     ? `<button
             type="button"
             class="price-details-link"
@@ -12758,6 +12886,7 @@ ${!isTbd
         </article>
     `;
         }
+
 
         function renderPricing() {
 
@@ -19969,6 +20098,15 @@ ${request.has_active_unlock
                         ? localStorage.getItem("home_project_id")
                         : null;
 
+                console.log("[DASHBOARD LOAD USER]", {
+                    workspaceMode,
+                    projectId,
+                    homeSimpleReportUnlocked:
+                        window.currentUser?.home_simple_report_unlocked,
+                    homeSimpleReportPurchased:
+                        window.currentUser?.home_simple_report_purchased
+                });
+
                 const userUrl = projectId
                     ? `${API}/me?project_id=${encodeURIComponent(projectId)}`
                     : `${API}/me`;
@@ -19984,7 +20122,21 @@ ${request.has_active_unlock
                     throw new Error(`User request failed: ${res.status}`);
                 }
 
+
+
                 const data = await res.json();
+
+                console.log("[DASHBOARD /me RESPONSE]", {
+                    workspaceMode,
+                    projectId,
+                    simpleUnlocked: data.home_simple_report_unlocked,
+                    simplePurchased: data.home_simple_report_purchased,
+                    usageStatus: data.home_simple_report_usage_status,
+                    reportId: data.home_simple_report_id,
+                    expiresAt: data.home_simple_report_expires_at
+                });
+
+                console.time("loadUser processing");
                 console.time("loadUser processing");
                 window.currentUser = data;
 
@@ -24695,6 +24847,8 @@ ${request.contact_expires_at
                 return [];
             }
         }
+
+
         async function saveProfile(event) {
 
             if (event) {
@@ -28493,6 +28647,16 @@ ${request.contact_expires_at
                     const unlocked =
                         entitlement.home_simple_report_unlocked === true;
 
+                    const reportGenerated =
+                        entitlement.home_simple_report_usage_status === "used" ||
+                        !!entitlement.home_simple_report_id;
+
+                    const reportStatusLabel = !purchased
+                        ? "—"
+                        : reportGenerated
+                            ? "Generated"
+                            : "Not generated";
+
                     const daysRemaining = Math.max(
                         0,
                         Number(entitlement.home_simple_report_days_remaining || 0)
@@ -28515,6 +28679,24 @@ ${request.contact_expires_at
                         !report.preview
                     );
 
+                    const simpleReportId =
+                        entitlement.home_simple_report_id;
+
+                    const simpleReportRecord = simpleReportId
+                        ? reports.find(report =>
+                            String(report.id) === String(simpleReportId) &&
+                            String(report.project_id ?? report.projectId) === id &&
+                            !report.preview &&
+                            String(report.workspace || "").toLowerCase() === "home"
+                        )
+                        : null;
+
+                    console.log("[HOME SIMPLE REPORT DOWNLOAD]", {
+                        projectId: id,
+                        simpleReportId,
+                        reportFound: !!simpleReportRecord
+                    });
+
                     const previewReports = reports.filter(report =>
                         String(report.projectId ?? report.project_id) === id &&
                         report.preview
@@ -28523,36 +28705,40 @@ ${request.contact_expires_at
                     const totalReports =
                         projectReports.length + previewReports.length;
 
+
+
+
                     return `
-        
 <tr style="border-bottom:1px solid var(--border, #e2e8f0);">
+
+    <!-- 1. Property / Project -->
     <td style="padding:13px 10px;min-width:180px;">
-       <button
-    type="button"
-    class="home-billing-property-link"
-    data-home-property-id="${esc(id)}"
-    style="
-        border:0;
-        padding:0;
-        background:none;
-        color:var(--primary, #2563eb);
-        font:inherit;
-        font-weight:600;
-        cursor:pointer;
-        text-align:left;
-        text-decoration:underline;
-        text-underline-offset:3px;
-    "
->
-    ${esc(project.name || "Home Wellness Property")}
-</button>
+        <button
+            type="button"
+            class="home-billing-property-link"
+            data-home-property-id="${esc(id)}"
+            style="
+                border:0;
+                padding:0;
+                background:none;
+                color:var(--primary, #2563eb);
+                font:inherit;
+                font-weight:600;
+                cursor:pointer;
+                text-align:left;
+                text-decoration:underline;
+                text-underline-offset:3px;
+            "
+        >
+            ${esc(project.name || "Home Wellness Property")}
+        </button>
+
         <div style="font-size:11px;color:var(--muted);margin-top:3px;">
             Project #${esc(id)}
         </div>
-
-       
     </td>
 
+    <!-- 2. Simple Report Purchase -->
     <td style="padding:13px 10px;white-space:nowrap;">
         <span style="
             background:${purchased ? "#dcfce7" : "#fff7ed"};
@@ -28560,11 +28746,37 @@ ${request.contact_expires_at
             padding:5px 9px;
             border-radius:20px;
             font-size:11px;
-            font-weight:600;">
-            ${purchased ? "Purchased" : "Not purchased"}
+            font-weight:600;
+        ">
+            ${purchased ? "Paid · €15" : "Not purchased"}
         </span>
     </td>
 
+    <!-- 3. Report Status -->
+    <td style="padding:13px 10px;white-space:nowrap;">
+        <span style="
+            background:${reportGenerated ? "#dcfce7" : purchased ? "#fff7ed" : "#f1f5f9"};
+            color:${reportGenerated ? "#166534" : purchased ? "#c2410c" : "#475569"};
+            padding:5px 9px;
+            border-radius:20px;
+            font-size:11px;
+            font-weight:600;
+        ">
+            ${reportStatusLabel}
+        </span>
+    </td>
+
+    <!-- 4. Valid Until -->
+    <td style="padding:13px 10px;white-space:nowrap;">
+        ${purchased ? expiryDate : "—"}
+    </td>
+
+    <!-- 5. Days Left -->
+    <td style="padding:13px 10px;text-align:center;">
+        <strong>${purchased ? daysRemaining : "—"}</strong>
+    </td>
+
+    <!-- 6. PHR Access -->
     <td style="padding:13px 10px;white-space:nowrap;">
         <span style="
             background:${unlocked ? "#dcfce7" : purchased ? "#fff7ed" : "#f1f5f9"};
@@ -28572,33 +28784,45 @@ ${request.contact_expires_at
             padding:5px 9px;
             border-radius:20px;
             font-size:11px;
-            font-weight:600;">
+            font-weight:600;
+        ">
             ${accessLabel}
         </span>
     </td>
 
-    <td style="padding:13px 10px;white-space:nowrap;">
-        ${purchased ? expiryDate : "—"}
+    <!-- Simple Report Download -->
+<td style="padding:13px 10px;white-space:nowrap;">
+    ${simpleReportRecord
+                            ? `<button
+                type="button"
+                class="row-button"
+                onclick="downloadReport('${esc(simpleReportRecord.id)}')"
+                style="font-size:11px;padding:7px 10px;"
+            >
+                Download Simple Report
+            </button>`
+                            : "—"
+                        }
+</td>
+
+    <!-- 7. Paid Complete Reports -->
+    <td style="padding:13px 10px;text-align:center;">
+        <strong>${projectReports.length}</strong>
     </td>
 
+    <!-- 8. Free Report Previews -->
     <td style="padding:13px 10px;text-align:center;">
-        <strong>${unlocked ? daysRemaining : "—"}</strong>
+        <strong>${previewReports.length}</strong>
     </td>
 
+    <!-- 9. Total Reports -->
     <td style="padding:13px 10px;text-align:center;">
-    <strong>${projectReports.length}</strong>
-</td>
+        <strong style="color:#1d4ed8;">${totalReports}</strong>
+    </td>
 
-<td style="padding:13px 10px;text-align:center;">
-    <strong>${previewReports.length}</strong>
-</td>
-
-<td style="padding:13px 10px;text-align:center;">
-    <strong style="color:#1d4ed8;">${totalReports}</strong>
-</td>
 </tr>
+`;
 
-    `;
                 }).join("");
 
                 const list = container.querySelector("#homeBillingPropertiesList");
@@ -28653,29 +28877,31 @@ ${request.contact_expires_at
         text-align:left;
         font-size:12px;
     ">
-        <thead>
-            <tr style="
-                background:var(--surface, #f8fafc);
-                border-bottom:1px solid var(--border, #e2e8f0);
-            ">
-                <th style="padding:11px 10px;">Property</th>
-                <th style="padding:11px 10px;">Purchase</th>
-                <th style="padding:11px 10px;">PHR Access</th>
-                <th style="padding:11px 10px;white-space:nowrap;">Valid Until</th>
-                <th style="padding:11px 10px;text-align:center;white-space:nowrap;">Days Left</th>
-                <th style="padding:11px 10px;text-align:center;min-width:135px;">
-    Paid Complete Reports
+       <thead>
+    <tr style="
+        background:var(--surface, #f8fafc);
+        border-bottom:1px solid var(--border, #e2e8f0);
+    ">
+        <th style="padding:11px 10px;min-width:160px;">Property / Project</th>
+        <th style="padding:11px 10px;min-width:145px;">Simple Report Purchase</th>
+        <th style="padding:11px 10px;min-width:120px;">Report Status</th>
+        <th style="padding:11px 10px;">Valid Until</th>
+        <th style="padding:11px 10px;text-align:center;">Days Left</th>
+        <th style="padding:11px 10px;">PHR Access</th>
+        <th style="padding:11px 10px;min-width:165px;">
+    Simple Report Download
 </th>
-
-<th style="padding:11px 10px;text-align:center;min-width:130px;">
-    Free Report Previews
-</th>
-
-<th style="padding:11px 10px;text-align:center;min-width:110px;">
-    Total Reports
-</th>
-            </tr>
-        </thead>
+        <th style="padding:11px 10px;text-align:center;min-width:135px;">
+            Paid Complete Reports
+        </th>
+        <th style="padding:11px 10px;text-align:center;min-width:130px;">
+            Free Report Previews
+        </th>
+        <th style="padding:11px 10px;text-align:center;min-width:110px;">
+            Total Reports
+        </th>
+    </tr>
+</thead>
 
         <tbody id="homeBillingPropertiesList"></tbody>
     </table>

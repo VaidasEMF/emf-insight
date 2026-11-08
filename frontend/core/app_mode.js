@@ -2157,9 +2157,13 @@ async function setAppMode(
     ) {
         localStorage.removeItem("openHomeSimpleReport");
 
-        await window.HomeMeasurements?.start();
+        await window.HomeMeasurements?.start("report");
 
-        window.HomeMeasurements?.showPage("report");
+        if (typeof window.generatePDF === "function") {
+            await window.generatePDF("simple");
+        } else {
+            console.error("[HOME SIMPLE REPORT] generatePDF is unavailable");
+        }
     }
 
     console.timeEnd("setAppMode TOTAL");

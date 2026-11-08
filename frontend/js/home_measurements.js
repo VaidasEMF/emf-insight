@@ -2712,7 +2712,7 @@ ${window.AppState?.project?.homeMeasurementState
     }
 
 
-    async function start() {
+    async function start(initialPage = null) {
         if (window.AppMode?.current !== HOME_MODE) {
             console.warn(
                 "[HOME MEASUREMENTS] Available only in Home Wellness mode."
@@ -2738,11 +2738,11 @@ ${window.AppState?.project?.homeMeasurementState
             await saveHomeProject();
         }
 
-        openWorkspace();
+        openWorkspace(initialPage);
     }
 
 
-    function openWorkspace() {
+    function openWorkspace(initialPage = null) {
         if (window.AppMode?.current !== HOME_MODE) return;
 
         let workspace = document.getElementById("homeMeasurementsWorkspace");
@@ -2827,7 +2827,9 @@ ${window.AppState?.project?.homeMeasurementState
         const measurementState =
             window.AppState?.project?.homeMeasurementState?.status;
 
-        if (measurementState === "completed") {
+        if (initialPage && initialPage === "report") {
+            showPage("report");
+        } else if (measurementState === "completed") {
             showPage("completed");
         } else if (
             measurementState === "guided" ||

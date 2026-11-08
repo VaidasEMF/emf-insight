@@ -2388,6 +2388,64 @@ def generate_pdf(
 
             is_preview = True
 
+                    # ==================================================
+        # HOME SIMPLE REPORT — REUSE EXISTING PDF
+        # ==================================================
+
+        if workspace == "home" and report_type == "simple" and not is_preview:
+
+            existing_transaction = db.execute(
+                text("""
+                    SELECT report_id
+                    FROM home_wellness_transactions
+                    WHERE user_id = :user_id
+                      AND project_id = :project_id
+                      AND product_key = 'home_simple_report'
+                      AND status = 'completed'
+                      AND report_id IS NOT NULL
+                    ORDER BY id DESC
+                    LIMIT 1
+                """),
+                {
+                    "user_id": str(current_user.id),
+                    "project_id": str(project_row.id),
+                },
+            ).first()
+
+            if existing_transaction and existing_transaction.report_id:
+
+                existing_report = (
+                    db.query(Report)
+                    .filter(
+                        Report.id == existing_transaction.report_id,
+                        Report.project_id == project_row.id,
+                        Report.workspace == "home",
+                        Report.preview == 0,
+                    )
+                    .first()
+                )
+
+                if not existing_report:
+                    raise HTTPException(
+                        status_code=409,
+                        detail="Existing Simple Report record was not found.",
+                    )
+
+                print(
+                    "HOME SIMPLE REPORT REUSED",
+                    "| PROJECT:",
+                    project_row.id,
+                    "| REPORT:",
+                    existing_report.id,
+                )
+
+                return {
+                    "status": "ok",
+                    "existing_report": True,
+                    "report_id": existing_report.id,
+                    "preview": False,
+                }
+
         # =====================
         # BUILD PDF
         # =====================

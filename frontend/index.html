@@ -44576,6 +44576,65 @@ return false;
         );
       }
 
+      // ==================================================
+      // REUSE EXISTING HOME SIMPLE REPORT
+      // ==================================================
+
+      if (data.existing_report && data.report_id) {
+
+        if (pdfWindow) {
+          pdfWindow.document.body.innerHTML = `
+            <div style="
+                font-family:Arial,sans-serif;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                height:100vh;
+            ">
+                <h3>Opening existing report...</h3>
+            </div>
+        `;
+        }
+
+        try {
+          const downloadResponse = await fetch(
+            `${API}/reports/${encodeURIComponent(data.report_id)}/download`,
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`
+              }
+            }
+          );
+
+          if (!downloadResponse.ok) {
+            throw new Error("Existing report download failed.");
+          }
+
+          const pdfBlob = await downloadResponse.blob();
+
+          if (!pdfBlob.size) {
+            throw new Error("The existing PDF is empty.");
+          }
+
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+
+          if (pdfWindow) {
+            pdfWindow.location.href = pdfUrl;
+          } else {
+            window.open(pdfUrl, "_blank");
+          }
+
+          window.homeSimpleReportUsageStatus = "used";
+          window.homeSimpleReportId = data.report_id;
+
+          return;
+
+        } catch (error) {
+          if (pdfWindow) pdfWindow.close();
+          throw error;
+        }
+      }
+
       if (data.pdf_url) {
 
         if (
@@ -44590,6 +44649,11 @@ return false;
           }
         }
 
+        if (pdfWindow) {
+          pdfWindow.location.href = new URL(data.pdf_url, API).href;
+        } else {
+          window.open(new URL(data.pdf_url, API).href, "_blank");
+        }
 
       } else {
         console.error(data);
@@ -44613,6 +44677,7 @@ return false;
     }
 
   }
+
 
   window.generatePDF = generatePDF;
 
