@@ -14,11 +14,32 @@ from models.report_credit_ledger import ReportCreditLedger
 from models.notification import Notification
 from models.project_version import ProjectVersion
 
+from models.property import Property
+from models.property_health_record import PropertyHealthRecord
+from models.assessment import Assessment
+
 def init_db():
 
     Base.metadata.create_all(
         bind=engine,
     )
+
+        # ==================================================
+    # PROPERTY REFERENCE NUMBERS
+    # ==================================================
+
+    if engine.dialect.name == "postgresql":
+        with engine.begin() as connection:
+
+            connection.execute(text("""
+                ALTER TABLE properties
+                ADD COLUMN IF NOT EXISTS property_reference VARCHAR(30)
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE property_health_records
+                ADD COLUMN IF NOT EXISTS phr_reference VARCHAR(30)
+            """))
 
 
     if engine.dialect.name == "postgresql":
@@ -33,6 +54,29 @@ def init_db():
                 ALTER TABLE reports
                 ADD COLUMN IF NOT EXISTS workspace VARCHAR(20)
                 NOT NULL DEFAULT 'business'
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE reports
+                ADD COLUMN IF NOT EXISTS property_id INTEGER
+                REFERENCES properties(id)
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE reports
+                ADD COLUMN IF NOT EXISTS property_health_record_id INTEGER
+                REFERENCES property_health_records(id)
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE reports
+                ADD COLUMN IF NOT EXISTS assessment_id INTEGER
+                REFERENCES assessments(id)
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE reports
+                ADD COLUMN IF NOT EXISTS report_type VARCHAR(50)
             """))
 
             connection.execute(text("""
@@ -94,6 +138,120 @@ def init_db():
                     """
                 )
             )
+
+            # =====================
+            # PROFESSIONAL ASSESSMENT LINK
+            # =====================
+
+            connection.execute(text("""
+                ALTER TABLE assessments
+                ADD COLUMN IF NOT EXISTS professional_request_id INTEGER
+            """))
+
+            # =====================
+            # ASSESSMENT ↔ UNLOCK LINK
+            # =====================
+
+            connection.execute(text("""
+                ALTER TABLE assessments
+                ADD COLUMN IF NOT EXISTS professional_request_contact_id INTEGER
+            """))
+
+            connection.execute(text("""
+                CREATE INDEX IF NOT EXISTS
+                ix_assessments_professional_request_contact_id
+                ON assessments (professional_request_contact_id)
+            """))
+
+            connection.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1
+                        FROM pg_constraint
+                        WHERE conname = 'fk_assessments_professional_request_contact_id'
+                    ) THEN
+                        ALTER TABLE assessments
+                        ADD CONSTRAINT fk_assessments_professional_request_contact_id
+                        FOREIGN KEY (professional_request_contact_id)
+                        REFERENCES professional_request_contacts(id)
+                        ON DELETE RESTRICT;
+                    END IF;
+                END
+                $$;
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE assessments
+                ADD COLUMN IF NOT EXISTS client_project_id INTEGER
+            """))
+
+            connection.execute(text("""
+                CREATE INDEX IF NOT EXISTS
+                ix_assessments_client_project_id
+                ON assessments (client_project_id)
+            """))
+
+            connection.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1
+                        FROM pg_constraint
+                        WHERE conname = 'fk_assessments_client_project_id'
+                    ) THEN
+                        ALTER TABLE assessments
+                        ADD CONSTRAINT fk_assessments_client_project_id
+                        FOREIGN KEY (client_project_id)
+                        REFERENCES projects(id)
+                        ON DELETE SET NULL;
+                    END IF;
+                END
+                $$;
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE assessments
+                ADD COLUMN IF NOT EXISTS display_reference VARCHAR(50)
+            """))
+
+            connection.execute(text("""
+                CREATE UNIQUE INDEX IF NOT EXISTS
+                uq_assessments_display_reference
+                ON assessments (display_reference)
+                WHERE display_reference IS NOT NULL
+            """))
+
+            connection.execute(text("""
+                DROP INDEX IF EXISTS uq_assessments_professional_request_id
+            """))
+
+            connection.execute(text("""
+                DROP INDEX IF EXISTS uq_assessments_request_professional
+            """))
+
+            connection.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1
+                        FROM pg_constraint
+                        WHERE conname = 'fk_assessments_professional_request_id'
+                    ) THEN
+                        ALTER TABLE assessments
+                        ADD CONSTRAINT fk_assessments_professional_request_id
+                        FOREIGN KEY (professional_request_id)
+                        REFERENCES professional_requests(id)
+                        ON DELETE SET NULL;
+                    END IF;
+                END
+                $$;
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE assessments
+                ADD COLUMN IF NOT EXISTS professional_user_id VARCHAR(255)
+            """))
 
             connection.execute(text("""
                 ALTER TABLE professional_requests
@@ -747,3 +905,31 @@ def init_db():
                     """
                 )
             )
+
+                        # ==========================================
+            # BACKFILL PROPERTY REFERENCE NUMBERS
+            # ==========================================
+
+            connection.execute(text("""
+                UPDATE properties
+                SET property_reference =
+                    'PROP-' ||
+                    EXTRACT(YEAR FROM created_at)::INTEGER::TEXT ||
+                    '-' ||
+                    LPAD(id::TEXT, 6, '0')
+                WHERE property_reference IS NULL
+            """))
+
+            # ==========================================
+            # BACKFILL PHR REFERENCE NUMBERS
+            # ==========================================
+
+            connection.execute(text("""
+                UPDATE property_health_records
+                SET phr_reference =
+                    'PHR-' ||
+                    EXTRACT(YEAR FROM created_at)::INTEGER::TEXT ||
+                    '-' ||
+                    LPAD(id::TEXT, 6, '0')
+                WHERE phr_reference IS NULL
+            """))

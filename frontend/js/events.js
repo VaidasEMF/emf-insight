@@ -1773,10 +1773,23 @@ function handleMouseDown(evt) {
                 //
                 // Property-level canonical source.
                 // ==================================================
-
                 if (
                     isOutdoorSource
                 ) {
+
+                    console.log("OUTDOOR DELETE HANDLER REACHED:", {
+                        accessMode: AppState.project?.access_mode,
+                        projectId: AppState.project?.id
+                    });
+
+                    // FROZEN PROFESSIONAL PROJECT — BLOCK SOURCE DELETION
+                    if (
+                        AppState.project?.access_mode ===
+                        "FROZEN_READ_ONLY"
+                    ) {
+                        console.warn("FROZEN CHECK: deletion blocked");
+                        return;
+                    }
 
                     AppState.project.outdoorSources =
                         (
@@ -2990,6 +3003,10 @@ function handleMouseDown(evt) {
                         "zone_" +
                         Date.now()
                     ),
+
+                ...(window.AppMode?.current === "business"
+                    ? { source: "business" }
+                    : {}),
 
                 type:
                     window.selectedZoneType ||
@@ -4460,10 +4477,28 @@ function handleSourceDoubleClick(
     const floor =
         getCurrentFloor?.();
 
+    console.log("DOUBLE CLICK MODE:", {
+        mode: window.AppMode?.current,
+        floorId: floor?.id,
+        isBusiness: window.AppMode?.current === "business"
+    });
+
     if (!floor) {
         return;
     }
 
+    console.log("INDOOR DOUBLE CLICK CHECK:", {
+        floorId: floor.id,
+        sourceCount: floor.sources?.length || 0,
+        point: p,
+        sources: (floor.sources || []).map(s => ({
+            id: s.id,
+            type: s.type,
+            x: s.x,
+            y: s.y,
+            distance: Math.hypot(p.x - s.x, p.y - s.y)
+        }))
+    });
 
     for (
         const s of floor.sources || []
@@ -4495,8 +4530,14 @@ function handleSourceDoubleClick(
                 // Business Indoor Source: use the detailed popup
                 const isIndoor =
                     window.INDOOR_SOURCE_TYPES?.includes(s.type);
-
                 if (isIndoor) {
+                    console.log("BUSINESS BRANCH — INDOOR POPUP:", {
+                        id: s.id,
+                        type: s.type,
+                        popupFunction: typeof window.showHomeIndoorSourcePopup,
+                        floorId: floor.id
+                    });
+
                     window.showHomeIndoorSourcePopup?.(s);
                 } else {
                     window.showBusinessSourcePopup?.(s);
@@ -4525,10 +4566,13 @@ function handleSourceDoubleClick(
                 isIndoor
             ) {
 
-                showIndoorDistancePopup?.(
-                    s
-                );
+                console.log("INDOOR POPUP CALL:", {
+                    id: s.id,
+                    type: s.type,
+                    popupFunction: typeof window.showIndoorDistancePopup
+                });
 
+                window.showHomeIndoorSourcePopup?.(s);
             }
 
             else {

@@ -20539,6 +20539,16 @@ ${request.has_active_unlock
                 const homeSimpleReportUsed =
                     data.home_simple_report_usage_status === "used";
 
+                // HOME DEEPER UNDERSTANDING — €49
+                const homeDeeperAnalysisPurchased =
+                    data.home_deeper_analysis_purchased === true;
+
+                const homeDeeperAnalysisUnlocked =
+                    data.home_deeper_analysis_unlocked === true;
+
+                const homeDeeperAnalysisUsageStatus =
+                    data.home_deeper_analysis_usage_status || null;
+
                 const homeSimpleReportId =
                     data.home_simple_report_id || null;
 
@@ -22818,6 +22828,7 @@ ${request.has_active_unlock
 
                 const data = await response.json();
 
+
                 if (!response.ok) {
                     throw new Error(
                         data.detail || "Unable to unlock contact."
@@ -23790,18 +23801,30 @@ ${request.contact_expires_at
         }
 
         async function openProfessionalHomeAssessment(requestId) {
+
+            console.log("🚀 OPEN PROFESSIONAL HOME ASSESSMENT CALLED", {
+                requestId: requestId
+            });
+
             const token = localStorage.getItem("token");
+            const rid = Number(requestId);
 
             if (!token) {
                 alert("Please sign in again.");
                 return;
             }
 
+            if (!Number.isInteger(rid) || rid <= 0) {
+                alert("Invalid Professional Request.");
+                return;
+            }
+
             try {
                 const response = await fetch(
-                    `${API}/professional-requests/${Number(requestId)}/project`,
+                    `${API}/professional-requests/${rid}/assessment?create_new=true`,
                     {
-                        method: "GET",
+                        method: "POST",
+                        cache: "no-store",
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -23810,69 +23833,39 @@ ${request.contact_expires_at
 
                 const data = await response.json();
 
-                if (!response.ok) {
+                console.log("🧪 NEW ASSESSMENT SERVER RESPONSE", data);
+
+                console.log("🧪 NEW ASSESSMENT SERVER RESPONSE", {
+                    success: data.success,
+                    assessment: data.assessment,
+                    assessmentId: data.assessment?.id,
+                    projectId: data.assessment?.project_id
+                });
+
+                if (!response.ok || !data.success || !data.assessment) {
                     throw new Error(
-                        data.detail ||
-                        "Unable to open Property Assessment."
+                        data.detail || "Unable to create Professional Assessment."
                     );
                 }
 
-                if (
-                    !data.success ||
-                    !data.project ||
-                    !data.project.data
-                ) {
-                    throw new Error(
-                        "The Home project data is unavailable."
-                    );
-                }
-
-
-                const homeProject = data.project.data;
+                const assessmentId = Number(data.assessment.id);
+                const projectId = Number(data.assessment.project_id);
 
                 if (
-                    homeProject.type !== "home" ||
-                    Number(homeProject.project_id ?? data.project_id) !==
-                    Number(data.project_id)
+                    !Number.isInteger(assessmentId) || assessmentId <= 0 ||
+                    !Number.isInteger(projectId) || projectId <= 0
                 ) {
-                    throw new Error(
-                        "The requested project is not a valid Home project."
-                    );
+                    throw new Error("Invalid Assessment reference returned by server.");
                 }
 
                 sessionStorage.setItem(
                     "professionalAssessmentContext",
                     JSON.stringify({
-                        requestId: data.request_id,
-                        projectId: data.project_id,
-                        expiresAt: data.unlock?.expires_at
+                        requestId: rid,
+                        projectId: projectId,
+                        assessmentId: assessmentId,
+                        expiresAt: null
                     })
-                );
-
-                console.log(
-                    "Professional Assessment context stored",
-                    {
-                        requestId: data.request_id,
-                        projectId: data.project_id,
-                        expiresAt: data.unlock?.expires_at
-                    }
-                );
-
-
-                console.log(
-                    "Unlocked Home Property Assessment loaded",
-                    {
-                        requestId: data.request_id,
-                        projectId: data.project_id,
-                        expiresAt: data.unlock?.expires_at,
-                        project: homeProject
-                    }
-                );
-
-
-                localStorage.setItem(
-                    "workspaceMode",
-                    "business"
                 );
 
                 sessionStorage.setItem(
@@ -23880,8 +23873,20 @@ ${request.contact_expires_at
                     "professional-assessment"
                 );
 
-                window.location.href = "index.html";
+                sessionStorage.setItem(
+                    "workspaceMode",
+                    "business"
+                );
 
+                console.log("NEW PROFESSIONAL ASSESSMENT CREATED", {
+                    requestId: rid,
+                    projectId,
+                    assessmentId,
+                    assessmentUid: data.assessment.assessment_uid,
+                    displayReference: data.assessment.display_reference
+                });
+
+                window.location.href = "index.html";
 
             } catch (error) {
                 console.error(
@@ -23890,12 +23895,10 @@ ${request.contact_expires_at
                 );
 
                 alert(
-                    error.message ||
-                    "Unable to open Property Assessment."
+                    error.message || "Unable to open Property Assessment."
                 );
             }
         }
-
 
 
         function initializeProfessionalDashboardSubnav() {
@@ -24588,6 +24591,10 @@ ${request.contact_expires_at
                 workspaceMode === "home"
                     ? "home"
                     : "business";
+
+            // Clear stale Professional Assessment startup context
+            sessionStorage.removeItem("requestedWorkspace");
+            sessionStorage.removeItem("professionalAssessmentContext");
 
             localStorage.setItem("workspaceMode", mode);
 
@@ -25404,7 +25411,8 @@ ${request.contact_expires_at
 
                 if (
                     plan === "home_full_report" ||
-                    plan === "home_simple_report"
+                    plan === "home_simple_report" ||
+                    plan === "home_deeper_first"
                 ) {
                     const userId =
                         window.currentUser?.id ||

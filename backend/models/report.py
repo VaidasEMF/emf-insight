@@ -55,6 +55,26 @@ class Report(Base):
         server_default="business",
     )
 
+    property_id: Mapped[int | None] = mapped_column(
+        ForeignKey("properties.id"),
+        nullable=True,
+    )
+
+    property_health_record_id: Mapped[int | None] = mapped_column(
+        ForeignKey("property_health_records.id"),
+        nullable=True,
+    )
+
+    assessment_id: Mapped[int | None] = mapped_column(
+        ForeignKey("assessments.id"),
+        nullable=True,
+    )
+
+    report_type: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
     project = relationship(
         "Project",
         back_populates="reports",

@@ -2185,6 +2185,18 @@ window.drawOutdoorPlacementGuide =
 function drawOutdoorSources() {
     const ctx = window.ctx;
     const project = window.AppState?.project;
+
+    const isProfessionalHomeAssessment =
+        window.AppMode?.current === "business" &&
+        window.professionalAssessmentData?.assessment_mode === "existing_home";
+
+    if (
+        isProfessionalHomeAssessment &&
+        window.clientHomeLayerVisibility?.outdoorSources === false
+    ) {
+        return;
+    }
+
     const sources = Array.isArray(project?.outdoorSources)
         ? project.outdoorSources
         : [];
@@ -2236,7 +2248,14 @@ function drawOutdoorSources() {
 }
 
 function drawHomeMeasurementPointsLayer() {
-    if (window.AppMode?.current !== "home") return;
+
+    const isHomeMode = window.AppMode?.current === "home";
+
+    const isProfessionalHomeAssessment =
+        window.AppMode?.current === "business" &&
+        window.professionalAssessmentData?.assessment_mode === "existing_home";
+
+    if (!isHomeMode && !isProfessionalHomeAssessment) return;
 
     const project = window.AppState?.project;
     const floor = project?.floors?.[project.currentFloorIndex || 0];
@@ -2245,6 +2264,7 @@ function drawHomeMeasurementPointsLayer() {
     if (!floor || !canvasCtx || !window.EMFViewport?.worldPoint) return;
 
     const zones = Array.isArray(floor.zones) ? floor.zones : [];
+
 
     canvasCtx.save();
 
@@ -2283,6 +2303,7 @@ function drawHomeMeasurementPointsLayer() {
         points.forEach(point => {
             globalPointNumber++;
 
+
             if (
                 !Number.isFinite(Number(point.x)) ||
                 !Number.isFinite(Number(point.y))
@@ -2292,6 +2313,7 @@ function drawHomeMeasurementPointsLayer() {
                 x: Number(point.x),
                 y: Number(point.y)
             });
+
 
             const status = point.status ||
                 (point.measured ? "measured" : "pending");
@@ -2319,6 +2341,8 @@ function drawHomeMeasurementPointsLayer() {
 
             canvasCtx.fill();
             canvasCtx.stroke();
+
+
 
             canvasCtx.fillStyle = isMeasured || isPartial
                 ? "#ffffff"
@@ -2459,15 +2483,47 @@ function drawObjects() {
     //
     // ==================================================
 
-    const allObjects = [
+    const isProfessionalHomeAssessment =
+        window.AppMode?.current === "business" &&
+        window.professionalAssessmentData?.assessment_mode === "existing_home";
 
-        ...floorZones,
+    const clientHomeLayers =
+        window.clientHomeLayerVisibility ??= {
+            lifestyleZones: true,
+            indoorSources: true,
+            outdoorSources: true
+        };
 
-        ...filteredFloorSources,
+    const clientLifestyleZones =
+        floorZones.filter(
+            zone => zone?.source !== "business"
+        );
 
-        ...propertyOutdoorSources
+    const allObjects = isProfessionalHomeAssessment
 
-    ];
+        ? [
+
+            ...(clientHomeLayers.lifestyleZones
+                ? clientLifestyleZones
+                : []),
+
+            ...(clientHomeLayers.indoorSources
+                ? filteredFloorSources
+                : []),
+
+            ...(clientHomeLayers.outdoorSources
+                ? propertyOutdoorSources
+                : [])
+
+        ]
+
+        : [
+
+            ...floorZones,
+            ...filteredFloorSources,
+            ...propertyOutdoorSources
+
+        ];
 
 
     console.log(
@@ -2519,179 +2575,190 @@ function drawObjects() {
             : [];
 
 
-    outdoorRelationships.forEach(
-        relationship => {
+    const shouldDrawOutdoorRelationships =
+        !isProfessionalHomeAssessment ||
+        (
+            clientHomeLayers.lifestyleZones &&
+            clientHomeLayers.outdoorSources
+        );
 
-            const source =
-                propertyOutdoorSources.find(
-                    item =>
-                        item?.id ===
-                        relationship.sourceId
+
+    if (shouldDrawOutdoorRelationships) {
+
+        outdoorRelationships.forEach(
+            relationship => {
+
+                const source =
+                    propertyOutdoorSources.find(
+                        item =>
+                            item?.id ===
+                            relationship.sourceId
+                    );
+
+
+                const targetZone =
+                    floorZones.find(
+                        zone =>
+                            zone?.id ===
+                            relationship.targetAreaId
+                    );
+
+
+                if (
+                    !source ||
+                    !targetZone
+                ) {
+
+                    return;
+                }
+
+
+                const sourcePoint =
+                    EMFViewport.worldPoint(
+                        source
+                    );
+
+
+                const zonePoint =
+                    EMFViewport.worldPoint(
+                        targetZone
+                    );
+
+
+                // ==================================================
+                // CONNECTION LINE
+                // ==================================================
+
+                ctx.save();
+
+
+                ctx.beginPath();
+
+                ctx.setLineDash(
+                    [
+                        6,
+                        5
+                    ]
                 );
 
 
-            const targetZone =
-                floorZones.find(
-                    zone =>
-                        zone?.id ===
-                        relationship.targetAreaId
+                ctx.moveTo(
+                    sourcePoint.x,
+                    sourcePoint.y
                 );
 
 
-            if (
-                !source ||
-                !targetZone
-            ) {
-
-                return;
-            }
-
-
-            const sourcePoint =
-                EMFViewport.worldPoint(
-                    source
-                );
-
-
-            const zonePoint =
-                EMFViewport.worldPoint(
-                    targetZone
-                );
-
-
-            // ==================================================
-            // CONNECTION LINE
-            // ==================================================
-
-            ctx.save();
-
-
-            ctx.beginPath();
-
-            ctx.setLineDash(
-                [
-                    6,
-                    5
-                ]
-            );
-
-
-            ctx.moveTo(
-                sourcePoint.x,
-                sourcePoint.y
-            );
-
-
-            ctx.lineTo(
-                zonePoint.x,
-                zonePoint.y
-            );
-
-
-            ctx.strokeStyle =
-                "rgba(37,99,235,0.55)";
-
-            ctx.lineWidth =
-                1.5;
-
-
-            ctx.stroke();
-
-
-            // ==================================================
-            // CONTEXT LABEL
-            // ==================================================
-
-            const midX =
-                (
-                    sourcePoint.x +
-                    zonePoint.x
-                ) / 2;
-
-
-            const midY =
-                (
-                    sourcePoint.y +
+                ctx.lineTo(
+                    zonePoint.x,
                     zonePoint.y
-                ) / 2;
+                );
 
 
-            const zoneMeta =
-                OBJECT_CONFIGS?.[
-                targetZone.type
-                ];
+                ctx.strokeStyle =
+                    "rgba(37,99,235,0.55)";
+
+                ctx.lineWidth =
+                    1.5;
 
 
-            const zoneLabel =
-                zoneMeta?.label ||
-                targetZone.zoneType ||
-                "Lifestyle Area";
+                ctx.stroke();
 
 
-            ctx.setLineDash(
-                []
-            );
+                // ==================================================
+                // CONTEXT LABEL
+                // ==================================================
+
+                const midX =
+                    (
+                        sourcePoint.x +
+                        zonePoint.x
+                    ) / 2;
 
 
-            ctx.font =
-                "600 9px Inter";
+                const midY =
+                    (
+                        sourcePoint.y +
+                        zonePoint.y
+                    ) / 2;
 
 
-            ctx.textAlign =
-                "center";
-
-            ctx.textBaseline =
-                "middle";
-
-
-            // small readable white background
-            // behind contextual text
-
-            const text =
-                `Potentially relevant to ${zoneLabel}`;
+                const zoneMeta =
+                    OBJECT_CONFIGS?.[
+                    targetZone.type
+                    ];
 
 
-            const textWidth =
-                ctx.measureText(
-                    text
-                ).width;
+                const zoneLabel =
+                    zoneMeta?.label ||
+                    targetZone.zoneType ||
+                    "Lifestyle Area";
 
 
-            ctx.fillStyle =
-                "rgba(255,255,255,0.88)";
+                ctx.setLineDash(
+                    []
+                );
 
 
-            ctx.fillRect(
-
-                midX -
-                textWidth / 2 -
-                5,
-
-                midY -
-                8,
-
-                textWidth +
-                10,
-
-                16
-            );
+                ctx.font =
+                    "600 9px Inter";
 
 
-            ctx.fillStyle =
-                "#475569";
+                ctx.textAlign =
+                    "center";
+
+                ctx.textBaseline =
+                    "middle";
 
 
-            ctx.fillText(
-                text,
-                midX,
-                midY
-            );
+                // small readable white background
+                // behind contextual text
+
+                const text =
+                    `Potentially relevant to ${zoneLabel}`;
 
 
-            ctx.restore();
-        }
-    );
+                const textWidth =
+                    ctx.measureText(
+                        text
+                    ).width;
 
+
+                ctx.fillStyle =
+                    "rgba(255,255,255,0.88)";
+
+
+                ctx.fillRect(
+
+                    midX -
+                    textWidth / 2 -
+                    5,
+
+                    midY -
+                    8,
+
+                    textWidth +
+                    10,
+
+                    16
+                );
+
+
+                ctx.fillStyle =
+                    "#475569";
+
+
+                ctx.fillText(
+                    text,
+                    midX,
+                    midY
+                );
+
+
+                ctx.restore();
+            }
+        );
+
+    }
 
     allObjects.forEach(
         obj => {
@@ -2821,9 +2888,12 @@ function drawObjects() {
             // ==================================================
             // HOME WELLNESS — SAVED LIFESTYLE ZONE BOUNDARY
             // ==================================================
-
             const isHomeLifestyle =
-                window.AppMode?.current === "home" &&
+                (
+                    window.AppMode?.current === "home" ||
+                    window.AppMode?.current === "business" &&
+                    window.professionalAssessmentData?.assessment_mode === "existing_home"
+                ) &&
                 !!obj.zoneType &&
                 obj.measurementZoneDimensions &&
                 Number.isFinite(
@@ -3103,6 +3173,7 @@ function drawObjects() {
                     ""
                 ).toLowerCase() ===
                 "indoor";
+
 
 
             if (
@@ -7399,6 +7470,16 @@ function showLifestyleAreaPopup(
                 event?.preventDefault();
                 event?.stopPropagation();
 
+                if (
+                    window.AppState?.project?.access_mode === "FROZEN_READ_ONLY"
+                ) {
+                    console.warn(
+                        "FROZEN PROJECT: Lifestyle Zone deletion blocked.",
+                        { zoneId: zone?.id }
+                    );
+                    return;
+                }
+
 
                 window.showDeleteLifestyleAreaConfirm?.(
                     zone,
@@ -7708,6 +7789,13 @@ function showHomeIndoorSourcePopup(
     options = {}
 ) {
 
+    console.log("HOME INDOOR POPUP FUNCTION ENTERED:", {
+        sourceId: source?.id,
+        sourceType: source?.type,
+        mode: window.AppMode?.current,
+        popupExists: !!document.getElementById("homeIndoorSourcePopup"),
+        canvasExists: !!window.canvas
+    });
     if (!source) {
 
         console.warn(
@@ -7787,7 +7875,11 @@ function showHomeIndoorSourcePopup(
         return;
     }
 
-
+    console.log("HOME INDOOR POPUP FLOOR OK:", {
+        floorId: floor.id,
+        floorSources: floor.sources?.length,
+        popupDisplayBefore: popup.style.display
+    });
     // ==================================================
     // ACTIVE SOURCE
     // ==================================================
@@ -8117,47 +8209,12 @@ function showHomeIndoorSourcePopup(
         "Indoor Source";
 
 
+
     // ==================================================
     // SUMMARY
     // ==================================================
+
     if (summary) {
-        const rawType = String(
-            zone.zoneType || zone.type || ""
-        ).toLowerCase();
-
-        const presetTypeMap = {
-            bed: "bed",
-            sleep: "bed",
-            work: "work_area",
-            desk: "work_area",
-            work_area: "work_area",
-            sofa: "sofa",
-            relax: "sofa",
-            rest: "sofa",
-            child: "child_area",
-            child_area: "child_area"
-        };
-
-        const presetType =
-            presetTypeMap[rawType] ||
-            (HOME_LIFESTYLE_PRESETS[rawType] ? rawType : null);
-
-        const presetKey =
-            zone.lifestylePreset ||
-            zone.lifestylePresetKey ||
-            zone.presetKey ||
-            "";
-
-        const presetConfig = presetType
-            ? HOME_LIFESTYLE_PRESETS[presetType]?.presets?.[presetKey]
-            : null;
-
-        const presetLabel =
-            zone.lifestylePresetLabel ||
-            zone.presetLabel ||
-            presetConfig?.label ||
-            "";
-
         summary.innerHTML = `
         <div style="
             display:flex;
@@ -8183,51 +8240,21 @@ function showHomeIndoorSourcePopup(
                     font-size:14px;
                     font-weight:700;
                     color:#0f172a;
-                "${zone.lifestylePresetLabel || sourceLabel || "Lifestyle Area"}</div>
+                ">
+                    ${sourceLabel}
+                </div>
 
                 <div style="
                     margin-top:3px;
                     font-size:12px;
-                    color:${presetLabel ? "#64748b" : "#b45309"};
-                ">${presetLabel || "Preset not saved"}</div>
+                    color:#64748b;
+                ">
+                    Indoor Source
+                </div>
             </div>
-
-            ${presetType ? `
-                <button
-                    type="button"
-                    id="btnEditLifestylePreset"
-                    style="
-                        flex:0 0 auto;
-                        padding:6px 11px;
-                        border:1px solid #cbd5e1;
-                        border-radius:7px;
-                        background:#fff;
-                        color:#334155;
-                        font-size:12px;
-                        font-weight:600;
-                        cursor:pointer;
-                    "
-                >Edit</button>
-            ` : ""}
         </div>
     `;
-
-        const editButton = document.getElementById(
-            "btnEditLifestylePreset"
-        );
-
-        if (editButton && presetType) {
-            editButton.addEventListener("click", () => {
-                if (window.AppMode?.current !== "home") return;
-
-                editingLifestyleZone = zone;
-                openLifestyleSizeSelector(presetType);
-            });
-        }
-
-
     }
-
     // ==================================================
     // OPERATING STATE
     // ==================================================
@@ -8789,7 +8816,11 @@ function showHomeIndoorSourcePopup(
     popup.style.display =
         "block";
 
-
+    console.log("HOME INDOOR POPUP DISPLAY SET:", {
+        display: popup.style.display,
+        visibility: getComputedStyle(popup).visibility,
+        rect: popup.getBoundingClientRect().toJSON()
+    });
     // ==================================================
     // CLOSE
     // ==================================================
@@ -8926,7 +8957,6 @@ function showHomeIndoorSourcePopup(
     // ==================================================
     // DELETE â€” CONFIRMATION
     // ==================================================
-
     if (deleteBtn) {
 
         deleteBtn.onclick =
@@ -8935,10 +8965,23 @@ function showHomeIndoorSourcePopup(
                 event?.preventDefault();
                 event?.stopPropagation();
 
+                // FROZEN PROFESSIONAL PROJECT — BLOCK DELETION
+                if (
+                    window.AppState?.project?.access_mode ===
+                    "FROZEN_READ_ONLY"
+                ) {
+                    console.warn(
+                        "FROZEN PROJECT: Indoor Source deletion blocked.",
+                        {
+                            sourceId: source?.id
+                        }
+                    );
+
+                    return;
+                }
 
                 window.selectedIndoorSource =
                     source;
-
 
                 window.activePopupSource =
                     source;
@@ -10759,6 +10802,48 @@ window.startObjectPlacement =
 
 window.placeObject =
     placeObject;
+
+
+function initClientHomeLayerControls() {
+
+    const controls = {
+        clientHomeLayerLifestyleZones: "lifestyleZones",
+        clientHomeLayerIndoorSources: "indoorSources",
+        clientHomeLayerOutdoorSources: "outdoorSources"
+    };
+
+    window.clientHomeLayerVisibility ??= {
+        lifestyleZones: true,
+        indoorSources: true,
+        outdoorSources: true
+    };
+
+    Object.entries(controls).forEach(([id, stateKey]) => {
+
+        const checkbox = document.getElementById(id);
+
+        if (!checkbox || checkbox.dataset.bound === "true") {
+            return;
+        }
+
+        checkbox.checked =
+            window.clientHomeLayerVisibility[stateKey];
+
+        checkbox.addEventListener("change", () => {
+
+            window.clientHomeLayerVisibility[stateKey] =
+                checkbox.checked;
+
+            window.requestRender?.();
+        });
+
+        checkbox.dataset.bound = "true";
+    });
+}
+
+window.initClientHomeLayerControls =
+    initClientHomeLayerControls;
+
 
 window.drawObjects =
     drawObjects;

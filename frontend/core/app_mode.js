@@ -320,8 +320,26 @@ async function setAppMode(
     options = {}
 ) {
 
+
     console.log("DEBUG setAppMode START", mode, options);
     console.trace("DEBUG setAppMode CALL STACK");
+
+    // Preserve original Business Toggles DOM position
+    function preserveBusinessTogglesPosition() {
+        if (window.businessTogglesOriginalPosition) return;
+
+        const toggles =
+            document.getElementById("businessProjectToggles");
+
+        if (toggles?.parentNode) {
+            window.businessTogglesOriginalPosition = {
+                parent: toggles.parentNode,
+                nextSibling: toggles.nextSibling
+            };
+        }
+    }
+
+    preserveBusinessTogglesPosition();
     const experience =
         resolveWorkspaceExperience(mode, options);
 
@@ -349,7 +367,11 @@ async function setAppMode(
         return;
     }
 
-
+    const isProfessionalAssessment =
+        mode === "business" &&
+        sessionStorage.getItem("requestedWorkspace") ===
+        "professional-assessment" &&
+        !!sessionStorage.getItem("professionalAssessmentContext");
     // ==================================================
     // PREVIOUS STATE
     // ==================================================
@@ -630,7 +652,8 @@ async function setAppMode(
     let targetProjectId =
         mode === "business"
             ? (
-                options.skipProjectRestore ||
+                isProfessionalAssessment ||
+                    options.skipProjectRestore ||
                     leavingHomeDemo
                     ? null
                     : localStorage.getItem(
@@ -652,6 +675,7 @@ async function setAppMode(
 
     if (
         mode === "business" &&
+        !isProfessionalAssessment &&
         sessionStorage.getItem("business_project_closed") !== "true" &&
         window.EMFProductContext?.account?.role === "professional" &&
         !options.showProjectStart &&
@@ -1113,35 +1137,38 @@ async function setAppMode(
 
             // ------------------------------------------------
             // PROFESSIONAL ASSESSMENT — SKIP BUSINESS RESTORE
-            // ------------------------------------------------
-
-            const isProfessionalAssessment =
-                sessionStorage.getItem("requestedWorkspace") ===
-                "professional-assessment" &&
-                !!sessionStorage.getItem("professionalAssessmentContext");
-
-            console.log("🔎 PA RESTORE GUARD CHECK", {
-                requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),
-                hasContext: !!sessionStorage.getItem("professionalAssessmentContext"),
+            // -----------------------------------------------
+            console.log("PROFESSIONAL RESTORE DECISION:", {
                 isProfessionalAssessment,
-                targetProjectId
+                requestedWorkspace:
+                    sessionStorage.getItem("requestedWorkspace"),
+                hasProfessionalAssessmentContext:
+                    !!sessionStorage.getItem("professionalAssessmentContext"),
+                targetProjectId,
+                role:
+                    window.EMFProductContext?.account?.role,
+                canvasProjectId:
+                    window.professionalAssessmentCanvasProject?.project_id,
+                canvasAssessmentId:
+                    window.professionalAssessmentCanvasProject?.assessmentDatabaseId
             });
-
 
             if (isProfessionalAssessment) {
                 console.log(
-                    "🔐 Professional Assessment active — skipping Business project restore.",
+                    "🔐 Professional Assessment — activating isolated Canvas project.",
                     {
-                        requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),
-                        hasContext: !!sessionStorage.getItem("professionalAssessmentContext")
+                        hasContext: !!sessionStorage.getItem("professionalAssessmentContext"),
+                        hasCanvasProject: !!window.professionalAssessmentCanvasProject
                     }
                 );
 
-                activeProject = null;
-                AppState.project = null;
-                window.project = null;
-                currentProjectId = null;
+                activeProject =
+                    window.professionalAssessmentCanvasProject || null;
 
+                AppState.project = activeProject;
+                window.project = activeProject;
+
+                currentProjectId = null;
             } else {
 
 
@@ -1646,7 +1673,13 @@ async function setAppMode(
             updateHomeLocks?.();
             updateHomeEmptyPlanState?.();
             updateHomeProfessionalAssessment?.();
-            updateProjectHeader?.();
+            if (mode === "home") {
+                requestAnimationFrame(() => {
+                    window.updateProjectHeader?.();
+                });
+            } else {
+                updateProjectHeader?.();
+            }
             updateWorkflowUI?.();
             updateCurrentExposure?.();
 
@@ -1862,35 +1895,6 @@ async function setAppMode(
                     ? "flex"
                     : "none";
         }
-
-
-        // ==================================================
-        // BUSINESS TOGGLES
-        // ==================================================
-
-        const businessProjectToggles =
-            document.getElementById(
-                "businessProjectToggles"
-            );
-
-
-        if (
-            businessProjectToggles
-        ) {
-
-            if (businessProjectToggles) {
-                businessProjectToggles.style.display =
-                    mode === "business" &&
-                        !!(
-                            window.AppState?.businessProject ||
-                            window.AppState?.project
-                        ) &&
-                        window.EMFHomeDemo !== true
-                        ? "flex"
-                        : "none";
-            }
-        }
-
 
         // ==================================================
         // ROOM PANEL
@@ -3943,6 +3947,13 @@ function resolveWorkspaceExperience(mode, options = {}) {
         window.EMFProductContext?.account?.role ||
         "user";
 
+    console.log("WORKSPACE EXPERIENCE ROLE CHECK:", {
+        role,
+        account: window.EMFProductContext?.account,
+        businessProjectId: localStorage.getItem("business_project_id"),
+        mode
+    });
+
     const isAdmin =
         window.EMFProductContext?.account?.isAdmin === true;
 
@@ -4187,6 +4198,32 @@ async function closeActiveProject() {
     window.updateWorkspaceUI?.();
     window.updateProjectHeader?.();
 
+    // Hide stale Room Navigator after closing the project.
+    const roomStatus = document.getElementById("roomStatus");
+
+    if (roomStatus) {
+        roomStatus.style.display = "none";
+        roomStatus.innerHTML = "";
+    }
+
+    if (mode === "business") {
+        const professionalRightSidebar = document.getElementById(
+            "professionalRightSidebar"
+        );
+
+        if (professionalRightSidebar) {
+            professionalRightSidebar.style.display = "none";
+        }
+
+        console.log("SIDEBAR CLOSE CHECK", {
+            found: !!professionalRightSidebar,
+            inlineDisplay: professionalRightSidebar?.style.display,
+            computedDisplay: professionalRightSidebar
+                ? window.getComputedStyle(professionalRightSidebar).display
+                : "element not found"
+        });
+    }
+
     console.log("PROJECT CLOSED", { mode, isDemo, projectId: project.project_id || project.id });
 }
 
@@ -4203,10 +4240,17 @@ function updateWorkspaceUI(options = {}) {
         screenDisplay: document.getElementById("projectStartScreen")?.style.display
     });
 
+    // Remove Home Guided layout when switching to Business mode.
+    if (window.AppMode?.current === "business") {
+        document.querySelector(".canvas-area")
+            ?.classList.remove("home-guided-layout");
+    }
 
     const mode =
         window.AppMode?.current ||
         "home";
+
+
 
 
     // ==================================================
@@ -4389,6 +4433,41 @@ function updateWorkspaceUI(options = {}) {
 
     const hasActiveProject =
         !!activeProject;
+
+    // ==================================================
+    // BUSINESS PROJECT — FROZEN ACCESS NOTICE
+    // ==================================================
+
+    const isFrozenBusinessProject =
+        mode === "business" &&
+        activeProject?.access_mode === "FROZEN_READ_ONLY";
+
+
+
+    const businessFrozenNotice =
+        document.getElementById("businessFrozenNotice");
+
+    if (businessFrozenNotice) {
+        businessFrozenNotice.hidden =
+            !isFrozenBusinessProject;
+
+        businessFrozenNotice.style.display =
+            isFrozenBusinessProject ? "flex" : "none";
+    }
+
+    // FROZEN — DISABLE SAVE PROJECT
+    const businessSaveProjectButton =
+        document.getElementById("businessSaveProjectButton");
+
+    if (businessSaveProjectButton) {
+        businessSaveProjectButton.disabled =
+            isFrozenBusinessProject;
+
+        businessSaveProjectButton.title =
+            isFrozenBusinessProject
+                ? "This project is read-only."
+                : "";
+    }
 
     // ==================================================
     // PROJECT HEADER ACTIONS
@@ -4799,9 +4878,105 @@ function updateWorkspaceUI(options = {}) {
 
     // END MY_WELLNESS_DASHBOARD_LAYOUT_FIX
     const isProfessionalAssessmentView =
+        mode === "business" &&
         sessionStorage.getItem("requestedWorkspace") ===
         "professional-assessment" &&
         !!sessionStorage.getItem("professionalAssessmentContext");
+
+    const isFrozenProfessionalProject =
+        mode === "business" &&
+        activeProject?.access_mode === "FROZEN_READ_ONLY" &&
+        !!activeProject?.assessmentDatabaseId;
+
+
+    // PROFESSIONAL ASSESSMENT ACCESS BADGE
+    const professionalAssessmentAccessBadge =
+        document.getElementById("professionalAssessmentAccessBadge");
+
+    if (professionalAssessmentAccessBadge) {
+        professionalAssessmentAccessBadge.textContent =
+            isFrozenProfessionalProject ? "Expired · Frozen" : "Active";
+
+        professionalAssessmentAccessBadge.style.background =
+            isFrozenProfessionalProject ? "#fee2e2" : "#dcfce7";
+
+        professionalAssessmentAccessBadge.style.color =
+            isFrozenProfessionalProject ? "#b91c1c" : "#15803d";
+    }
+    // PROFESSIONAL ASSESSMENT SIDEBAR VISIBILITY
+    const professionalAssessmentMenu =
+        document.getElementById("professionalAssessmentSidebarMenu");
+    professionalAssessmentMenu.style.display =
+        (isProfessionalAssessmentView || isFrozenProfessionalProject)
+            ? "block"
+            : "none";
+
+    // FROZEN PROFESSIONAL PROJECT — LIMIT SIDEBAR ACTIONS
+    const professionalNewAssessmentBtn =
+        document.getElementById("professionalNewIndependentProjectBtn");
+
+    const professionalSwitchProjectBtn =
+        document.getElementById("professionalSwitchProjectBtn");
+
+    if (professionalNewAssessmentBtn) {
+        professionalNewAssessmentBtn.style.display =
+            isFrozenProfessionalProject ? "none" : "";
+    }
+
+    if (professionalSwitchProjectBtn) {
+        professionalSwitchProjectBtn.style.display =
+            isFrozenProfessionalProject ? "none" : "";
+    }
+
+    const professionalRightSidebar =
+        document.getElementById("professionalRightSidebar");
+
+    if (professionalRightSidebar) {
+        professionalRightSidebar.style.display =
+            isProfessionalAssessmentView ? "flex" : "none";
+    }
+
+    // Client Home Assessment – visual distinction for Map Layers
+    const isClientHomeAssessment =
+        isProfessionalAssessmentView &&
+        window.professionalAssessmentData?.assessment_mode === "existing_home";
+
+    document.body.classList.toggle(
+        "client-home-assessment",
+        isClientHomeAssessment
+    );
+
+    // Remove Map Layers de-emphasis when professional
+    // starts using an assessment workflow tool.
+    if (!window.clientHomeWorkflowClickBound) {
+
+        document.addEventListener("click", event => {
+
+            const workflowButton = event.target.closest(
+                "#btnDrawRooms, " +
+                "#btnGenerateGrid, " +
+                "#btnAddZone, " +
+                "#btnStartMeasure, " +
+                "#btnStartZoneMeasure, " +
+                "#btnAddSources"
+            );
+
+            if (!workflowButton) return;
+
+            if (
+                document.body.classList.contains(
+                    "client-home-assessment"
+                )
+            ) {
+                document.body.classList.remove(
+                    "client-home-assessment"
+                );
+            }
+
+        }, true);
+
+        window.clientHomeWorkflowClickBound = true;
+    }
 
     const forceProfessionalDashboard =
         options.forceProfessionalDashboard === true &&
@@ -4813,6 +4988,22 @@ function updateWorkspaceUI(options = {}) {
         forceProfessionalDashboard &&
         !isBusinessDemo &&
         !isProfessionalAssessmentView;
+
+
+
+
+
+    const showBusinessProjectControls =
+        mode === "business" &&
+        hasActiveProject &&
+        !showProfessionalDashboard &&
+        !isProfessionalAssessmentView;
+
+    if (businessWorkflowBar) {
+        businessWorkflowBar.style.display =
+            showBusinessProjectControls ? "" : "none";
+    }
+
 
 
     // BUSINESS HEADER META — hide when no Business project is open
@@ -4925,10 +5116,13 @@ function updateWorkspaceUI(options = {}) {
     // BUSINESS PROJECT ACTIONS IN SIDEBAR
     const businessProjectActions =
         document.getElementById("businessProjectActions");
-
     if (businessProjectActions) {
         businessProjectActions.style.display =
-            showProfessionalDashboard ? "none" : "";
+            showProfessionalDashboard ||
+                isProfessionalAssessmentView ||
+                isFrozenProfessionalProject
+                ? "none"
+                : "";
     }
 
     // BUSINESS OUTPUT ACTIONS
@@ -4955,6 +5149,8 @@ function updateWorkspaceUI(options = {}) {
                         ? "flex"
                         : "none"
                 );
+
+
     }
 
     // BUSINESS WORKSPACE CANVAS
@@ -5246,9 +5442,7 @@ function updateWorkspaceUI(options = {}) {
         );
 
 
-    if (
-        businessWorkflowSection
-    ) {
+    if (businessWorkflowSection) {
 
         businessWorkflowSection.style.display =
             (
@@ -5257,8 +5451,64 @@ function updateWorkspaceUI(options = {}) {
             )
                 ? "block"
                 : "none";
+
+        businessWorkflowSection.classList.toggle(
+            "frozen-professional-workflow",
+            isFrozenBusinessProject
+        );
     }
 
+
+    // ==================================================
+    // FROZEN — DISABLE CANVAS EDITING TOOLS
+    // ==================================================
+
+    [
+        "canvasSelectTool",
+        "canvasPanTool"
+    ].forEach(id => {
+
+        const button =
+            document.getElementById(id);
+
+        if (button) {
+            button.classList.toggle(
+                "frozen-professional-workflow",
+                isFrozenBusinessProject
+            );
+        }
+    });
+
+    [
+        "businessFloorHeaderControl",
+        "businessFloorTabs"
+    ].forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+            element.classList.toggle(
+                "frozen-professional-workflow",
+                isFrozenBusinessProject
+            );
+        }
+    });
+
+
+    // ==================================================
+    // FROZEN — LOCK ROOM ACTIONS
+    // ==================================================
+
+    const roomStatusPanel =
+        document.getElementById("roomStatus");
+
+    if (roomStatusPanel) {
+        roomStatusPanel.classList.toggle(
+            "frozen-professional-room-actions",
+            isFrozenBusinessProject
+        );
+    }
 
     // ==================================================
     // HOME WORKFLOW BAR
@@ -7022,6 +7272,14 @@ function populatePropertyHealthDashboard() {
         window.AppState?.property ||
         {};
 
+    const propertyReference =
+        document.getElementById("dashboardPropertyId");
+
+    if (propertyReference) {
+        propertyReference.textContent =
+            property.propertyReference || "—";
+    }
+
     const homeProject =
         window.AppState?.homeProject ||
         window.AppState?.project ||
@@ -7030,6 +7288,71 @@ function populatePropertyHealthDashboard() {
     const assessment =
         window.AppState?.propertyAssessment ||
         {};
+
+
+    // ==================================================
+    // PROPERTY HEALTH RECORD — DISPLAY
+    // ==================================================
+
+    const phrRecord =
+        window.AppState?.propertyHealthRecord || {};
+
+    const phrRecordStatus =
+        document.getElementById("phrRecordStatus");
+
+    if (phrRecordStatus) {
+        phrRecordStatus.textContent =
+            phrRecord.status
+                ? phrRecord.status.charAt(0).toUpperCase() +
+                phrRecord.status.slice(1)
+                : "—";
+    }
+
+    const phrRecordId =
+        document.getElementById("phrRecordId");
+
+    if (phrRecordId) {
+        phrRecordId.textContent =
+            phrRecord.phrReference || "—";
+    }
+
+    const formatPHRDate = (value) => {
+        if (!value) return "—";
+
+        const date = new Date(value);
+
+        return Number.isNaN(date.getTime())
+            ? "—"
+            : date.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            });
+    };
+
+    const phrRecordCreated =
+        document.getElementById("phrRecordCreated");
+
+    if (phrRecordCreated) {
+        phrRecordCreated.textContent =
+            formatPHRDate(phrRecord.createdAt);
+    }
+
+    const phrRecordUpdated =
+        document.getElementById("phrRecordUpdated");
+
+    if (phrRecordUpdated) {
+        phrRecordUpdated.textContent =
+            formatPHRDate(phrRecord.updatedAt);
+    }
+
+    console.log("🏠 PHR RECORD DISPLAY:", {
+        id: phrRecord.id,
+        status: phrRecord.status,
+        createdAt: phrRecord.createdAt,
+        updatedAt: phrRecord.updatedAt
+    });
+
 
     // ================================
     // PHR REPORTS
@@ -8745,6 +9068,8 @@ window.openRealHomeWorkspace = async function () {
 
 window.returnToHomeWorkspace = async function () {
 
+    // Clear Professional Assessment workspace marker when returning Home.
+    sessionStorage.removeItem("requestedWorkspace");
 
     // Clear Explore Demo selection when returning to real Home.
     window.EMFExploreSelection = null;

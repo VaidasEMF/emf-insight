@@ -117,27 +117,7 @@ async function createProject(options = {}) {
 
 
     // ==================================================
-    // 🔥 CREATE FRONTEND PROJECT MODEL FIRST
-    // ==================================================
-    //
-    // createProjectModel() already creates the
-    // initial Main Floor.
-    //
-    // ==================================================
-
-    const newProject =
-        createProjectModel(
-            projectType
-        );
-
-    // ==================================================
-    // 🔥 CANONICAL PROPERTY PROFILE
-    // ==================================================
-    //
-    // The Property is the persistent parent object.
-    // createProjectModel() creates the assessment workspace.
-    // The profile data belongs to AppState.property.
-    //
+    // CANONICAL PROPERTY + PHR + ASSESSMENT
     // ==================================================
 
     if (
@@ -145,11 +125,12 @@ async function createProject(options = {}) {
         window.AppState?.property
     ) {
 
-        // NEW HOME PROPERTY = NEW CANONICAL PROPERTY
+        // NEW PROPERTY
         AppState.property.id =
             window.PhiIdFactory
                 ?.createPropertyId?.();
 
+        // NEW PROPERTY HEALTH RECORD
         AppState.property.propertyHealthRecordId =
             window.PhiIdFactory
                 ?.createPropertyHealthRecordId?.();
@@ -161,32 +142,61 @@ async function createProject(options = {}) {
             projectName;
 
         AppState.property.propertyType =
-            propertyProfile.propertyType ||
-            "";
+            propertyProfile.propertyType || "";
 
         AppState.property.country =
-            propertyProfile.country ||
-            "";
+            propertyProfile.country || "";
 
         AppState.property.city =
-            propertyProfile.city ||
-            "";
+            propertyProfile.city || "";
 
         AppState.property.postalCode =
-            propertyProfile.postalCode ||
-            "";
+            propertyProfile.postalCode || "";
 
         AppState.property.address =
-            propertyProfile.address ||
-            "";
+            propertyProfile.address || "";
 
         AppState.property.unit =
-            propertyProfile.unit ||
-            "";
+            propertyProfile.unit || "";
 
-        // --------------------------------------------------
-        // PROPERTY → PROJECT LINK
-        // --------------------------------------------------
+        // NEW CANONICAL ASSESSMENT
+        AppState.propertyAssessment.id =
+            window.PhiIdFactory
+                ?.createAssessmentId?.();
+
+        AppState.propertyAssessment.propertyId =
+            AppState.property.id;
+
+        AppState.propertyAssessment.propertyHealthRecordId =
+            AppState.property.propertyHealthRecordId;
+
+        AppState.propertyAssessment.type =
+            "property";
+
+        AppState.propertyAssessment.assessmentContext =
+            "home";
+    }
+
+    // ==================================================
+    // CREATE PROJECT MODEL WITH CANONICAL IDs
+    // ==================================================
+
+    const newProject =
+        createProjectModel(
+            projectType,
+            projectType === "home"
+                ? AppState.property.id
+                : null,
+            projectType === "home"
+                ? AppState.propertyAssessment.id
+                : null
+        );
+
+    // ==================================================
+    // PROPERTY → PROJECT LINK
+    // ==================================================
+
+    if (projectType === "home") {
 
         newProject.propertyId =
             AppState.property.id;
@@ -215,7 +225,6 @@ async function createProject(options = {}) {
         newProject.unit =
             AppState.property.unit;
     }
-
     // ==================================================
     // PROJECT NAME
     // ==================================================
@@ -491,6 +500,8 @@ async function createProject(options = {}) {
     const data =
         await res.json();
 
+
+
     console.log(
         "🔥 CREATE PROJECT RESPONSE",
         data
@@ -529,6 +540,66 @@ async function createProject(options = {}) {
 
     newProject.id =
         projectId;
+
+    // ==================================================
+    // CANONICAL PROPERTY / PHR / ASSESSMENT IDS
+    // ==================================================
+
+    if (projectType === "home") {
+
+        const canonicalPropertyId =
+            data.propertyId ||
+            newProject.propertyId;
+
+        const canonicalPhrId =
+            data.propertyHealthRecordId;
+
+        const canonicalAssessmentId =
+            data.assessmentId ||
+            newProject.assessmentId;
+
+        if (!canonicalPropertyId || !canonicalPhrId || !canonicalAssessmentId) {
+            throw new Error(
+                "Backend did not return complete Home Property IDs"
+            );
+        }
+
+        // Update project model
+        newProject.propertyId =
+            canonicalPropertyId;
+
+        newProject.propertyHealthRecordId =
+            canonicalPhrId;
+
+        newProject.assessmentId =
+            canonicalAssessmentId;
+
+        // Update canonical Property state
+        AppState.property.id =
+            canonicalPropertyId;
+
+        AppState.property.propertyHealthRecordId =
+            canonicalPhrId;
+
+        // Update canonical Home Assessment state
+        AppState.propertyAssessment.id =
+            canonicalAssessmentId;
+
+        AppState.propertyAssessment.propertyId =
+            canonicalPropertyId;
+
+        AppState.propertyAssessment.propertyHealthRecordId =
+            canonicalPhrId;
+
+        console.log(
+            "CANONICAL HOME IDS SYNCHRONIZED",
+            {
+                propertyId: canonicalPropertyId,
+                propertyHealthRecordId: canonicalPhrId,
+                assessmentId: canonicalAssessmentId
+            }
+        );
+    }
 
     // ==================================================
     // PROJECT TYPE
@@ -1195,6 +1266,30 @@ function finishProjectSaveStatus(success) {
 
 async function saveProject() {
 
+    const isProfessionalAssessment =
+        !!window.professionalAssessmentClientContext &&
+        !!window.professionalAssessmentCanvasProject;
+
+    if (isProfessionalAssessment) {
+        try {
+            const result = await window.saveProfessionalAssessment();
+
+            console.log(
+                "[PROFESSIONAL ASSESSMENT] Canvas saved:",
+                result
+            );
+
+            return true;
+        } catch (error) {
+            console.error(
+                "[PROFESSIONAL ASSESSMENT] Save failed:",
+                error
+            );
+
+            return false;
+        }
+    }
+
     startProjectSaveStatus();
 
     let saveStatusFinished = false;
@@ -1462,6 +1557,21 @@ async function loadProjectList() {
             window.AppMode?.current ||
             "business";
 
+        const popupTitle = document.getElementById("openProjectPopupTitle");
+        const popupSubtitle = document.getElementById("openProjectPopupSubtitle");
+
+        if (popupTitle) {
+            popupTitle.textContent = currentMode === "home"
+                ? "Open Home Wellness Project"
+                : "Open Business Survey Project";
+        }
+
+        if (popupSubtitle) {
+            popupSubtitle.textContent = currentMode === "home"
+                ? "Select a Home Wellness project to continue"
+                : "Select a Business Survey project to continue";
+        }
+
         console.log(
             "🔥 PROJECT LIST MODE",
             { currentMode }
@@ -1527,6 +1637,20 @@ async function loadProjectList() {
                 : response.projects ||
                 response.data ||
                 [];
+
+        console.table(
+            allProjects.map(project => ({
+                id: project.id ?? project.project_id,
+                name: project.name,
+                type: project.type,
+                projectType: project.project_type ?? project.projectType,
+                dataKeys: Object.keys(project.data || {}).join(", "),
+                assessmentContext: project.data?.assessmentContext,
+                assessmentId: project.data?.assessmentId,
+                clientHomeProjectId: project.data?.clientHomeProjectId,
+                professionalRequestId: project.data?.professionalRequestId
+            }))
+        );
 
 
         console.log(
@@ -1898,58 +2022,49 @@ async function loadProjectList() {
          * RENDER
          */
 
-        container.innerHTML =
-            sortedProjects
+        let showAllProjects = false;
+
+        function renderProjectItems() {
+
+            const visibleProjects = showAllProjects
+                ? sortedProjects
+                : sortedProjects.slice(0, 4);
+
+            container.innerHTML = visibleProjects
                 .map(project => {
 
-                    const projectId =
-                        getProjectId(project);
+                    const projectId = getProjectId(project);
 
-
-                    if (
-                        projectId ===
-                        null ||
-                        projectId ===
-                        undefined
-                    ) {
-
+                    if (projectId === null || projectId === undefined) {
                         return "";
                     }
 
+                    const projectName = getProjectName(project);
 
-                    const projectName =
-                        getProjectName(
-                            project
-                        );
+                    const cleanProjectName = String(projectName)
+                        .replace(/^[\s🏠🏢🏭🏬🏢📱📡]+\s*/, "")
+                        .trim();
 
-                    const cleanProjectName =
-                        String(projectName)
-                            .replace(
-                                /^[\s🏠🏢🏭🏬🏢📱📡🏠🏢]+\s*/,
-                                ""
-                            )
-                            .trim();
+                    const projectType = getProjectType(project);
+                    const isHome = projectType === "home";
 
+                    const typeLabel = isHome
+                        ? "Home Wellness"
+                        : "Business Survey";
 
-                    const projectType =
-                        getProjectType(
-                            project
-                        );
+                    console.log("[PROJECT ORIGIN DEBUG]", project);
 
+                    const clientHomeProjectId =
+                        project?.client_home_project_id ?? null;
 
-                    const isHome =
-                        projectType ===
-                        "home";
-
-
-                    const typeLabel =
-                        isHome
-                            ? "Home Wellness"
-                            : "Business Survey";
-
-
-
-
+                    const originProjectHtml =
+                        !isHome && clientHomeProjectId
+                            ? `
+                        <div class="open-project-origin">
+                            ↳ Created from Home Project #${clientHomeProjectId}
+                        </div>
+                    `
+                            : "";
 
                     const createdAt =
                         project?.created_at ||
@@ -1958,139 +2073,132 @@ async function loadProjectList() {
                         project?.data?.createdAt ||
                         "";
 
-
                     let dateHtml = "";
 
-
                     if (createdAt) {
+                        let formattedDate = createdAt;
+                        const date = new Date(createdAt);
 
-                        let formattedDate =
-                            createdAt;
-
-
-                        const date =
-                            new Date(
-                                createdAt
+                        if (!Number.isNaN(date.getTime())) {
+                            formattedDate = date.toLocaleDateString(
+                                undefined,
+                                {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric"
+                                }
                             );
-
-
-                        if (
-                            !Number.isNaN(
-                                date.getTime()
-                            )
-                        ) {
-
-                            formattedDate =
-                                date.toLocaleDateString(
-                                    undefined,
-                                    {
-                                        year:
-                                            "numeric",
-
-                                        month:
-                                            "short",
-
-                                        day:
-                                            "numeric"
-                                    }
-                                );
                         }
 
-
                         dateHtml = `
-                            <span>
-                                ${formattedDate}
-                            </span>
-                        `;
+                    <span>${formattedDate}</span>
+                `;
                     }
 
-
                     return `
-                        <div
-                            class="open-project-item"
-                            data-project-id="${projectId}"
-                        >
+                <div
+                    class="open-project-item"
+                    data-project-id="${projectId}"
+                >
 
-                            <div class="open-project-info">
+                    <div class="open-project-info">
 
-                               <div class="open-project-name">
+                        <div class="open-project-name">
+                            <span class="project-name-text">
+                                ${cleanProjectName}
+                            </span>
+                        </div>
 
-    <span class="project-name-text">
-        ${cleanProjectName}
-    </span>
+                        <div class="open-project-meta">
 
-</div>
+                            <span>${typeLabel}</span>
 
-                                <div class="open-project-meta">
+                            <span>Project #${projectId}</span>
 
-                                    <span>
-                                        ${typeLabel}
-                                    </span>
-
-                                    <span>
-                                        Project #${projectId}
-                                    </span>
-
-                                    ${dateHtml}
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="open-project-actions">
-
-                                <button
-    type="button"
-    class="project-open-btn"
-    onclick="
-        event.preventDefault();
-        event.stopPropagation();
-
-        openExistingProject(
-            ${projectId}
-        );
-    "
->
-    Open
-</button>
-
-<button
-    type="button"
-    class="project-rename-btn"
-    onclick="
-        event.preventDefault();
-        event.stopPropagation();
-
-        renameProjectFromList(
-            ${projectId}
-        );
-    "
->
-    Rename
-</button>
-
-<button
-    type="button"
-    class="project-delete-btn"
-    onclick="
-        event.preventDefault();
-        event.stopPropagation();
-
-        deleteProjectFromList(
-            ${projectId}
-        );
-    "
->
-    Delete
-</button>
-
-                            </div>
+                            ${dateHtml}
 
                         </div>
-                    `;
+
+                        ${originProjectHtml}
+
+                    </div>
+
+                    <div class="open-project-actions">
+
+                        <button
+                            type="button"
+                            class="project-open-btn"
+                            onclick="
+                                event.preventDefault();
+                                event.stopPropagation();
+                                openExistingProject(${projectId});
+                            "
+                        >
+                            Open
+                        </button>
+
+                        <button
+                            type="button"
+                            class="project-rename-btn"
+                            onclick="
+                                event.preventDefault();
+                                event.stopPropagation();
+                                renameProjectFromList(${projectId});
+                            "
+                        >
+                            Rename
+                        </button>
+
+                        <button
+                            type="button"
+                            class="project-delete-btn"
+                            onclick="
+                                event.preventDefault();
+                                event.stopPropagation();
+                                deleteProjectFromList(${projectId});
+                            "
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
                 })
                 .join("");
+
+            // Show More / Show Less
+            if (sortedProjects.length > 4) {
+
+                const toggleButton = document.createElement("button");
+                toggleButton.type = "button";
+
+                toggleButton.textContent = showAllProjects
+                    ? "Show less"
+                    : `Show more (${sortedProjects.length - 4})`;
+
+                toggleButton.style.cssText =
+                    "margin:12px auto 4px;display:block;" +
+                    "border:none;background:transparent;" +
+                    "color:#2563eb;font-size:13px;font-weight:600;" +
+                    "cursor:pointer;padding:8px 12px;";
+
+                toggleButton.addEventListener("click", () => {
+                    showAllProjects = !showAllProjects;
+                    renderProjectItems();
+                });
+
+                if (showAllProjects) {
+                    container.prepend(toggleButton);
+                } else {
+                    container.appendChild(toggleButton);
+                }
+            }
+        }
+
+        renderProjectItems();
+
 
 
         /*
@@ -2204,8 +2312,12 @@ function renameProjectFromList(projectId) {
 
         if (
             activeProject &&
-            String(activeProject.id) ===
-            String(projectId)
+            String(
+                activeProject.project_id ??
+                activeProject.projectId ??
+                activeProject.id ??
+                ""
+            ) === String(projectId)
         ) {
 
             currentName =
@@ -2409,6 +2521,23 @@ function renameProjectFromList(projectId) {
                     AppState.project.name = newName;
                 }
 
+                // Update Professional Assessment Client Project context.
+                const professionalCanvas =
+                    window.professionalAssessmentCanvasProject;
+
+                if (
+                    professionalCanvas &&
+                    String(professionalCanvas.project_id) === targetProjectId
+                ) {
+                    professionalCanvas.name = newName;
+                    professionalCanvas.clientProjectName = newName;
+
+                    if (window.professionalAssessmentClientContext) {
+                        window.professionalAssessmentClientContext.clientProjectName =
+                            newName;
+                    }
+                }
+
                 if (matchesProject(AppState?.homeProject)) {
                     AppState.homeProject.name = newName;
                 }
@@ -2553,12 +2682,30 @@ function initHomeProjectRenameButton() {
         "click",
         () => {
 
+
+            console.log("RENAME BUTTON CLICKED");
+
+            console.log(
+                "AppState project:",
+                AppState?.project
+            );
+
+            console.log(
+                "Professional Canvas project:",
+                window.professionalAssessmentCanvasProject
+            );
             const projectId =
                 AppState?.project?.project_id ??
                 AppState?.project?.projectId ??
                 AppState?.project?.id ??
                 null;
 
+            console.log("[RENAME DIAGNOSTIC]", {
+                appStateProject: AppState?.project,
+                professionalCanvasProject:
+                    window.professionalAssessmentCanvasProject,
+                projectId
+            });
 
             if (!projectId) {
 
@@ -2983,7 +3130,7 @@ function setHomeFieldError(
     }
 
     if (message) {
-        error.textContent = message;
+        error.textContent = message; create
         error.style.display = "block";
 
         field.style.borderColor =
@@ -5135,9 +5282,29 @@ async function openExistingProject(
         // ==================================================
         // LOAD PROJECT
         // ==================================================
+        const businessLoadingOverlay =
+            document.getElementById("businessLoadingOverlay");
 
+        const homeLoadingOverlay =
+            document.getElementById("homeLoadingOverlay");
+
+        if (currentWorkspace === "business" && businessLoadingOverlay) {
+            businessLoadingOverlay.style.display = "flex";
+        }
+
+        if (currentWorkspace === "home" && homeLoadingOverlay) {
+            homeLoadingOverlay.style.display = "flex";
+        }
 
         const loadResult = await loadProject(projectId);
+
+        if (businessLoadingOverlay) {
+            businessLoadingOverlay.style.display = "none";
+        }
+
+        if (homeLoadingOverlay) {
+            homeLoadingOverlay.style.display = "none";
+        }
 
         console.log(
             "[OPEN PROJECT LOAD RESULT]",
@@ -5180,6 +5347,13 @@ async function openExistingProject(
     catch (
     err
     ) {
+
+        const businessLoadingOverlay =
+            document.getElementById("businessLoadingOverlay");
+
+        if (businessLoadingOverlay) {
+            businessLoadingOverlay.style.display = "none";
+        }
 
         console.error(
             "🔥 OPEN EXISTING PROJECT FAILED",
@@ -5312,6 +5486,41 @@ async function openProject(
         return false;
     }
 
+    // Restore project metadata for normal project opening.
+    document.body.classList.remove("pa-professional-assessment-open");
+
+    // Preserve Professional Assessment context for returning later.
+    // Deactivate the Assessment view while a regular Business Project is open.
+    sessionStorage.removeItem("requestedWorkspace");
+
+    // Deactivate stale Professional Assessment runtime context.
+    // Keep sessionStorage context intact for returning to the assessment.
+    window.professionalAssessmentCanvasProject = null;
+    window.professionalAssessmentClientContext = null;
+    window.professionalAssessmentData = null;
+
+    // Hide Property Assessment workspace while a regular Business Project is open.
+    const assessmentWorkspace = document.getElementById(
+        "professionalAssessmentWorkspace"
+    );
+
+    if (assessmentWorkspace) {
+        assessmentWorkspace.style.display = "none";
+    }
+
+    console.log("[BUSINESS PROJECT CONTEXT CHECK]", {
+        activeProjectId:
+            AppState.project?.project_id ?? AppState.project?.id ?? null,
+
+        professionalCanvasProjectId:
+            window.professionalAssessmentCanvasProject?.project_id ?? null,
+
+        professionalAssessmentId:
+            window.professionalAssessmentClientContext?.assessmentId ?? null,
+
+        professionalClientProjectId:
+            window.professionalAssessmentClientContext?.clientProjectId ?? null
+    });
     // ==================================================
     // 🔥 COMPLETE
     // ==================================================
@@ -5358,102 +5567,425 @@ async function openProject(
 
 async function openProjectMenu() {
 
-    console.log(
-        "================================="
-    );
+    const popup = document.getElementById("openProjectPopup");
 
-    console.log(
-        "🔥 OPEN PROJECT MENU"
-    );
-
-
-    const popup =
-        document.getElementById(
-            "openProjectPopup"
-        );
-
-
-    // ==================================================
-    // POPUP CHECK
-    // ==================================================
-
-    if (
-        !popup
-    ) {
-
-        console.error(
-            "🔥 OPEN PROJECT POPUP NOT FOUND"
-        );
-
+    if (!popup) {
+        console.error("OPEN PROJECT POPUP NOT FOUND");
         return;
     }
 
-    // Keep the project modal outside the hidden canvas area.
     if (popup.parentElement !== document.body) {
         document.body.appendChild(popup);
     }
 
-    // ==================================================
-    // HIDE WORKFLOW BEHIND MODAL
-    // ==================================================
+    document.body.classList.add("project-popup-open");
 
-    document.body.classList.add(
-        "project-popup-open"
-    );
+    const mode = window.AppMode?.current || "business";
 
+    const chooser = document.getElementById("openProjectChooser");
+    const listView = document.getElementById("openProjectListView");
+    const clientView = document.getElementById("openClientPropertiesView");
+    const backButton = popup.querySelector(".open-project-back-btn");
 
-    // ==================================================
-    // CURRENT WORKSPACE
-    // ==================================================
+    // Always reset Client Properties view.
+    if (clientView) clientView.style.display = "none";
 
-    const mode =
-        window.AppMode?.current ||
-        "business";
+    if (mode === "home") {
 
+        if (chooser) chooser.style.display = "none";
+        if (listView) listView.style.display = "block";
+        if (backButton) backButton.style.display = "none";
 
-    console.log(
-        "🔥 OPEN PROJECT WORKSPACE",
-        {
-            mode
-        }
-    );
+    } else {
 
+        if (chooser) chooser.style.display = "flex";
+        if (listView) listView.style.display = "none";
+        if (backButton) backButton.style.display = "inline-flex";
 
-    // ==================================================
-    // SHOW POPUP
-    // ==================================================
+    }
 
-    popup.style.display =
-        "flex";
+    popup.style.display = "flex";
+    popup.setAttribute("aria-hidden", "false");
 
-    popup.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+    if (mode === "home") {
+        await loadProjectList();
+    }
+
+    console.log("OPEN PROJECT MENU READY", { mode });
+}
 
 
-    // ==================================================
-    // LOAD PROJECTS
-    // ==================================================
+async function showBusinessProjectList() {
+
+    const chooser = document.getElementById("openProjectChooser");
+    const listView = document.getElementById("openProjectListView");
+    const clientView = document.getElementById("openClientPropertiesView");
+
+    if (chooser) chooser.style.display = "none";
+    if (clientView) clientView.style.display = "none";
+    if (listView) listView.style.display = "block";
 
     await loadProjectList();
-
-
-    // ==================================================
-    // READY
-    // ==================================================
-
-    console.log(
-        "🔥 OPEN PROJECT MENU READY",
-        {
-            mode
-        }
-    );
-
-    console.log(
-        "================================="
-    );
 }
+
+
+function showOpenProjectChooser() {
+
+    const chooser = document.getElementById("openProjectChooser");
+    const listView = document.getElementById("openProjectListView");
+    const clientView = document.getElementById("openClientPropertiesView");
+
+    if (chooser) chooser.style.display = "flex";
+    if (listView) listView.style.display = "none";
+    if (clientView) clientView.style.display = "none";
+
+}
+
+
+async function showClientPropertiesList() {
+
+    // Client Properties is available only in Business mode.
+    if ((window.AppMode?.current || "business") !== "business") {
+        console.warn("Client Properties is available only in Business mode.");
+        return;
+    }
+
+    const chooser = document.getElementById("openProjectChooser");
+    const businessView = document.getElementById("openProjectListView");
+    const clientView = document.getElementById("openClientPropertiesView");
+    const container = document.getElementById("clientPropertiesList");
+
+    if (!clientView || !container) {
+        console.error("Client Properties view elements not found.");
+        return;
+    }
+
+    const sortSelect = document.getElementById(
+        "clientAssessmentSortSelect"
+    );
+
+    if (sortSelect && !sortSelect.dataset.bound) {
+
+        sortSelect.dataset.bound = "1";
+
+        sortSelect.addEventListener("change", () => {
+            showClientPropertiesList();
+        });
+    }
+
+    if (chooser) chooser.style.display = "none";
+    if (businessView) businessView.style.display = "none";
+
+    clientView.style.display = "block";
+    const popupTitle = document.getElementById("openProjectPopupTitle");
+    const popupSubtitle = document.getElementById("openProjectPopupSubtitle");
+
+    if (popupTitle) {
+        popupTitle.textContent = "Open Client Properties";
+    }
+
+    if (popupSubtitle) {
+        popupSubtitle.textContent =
+            "View properties shared with you and your professional assessments";
+    }
+    container.innerHTML = "<p>Loading client properties...</p>";
+
+    try {
+
+        const response = await fetch(
+            `${API}/professional-properties/mine`,
+            {
+                method: "GET",
+                cache: "no-store",
+                headers: getAuthHeaders()
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Request failed: ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.properties)) {
+            throw new Error("Invalid Client Properties response.");
+        }
+
+        container.replaceChildren();
+
+        if (data.properties.length === 0) {
+            container.innerHTML = `
+                <p style="padding:20px;color:#64748b;">
+                    No client properties found.
+                </p>
+            `;
+            return;
+        }
+
+        data.properties.forEach(property => {
+
+            const card = document.createElement("div");
+            card.className = "open-project-item";
+
+            card.style.flexDirection = "column";
+            card.style.alignItems = "stretch";
+
+            const info = document.createElement("div");
+            info.className = "open-project-info";
+
+            info.style.width = "100%";
+
+            const title = document.createElement("div");
+            title.className = "open-project-name";
+            title.textContent = property.property_name || "Unnamed Property";
+            title.style.fontSize = "16px";
+            title.style.fontWeight = "700";
+
+            const meta = document.createElement("div");
+            meta.className = "open-project-meta";
+
+            const location = [
+                property.city,
+                property.country
+            ].filter(Boolean).join(", ");
+
+            meta.textContent = [
+                property.property_reference,
+                location
+            ].filter(Boolean).join(" · ");
+
+            info.append(title, meta);
+
+            const assessments = document.createElement("div");
+            assessments.style.cssText =
+                "margin-top:12px;display:flex;flex-direction:column;gap:8px;";
+
+            assessments.style.width = "100%";
+
+
+            const sortMode = sortSelect?.value || "newest";
+
+            const assessmentItems = [...(property.assessments || [])];
+
+            function getAssessmentDate(assessment) {
+                const value =
+                    assessment.updated_at ||
+                    assessment.created_at ||
+                    null;
+
+                if (!value) return 0;
+
+                const timestamp = new Date(value).getTime();
+
+                return Number.isNaN(timestamp) ? 0 : timestamp;
+            }
+
+            assessmentItems.sort((a, b) => {
+
+                if (sortMode === "name_asc") {
+                    return (a.assessment_project_name || "")
+                        .localeCompare(
+                            b.assessment_project_name || "",
+                            undefined,
+                            { sensitivity: "base" }
+                        );
+                }
+
+                if (sortMode === "name_desc") {
+                    return (b.assessment_project_name || "")
+                        .localeCompare(
+                            a.assessment_project_name || "",
+                            undefined,
+                            { sensitivity: "base" }
+                        );
+                }
+
+                const dateA = getAssessmentDate(a);
+                const dateB = getAssessmentDate(b);
+
+                if (sortMode === "oldest") {
+                    return dateA - dateB;
+                }
+
+                return dateB - dateA;
+            });
+
+            let showAllAssessments = false;
+
+
+            function renderAssessments() {
+
+                assessments.replaceChildren();
+
+                const visibleAssessments = showAllAssessments
+                    ? assessmentItems
+                    : assessmentItems.slice(0, 4);
+
+                visibleAssessments.forEach(assessment => {
+
+                    const row = document.createElement("div");
+                    row.style.cssText =
+                        "display:flex;align-items:center;justify-content:space-between;" +
+                        "gap:12px;padding:10px;border-top:1px solid #e2e8f0;";
+
+                    const details = document.createElement("div");
+
+                    const projectTitle = document.createElement("div");
+                    projectTitle.style.cssText =
+                        "font-size:14px;font-weight:600;color:#1e293b;";
+
+                    projectTitle.textContent =
+                        assessment.assessment_project_name || "Professional Assessment";
+
+                    const reference = document.createElement("div");
+                    reference.style.cssText =
+                        "font-size:11px;color:#94a3b8;margin-top:2px;";
+
+                    const assessmentDate =
+                        assessment.created_at || assessment.updated_at || null;
+
+                    let formattedAssessmentDate = "";
+
+                    if (assessmentDate) {
+                        const date = new Date(assessmentDate);
+
+                        if (!Number.isNaN(date.getTime())) {
+                            formattedAssessmentDate = date.toLocaleDateString(
+                                undefined,
+                                {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric"
+                                }
+                            );
+                        }
+                    }
+
+                    reference.textContent = [
+                        `Assessment #${assessment.assessment_id}`,
+                        assessment.display_reference,
+                        formattedAssessmentDate
+                    ].filter(Boolean).join(" · ");
+
+                    const status = document.createElement("div");
+                    status.style.cssText =
+                        "display:flex;align-items:center;gap:7px;margin-top:5px;";
+
+                    const assessmentStatus = document.createElement("span");
+                    assessmentStatus.textContent =
+                        assessment.assessment_status || "Unknown";
+
+                    assessmentStatus.style.cssText =
+                        "font-size:11px;font-weight:600;padding:3px 7px;" +
+                        "border-radius:5px;background:#fff7ed;color:#c2410c;";
+
+                    const accessStatus = document.createElement("span");
+                    const isActive = !!assessment.has_active_unlock;
+
+                    accessStatus.textContent =
+                        isActive ? "Active access" : "Expired access";
+
+                    accessStatus.style.cssText =
+                        "font-size:11px;font-weight:600;padding:3px 7px;" +
+                        "border-radius:5px;" +
+                        (isActive
+                            ? "background:#ecfdf5;color:#047857;"
+                            : "background:#f1f5f9;color:#64748b;");
+
+                    status.append(assessmentStatus, accessStatus);
+                    details.append(projectTitle, reference, status);
+                    row.appendChild(details);
+
+                    if (isActive) {
+
+                        const openButton = document.createElement("button");
+                        openButton.type = "button";
+                        openButton.className = "project-open-btn";
+                        openButton.textContent = "Open Assessment";
+
+                        openButton.addEventListener("click", () => {
+                            window.openProfessionalAssessmentFromDashboard(
+                                assessment.request_id,
+                                assessment.project_id,
+                                assessment.unlock_expires_at,
+                                assessment.assessment_id
+                            );
+                        });
+
+                        row.appendChild(openButton);
+
+                    } else {
+
+                        const historyLabel = document.createElement("span");
+                        historyLabel.textContent = "History only";
+                        historyLabel.style.cssText =
+                            "font-size:12px;color:#94a3b8;font-weight:600;";
+
+                        row.appendChild(historyLabel);
+                    }
+
+                    assessments.appendChild(row);
+                });
+
+                if (assessmentItems.length > 4) {
+
+                    const toggleButton = document.createElement("button");
+                    toggleButton.type = "button";
+
+                    toggleButton.textContent = showAllAssessments
+                        ? "Show less"
+                        : `Show more (${assessmentItems.length - 4})`;
+
+                    toggleButton.style.cssText =
+                        "margin:10px auto 2px;display:block;" +
+                        "border:none;background:transparent;" +
+                        "color:#2563eb;font-size:13px;font-weight:600;" +
+                        "cursor:pointer;padding:7px 12px;";
+
+                    toggleButton.addEventListener("click", () => {
+                        showAllAssessments = !showAllAssessments;
+                        renderAssessments();
+                    });
+
+                    if (showAllAssessments) {
+                        assessments.prepend(toggleButton);
+                    } else {
+                        assessments.appendChild(toggleButton);
+                    }
+                }
+            }
+
+            renderAssessments();
+
+            card.append(info, assessments);
+            container.appendChild(card);
+        });
+
+        console.log(
+            "[CLIENT PROPERTIES] Loaded",
+            data.properties.length,
+            "properties"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "[CLIENT PROPERTIES] Loading failed:",
+            error
+        );
+
+        container.innerHTML = `
+            <p style="padding:20px;color:#dc2626;">
+                Unable to load client properties. Please try again.
+            </p>
+        `;
+    }
+}
+
+window.showClientPropertiesList = showClientPropertiesList;
+
 
 // =====================================================
 // 🔥 CLOSE PROJECT MENU
@@ -5477,6 +6009,23 @@ function closeProjectMenu() {
         popup.style.display =
             "none";
     }
+}
+
+// Close Open Project popup with Escape key
+if (!window.projectPopupEscapeBound) {
+
+    window.projectPopupEscapeBound = true;
+
+    document.addEventListener("keydown", (event) => {
+
+        if (event.key !== "Escape") return;
+
+        const popup = document.getElementById("openProjectPopup");
+
+        if (!popup || popup.style.display === "none") return;
+
+        closeProjectMenu();
+    });
 }
 
 window.closeProjectMenu =
@@ -5533,6 +6082,12 @@ async function refreshHomeReportEntitlement() {
         }
 
         const me = await meRes.json();
+
+        window.homeDeeperAnalysisPurchased =
+            me.home_deeper_analysis_purchased === true;
+
+        window.homeDeeperAnalysisUnlocked =
+            me.home_deeper_analysis_unlocked === true;
 
         window.homeFullReportUnlocked =
             me.home_full_report_unlocked === true;
@@ -5661,6 +6216,18 @@ async function loadProject(
         return false;
     }
 
+    // CLOSE POPUPS FROM PREVIOUS PROJECT
+    const indoorPopup = document.getElementById(
+        "homeIndoorSourcePopup"
+    );
+
+    if (indoorPopup) {
+        indoorPopup.style.display = "none";
+    }
+
+    window.activePopupSource = null;
+    window.selectedIndoorSource = null;
+
     // ==================================================
     // SET CURRENT PROJECT ID
     // ==================================================
@@ -5745,6 +6312,13 @@ async function loadProject(
         const data =
             await res.json();
 
+        console.log("PROJECT ACCESS API CHECK:", {
+            projectId: currentProjectId,
+            accessMode: data.access_mode,
+            hasActiveUnlock: data.has_active_unlock,
+            projectKeys: Object.keys(data.data || data.project || {})
+        });
+
         // ==================================================
         // 🔥 RAW BUSINESS PROJECT RESPONSE DEBUG
         // ==================================================
@@ -5819,6 +6393,16 @@ async function loadProject(
 
             return false;
         }
+
+        // PROFESSIONAL ASSESSMENT ACCESS
+        project.access_mode =
+            data.access_mode || null;
+
+        project.has_active_unlock =
+            data.has_active_unlock ?? null;
+
+        project.professional_assessment =
+            data.professional_assessment || null;
 
         // ==================================================
         // NORMALIZE
@@ -6158,6 +6742,30 @@ async function loadProject(
 
 
                 // ==================================================
+                // RESTORE PROPERTY AND PROPERTY HEALTH RECORD FROM API
+                // ==================================================
+
+                if (data.property) {
+                    Object.assign(
+                        AppState.property,
+                        data.property
+                    );
+                }
+
+                AppState.propertyHealthRecord =
+                    data.propertyHealthRecord || null;
+
+                console.log(
+                    "🏠 HOME PROPERTY HEALTH RECORD RESTORED:",
+                    {
+                        property: AppState.property,
+                        propertyHealthRecord:
+                            AppState.propertyHealthRecord
+                    }
+                );
+
+
+                // ==================================================
                 // RESTORE CANONICAL PROPERTY ASSESSMENT
                 // ==================================================
 
@@ -6180,6 +6788,46 @@ async function loadProject(
 
                 const assessment =
                     AppState.propertyAssessment;
+
+
+                const backendAssessment =
+                    Array.isArray(data.assessments)
+                        ? data.assessments[0]
+                        : null;
+
+                if (backendAssessment) {
+
+                    // Preserve existing Home assessment data.
+                    Object.assign(
+                        assessment,
+                        backendAssessment.data || {}
+                    );
+
+                    // Restore canonical backend identity.
+                    assessment.id =
+                        backendAssessment.id;
+
+                    assessment.propertyId =
+                        data.property?.id ||
+                        AppState.property.id;
+
+                    assessment.propertyHealthRecordId =
+                        data.propertyHealthRecord?.id ||
+                        AppState.property.propertyHealthRecordId;
+
+                    assessment.type = "property";
+                    assessment.assessmentContext = "home";
+
+                    console.log(
+                        "🏠 BACKEND HOME ASSESSMENT RESTORED",
+                        {
+                            id: assessment.id,
+                            status: backendAssessment.status,
+                            assessment
+                        }
+                    );
+                }
+
 
                 // Restore the assessment identity from this project.
                 if (project.assessmentId) {
@@ -6581,11 +7229,63 @@ async function loadProject(
         updateHomeLocks?.();
 
         updateCurrentExposure?.();
-        // ==================================================
-        // RENDER
-        // ==================================================
 
-        requestRender?.();
+
+        // ============================================
+        // BUSINESS RIGHT SIDEBAR VISIBILITY
+        // ============================================
+
+        const professionalRightSidebar = document.getElementById(
+            "professionalRightSidebar"
+        );
+
+        const professionalSidebarTop = document.querySelector(
+            "#professionalRightSidebar .professional-sidebar-top"
+        );
+
+        const activeProjectId =
+            AppState.project?.project_id ??
+            AppState.project?.projectId ??
+            AppState.project?.id;
+
+        const assessmentProjectId =
+            window.professionalAssessmentCanvasProject?.project_id ??
+            window.professionalAssessmentCanvasProject?.projectId ??
+            window.professionalAssessmentCanvasProject?.id;
+
+        const isActiveAssessmentProject =
+            activeProjectId != null &&
+            assessmentProjectId != null &&
+            String(activeProjectId) === String(assessmentProjectId);
+
+        const isExistingHomeAssessment =
+            window.professionalAssessmentData?.assessment_mode === "existing_home";
+
+        // Show sidebar for active Business project.
+        if (
+            professionalRightSidebar &&
+            projectType === "business"
+        ) {
+            professionalRightSidebar.style.display = "flex";
+        }
+
+        // Client Home Layers only for the active Existing Home Assessment.
+        if (professionalSidebarTop) {
+            professionalSidebarTop.style.display =
+                isActiveAssessmentProject && isExistingHomeAssessment
+                    ? "flex"
+                    : "none";
+        }
+        requestAnimationFrame(() => {
+
+            resizeCanvasSafe?.();
+
+            observeCanvasResize?.();
+
+            requestRender?.();
+
+        });
+
 
         if (currentWorkspace === "home") {
             window.HomeMeasurements?.restoreWorkspace?.();

@@ -34,6 +34,10 @@ from sqlalchemy import DateTime, func
 
 from models.report import Report
 
+from services.professional_assessment_access import (
+    get_professional_project_access,
+)
+
 from models.report_credit_ledger import ReportCreditLedger
 
 router = APIRouter()
@@ -60,6 +64,16 @@ def download_report(
 
     if project.user_id != current_user.id:
         raise HTTPException(403, "Forbidden")
+
+    # =====================
+    # PROFESSIONAL ASSESSMENT READ ACCESS
+    # =====================
+
+    professional_access = get_professional_project_access(
+        db=db,
+        current_user=current_user,
+        project_id=project.id,
+    )
 
     # HOME REPORTS — download from private Supabase Storage
     if report.pdf_path.startswith("supabase://"):

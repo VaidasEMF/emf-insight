@@ -39,10 +39,18 @@ from engine.analysis.business.analysis import (
 )
 
 from db.database import SessionLocal
+from services.professional_assessment_access import (
+    get_professional_project_access,
+    require_active_edit,
+)
 from storage import supabase
 
 from models.user import User
 from models.project import Project
+
+from models.property import Property
+from models.property_health_record import PropertyHealthRecord
+from models.assessment import Assessment
 from models.report_credit_ledger import ReportCreditLedger
 from models.report import Report
 
@@ -170,9 +178,6 @@ app.include_router(
     users_router,
 )
 
-app.include_router(
-    professional_requests_router,
-)
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
@@ -625,6 +630,8 @@ def create_checkout(
         if plan in {
             "home_full_report",
             "home_simple_report",
+            "home_deeper_first",
+            "home_deeper_repeat",
         }:
             if not project_id:
                 raise HTTPException(
@@ -679,6 +686,8 @@ def create_checkout(
                         if plan in {
                             "home_full_report",
                             "home_simple_report",
+                            "home_deeper_first",
+                            "home_deeper_repeat",
                         }
                         else {}
                     ),
@@ -1162,6 +1171,123 @@ async def stripe_webhook(request: Request):
                     access_days,
                     "days",
                 )
+
+
+            elif plan == "home_deeper_first":
+                project_id = metadata.get("project_id")
+                stripe_session_id = session.get("id")
+
+                if not project_id:
+                    print(
+                        "CRITICAL: Stripe Deeper Analysis webhook missing project_id:",
+                        stripe_session_id,
+                    )
+                    raise RuntimeError(
+                        f"Deeper Analysis payment has no project_id. "
+                        f"Stripe session: {stripe_session_id}"
+                    )
+
+                # Verify project ownership.
+                project = db.execute(
+                    text("""
+                        SELECT id
+                        FROM projects
+                        WHERE id = :project_id
+                          AND user_id = :user_id
+                    """),
+                    {
+                        "project_id": str(project_id),
+                        "user_id": str(user.id),
+                    },
+                ).first()
+
+                if not project:
+                    print(
+                        "CRITICAL: Stripe Deeper Analysis project not found or not owned:",
+                        project_id,
+                        user.id,
+                    )
+                    raise RuntimeError(
+                        f"Deeper Analysis project not found or not owned. "
+                        f"Project: {project_id}, User: {user.id}"
+                    )
+
+                now = datetime.utcnow()
+
+                # Create project-scoped Deeper Analysis entitlement.
+                # No expiration is assigned here.
+                db.execute(
+                    text("""
+                        INSERT INTO home_wellness_entitlements (
+                            user_id,
+                            project_id,
+                            entitlement_type,
+                            status,
+                            starts_at,
+                            expires_at,
+                            stripe_session_id
+                        )
+                        VALUES (
+                            :user_id,
+                            :project_id,
+                            'deeper_analysis',
+                            'active',
+                            :starts_at,
+                            NULL,
+                            :stripe_session_id
+                        )
+                        ON CONFLICT (stripe_session_id) DO NOTHING
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "project_id": str(project_id),
+                        "starts_at": now,
+                        "stripe_session_id": stripe_session_id,
+                    },
+                )
+
+                # Record the successful one-time purchase.
+                db.execute(
+                    text("""
+                        INSERT INTO home_wellness_transactions (
+                            user_id,
+                            project_id,
+                            product_key,
+                            stripe_session_id,
+                            stripe_payment_intent_id,
+                            amount,
+                            currency,
+                            status
+                        )
+                        VALUES (
+                            :user_id,
+                            :project_id,
+                            'home_deeper_first',
+                            :stripe_session_id,
+                            :payment_intent_id,
+                            :amount,
+                            :currency,
+                            'completed'
+                        )
+                        ON CONFLICT (stripe_session_id) DO NOTHING
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "project_id": str(project_id),
+                        "stripe_session_id": stripe_session_id,
+                        "payment_intent_id": session.get("payment_intent"),
+                        "amount": session.get("amount_total"),
+                        "currency": session.get("currency"),
+                    },
+                )
+
+                print(
+                    "HOME DEEPER ANALYSIS ACTIVATED",
+                    user.email,
+                    project_id,
+                    stripe_session_id,
+                )
+
 
             elif plan == "home_full_report":
                 # Home Full Report is deliberately separate from Business credits
@@ -1768,6 +1894,19 @@ def save_project(
                 detail="Forbidden",
             )
 
+        # =================================================
+        # PROFESSIONAL ASSESSMENT ACCESS CONTROL
+        # =================================================
+
+        professional_access = get_professional_project_access(
+            db=db,
+            current_user=current_user,
+            project_id=project.id,
+        )
+
+        if professional_access is not None:
+            require_active_edit(professional_access)
+
         print(
             "🔥 PROJECT MODE: UPDATE"
         )
@@ -1780,6 +1919,31 @@ def save_project(
         print(
             "🔥 PROJECT OWNER:",
             project.user_id,
+        )
+
+        # TEMPORARY PROFESSIONAL PROJECT SAVE DIAGNOSTIC
+        print(
+            "\n[PROJECT SAVE IDENTITY CHECK]",
+            {
+                "request_project_id": project_id,
+                "database_project_id": project.id,
+                "database_project_name": project.name,
+                "body_name": body.get("name"),
+                "data_id": data.get("id"),
+                "data_project_id": data.get("project_id"),
+                "data_name": data.get("name"),
+                "assessmentContext": data.get("assessmentContext"),
+                "assessmentDatabaseId": data.get("assessmentDatabaseId"),
+                "assessmentReference": data.get("assessmentReference"),
+                "professionalRequestId": data.get("professionalRequestId"),
+                "clientHomeProjectId": data.get("clientHomeProjectId"),
+                "floor_count": len(floors),
+                "floor_ids": [
+                    f.get("id")
+                    for f in floors
+                    if isinstance(f, dict)
+                ],
+            },
         )
 
         # =================================================
@@ -2026,6 +2190,18 @@ def generate_pdf(
         if not project_row:
             raise HTTPException(404, "Project not found")
 
+        # =====================
+        # PROFESSIONAL ASSESSMENT ACCESS CONTROL
+        # =====================
+
+        professional_access = get_professional_project_access(
+            db=db,
+            current_user=current_user,
+            project_id=project_row.id,
+        )
+
+        if professional_access is not None:
+            require_active_edit(professional_access)
 
         # =====================
         # AUTHENTICATED USER
@@ -2504,11 +2680,63 @@ def generate_pdf(
 
             pdf_path = f"supabase://reports/{storage_path}"
 
+                    # =====================
+        # PROPERTY / PHR / ASSESSMENT LINKS
+        # =====================
+
+        project_data = project_row.data or {}
+
+        property_record = None
+        health_record = None
+        assessment_record = None
+
+        property_uid = project_data.get("propertyId")
+        phr_uid = project_data.get("propertyHealthRecordId")
+        assessment_uid = project_data.get("assessmentId")
+
+        if property_uid:
+            property_record = (
+                db.query(Property)
+                .filter(Property.property_uid == property_uid)
+                .first()
+            )
+
+        if phr_uid and property_record:
+            health_record = (
+                db.query(PropertyHealthRecord)
+                .filter(
+                    PropertyHealthRecord.phr_uid == phr_uid,
+                    PropertyHealthRecord.property_id == property_record.id,
+                )
+                .first()
+            )
+
+        if assessment_uid and property_record and health_record:
+            assessment_record = (
+                db.query(Assessment)
+                .filter(
+                    Assessment.assessment_uid == assessment_uid,
+                    Assessment.property_id == property_record.id,
+                    Assessment.property_health_record_id == health_record.id,
+                )
+                .first()
+            )
+
         report = Report(
             pdf_path=pdf_path,
             preview=1 if is_preview else 0,
             project_id=project_row.id,
             workspace=workspace,
+
+            property_id=property_record.id if property_record else None,
+            property_health_record_id=(
+                health_record.id if health_record else None
+            ),
+            assessment_id=(
+                assessment_record.id if assessment_record else None
+            ),
+
+            report_type=report_type,
         )
 
 

@@ -120,7 +120,7 @@
                 <p>Create another property or environment profile.</p>
             </div>
            <button type="button"
-    onclick="createProject()">
+    onclick="createProject({type:'home'})">
     Create Project
 </button>
         </div>
@@ -148,7 +148,29 @@
 
     window.openHomeWellnessProject = async function (projectId) {
 
+        alert("HOME WELLNESS PROJECT FUNCTION");
+
         console.log("[HOME PROJECT OPEN START]", projectId);
+
+        console.log("[HOME LOADING] ELEMENT CHECK",
+            !!document.getElementById("homeLoadingOverlay")
+        );
+
+        const homeLoadingOverlay =
+            document.getElementById("homeLoadingOverlay");
+
+        if (homeLoadingOverlay) {
+            homeLoadingOverlay.style.display = "flex";
+        }
+
+        console.log("[HOME LOADING] DISPLAY",
+            document.getElementById("homeLoadingOverlay")?.style.display
+        );
+
+        // Clear stale Professional Assessment UI state
+        sessionStorage.removeItem("requestedWorkspace");
+        document.body.classList.remove("pa-measurements-active");
+
         if (window.AppMode?.current !== "home") {
             await window.setAppMode("home");
         }
@@ -181,6 +203,10 @@
             window.requestRender?.();
 
             await window.HomeMeasurements?.start?.();
+
+            if (homeLoadingOverlay) {
+                homeLoadingOverlay.style.display = "none";
+            }
         }
     };
 

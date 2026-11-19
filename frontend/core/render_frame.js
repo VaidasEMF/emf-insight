@@ -462,7 +462,7 @@ function renderFrame() {
             window.drawSourcesLayer?.(currentFloor);
             window.drawOutdoorPlacementGuide?.(ctx);
             window.drawObjects?.();
-            window.drawHomeMeasurementPointsLayer?.();
+
             window.drawHomeLifestylePlacementPreview?.();
             window.drawHomeGuidedActiveLifestyleArea?.();
         }
@@ -503,18 +503,25 @@ function renderFrame() {
             }
 
 
+
             // ==================================================
             // ZONES
             // ==================================================
 
-            if (
-                layers.zones !== false
-            ) {
-
-                window.drawZonesLayer?.(
-                    currentFloor
-                );
+            if (layers.zones !== false) {
+                window.drawZonesLayer?.(currentFloor);
             }
+
+            // Client Home Layers — independent visibility
+            if (
+                window.professionalAssessmentData?.assessment_mode === "existing_home"
+            ) {
+                window.initClientHomeLayerControls?.();
+                window.drawObjects?.();
+                console.log("[PA] Measurement points layer called");
+                window.drawHomeMeasurementPointsLayer?.();
+            }
+
 
 
             // ==================================================
@@ -610,6 +617,13 @@ function renderFrame() {
             ) {
 
                 window.positionMeasurementPopup?.();
+            }
+
+            // Professional Assessment — measurement points on top
+            if (
+                window.professionalAssessmentData?.assessment_mode === "existing_home"
+            ) {
+                window.drawHomeMeasurementPointsLayer?.();
             }
         }
     }

@@ -91,6 +91,17 @@ function createPropertyAssessmentId() {
     );
 }
 
+// =====================================================
+// CANONICAL ASSESSMENT
+// =====================================================
+
+function createAssessmentId() {
+
+    return createPhiId(
+        "assessment"
+    );
+}
+
 
 // =====================================================
 // HOME ASSESSMENT SESSION
@@ -237,6 +248,8 @@ window.PhiIdFactory = {
     createPropertyHealthRecordId,
 
     createPropertyAssessmentId,
+
+    createAssessmentId,
 
     createHomeAssessmentSessionId,
 

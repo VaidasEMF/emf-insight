@@ -7,13 +7,6 @@ from engine.config import THRESHOLDS
 # =====================
 # GET THRESHOLDS
 # =====================
-def get_thresholds(measure_type):
-    return THRESHOLDS.get(measure_type, THRESHOLDS["rf"])
-
-
-from engine.config import THRESHOLDS
-
-
 def get_thresholds(measure_type, zone_type=None):
 
     base = THRESHOLDS.get(measure_type, THRESHOLDS["rf"])
@@ -21,7 +14,7 @@ def get_thresholds(measure_type, zone_type=None):
     warning = base["warning"]
     danger = base["danger"]
 
-    # 🔥 ZONE ADJUSTMENTS
+    # ZONE ADJUSTMENTS
     if zone_type == "bed":
         warning *= 0.3
         danger *= 0.5

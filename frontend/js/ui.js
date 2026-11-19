@@ -340,8 +340,35 @@ function updateProjectHeader() {
             projectId !== undefined &&
             projectId !== "";
 
-        projectHeaderId.textContent =
-            hasProjectId ? `Project #${projectId}` : "";
+        const isProfessionalAssessment =
+            mode === "business" &&
+            project?.assessmentContext === "professional" &&
+            !!project?.assessmentDatabaseId;
+
+        if (isProfessionalAssessment) {
+            projectHeaderId.textContent =
+                `Project #${projectId} · Assessment #${project.assessmentDatabaseId}\n` +
+                `${project.assessmentReference || ""}`;
+
+            projectHeaderId.style.whiteSpace = "pre-line";
+            projectHeaderId.style.display = "inline-block";
+            projectHeaderId.style.fontSize = "10px";
+            projectHeaderId.style.lineHeight = "1.4";
+            projectHeaderId.style.minHeight = "auto";
+            projectHeaderId.style.padding = "4px 7px";
+
+        } else {
+            projectHeaderId.style.whiteSpace = "";
+            projectHeaderId.style.display = "";
+            projectHeaderId.style.fontSize = "";
+            projectHeaderId.style.lineHeight = "";
+            projectHeaderId.style.minHeight = "";
+            projectHeaderId.style.padding = "";
+            projectHeaderId.textContent =
+                hasProjectId ? `Project #${projectId}` : "";
+
+
+        }
 
         projectHeaderId.style.display =
             hasProjectId ? "inline-flex" : "none";
@@ -624,6 +651,10 @@ function updateProjectHeader() {
     controls.style.display =
         "";
 
+    if (window.professionalAssessmentData) {
+        controls.style.display = "none";
+        return;
+    }
 
     // ==================================================
     // UNITS

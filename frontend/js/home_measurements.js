@@ -1770,6 +1770,9 @@ aria-pressed="${currentMethod === "buy_meter"}"
             const floor = window.HomeMeasurements?.getHomeFloor?.();
             const zones = Array.isArray(floor?.zones) ? floor.zones : [];
 
+            const completion =
+                window.HomeMeasurements?.getHomeMeasurementCompletion?.() || null;
+
             content.innerHTML = `
                 <div class="home-measurements-placeholder">
                     <h2>Guided Measurement</h2>
@@ -1908,7 +1911,81 @@ aria-pressed="${currentMethod === "buy_meter"}"
 
 </div>
 
-                    <h3>Select a Lifestyle Area</h3>
+                    ${completion && completion.totalPoints > 0 ? `
+    <div class="home-guided-overall-progress" style="
+        margin:8px 0 12px;
+        padding:10px;
+        background:#f5f9ff;
+        border:1px solid #d8e6ff;
+        border-radius:10px;
+    ">
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:8px;
+        ">
+            <strong style="font-size:12px;color:#1e293b;">
+                Property Measurement Progress
+            </strong>
+
+            <strong style="
+                font-size:16px;
+                color:${completion.eligible ? '#16a34a' : '#2563eb'};
+            ">
+                ${completion.overallPercent}%
+            </strong>
+        </div>
+
+        <div style="
+            margin-top:6px;
+            height:6px;
+            background:#e5e7eb;
+            border-radius:999px;
+            overflow:hidden;
+        ">
+            <div style="
+                width:${completion.overallPercent}%;
+                height:100%;
+                background:${completion.eligible ? '#16a34a' : '#2563eb'};
+                border-radius:999px;
+                transition:width 0.25s ease;
+            "></div>
+        </div>
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:8px;
+            margin-top:6px;
+            font-size:11px;
+            color:#64748b;
+        ">
+            <span>
+                ${completion.measuredPoints} of ${completion.totalPoints} points measured
+            </span>
+
+            <span>
+                ${completion.remainingPoints} remaining
+            </span>
+        </div>
+
+        <div style="
+            margin-top:7px;
+            padding-top:6px;
+            border-top:1px solid #dce8f8;
+            font-size:11px;
+            font-weight:600;
+            color:${completion.eligible ? '#15803d' : '#64748b'};
+        ">
+            ${completion.eligible
+                        ? '✓ Minimum measurement coverage reached'
+                        : 'Continue measuring to unlock Deeper Understanding'}
+        </div>
+    </div>
+` : ''}
+
+<h3>Select a Lifestyle Area</h3>
 
                     <div id="homeGuidedLifestyleAreaList">
                         ${zones.length
@@ -2232,6 +2309,10 @@ ${window.AppState?.project?.homeMeasurementState
 
         const resultsPoints = getOrderedGuidedPoints(resultsZones);
 
+        // DEEPER UNDERSTANDING — ALL PROJECT FLOORS ELIGIBILITY
+        const resultsCompletion =
+            window.HomeMeasurements?.getHomeMeasurementCompletion?.() || null;
+
         const measuredResultsPoints = resultsPoints.filter(
             item => item.point.status === "measured"
         );
@@ -2432,44 +2513,141 @@ ${window.AppState?.project?.homeMeasurementState
             `).join("")}
         </div>
 
-        <!-- ACTIONS -->
-        <div style="
-            display:flex;
-            gap:10px;
-            margin-top:22px;
-        ">
+               <!-- ACTIONS -->
+        <div style="margin-top:22px;">
+
             <button
                 type="button"
                 id="homeResultsBack"
                 style="
-                    flex:1;
-                    padding:13px;
+                    width:100%;
+                    padding:12px;
                     border:1px solid #cbd5e1;
                     border-radius:9px;
                     background:#ffffff;
                     font-weight:600;
                     cursor:pointer;
+                    margin-bottom:16px;
                 "
             >
-                Back
+                ← Back to Guided Measurement
             </button>
 
-            <button
-                type="button"
-                id="homeResultsCreateReport"
-                style="
-                    flex:2;
-                    padding:13px;
-                    border:0;
-                    border-radius:9px;
-                    background:#2563eb;
-                    color:white;
-                    font-weight:700;
-                    cursor:pointer;
-                "
-            >
-                Create Property Health Report →
-            </button>
+            ${!resultsCompletion?.eligible ? `
+                <div style="
+                    padding:18px;
+                    border:1px solid #dbe3ef;
+                    border-radius:12px;
+                    background:#f8fafc;
+                ">
+                    <strong>Deeper Understanding</strong>
+                    <p style="font-size:13px;color:#64748b;margin:8px 0;">
+                        Complete the minimum measurement coverage to unlock
+                        your detailed EMF analysis.
+                    </p>
+                    <div style="font-size:14px;font-weight:700;">
+                        ${resultsCompletion?.overallPercent ?? 0}% completed
+                    </div>
+           ` : !window.homeDeeperAnalysisPurchased ? `
+                <div style="
+                    padding:20px;
+                    border:1px solid #cbd5e1;
+                    border-radius:12px;
+                    background:#ffffff;
+                ">
+                    <div style="
+                        font-size:11px;
+                        font-weight:700;
+                        color:#2563eb;
+                        letter-spacing:0.7px;
+                        margin-bottom:8px;
+                    ">
+                        YOUR NEXT STEP
+                    </div>
+
+                    <h3 style="margin:0 0 8px;font-size:20px;">
+                        Deeper Understanding
+                    </h3>
+
+                    <p style="font-size:13px;color:#64748b;line-height:1.5;">
+                        Get a detailed interpretation of your home's EMF
+                        measurements, Lifestyle Areas and prioritised
+                        recommendations.
+                    </p>
+
+                    <ul style="
+                        padding-left:19px;
+                        font-size:13px;
+                        line-height:1.8;
+                        color:#334155;
+                    ">
+                        <li>RF, Electric and Magnetic analysis</li>
+                        <li>Lifestyle Area insights</li>
+                        <li>Prioritised recommendations</li>
+                        <li>Detailed Property Health PDF</li>
+                    </ul>
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        margin-top:16px;
+                    ">
+                        <strong style="font-size:24px;">€49</strong>
+                        <span style="font-size:12px;color:#64748b;">
+                            One-time payment
+                        </span>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="homeDeeperPurchase"
+                        style="
+                            width:100%;
+                            margin-top:14px;
+                            padding:14px;
+                            border:0;
+                            border-radius:9px;
+                            background:#2563eb;
+                            color:white;
+                            font-weight:700;
+                            cursor:pointer;
+                        "
+                    >
+                        Unlock Deeper Understanding →
+                    </button>
+                </div>
+            ` : `
+                <div style="
+                    padding:20px;
+                    border:1px solid #bbf7d0;
+                    border-radius:12px;
+                    background:#f0fdf4;
+                ">
+                    <strong>Deeper Understanding unlocked</strong>
+                    <p style="font-size:13px;color:#166534;">
+                        Your purchase is confirmed. Continue to your detailed
+                        EMF analysis.
+                    </p>
+                    <button
+                        type="button"
+                        id="homeDeeperStart"
+                        style="
+                            width:100%;
+                            padding:14px;
+                            border:0;
+                            border-radius:9px;
+                            background:#15803d;
+                            color:white;
+                            font-weight:700;
+                            cursor:pointer;
+                        "
+                    >
+                        Start Deeper Analysis →
+                    </button>
+                </div>
+            `}
+
         </div>
 
     </div>
@@ -2530,9 +2708,16 @@ ${window.AppState?.project?.homeMeasurementState
         content.querySelector("#homeResultsBack")
             ?.addEventListener("click", () => showPage("guided"));
 
-        content.querySelector("#homeResultsCreateReport")
-            ?.addEventListener("click", () => showPage("report"));
+        // DEEPER UNDERSTANDING — €49 CHECKOUT
+        content.querySelector("#homeDeeperPurchase")
+            ?.addEventListener("click", () => {
+                if (typeof window.buyPlan !== "function") {
+                    alert("Payment service is currently unavailable.");
+                    return;
+                }
 
+                window.buyPlan("home_deeper_first");
+            });
         // SIMPLE PROPERTY REPORT — PRICING AND CHECKOUT
         if (activePage === "report") {
             const priceElement = content.querySelector(
@@ -3039,6 +3224,100 @@ ${window.AppState?.project?.homeMeasurementState
         }));
     }
 
+    function getHomeMeasurementCompletion() {
+        const project = window.AppState?.project;
+
+        if (!project || !Array.isArray(project.floors)) {
+            return {
+                eligible: false,
+                overallPercent: 0,
+                measuredPoints: 0,
+                totalPoints: 0,
+                areas: []
+            };
+        }
+
+        const lifestyleTypes = [
+            "bed",
+            "work_area",
+            "child_area"
+        ];
+
+        const areas = [];
+
+        project.floors.forEach((floor, floorIndex) => {
+            (floor.zones || []).forEach(zone => {
+                if (!lifestyleTypes.includes(zone.type)) return;
+
+                const expectedPoints =
+                    generateLifestyleMeasurementPoints(zone, floor);
+
+                if (!expectedPoints.length) return;
+
+                const existingPoints = Array.isArray(zone.measurementPoints)
+                    ? zone.measurementPoints
+                    : [];
+
+                const existingById = new Map(
+                    existingPoints.map(point => [point.id, point])
+                );
+
+                const measuredCount = expectedPoints.filter(point => {
+                    const existing = existingById.get(point.id);
+
+                    return existing?.status === "measured";
+                }).length;
+
+                const totalCount = expectedPoints.length;
+
+                const percent = Math.round(
+                    (measuredCount / totalCount) * 100
+                );
+
+                areas.push({
+                    floorId: floor.id,
+                    floorName: floor.name || `Floor ${floorIndex + 1}`,
+                    zoneId: zone.id,
+                    type: zone.type,
+                    totalPoints: totalCount,
+                    measuredPoints: measuredCount,
+                    remainingPoints: totalCount - measuredCount,
+                    percent,
+                    eligible: percent >= 50
+                });
+            });
+        });
+
+        const totalPoints = areas.reduce(
+            (sum, area) => sum + area.totalPoints,
+            0
+        );
+
+        const measuredPoints = areas.reduce(
+            (sum, area) => sum + area.measuredPoints,
+            0
+        );
+
+        const overallPercent = totalPoints > 0
+            ? Math.round((measuredPoints / totalPoints) * 100)
+            : 0;
+
+        const allAreasEligible =
+            areas.length > 0 &&
+            areas.every(area => area.eligible);
+
+        return {
+            eligible:
+                overallPercent >= 60 &&
+                allAreasEligible,
+            overallPercent,
+            measuredPoints,
+            totalPoints,
+            remainingPoints: totalPoints - measuredPoints,
+            areas
+        };
+    }
+
     function openRoom(room) {
         if (window.AppMode?.current !== HOME_MODE) return;
 
@@ -3531,7 +3810,13 @@ ${window.AppState?.project?.homeMeasurementState
     }
 
     window.drawHomeGuidedActiveLifestyleArea = function () {
-        if (window.AppMode?.current !== "home") return;
+        const isHomeMode = window.AppMode?.current === "home";
+
+        const isProfessionalHomeAssessment =
+            window.AppMode?.current === "business" &&
+            window.professionalAssessmentData?.assessment_mode === "existing_home";
+
+        if (!isHomeMode && !isProfessionalHomeAssessment) return;
 
         const zone = window.HomeMeasurements?.activeLifestyleArea;
         if (!zone) return;
@@ -3600,6 +3885,7 @@ ${window.AppState?.project?.homeMeasurementState
         openCanvasPoint,
         generateRoomMeasurementPoints,
         generateLifestyleMeasurementPoints,
+        getHomeMeasurementCompletion,
         getHomeFloor,
         getHomeRooms,
         getRoomGridStats,

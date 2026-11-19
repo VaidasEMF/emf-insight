@@ -54,6 +54,10 @@ def me(
     home_simple_report_used_at = None
     home_simple_report_expires_at = None
     home_simple_report_days_remaining = 0
+    # HOME DEEPER UNDERSTANDING
+    home_deeper_analysis_purchased = False
+    home_deeper_analysis_unlocked = False
+    home_deeper_analysis_usage_status = None
 
     professional_demo_active = False
     professional_demo_expires_at = None
@@ -267,6 +271,61 @@ LIMIT 1
             )
             home_simple_report_unlocked = False
 
+
+                # ---------------------------------------------------------
+    # HOME DEEPER ANALYSIS ENTITLEMENT
+    # Project-scoped ONLY
+    # ---------------------------------------------------------
+    if project_id is not None:
+        try:
+            from sqlalchemy import text
+
+            result = db.execute(
+                text("""
+                    SELECT
+                        t.id AS transaction_id,
+                        t.usage_status
+                    FROM home_wellness_entitlements e
+                    LEFT JOIN home_wellness_transactions t
+                        ON t.user_id = e.user_id
+                        AND t.project_id = e.project_id
+                        AND t.product_key = 'home_deeper_first'
+                        AND t.status = 'completed'
+                    WHERE e.project_id = :project_id
+                        AND e.user_id = :user_id
+                        AND e.entitlement_type = 'deeper_analysis'
+                        AND e.status = 'active'
+                        AND (
+                            e.starts_at IS NULL
+                            OR e.starts_at <= CURRENT_TIMESTAMP
+                        )
+                    ORDER BY e.created_at DESC, t.created_at DESC
+                    LIMIT 1
+                """),
+                {
+                    "project_id": str(project_id),
+                    "user_id": str(current_user.id),
+                },
+            ).first()
+
+            if result:
+                home_deeper_analysis_purchased = (
+                    result.transaction_id is not None
+                )
+                home_deeper_analysis_unlocked = (
+                    home_deeper_analysis_purchased
+                )
+                home_deeper_analysis_usage_status = (
+                    result.usage_status or "not_used"
+                )
+
+        except Exception as e:
+            print(
+                "HOME DEEPER ANALYSIS ENTITLEMENT CHECK FAILED:",
+                repr(e)
+            )
+            home_deeper_analysis_unlocked = False
+
     # IMPORTANT:
     # If project_id is not supplied, the Home Full Report
     # remains locked.
@@ -323,6 +382,10 @@ LIMIT 1
         "home_full_report_unlocked": home_full_report_unlocked,
         "home_simple_report_unlocked": home_simple_report_unlocked,
         "home_simple_report_purchased": home_simple_report_purchased,
+        "home_deeper_analysis_purchased": home_deeper_analysis_purchased,
+        "home_deeper_analysis_unlocked": home_deeper_analysis_unlocked,
+        "home_deeper_analysis_usage_status": home_deeper_analysis_usage_status,
+
 
         "home_simple_report_usage_status": home_simple_report_usage_status,
         "home_simple_report_id": home_simple_report_id,

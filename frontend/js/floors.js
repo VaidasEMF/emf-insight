@@ -5304,6 +5304,8 @@ function switchFloor(index) {
 
         resizeCanvasSafe?.();
 
+        console.log("[FLOOR CHANGE] Before observer");
+
         observeCanvasResize();
 
         requestRender?.();
@@ -5909,6 +5911,8 @@ function observeCanvasResize() {
 
     canvasResizeObserver = new ResizeObserver(() => {
 
+        console.log("[FLOOR CHANGE] RAF reached");
+
         requestAnimationFrame(() => {
 
             window.resizeCanvasSafe?.();
@@ -5920,6 +5924,12 @@ function observeCanvasResize() {
     });
 
     canvasResizeObserver.observe(container);
+
+    console.log("[OBSERVER CHECK]", {
+        target: container.id,
+        height: container.getBoundingClientRect().height,
+        canvasHeight: document.getElementById("canvas")?.height
+    });
 
     console.log(
         "[CANVAS RESIZE OBSERVER] Observing:",
