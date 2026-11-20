@@ -2907,8 +2907,8 @@ ${window.AppState?.project?.homeMeasurementState
 
         const floor = getHomeFloor();
 
-        if (!floor) {
-            alert("Open a Home Wellness project first.");
+        if (!floor?.image) {
+            alert("Please upload a Floor Plan before starting measurements.");
             return;
         }
 
@@ -3797,6 +3797,8 @@ ${window.AppState?.project?.homeMeasurementState
 
         const status =
             window.AppState?.project?.homeMeasurementState?.status;
+
+
 
         if (!["setup", "guided", "review", "completed"].includes(status)) {
             return;

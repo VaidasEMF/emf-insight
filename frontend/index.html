@@ -4467,6 +4467,30 @@
         1;
     }
 
+
+    /* KEEP GUIDED MEASUREMENT ELEMENTS IN FIXED GRID COLUMNS */
+
+    .canvas-area.home-guided-layout #canvasNavigation {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .canvas-area.home-guided-layout #canvasWrap {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .canvas-area.home-guided-layout #homeGuidedRightPanel {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    /* HIDE MEASUREMENT SETUP WHEN NO FLOOR PLAN EXISTS */
+
+    .canvas-area.home-guided-no-plan #homeGuidedRightPanel {
+      display: none !important;
+    }
+
     /* ===================================================== */
     /* EMF INSIGHT — CANVAS NAVIGATION TOOLBAR                */
     /* ===================================================== */
@@ -39693,6 +39717,57 @@ return false;
                     <span class="client-home-layer-meta">2 sources</span>
                   </label>
 
+                  <label class="client-home-layer-row">
+                    <input type="checkbox" id="clientHomeLayerMeasurementPoints" checked>
+                    <span class="client-home-layer-icon">
+                      <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="8" />
+                        <circle cx="12" cy="12" r="2" />
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+                      </svg>
+                    </span>
+                    <span class="client-home-layer-name">Measurement Points</span>
+                    <span class="client-home-layer-meta" id="clientHomeMeasurementSummary">0 / 0</span>
+                  </label>
+
+
+
+                  <div id="clientHomeMeasurementProgressDetails">
+                    <div style="
+        height:5px;
+        margin-top:6px;
+        background:#e2e8f0;
+        border-radius:10px;
+        overflow:hidden;
+    ">
+                      <div id="clientHomeMeasurementProgressBar" style="
+            width:0%;
+            height:100%;
+            background:#16a34a;
+            border-radius:10px;
+            transition:width .2s ease;
+        "></div>
+                    </div>
+
+                    <div style="
+        display:flex;
+        justify-content:space-between;
+        gap:8px;
+        margin-top:5px;
+        font-size:10px;
+    ">
+                      <span style="color:#16a34a;">
+                        <strong id="clientHomeMeasuredLabel">0</strong> Measured
+                      </span>
+
+                      <span style="color:#64748b;">
+                        <strong id="clientHomePendingLabel">0</strong> Pending
+                      </span>
+                    </div>
+                  </div>
+
+
+
                 </div>
 
               </div>
@@ -42076,6 +42151,24 @@ return false;
 
     el.innerHTML =
       html;
+
+    // Show Professional Room Navigator when rooms exist.
+    const professionalRightSidebar =
+      document.getElementById("professionalRightSidebar");
+
+    if (professionalRightSidebar) {
+      const hasFloorPlan = !!floor.image;
+      const isProfessional =
+        window.EMFProductContext?.account?.role === "professional";
+
+      professionalRightSidebar.style.display =
+        AppMode.current === "business" &&
+          isProfessional &&
+          hasFloorPlan &&
+          rooms.length > 0
+          ? "flex"
+          : "none";
+    }
   }
 
   window.updateRoomProgressPanel =
@@ -44436,6 +44529,35 @@ cursor: ${canOpenAssessment ? "pointer" : "not-allowed"};
 
     if (role !== "professional") {
       return;
+    }
+
+    // Preserve the active independent Business Project.
+    const activeProject = window.AppState?.project;
+
+    const activeAssessmentId =
+      activeProject?.assessmentDatabaseId ??
+      window.professionalAssessmentData?.assessment?.id ??
+      null;
+
+    const activeBusinessProjectId =
+      activeProject?.project_id ??
+      activeProject?.id ??
+      window.currentProjectId ??
+      null;
+
+    if (!activeAssessmentId && activeBusinessProjectId) {
+      sessionStorage.setItem(
+        "professionalReturnContext",
+        JSON.stringify({
+          type: "business-project",
+          projectId: String(activeBusinessProjectId)
+        })
+      );
+
+      console.log("💾 BUSINESS RETURN CONTEXT SAVED", {
+        type: "business-project",
+        projectId: activeBusinessProjectId
+      });
     }
 
     sessionStorage.setItem("professionalDashboardRequested", "true");
@@ -56437,6 +56559,7 @@ z-index:2;
 
       const assessmentMode =
         window.professionalAssessmentData?.assessment_mode;
+
       const activeProjectId =
         AppState.project?.project_id ??
         AppState.project?.projectId ??
@@ -56740,18 +56863,42 @@ z-index:2;
         }
       }
 
-      console.log("🔙 RETURN DEBUG", {
-        requestedWorkspace: sessionStorage.getItem("requestedWorkspace"),
-        hasContext: !!sessionStorage.getItem("professionalAssessmentContext"),
-        panelDisplay: document.getElementById("panel")?.style.display,
-        assessmentDisplay: document.getElementById("professionalAssessmentWorkspace")?.style.display
-      });
-
       // Return to Professional Dashboard after leaving Assessment.
+
+      // Preserve the exact Professional Assessment context.
+      const assessmentContext = JSON.parse(
+        sessionStorage.getItem("professionalAssessmentContext") || "null"
+      );
+
+      if (
+        assessmentContext?.requestId &&
+        assessmentContext?.projectId &&
+        assessmentContext?.assessmentId
+      ) {
+        sessionStorage.setItem(
+          "professionalReturnContext",
+          JSON.stringify({
+            type: "professional-assessment",
+            requestId: Number(assessmentContext.requestId),
+            projectId: Number(assessmentContext.projectId),
+            assessmentId: Number(assessmentContext.assessmentId),
+            expiresAt: assessmentContext.expiresAt || null
+          })
+        );
+
+        console.log("💾 PROFESSIONAL RETURN CONTEXT SAVED", {
+          type: "professional-assessment",
+          requestId: assessmentContext.requestId,
+          projectId: assessmentContext.projectId,
+          assessmentId: assessmentContext.assessmentId
+        });
+      }
+
       sessionStorage.setItem("workspaceMode", "business");
       sessionStorage.removeItem("requestedWorkspace");
 
       returnToProfessionalDashboard();
+
     }
 
 

@@ -761,6 +761,17 @@ function handleImageUpload(evt) {
 
                 updateRoomProgressPanel?.();
 
+                // Refresh Professional Room Navigator visibility after plan upload.
+                const professionalRightSidebar =
+                    document.getElementById("professionalRightSidebar");
+
+                if (
+                    professionalRightSidebar &&
+                    window.AppMode?.current === "business"
+                ) {
+                    professionalRightSidebar.style.display = "flex";
+                }
+
                 // ==================================================
                 // FINAL DEBUG
                 // ==================================================

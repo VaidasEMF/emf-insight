@@ -4888,6 +4888,31 @@ function updateWorkspaceUI(options = {}) {
         activeProject?.access_mode === "FROZEN_READ_ONLY" &&
         !!activeProject?.assessmentDatabaseId;
 
+    // CANVAS NAVIGATION — BUSINESS SURVEY ONLY
+    const canvasNavigation =
+        document.getElementById("canvasNavigation");
+
+    if (canvasNavigation) {
+        const hasHomeFloorPlan =
+            !!window.getCurrentFloor?.()?.image;
+
+        const canvasArea =
+            document.querySelector(".canvas-area");
+
+        if (canvasArea) {
+            canvasArea.classList.toggle(
+                "home-guided-no-plan",
+                mode === "home" && !hasHomeFloorPlan
+            );
+        }
+
+        canvasNavigation.style.display =
+            mode === "business"
+                ? (window.getCurrentFloor?.()?.image ? "flex" : "none")
+                : mode === "home" && hasHomeFloorPlan
+                    ? "flex"
+                    : "none";
+    }
 
     // PROFESSIONAL ASSESSMENT ACCESS BADGE
     const professionalAssessmentAccessBadge =
@@ -4907,9 +4932,11 @@ function updateWorkspaceUI(options = {}) {
     const professionalAssessmentMenu =
         document.getElementById("professionalAssessmentSidebarMenu");
     professionalAssessmentMenu.style.display =
-        (isProfessionalAssessmentView || isFrozenProfessionalProject)
-            ? "block"
-            : "none";
+        (isProfessionalAssessmentView && isDemo)
+            ? "none"
+            : (isProfessionalAssessmentView || isFrozenProfessionalProject)
+                ? "block"
+                : "none";
 
     // FROZEN PROFESSIONAL PROJECT — LIMIT SIDEBAR ACTIONS
     const professionalNewAssessmentBtn =
@@ -4931,9 +4958,18 @@ function updateWorkspaceUI(options = {}) {
     const professionalRightSidebar =
         document.getElementById("professionalRightSidebar");
 
+    const hasFloorPlan =
+        !!window.getCurrentFloor?.()?.image;
+
     if (professionalRightSidebar) {
         professionalRightSidebar.style.display =
-            isProfessionalAssessmentView ? "flex" : "none";
+            (mode === "business" &&
+                hasFloorPlan &&
+                (isProfessionalAssessmentView ||
+                    isFrozenProfessionalProject ||
+                    window.EMFProductContext?.account?.role === "professional"))
+                ? "flex"
+                : "none";
     }
 
     // Client Home Assessment – visual distinction for Map Layers
@@ -5113,16 +5149,24 @@ function updateWorkspaceUI(options = {}) {
                 : "none";
     }
 
-    // BUSINESS PROJECT ACTIONS IN SIDEBAR
     const businessProjectActions =
         document.getElementById("businessProjectActions");
+
+    // BUSINESS PROJECT ACTIONS IN SIDEBAR
     if (businessProjectActions) {
+        const isProfessionalAssessmentDemo =
+            isProfessionalAssessmentView && isDemo;
+
         businessProjectActions.style.display =
-            showProfessionalDashboard ||
-                isProfessionalAssessmentView ||
-                isFrozenProfessionalProject
-                ? "none"
-                : "";
+            isProfessionalAssessmentDemo
+                ? "block"
+                : (
+                    showProfessionalDashboard ||
+                        isProfessionalAssessmentView ||
+                        isFrozenProfessionalProject
+                        ? "none"
+                        : ""
+                );
     }
 
     // BUSINESS OUTPUT ACTIONS

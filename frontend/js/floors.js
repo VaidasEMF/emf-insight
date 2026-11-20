@@ -2098,6 +2098,13 @@ function updateHomeEmptyPlanState() {
 
     if (!floor) {
 
+        const canvasArea =
+            document.querySelector(".canvas-area");
+
+        canvasArea?.classList.add(
+            "home-guided-no-plan"
+        );
+
         if (emptyState) {
 
             emptyState.style.display =
@@ -2137,7 +2144,13 @@ function updateHomeEmptyPlanState() {
     const hasPlan =
         !!floor.image;
 
+    const canvasArea =
+        document.querySelector(".canvas-area");
 
+    canvasArea?.classList.toggle(
+        "home-guided-no-plan",
+        !hasPlan
+    );
     // ==================================================
     // EMPTY CANVAS STATE
     // ==================================================

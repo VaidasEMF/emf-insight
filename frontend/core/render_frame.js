@@ -463,6 +463,8 @@ function renderFrame() {
             window.drawOutdoorPlacementGuide?.(ctx);
             window.drawObjects?.();
 
+            window.drawHomeMeasurementPointsLayer?.();
+
             window.drawHomeLifestylePlacementPreview?.();
             window.drawHomeGuidedActiveLifestyleArea?.();
         }

@@ -2258,7 +2258,68 @@ function drawHomeMeasurementPointsLayer() {
     if (!isHomeMode && !isProfessionalHomeAssessment) return;
 
     const project = window.AppState?.project;
+
+    // CLIENT HOME MEASUREMENT PROGRESS
+    if (isProfessionalHomeAssessment && project) {
+
+        const allZones = (project.floors || []).flatMap(
+            floor => Array.isArray(floor.zones) ? floor.zones : []
+        );
+
+        const measurementPoints = allZones
+            .filter(zone =>
+                zone?.zoneType &&
+                zone.measurementZoneDimensions &&
+                Array.isArray(zone.measurementPoints)
+            )
+            .flatMap(zone => zone.measurementPoints);
+
+        const totalCount = measurementPoints.length;
+
+        const measuredCount = measurementPoints.filter(point =>
+            point.status === "measured" ||
+            point.measured === true
+        ).length;
+
+        const pendingCount = totalCount - measuredCount;
+
+        const progressPercent = totalCount > 0
+            ? (measuredCount / totalCount) * 100
+            : 0;
+
+        const setText = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = String(value);
+        };
+
+        setText("clientHomeMeasuredCount", measuredCount);
+        setText("clientHomeTotalCount", totalCount);
+        setText("clientHomeMeasuredLabel", measuredCount);
+        setText("clientHomePendingLabel", pendingCount);
+
+        setText(
+            "clientHomeMeasurementSummary",
+            `${measuredCount} / ${totalCount}`
+        );
+
+        const progressBar = document.getElementById(
+            "clientHomeMeasurementProgressBar"
+        );
+
+        if (progressBar) {
+            progressBar.style.width = `${progressPercent}%`;
+        }
+    }
+
     const floor = project?.floors?.[project.currentFloorIndex || 0];
+    // Keep progress calculation active, but hide Canvas points when disabled.
+    if (
+        isProfessionalHomeAssessment &&
+        window.clientHomeLayerVisibility?.measurementPoints === false
+    ) {
+        return;
+    }
+
     const canvasCtx = window.ctx;
 
     if (!floor || !canvasCtx || !window.EMFViewport?.worldPoint) return;
@@ -10809,13 +10870,15 @@ function initClientHomeLayerControls() {
     const controls = {
         clientHomeLayerLifestyleZones: "lifestyleZones",
         clientHomeLayerIndoorSources: "indoorSources",
-        clientHomeLayerOutdoorSources: "outdoorSources"
+        clientHomeLayerOutdoorSources: "outdoorSources",
+        clientHomeLayerMeasurementPoints: "measurementPoints"
     };
 
     window.clientHomeLayerVisibility ??= {
         lifestyleZones: true,
         indoorSources: true,
-        outdoorSources: true
+        outdoorSources: true,
+        measurementPoints: true
     };
 
     Object.entries(controls).forEach(([id, stateKey]) => {
@@ -10829,10 +10892,34 @@ function initClientHomeLayerControls() {
         checkbox.checked =
             window.clientHomeLayerVisibility[stateKey];
 
+        if (stateKey === "measurementPoints") {
+            const progressDetails = document.getElementById(
+                "clientHomeMeasurementProgressDetails"
+            );
+
+            if (progressDetails) {
+                progressDetails.style.display = checkbox.checked
+                    ? ""
+                    : "none";
+            }
+        }
+
         checkbox.addEventListener("change", () => {
 
             window.clientHomeLayerVisibility[stateKey] =
                 checkbox.checked;
+
+            if (stateKey === "measurementPoints") {
+                const progressDetails = document.getElementById(
+                    "clientHomeMeasurementProgressDetails"
+                );
+
+                if (progressDetails) {
+                    progressDetails.style.display = checkbox.checked
+                        ? ""
+                        : "none";
+                }
+            }
 
             window.requestRender?.();
         });
