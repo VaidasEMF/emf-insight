@@ -555,6 +555,27 @@
 
         }
 
+        // PRESELECT ACCOUNT TYPE FROM URL
+        const registrationParams =
+            new URLSearchParams(window.location.search);
+
+        const requestedAccountType =
+            registrationParams.get("type");
+
+        if (
+            requestedAccountType === "home" ||
+            requestedAccountType === "professional"
+        ) {
+            const accountTypeOption =
+                document.querySelector(
+                    `input[name="accountType"][value="${requestedAccountType}"]`
+                );
+
+            if (accountTypeOption) {
+                accountTypeOption.checked = true;
+            }
+        }
+
 
         form.addEventListener(
             "submit",
