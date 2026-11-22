@@ -560,10 +560,82 @@ def _ensure_professional_entitlements_table(db):
         )
     """))
 
+    # Business Report Usage
+    db.execute(text("""
+        ALTER TABLE professional_entitlements
+        ADD COLUMN IF NOT EXISTS report_limit INTEGER NOT NULL DEFAULT 0
+    """))
+
+    db.execute(text("""
+        ALTER TABLE professional_entitlements
+        ADD COLUMN IF NOT EXISTS reports_used INTEGER NOT NULL DEFAULT 0
+    """))
+
     db.execute(text("""
         ALTER TABLE professional_entitlements
         ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(255)
     """))
+
+    # Business Usage Ledger
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS business_usage_ledger (
+            id BIGSERIAL PRIMARY KEY,
+
+            user_id VARCHAR(255) NOT NULL,
+            plan_code VARCHAR(50) NOT NULL,
+
+            usage_type VARCHAR(50) NOT NULL,
+            amount INTEGER NOT NULL DEFAULT 1,
+
+            reference_type VARCHAR(50),
+            reference_id VARCHAR(255),
+
+            billing_period_start TIMESTAMP,
+            billing_period_end TIMESTAMP,
+
+            idempotency_key VARCHAR(255) NOT NULL UNIQUE,
+
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+            CONSTRAINT chk_business_usage_type
+                CHECK (
+                    usage_type IN (
+                        'assessment',
+                        'report',
+                        'contact_opportunity'
+                    )
+                ),
+
+            CONSTRAINT chk_business_usage_amount
+                CHECK (amount > 0)
+        )
+    """))
+
+    db.execute(text("""
+        CREATE INDEX IF NOT EXISTS
+        idx_business_usage_user
+        ON business_usage_ledger(user_id)
+    """))
+
+    db.execute(text("""
+        CREATE INDEX IF NOT EXISTS
+        idx_business_usage_type
+        ON business_usage_ledger(usage_type)
+    """))
+
+    db.execute(text("""
+        CREATE INDEX IF NOT EXISTS
+        idx_business_usage_created
+        ON business_usage_ledger(created_at)
+    """))
+
+    db.execute(text("""
+        CREATE INDEX IF NOT EXISTS
+        idx_business_usage_reference
+        ON business_usage_ledger(reference_type, reference_id)
+    """))
+
+ 
 
 
 def _claim_stripe_event(db, event_id):
@@ -904,7 +976,9 @@ async def stripe_webhook(request: Request):
                             contact_opportunity_limit,
                             contact_opportunities_used,
                             branding_included,
-                            status
+                            status,
+                            report_limit,
+                            reports_used
                         )
                         VALUES (
                             :user_id,
@@ -914,17 +988,21 @@ async def stripe_webhook(request: Request):
                             1,
                             0,
                             FALSE,
-                            'active'
+                            'active',
+                            1,
+                            0
                         )
                         ON CONFLICT (user_id) DO UPDATE SET
                             plan_code = 'single',
                             assessment_limit = 1,
-                            assessments_used = 0,
                             contact_opportunity_limit = 1,
-                            contact_opportunities_used = 0,
                             branding_included = FALSE,
                             status = 'active',
-                            updated_at = CURRENT_TIMESTAMP
+                            report_limit = 1,
+                            updated_at = CURRENT_TIMESTAMP,
+                            assessments_used = 0,
+                            reports_used = 0,
+                            contact_opportunities_used = 0
                     """),
                     {
                         "user_id": str(user.id),
@@ -942,8 +1020,10 @@ async def stripe_webhook(request: Request):
                     )
                 )
 
+
             elif plan == "pro":
-                # First Pro billing cycle = 5 Business report credits.
+                # Initial Pro subscription = 5 Assessments,
+                # 5 Reports and 3 Contact Opportunities.
                 user.plan = "pro"
                 user.credits = 5
 
@@ -957,7 +1037,9 @@ async def stripe_webhook(request: Request):
                             contact_opportunity_limit,
                             contact_opportunities_used,
                             branding_included,
-                            status
+                            status,
+                            report_limit,
+                            reports_used
                         )
                         VALUES (
                             :user_id,
@@ -967,7 +1049,9 @@ async def stripe_webhook(request: Request):
                             3,
                             0,
                             FALSE,
-                            'active'
+                            'active',
+                            5,
+                            0
                         )
                         ON CONFLICT (user_id) DO UPDATE SET
                             plan_code = 'pro',
@@ -977,6 +1061,8 @@ async def stripe_webhook(request: Request):
                             contact_opportunities_used = 0,
                             branding_included = FALSE,
                             status = 'active',
+                            report_limit = 5,
+                            reports_used = 0,
                             updated_at = CURRENT_TIMESTAMP
                     """),
                     {
@@ -996,9 +1082,8 @@ async def stripe_webhook(request: Request):
                 )
 
             elif plan == "professional":
-                # First Professional billing cycle.
-                # Professional includes 25 assessments,
-                # 10 contact opportunities and branding.
+                # Initial Professional subscription = 25 Assessments,
+                # 25 Reports, 10 Contact Opportunities and branding.
                 user.plan = "professional"
 
                 db.execute(
@@ -1012,7 +1097,9 @@ async def stripe_webhook(request: Request):
                             contact_opportunities_used,
                             branding_included,
                             status,
-                            stripe_subscription_id
+                            stripe_subscription_id,
+                            report_limit,
+                            reports_used
                         )
                         VALUES (
                             :user_id,
@@ -1023,7 +1110,9 @@ async def stripe_webhook(request: Request):
                             0,
                             TRUE,
                             'active',
-                            :stripe_subscription_id
+                            :stripe_subscription_id,
+                            25,
+                            0
                         )
                         ON CONFLICT (user_id) DO UPDATE SET
                             plan_code = 'professional',
@@ -1037,6 +1126,8 @@ async def stripe_webhook(request: Request):
                                 EXCLUDED.stripe_subscription_id,
                                 professional_entitlements.stripe_subscription_id
                             ),
+                            report_limit = 25,
+                            reports_used = 0,
                             updated_at = CURRENT_TIMESTAMP
                     """),
                     {
@@ -1380,6 +1471,26 @@ async def stripe_webhook(request: Request):
 
             if subscription_id:
                 subscription = stripe.Subscription.retrieve(subscription_id)
+
+                print(
+                    "STRIPE BILLING PERIOD DEBUG:",
+                    {
+                        "subscription_id": subscription_id,
+                        "subscription_current_period_start": subscription.get("current_period_start"),
+                        "subscription_current_period_end": subscription.get("current_period_end"),
+                        "items": [
+                            {
+                                "current_period_start": item.get("current_period_start"),
+                                "current_period_end": item.get("current_period_end"),
+                            }
+                            for item in (
+                                (subscription.get("items") or {}).get("data") or []
+                            )
+                        ],
+                        "invoice_period_start": invoice.get("period_start"),
+                        "invoice_period_end": invoice.get("period_end"),
+                    }
+                )
                 metadata = subscription.get("metadata") or {}
 
                 user_id = metadata.get("user_id")
@@ -1546,6 +1657,7 @@ async def stripe_webhook(request: Request):
                                 )
 
             db.commit()
+        
         elif event_type in (
             "customer.subscription.updated",
             "customer.subscription.deleted",
