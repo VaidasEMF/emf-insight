@@ -1009,6 +1009,32 @@ async def stripe_webhook(request: Request):
                     },
                 )
 
+                # Diagnostic: verify entitlement values immediately after UPSERT.
+                entitlement_debug = db.execute(
+                    text("""
+                        SELECT
+                            user_id,
+                            plan_code,
+                            assessment_limit,
+                            assessments_used,
+                            report_limit,
+                            reports_used,
+                            contact_opportunity_limit,
+                            contact_opportunities_used,
+                            status
+                        FROM professional_entitlements
+                        WHERE user_id = :user_id
+                    """),
+                    {
+                        "user_id": str(user.id),
+                    },
+                ).mappings().first()
+
+                print(
+                    "SINGLE ENTITLEMENT AFTER UPSERT:",
+                    dict(entitlement_debug or {})
+                )
+
                 db.add(
                     ReportCreditLedger(
                         user_id=user.id,
