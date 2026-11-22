@@ -1096,6 +1096,26 @@ async def stripe_webhook(request: Request):
                     },
                 )
 
+                pro_entitlement_debug = db.execute(
+                    text("""
+                        SELECT
+                            user_id,
+                            plan_code,
+                            assessment_limit,
+                            report_limit,
+                            contact_opportunity_limit,
+                            status
+                        FROM professional_entitlements
+                        WHERE user_id = :user_id
+                    """),
+                    {"user_id": str(user.id)},
+                ).mappings().first()
+
+                print(
+                    "PRO ENTITLEMENT AFTER UPSERT:",
+                    dict(pro_entitlement_debug or {})
+                )
+
                 db.add(
                     ReportCreditLedger(
                         user_id=user.id,
