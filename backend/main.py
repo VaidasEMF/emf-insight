@@ -5,7 +5,7 @@
 import os
 import uuid
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
 from sqlalchemy import text
@@ -341,6 +341,14 @@ def _ensure_home_wellness_entitlements_table(db):
         CREATE UNIQUE INDEX IF NOT EXISTS
         uq_home_wellness_entitlements_stripe_session_id
         ON home_wellness_entitlements (stripe_session_id)
+    """))
+
+    db.execute(text("""
+        CREATE UNIQUE INDEX IF NOT EXISTS
+        uq_home_wellness_entitlements_measure_subscription
+        ON home_wellness_entitlements (stripe_subscription_id)
+        WHERE entitlement_type = 'measure_monthly'
+          AND stripe_subscription_id IS NOT NULL
     """))
 
 
@@ -697,6 +705,177 @@ def create_checkout(
                 "Stripe price is not configured for this currency",
             )
 
+        # Prevent duplicate Business subscriptions.
+        # Single remains available as a separate one-time purchase.
+        if plan in {"pro", "professional"}:
+            current_entitlement = db.execute(
+                text("""
+                    SELECT
+                        plan_code,
+                        status,
+                        stripe_subscription_id
+                    FROM professional_entitlements
+                    WHERE user_id = :user_id
+                    FOR UPDATE
+                """),
+                {"user_id": str(current_user.id)},
+            ).mappings().first()
+
+            if (
+                current_entitlement
+                and current_entitlement["plan_code"] in (
+                    "pro",
+                    "professional",
+                )
+            ):
+                stripe_subscription_id = (
+                    current_entitlement["stripe_subscription_id"]
+                )
+
+                if stripe_subscription_id:
+                    try:
+                        existing_subscription = (
+                            stripe.Subscription.retrieve(
+                                stripe_subscription_id
+                            )
+                        )
+                        existing_status = existing_subscription.get("status")
+
+                    except Exception:
+                        print(
+                            "STRIPE SUBSCRIPTION STATUS CHECK FAILED",
+                            stripe_subscription_id,
+                        )
+                        raise HTTPException(
+                            503,
+                            "Unable to verify your existing subscription. "
+                            "Please try again later.",
+                        )
+
+                    if existing_status in (
+                        "canceled",
+                        "unpaid",
+                        "incomplete_expired",
+                    ):
+                        db.execute(
+                            text("""
+                                UPDATE professional_entitlements
+                                SET status = 'inactive',
+                                    updated_at = CURRENT_TIMESTAMP
+                                WHERE user_id = :user_id
+                                  AND stripe_subscription_id = :subscription_id
+                            """),
+                            {
+                                "user_id": str(current_user.id),
+                                "subscription_id": stripe_subscription_id,
+                            },
+                        )
+                        db.commit()
+
+                    else:
+                        if existing_status not in (
+                            "active",
+                            "trialing",
+                            "past_due",
+                        ):
+                            raise HTTPException(
+                                409,
+                                "Your existing subscription has a pending "
+                                "or unknown status. Please contact support.",
+                            )
+
+                        if current_entitlement["plan_code"] == "pro":
+                            raise HTTPException(
+                                409,
+                                "You already have an active Pro subscription. "
+                                "Use the Professional upgrade option.",
+                            )
+
+                        raise HTTPException(
+                            409,
+                            "You already have an active Professional subscription.",
+                        )
+
+                elif current_entitlement["status"] == "active":
+                    raise HTTPException(
+                        409,
+                        "An active Business subscription already exists, "
+                        "but its Stripe ID is missing. Please contact support.",
+                    )
+        # Business Stripe Customer management.
+        # Reuse one Stripe Customer per user.
+        if plan in {"single", "pro", "professional"}:
+            entitlement = db.execute(
+                text("""
+                    SELECT stripe_customer_id
+                    FROM professional_entitlements
+                    WHERE user_id = :user_id
+                    FOR UPDATE
+                """),
+                {"user_id": str(current_user.id)},
+            ).mappings().first()
+
+            if not entitlement:
+                db.execute(
+                    text("""
+                        INSERT INTO professional_entitlements (
+                            user_id,
+                            plan_code,
+                            status
+                        )
+                        VALUES (
+                            :user_id,
+                            'none',
+                            'inactive'
+                        )
+                        ON CONFLICT (user_id) DO NOTHING
+                    """),
+                    {"user_id": str(current_user.id)},
+                )
+
+                entitlement = db.execute(
+                    text("""
+                        SELECT stripe_customer_id
+                        FROM professional_entitlements
+                        WHERE user_id = :user_id
+                        FOR UPDATE
+                    """),
+                    {"user_id": str(current_user.id)},
+                ).mappings().first()
+
+            stripe_customer_id = (
+                entitlement.get("stripe_customer_id")
+                if entitlement else None
+            )
+
+            if not stripe_customer_id:
+                customer = stripe.Customer.create(
+                    email=current_user.email,
+                    metadata={
+                        "user_id": str(current_user.id),
+                    },
+                    idempotency_key=f"business_customer_user_{current_user.id}",
+                )
+
+                stripe_customer_id = customer.id
+
+                db.execute(
+                    text("""
+                        UPDATE professional_entitlements
+                        SET
+                            stripe_customer_id = :customer_id,
+                            updated_at = CURRENT_TIMESTAMP
+                        WHERE user_id = :user_id
+                    """),
+                    {
+                        "customer_id": stripe_customer_id,
+                        "user_id": str(current_user.id),
+                    },
+                )
+
+            db.commit()
+
+
         # Home Full Report is project-scoped.
         # The authenticated user must own the Home Project being purchased.
         if plan in {
@@ -704,6 +883,7 @@ def create_checkout(
             "home_simple_report",
             "home_deeper_first",
             "home_deeper_repeat",
+            "home_measure_monthly",
         }:
             if not project_id:
                 raise HTTPException(
@@ -747,6 +927,11 @@ def create_checkout(
                     }
                 ],
                 mode=mode,
+                customer=(
+                    stripe_customer_id
+                    if plan in {"single", "pro", "professional"}
+                    else None
+                ),
                 success_url=f"{STRIPE_APP_URL}/success.html",
                 cancel_url=f"{STRIPE_APP_URL}/dashboard.html#billing",
                 metadata={
@@ -760,6 +945,7 @@ def create_checkout(
                             "home_simple_report",
                             "home_deeper_first",
                             "home_deeper_repeat",
+                            "home_measure_monthly",
                         }
                         else {}
                     ),
@@ -769,6 +955,11 @@ def create_checkout(
                         "user_id": str(current_user.id),
                         "plan": plan,
                         "currency": currency,
+                        **(
+                            {"project_id": str(project_id)}
+                            if plan == "home_measure_monthly"
+                            else {}
+                        ),
                     }
                 } if mode == "subscription" else None,
             )
@@ -784,6 +975,227 @@ def create_checkout(
 
     finally:
         db.close()
+
+
+@app.post("/business/upgrade-to-professional")
+def upgrade_to_professional(
+    current_user=Depends(get_current_user),
+):
+    db = SessionLocal()
+
+    try:
+        # Lock the user's entitlement row to prevent concurrent upgrades.
+        entitlement = db.execute(
+            text("""
+                SELECT
+                    plan_code,
+                    status,
+                    stripe_customer_id,
+                    stripe_subscription_id
+                FROM professional_entitlements
+                WHERE user_id = :user_id
+                FOR UPDATE
+            """),
+            {"user_id": str(current_user.id)},
+        ).mappings().first()
+
+        if not entitlement:
+            raise HTTPException(404, "Business entitlement not found")
+
+        if entitlement["plan_code"] == "professional":
+            raise HTTPException(409, "Professional plan is already active")
+
+        if entitlement["plan_code"] != "pro":
+            raise HTTPException(409, "Only active Pro subscriptions can be upgraded")
+
+        if entitlement["status"] != "active":
+            raise HTTPException(409, "Pro subscription is not active")
+
+        customer_id = entitlement["stripe_customer_id"]
+        subscription_id = entitlement["stripe_subscription_id"]
+
+        if not customer_id or not subscription_id:
+            raise HTTPException(
+                409,
+                "Stripe Customer or Subscription is missing",
+            )
+
+        # Retrieve the existing Stripe subscription.
+        subscription = stripe.Subscription.retrieve(
+            subscription_id,
+            expand=["items.data.price"],
+        )
+
+        subscription_data = (
+            subscription.to_dict()
+            if hasattr(subscription, "to_dict")
+            else dict(subscription)
+        )
+
+        stripe_customer = subscription_data.get("customer")
+        if isinstance(stripe_customer, dict):
+            stripe_customer = stripe_customer.get("id")
+
+        if stripe_customer != customer_id:
+            raise HTTPException(
+                409,
+                "Stripe Customer does not match the Business account",
+            )
+
+        if subscription_data.get("status") != "active":
+            raise HTTPException(
+                409,
+                "Stripe subscription is not active",
+            )
+
+        if subscription_data.get("cancel_at_period_end"):
+            raise HTTPException(
+                409,
+                "Subscription is scheduled for cancellation",
+            )
+
+        if subscription_data.get("pending_update"):
+            raise HTTPException(
+                409,
+                "A subscription update is already pending",
+            )
+
+        subscription_items = (
+            (subscription_data.get("items") or {}).get("data") or []
+        )
+
+        if len(subscription_items) != 1:
+            raise HTTPException(
+                409,
+                "Unexpected Stripe subscription item configuration",
+            )
+
+        item = subscription_items[0]
+        price = item.get("price") or {}
+
+        current_price_id = price.get("id")
+        currency = str(price.get("currency") or "").upper()
+
+        if currency not in STRIPE_PRICE_IDS:
+            raise HTTPException(400, "Unsupported subscription currency")
+
+        expected_pro_price = STRIPE_PRICE_IDS[currency].get("pro")
+        professional_price = STRIPE_PRICE_IDS[currency].get("professional")
+
+        if current_price_id != expected_pro_price:
+            if current_price_id == professional_price:
+                raise HTTPException(
+                    409,
+                    "Stripe subscription is already Professional",
+                )
+
+            raise HTTPException(
+                409,
+                "Current Stripe subscription price is not Business Pro",
+            )
+
+        if not professional_price:
+            raise HTTPException(
+                503,
+                "Professional price is not configured",
+            )
+
+        # Update the existing subscription.
+        # Do not create a second subscription.
+        updated_subscription = stripe.Subscription.modify(
+            subscription_id,
+            items=[
+                {
+                    "id": item["id"],
+                    "price": professional_price,
+                }
+            ],
+            proration_behavior="always_invoice",
+            payment_behavior="pending_if_incomplete",
+            expand=["latest_invoice"],
+        )
+
+        updated_data = (
+            updated_subscription.to_dict()
+            if hasattr(updated_subscription, "to_dict")
+            else dict(updated_subscription)
+        )
+
+        latest_invoice = updated_data.get("latest_invoice") or {}
+
+        if isinstance(latest_invoice, str):
+            latest_invoice = stripe.Invoice.retrieve(
+                latest_invoice
+            ).to_dict()
+
+        invoice_id = latest_invoice.get("id")
+
+        if not invoice_id:
+            raise HTTPException(
+                502,
+                "Stripe did not return an upgrade invoice",
+            )
+
+        db.execute(text("""
+            INSERT INTO stripe_invoice_allocations (
+                invoice_id,
+                user_id,
+                plan_code,
+                billing_reason,
+                subscription_id
+            )
+            VALUES (
+                :invoice_id,
+                :user_id,
+                'professional',
+                'subscription_update',
+                :subscription_id
+            )
+            ON CONFLICT (invoice_id) DO NOTHING
+        """), {
+            "invoice_id": invoice_id,
+            "user_id": str(current_user.id),
+            "subscription_id": subscription_id,
+        })
+
+        # Entitlements are NOT changed here.
+        # The invoice.paid webhook activates Professional after payment.
+
+        db.commit()
+
+        print(
+            "BUSINESS UPGRADE REQUESTED:",
+            {
+                "user_id": str(current_user.id),
+                "subscription_id": subscription_id,
+                "invoice_id": latest_invoice.get("id"),
+                "invoice_status": latest_invoice.get("status"),
+                "currency": currency,
+            },
+        )
+
+        return {
+            "status": "upgrade_requested",
+            "invoice_status": latest_invoice.get("status"),
+            "hosted_invoice_url": latest_invoice.get("hosted_invoice_url"),
+            "message": "Professional upgrade submitted to Stripe.",
+        }
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception as exc:
+        db.rollback()
+        print("BUSINESS UPGRADE ERROR:", repr(exc))
+        raise HTTPException(
+            502,
+            "Unable to upgrade Business subscription",
+        )
+
+    finally:
+        db.close()
+
 
 # =====================
 # STRIPE BRANDING CHECKOUT
@@ -897,13 +1309,81 @@ async def stripe_webhook(request: Request):
         # =============================================================
         # INITIAL CHECKOUT
         # =============================================================
-        if event_type == "checkout.session.completed":
+        if event_type in (
+            "checkout.session.completed",
+            "checkout.session.async_payment_succeeded",
+        ):
             session = event["data"]["object"]
             session = session.to_dict()
+
             metadata = session.get("metadata") or {}
 
             user_id = metadata.get("user_id")
             plan = metadata.get("plan")
+
+            # One-time Home products must be paid before granting access.
+            home_one_time_plans = {
+                "home_simple_report",
+                "home_deeper_first",
+                "home_deeper_repeat",
+                "home_full_report",
+            }
+
+            if (
+                plan in home_one_time_plans
+                and session.get("payment_status") != "paid"
+            ):
+                print(
+                    "HOME ONE-TIME PAYMENT NOT YET PAID:",
+                    plan,
+                    session.get("id"),
+                    session.get("payment_status"),
+                )
+                db.commit()
+                return {"status": "ok"}
+
+            subscription_data = None
+
+            if session.get("subscription"):
+                subscription_data = stripe.Subscription.retrieve(
+                    session["subscription"]
+                )
+
+            subscription_items = (
+                (subscription_data.get("items") or {}).get("data") or []
+                if subscription_data else []
+            )
+
+            first_item = subscription_items[0] if subscription_items else {}
+
+            period_start_ts = (
+                (subscription_data.get("current_period_start") if subscription_data else None)
+                or first_item.get("current_period_start")
+            )
+
+            period_end_ts = (
+                (subscription_data.get("current_period_end") if subscription_data else None)
+                or first_item.get("current_period_end")
+            )
+
+            period_start = (
+                datetime.fromtimestamp(period_start_ts, tz=timezone.utc)
+                if period_start_ts else None
+            )
+
+            period_end = (
+                datetime.fromtimestamp(period_end_ts, tz=timezone.utc)
+                if period_end_ts else None
+            )
+            print(
+                "BUSINESS SUBSCRIPTION DEBUG:",
+                {
+                    "plan": plan,
+                    "subscription_id": session.get("subscription"),
+                    "period_start": period_start.isoformat() if period_start else None,
+                    "period_end": period_end.isoformat() if period_end else None,
+                }
+            )
 
             if not user_id or (
                 plan not in STRIPE_ALLOWED_PLANS
@@ -1003,6 +1483,9 @@ async def stripe_webhook(request: Request):
                             assessments_used = 0,
                             reports_used = 0,
                             contact_opportunities_used = 0
+                        WHERE
+                            professional_entitlements.status <> 'active'
+                            OR professional_entitlements.plan_code NOT IN ('pro', 'professional')
                     """),
                     {
                         "user_id": str(user.id),
@@ -1046,13 +1529,9 @@ async def stripe_webhook(request: Request):
                     )
                 )
 
-
             elif plan == "pro":
-                # Initial Pro subscription = 5 Assessments,
-                # 5 Reports and 3 Contact Opportunities.
-                user.plan = "pro"
-                user.credits = 5
-
+                # Initial Pro subscription:
+                # 5 Assessments, 5 Reports, 3 Contact Opportunities.
                 db.execute(
                     text("""
                         INSERT INTO professional_entitlements (
@@ -1064,6 +1543,9 @@ async def stripe_webhook(request: Request):
                             contact_opportunities_used,
                             branding_included,
                             status,
+                            stripe_subscription_id,
+                            period_start,
+                            period_end,
                             report_limit,
                             reports_used
                         )
@@ -1076,25 +1558,71 @@ async def stripe_webhook(request: Request):
                             0,
                             FALSE,
                             'active',
+                            :stripe_subscription_id,
+                            :period_start,
+                            :period_end,
                             5,
                             0
                         )
                         ON CONFLICT (user_id) DO UPDATE SET
-                            plan_code = 'pro',
-                            assessment_limit = 5,
+                            plan_code = EXCLUDED.plan_code,
+                            assessment_limit = EXCLUDED.assessment_limit,
                             assessments_used = 0,
-                            contact_opportunity_limit = 3,
+                            contact_opportunity_limit = EXCLUDED.contact_opportunity_limit,
                             contact_opportunities_used = 0,
                             branding_included = FALSE,
                             status = 'active',
-                            report_limit = 5,
+                            stripe_subscription_id = EXCLUDED.stripe_subscription_id,
+                            period_start = EXCLUDED.period_start,
+                            period_end = EXCLUDED.period_end,
+                            report_limit = EXCLUDED.report_limit,
                             reports_used = 0,
                             updated_at = CURRENT_TIMESTAMP
+                        WHERE
+                            professional_entitlements.status <> 'active'
+                            OR professional_entitlements.plan_code NOT IN (
+                                'pro',
+                                'professional'
+                            )
                     """),
                     {
                         "user_id": str(user.id),
+                        "stripe_subscription_id": session.get("subscription"),
+                        "period_start": period_start,
+                        "period_end": period_end,
                     },
                 )
+
+                # Update legacy user plan and credits only if this
+                # Checkout actually activated the Pro entitlement.
+                pro_activated = db.execute(
+                    text("""
+                        SELECT 1
+                        FROM professional_entitlements
+                        WHERE user_id = :user_id
+                          AND plan_code = 'pro'
+                          AND stripe_subscription_id = :subscription_id
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "subscription_id": session.get("subscription"),
+                    },
+                ).first()
+
+                if pro_activated:
+                    user.plan = "pro"
+                    user.credits = 5
+
+                    db.add(
+                        ReportCreditLedger(
+                            user_id=user.id,
+                            transaction_type="ALLOCATION",
+                            amount=5,
+                            balance_after=user.credits,
+                            reference_type="stripe_checkout",
+                            reference_id=session.get("id"),
+                        )
+                    )
 
                 pro_entitlement_debug = db.execute(
                     text("""
@@ -1104,7 +1632,10 @@ async def stripe_webhook(request: Request):
                             assessment_limit,
                             report_limit,
                             contact_opportunity_limit,
-                            status
+                            status,
+                            stripe_subscription_id,
+                            period_start,
+                            period_end
                         FROM professional_entitlements
                         WHERE user_id = :user_id
                     """),
@@ -1112,25 +1643,14 @@ async def stripe_webhook(request: Request):
                 ).mappings().first()
 
                 print(
-                    "PRO ENTITLEMENT AFTER UPSERT:",
+                    "PRO ENTITLEMENT AFTER CHECKOUT:",
                     dict(pro_entitlement_debug or {})
                 )
 
-                db.add(
-                    ReportCreditLedger(
-                        user_id=user.id,
-                        transaction_type="ALLOCATION",
-                        amount=5,
-                        balance_after=user.credits,
-                        reference_type="stripe_checkout",
-                        reference_id=session.get("id"),
-                    )
-                )
-
             elif plan == "professional":
-                # Initial Professional subscription = 25 Assessments,
-                # 25 Reports, 10 Contact Opportunities and branding.
-                user.plan = "professional"
+                # Initial Professional subscription:
+                # 25 Assessments, 25 Reports, 10 Contact Opportunities,
+                # and branding.
 
                 db.execute(
                     text("""
@@ -1144,6 +1664,8 @@ async def stripe_webhook(request: Request):
                             branding_included,
                             status,
                             stripe_subscription_id,
+                            period_start,
+                            period_end,
                             report_limit,
                             reports_used
                         )
@@ -1157,29 +1679,78 @@ async def stripe_webhook(request: Request):
                             TRUE,
                             'active',
                             :stripe_subscription_id,
+                            :period_start,
+                            :period_end,
                             25,
                             0
                         )
                         ON CONFLICT (user_id) DO UPDATE SET
-                            plan_code = 'professional',
-                            assessment_limit = 25,
+                            plan_code = EXCLUDED.plan_code,
+                            assessment_limit = EXCLUDED.assessment_limit,
                             assessments_used = 0,
-                            contact_opportunity_limit = 10,
+                            contact_opportunity_limit = EXCLUDED.contact_opportunity_limit,
                             contact_opportunities_used = 0,
                             branding_included = TRUE,
                             status = 'active',
-                            stripe_subscription_id = COALESCE(
-                                EXCLUDED.stripe_subscription_id,
-                                professional_entitlements.stripe_subscription_id
-                            ),
-                            report_limit = 25,
+                            stripe_subscription_id = EXCLUDED.stripe_subscription_id,
+                            period_start = EXCLUDED.period_start,
+                            period_end = EXCLUDED.period_end,
+                            report_limit = EXCLUDED.report_limit,
                             reports_used = 0,
                             updated_at = CURRENT_TIMESTAMP
+                        WHERE
+                            professional_entitlements.status <> 'active'
+                            OR professional_entitlements.plan_code NOT IN (
+                                'pro',
+                                'professional'
+                            )
                     """),
                     {
                         "user_id": str(user.id),
                         "stripe_subscription_id": session.get("subscription"),
+                        "period_start": period_start,
+                        "period_end": period_end,
                     },
+                )
+
+                professional_activated = db.execute(
+                    text("""
+                        SELECT 1
+                        FROM professional_entitlements
+                        WHERE user_id = :user_id
+                          AND plan_code = 'professional'
+                          AND stripe_subscription_id = :subscription_id
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "subscription_id": session.get("subscription"),
+                    },
+                ).first()
+
+                if professional_activated:
+                    user.plan = "professional"
+
+                professional_entitlement_debug = db.execute(
+                    text("""
+                        SELECT
+                            user_id,
+                            plan_code,
+                            assessment_limit,
+                            report_limit,
+                            contact_opportunity_limit,
+                            status,
+                            stripe_subscription_id,
+                            period_start,
+                            period_end
+                        FROM professional_entitlements
+                        WHERE user_id = :user_id
+                    """),
+                    {"user_id": str(user.id)},
+                ).mappings().first()
+
+                print(
+                    "PROFESSIONAL ENTITLEMENT AFTER CHECKOUT:",
+                    dict(professional_entitlement_debug or {})
                 )
 
             elif plan == "home_simple_report":
@@ -1425,6 +1996,79 @@ async def stripe_webhook(request: Request):
                     stripe_session_id,
                 )
 
+            elif plan == "home_deeper_repeat":
+                project_id = metadata.get("project_id")
+                stripe_session_id = session.get("id")
+
+                if not project_id:
+                    raise RuntimeError(
+                        f"Deeper Repeat payment has no project_id. "
+                        f"Stripe session: {stripe_session_id}"
+                    )
+
+                # Verify project ownership.
+                project = db.execute(
+                    text("""
+                        SELECT id
+                        FROM projects
+                        WHERE id = :project_id
+                          AND user_id = :user_id
+                    """),
+                    {
+                        "project_id": str(project_id),
+                        "user_id": str(user.id),
+                    },
+                ).first()
+
+                if not project:
+                    raise RuntimeError(
+                        f"Deeper Repeat project not found or not owned. "
+                        f"Project: {project_id}, User: {user.id}"
+                    )
+
+                # Record the successful repeat purchase.
+                # No additional PHR entitlement is created.
+                db.execute(
+                    text("""
+                        INSERT INTO home_wellness_transactions (
+                            user_id,
+                            project_id,
+                            product_key,
+                            stripe_session_id,
+                            stripe_payment_intent_id,
+                            amount,
+                            currency,
+                            status
+                        )
+                        VALUES (
+                            :user_id,
+                            :project_id,
+                            'home_deeper_repeat',
+                            :stripe_session_id,
+                            :payment_intent_id,
+                            :amount,
+                            :currency,
+                            'completed'
+                        )
+                        ON CONFLICT (stripe_session_id) DO NOTHING
+                    """),
+                    {
+                        "user_id": str(user.id),
+                        "project_id": str(project_id),
+                        "stripe_session_id": stripe_session_id,
+                        "payment_intent_id": session.get("payment_intent"),
+                        "amount": session.get("amount_total"),
+                        "currency": session.get("currency"),
+                    },
+                )
+
+                print(
+                    "HOME DEEPER REPEAT PURCHASE RECORDED",
+                    user.email,
+                    project_id,
+                    stripe_session_id,
+                )
+
 
             elif plan == "home_full_report":
                 # Home Full Report is deliberately separate from Business credits
@@ -1518,29 +2162,134 @@ async def stripe_webhook(request: Request):
             if subscription_id:
                 subscription = stripe.Subscription.retrieve(subscription_id)
 
+                subscription_data = (
+                    subscription.to_dict()
+                    if hasattr(subscription, "to_dict")
+                    else dict(subscription)
+                )
+
+                subscription_items = (
+                    (subscription_data.get("items") or {}).get("data") or []
+                )
+
+                first_item = subscription_items[0] if subscription_items else {}
+
+                period_start_ts = (
+                    subscription_data.get("current_period_start")
+                    or first_item.get("current_period_start")
+                )
+
+                period_end_ts = (
+                    subscription_data.get("current_period_end")
+                    or first_item.get("current_period_end")
+                )
+
+                period_start = (
+                    datetime.fromtimestamp(period_start_ts, tz=timezone.utc)
+                    if period_start_ts else None
+                )
+
+                period_end = (
+                    datetime.fromtimestamp(period_end_ts, tz=timezone.utc)
+                    if period_end_ts else None
+                )
+
                 print(
                     "STRIPE BILLING PERIOD DEBUG:",
                     {
                         "subscription_id": subscription_id,
-                        "subscription_current_period_start": subscription.get("current_period_start"),
-                        "subscription_current_period_end": subscription.get("current_period_end"),
+                        "subscription_current_period_start": subscription_data.get("current_period_start"),
+                        "subscription_current_period_end": subscription_data.get("current_period_end"),
                         "items": [
                             {
                                 "current_period_start": item.get("current_period_start"),
                                 "current_period_end": item.get("current_period_end"),
                             }
-                            for item in (
-                                (subscription.get("items") or {}).get("data") or []
-                            )
+                            for item in subscription_items
                         ],
                         "invoice_period_start": invoice.get("period_start"),
                         "invoice_period_end": invoice.get("period_end"),
                     }
                 )
-                metadata = subscription.get("metadata") or {}
+                metadata = subscription_data.get("metadata") or {}
 
+                invoice_id = invoice.get("id")
                 user_id = metadata.get("user_id")
                 plan = metadata.get("plan")
+
+                # Determine Business plan from the actual Stripe Price ID.
+                subscription_price_ids = set()
+                subscription_currency = None
+
+                for subscription_item in subscription_items:
+                    price_object = subscription_item.get("price") or {}
+                    if isinstance(price_object, dict):
+                        item_price_id = price_object.get("id")
+                        item_currency = price_object.get("currency")
+                    else:
+                        item_price_id = price_object
+                        item_currency = None
+
+                    if item_price_id:
+                        subscription_price_ids.add(item_price_id)
+                    if item_currency:
+                        subscription_currency = str(item_currency).upper()
+
+                invoice_currency = subscription_currency or ""
+                configured_prices = STRIPE_PRICE_IDS.get(price_currency, {})
+
+                if (
+                    configured_prices.get("professional")
+                    and configured_prices["professional"] in subscription_price_ids
+                ):
+                    plan = "professional"
+                elif (
+                    configured_prices.get("pro")
+                    and configured_prices["pro"] in subscription_price_ids
+                ):
+
+                   plan = "pro"
+
+                elif (
+                    configured_prices.get("home_measure_monthly")
+                    and configured_prices["home_measure_monthly"] in subscription_price_ids
+                ):
+                    plan = "home_measure_monthly"
+
+                elif plan in ("pro", "professional"):
+                    # Do not activate Business entitlements if Price ID is unknown.
+                    plan = None
+
+                # For Pro -> Professional upgrades, use the registered invoice
+                # as the authoritative source of the Business user.
+                upgrade_registration = None
+
+                if (
+                    invoice.get("billing_reason") == "subscription_update"
+                    and plan == "professional"
+                ):
+                    if not invoice_id:
+                        raise ValueError("Upgrade invoice ID is missing")
+
+                    upgrade_registration = db.execute(text("""
+                        SELECT user_id, plan_code, subscription_id
+                        FROM stripe_invoice_allocations
+                        WHERE invoice_id = :invoice_id
+                        AND billing_reason = 'subscription_update'
+                        AND plan_code = 'professional'
+                        AND subscription_id = :subscription_id
+                        FOR UPDATE
+                    """), {
+                        "invoice_id": invoice_id,
+                        "subscription_id": subscription_id,
+                    }).mappings().first()
+
+                    if not upgrade_registration:
+                        raise ValueError(
+                            "Professional upgrade invoice registration not found"
+                        )
+
+                    user_id = upgrade_registration["user_id"]
 
                 print(
                     "ADMIN INVOICE DEBUG:",
@@ -1552,6 +2301,136 @@ async def stripe_webhook(request: Request):
                     }
                 )
 
+
+                # Home Measure My Property subscription activation.
+                # Only successfully paid subscription invoices qualify.
+                if (
+                    user_id
+                    and plan == "home_measure_monthly"
+                    and invoice.get("billing_reason") in (
+                        "subscription_create",
+                        "subscription_cycle",
+                    )
+                ):
+                    project_id = metadata.get("project_id")
+
+                    if not project_id:
+                        raise ValueError(
+                            "Home Measure Monthly subscription has no project_id"
+                        )
+
+                    if not subscription_id:
+                        raise ValueError(
+                            "Home Measure Monthly subscription ID is missing"
+                        )
+
+                    if not period_start or not period_end:
+                        raise ValueError(
+                            "Home Measure Monthly billing period is missing"
+                        )
+
+                    home_user_id = str(user_id)
+                    home_project_id = str(project_id)
+
+                    # Verify that the Home Project belongs to this user.
+                    owned_project = db.execute(
+                        text("""
+                            SELECT id
+                            FROM projects
+                            WHERE id = :project_id
+                              AND user_id = :user_id
+                        """),
+                        {
+                            "project_id": home_project_id,
+                            "user_id": home_user_id,
+                        },
+                    ).first()
+
+                    if not owned_project:
+                        raise ValueError(
+                            "Home Measure Monthly project ownership validation failed"
+                        )
+
+                    # Do not activate access for a terminal subscription.
+                    home_subscription_status = subscription_data.get("status")
+
+                    if home_subscription_status not in ("active", "trialing"):
+                        raise ValueError(
+                            "Home Measure Monthly subscription is not active: "
+                            f"{home_subscription_status}"
+                        )
+
+                    # One entitlement per Stripe subscription.
+                    # Repeated paid invoices update the same entitlement.
+                    home_entitlement = db.execute(
+                        text("""
+                            INSERT INTO home_wellness_entitlements (
+                                user_id,
+                                project_id,
+                                entitlement_type,
+                                status,
+                                starts_at,
+                                expires_at,
+                                stripe_subscription_id,
+                                current_period_start,
+                                current_period_end,
+                                cancel_at_period_end
+                            )
+                            VALUES (
+                                :user_id,
+                                :project_id,
+                                'measure_monthly',
+                                'active',
+                                :period_start,
+                                :period_end,
+                                :subscription_id,
+                                :period_start,
+                                :period_end,
+                                :cancel_at_period_end
+                            )
+                            ON CONFLICT (stripe_subscription_id)
+                            WHERE entitlement_type = 'measure_monthly'
+                              AND stripe_subscription_id IS NOT NULL
+                            DO UPDATE SET
+                                status = 'active',
+                                starts_at = EXCLUDED.starts_at,
+                                expires_at = EXCLUDED.expires_at,
+                                current_period_start = EXCLUDED.current_period_start,
+                                current_period_end = EXCLUDED.current_period_end,
+                                cancel_at_period_end = EXCLUDED.cancel_at_period_end,
+                                updated_at = CURRENT_TIMESTAMP
+                            WHERE
+                                home_wellness_entitlements.user_id = EXCLUDED.user_id
+                                AND home_wellness_entitlements.project_id = EXCLUDED.project_id
+                            RETURNING id
+                        """),
+                        {
+                            "user_id": home_user_id,
+                            "project_id": home_project_id,
+                            "period_start": period_start,
+                            "period_end": period_end,
+                            "subscription_id": subscription_id,
+                            "cancel_at_period_end": bool(
+                                subscription_data.get("cancel_at_period_end")
+                            ),
+                        },
+                    ).scalar_one_or_none()
+
+                    if home_entitlement is None:
+                        raise ValueError(
+                            "Home Measure Monthly entitlement conflict: "
+                            "user or project mismatch"
+                        )
+
+                    print(
+                        "HOME MEASURE MONTHLY ACTIVATED",
+                        home_user_id,
+                        home_project_id,
+                        subscription_id,
+                        period_end,
+                    )
+
+
                 if user_id and plan == "pro":
                     user = db.query(User).filter(User.id == user_id).first()
 
@@ -1559,12 +2438,46 @@ async def stripe_webhook(request: Request):
                         billing_reason = invoice.get("billing_reason")
 
                         if billing_reason == "subscription_cycle":
-                            # New successful monthly billing cycle = fresh 5-credit allowance.
-                            user.plan = "pro"
-                            user.credits = 5
+                            invoice_id = invoice.get("id")
 
-                            db.execute(
-                                text("""
+                            if not invoice_id:
+                                raise ValueError("Stripe invoice ID is missing")
+
+                            allocation_result = db.execute(text("""
+                                INSERT INTO report_credit_ledger (
+                                    user_id,
+                                    transaction_type,
+                                    amount,
+                                    balance_after,
+                                    reference_type,
+                                    reference_id,
+                                    created_at
+                                )
+                                VALUES (
+                                    :user_id,
+                                    'ALLOCATION',
+                                    5,
+                                    5,
+                                    'stripe_invoice',
+                                    :invoice_id,
+                                    CURRENT_TIMESTAMP
+                                )
+                                ON CONFLICT (reference_type, reference_id)
+                                WHERE
+                                    reference_type = 'stripe_invoice'
+                                    AND transaction_type = 'ALLOCATION'
+                                    AND reference_id IS NOT NULL
+                                DO NOTHING
+                                RETURNING id
+                            """), {
+                                "user_id": user.id,
+                                "invoice_id": invoice_id,
+                            })
+
+                            allocation_id = allocation_result.scalar_one_or_none()
+
+                            if allocation_id is not None:
+                                result = db.execute(text("""
                                     UPDATE professional_entitlements
                                     SET
                                         plan_code = 'pro',
@@ -1574,73 +2487,80 @@ async def stripe_webhook(request: Request):
                                         contact_opportunities_used = 0,
                                         branding_included = FALSE,
                                         status = 'active',
-                                        period_start = CURRENT_TIMESTAMP,
-                                        period_end = NULL,
+                                        stripe_subscription_id = :subscription_id,
+                                        period_start = :period_start,
+                                        period_end = :period_end,
+                                        report_limit = 5,
+                                        reports_used = 0,
                                         updated_at = CURRENT_TIMESTAMP
-                                    WHERE user_id = :user_id
-                                """),
-                                {
+                                    WHERE
+                                        user_id = :user_id
+                                        AND stripe_subscription_id = :subscription_id
+                                """), {
                                     "user_id": str(user.id),
-                                },
-                            )
+                                    "subscription_id": subscription_id,
+                                    "period_start": period_start,
+                                    "period_end": period_end,
+                                })
 
-                            db.add(
-                                ReportCreditLedger(
-                                    user_id=user.id,
-                                    transaction_type="ALLOCATION",
-                                    amount=5,
-                                    balance_after=user.credits,
-                                    reference_type="stripe_invoice",
-                                    reference_id=invoice.get("id"),
+                                if result.rowcount == 1:
+                                    user.plan = "pro"
+                                    user.credits = 5
+
+                                    print(
+                                        "PRO MONTHLY RENEWAL",
+                                        user.email,
+                                        "5 credits",
+                                    )
+                                else:
+                                    raise ValueError(
+                                        "Pro entitlement renewal failed: subscription mismatch"
+                                    )
+                            else:
+                                print(
+                                    "PRO INVOICE ALREADY ALLOCATED",
+                                    invoice_id,
                                 )
-                            )
-
-                            print(
-                                "PRO MONTHLY RENEWAL",
-                                user.email,
-                                "5 credits",
-                            )
-
                 if user_id and plan == "professional":
                     user = db.query(User).filter(User.id == user_id).first()
 
                     if user:
                         billing_reason = invoice.get("billing_reason")
-
                         if billing_reason == "subscription_cycle":
-                            # New successful monthly Professional billing cycle.
-                            # Fresh allowance: 25 assessments + 10 contact opportunities.
-                            user.plan = "professional"
+                            invoice_id = invoice.get("id")
 
-                            db.execute(
-                                text("""
-                                    INSERT INTO professional_entitlements (
-                                        user_id,
-                                        plan_code,
-                                        assessment_limit,
-                                        assessments_used,
-                                        contact_opportunity_limit,
-                                        contact_opportunities_used,
-                                        branding_included,
-                                        status,
-                                        stripe_subscription_id,
-                                        period_start,
-                                        period_end
-                                    )
-                                    VALUES (
-                                        :user_id,
-                                        'professional',
-                                        25,
-                                        0,
-                                        10,
-                                        0,
-                                        TRUE,
-                                        'active',
-                                        :stripe_subscription_id,
-                                        CURRENT_TIMESTAMP,
-                                        NULL
-                                    )
-                                    ON CONFLICT (user_id) DO UPDATE SET
+                            if not invoice_id:
+                                raise ValueError("Stripe invoice ID is missing")
+                            allocation_result = db.execute(text("""
+                                INSERT INTO stripe_invoice_allocations (
+                                    invoice_id,
+                                    user_id,
+                                    plan_code,
+                                    billing_reason,
+                                    subscription_id
+                                )
+                                VALUES (
+                                    :invoice_id,
+                                    :user_id,
+                                    'professional',
+                                    :billing_reason,
+                                    :subscription_id
+                                )
+                                ON CONFLICT (invoice_id) DO NOTHING
+                                RETURNING invoice_id
+                            """), {
+                                "invoice_id": invoice_id,
+                                "user_id": str(user.id),
+                                "billing_reason": billing_reason,
+                                "subscription_id": subscription_id,
+                            })
+
+                            allocated_invoice_id = allocation_result.scalar_one_or_none()
+
+                            if allocated_invoice_id is not None:
+                                result = db.execute(text("""
+                                    UPDATE professional_entitlements
+                                    SET
                                         plan_code = 'professional',
                                         assessment_limit = 25,
                                         assessments_used = 0,
@@ -1648,26 +2568,124 @@ async def stripe_webhook(request: Request):
                                         contact_opportunities_used = 0,
                                         branding_included = TRUE,
                                         status = 'active',
-                                        stripe_subscription_id = COALESCE(
-                                            EXCLUDED.stripe_subscription_id,
-                                            professional_entitlements.stripe_subscription_id
-                                        ),
-                                        period_start = CURRENT_TIMESTAMP,
-                                        period_end = NULL,
+                                        stripe_subscription_id = :subscription_id,
+                                        period_start = :period_start,
+                                        period_end = :period_end,
+                                        report_limit = 25,
+                                        reports_used = 0,
                                         updated_at = CURRENT_TIMESTAMP
-                                """),
-                                {
+                                    WHERE
+                                        user_id = :user_id
+                                        AND stripe_subscription_id = :subscription_id
+                                """), {
                                     "user_id": str(user.id),
-                                    "stripe_subscription_id": subscription_id,
-                                },
+                                    "subscription_id": subscription_id,
+                                    "period_start": period_start,
+                                    "period_end": period_end,
+                                })
+
+                                if result.rowcount == 1:
+                                    user.plan = "professional"
+
+                                    print(
+                                        "PROFESSIONAL MONTHLY RENEWAL",
+                                        user.email,
+                                        "25 assessments / 10 contact opportunities",
+                                    )
+                                else:
+                                    raise ValueError(
+                                        "Professional entitlement renewal failed: subscription mismatch"
+                                    )
+                            else:
+                                existing_allocation = db.execute(text("""
+                                    SELECT
+                                        user_id,
+                                        plan_code,
+                                        billing_reason,
+                                        subscription_id
+                                    FROM stripe_invoice_allocations
+                                    WHERE invoice_id = :invoice_id
+                                    FOR UPDATE
+                                """), {
+                                    "invoice_id": invoice_id,
+                                }).mappings().first()
+
+                                if not existing_allocation:
+                                    raise ValueError(
+                                        "Professional invoice allocation conflict: record not found"
+                                    )
+
+                                if (
+                                    str(existing_allocation["user_id"]) != str(user.id)
+                                    or existing_allocation["plan_code"] != "professional"
+                                    or existing_allocation["billing_reason"] != billing_reason
+                                    or existing_allocation["subscription_id"] != subscription_id
+                                ):
+                                    raise ValueError(
+                                        "Professional invoice allocation conflict: "
+                                        "user, plan, billing reason or subscription mismatch"
+                                    )
+
+                                print(
+                                    "PROFESSIONAL INVOICE ALREADY ALLOCATED",
+                                    invoice_id,
+                                )
+
+
+                # Professional upgrade from Pro.
+                # Preserve all usage counters during the upgrade.
+                if user_id and plan == "professional":
+                    if invoice.get("billing_reason") == "subscription_update":
+                        user = db.query(User).filter(
+                            User.id == user_id
+                        ).first()
+                        if not user:
+                            raise ValueError(
+                                "Professional upgrade failed: Business user not found"
                             )
+
+                        if not upgrade_registration:
+                            raise ValueError(
+                                "Professional upgrade invoice registration not found"
+                            )
+
+                        result = db.execute(text("""
+                            UPDATE professional_entitlements
+                            SET
+                                plan_code = 'professional',
+                                assessment_limit = 25,
+                                contact_opportunity_limit = 10,
+                                branding_included = TRUE,
+                                status = 'active',
+                                stripe_subscription_id = :subscription_id,
+                                period_start = :period_start,
+                                period_end = :period_end,
+                                report_limit = 25,
+                                updated_at = CURRENT_TIMESTAMP
+                            WHERE
+                                user_id = :user_id
+                                AND stripe_subscription_id = :subscription_id
+                                AND plan_code = 'pro'
+                        """), {
+                            "user_id": str(user.id),
+                            "subscription_id": subscription_id,
+                            "period_start": period_start,
+                            "period_end": period_end,
+                        })
+
+                        if result.rowcount == 1:
+                            user.plan = "professional"
 
                             print(
-                                "PROFESSIONAL MONTHLY RENEWAL",
+                                "PROFESSIONAL UPGRADE CONFIRMED",
                                 user.email,
-                                "25 assessments / 10 contact opportunities",
+                                "Existing usage preserved",
                             )
-
+                        else:
+                            print(
+                                "PROFESSIONAL UPGRADE ALREADY PROCESSED OR NOT ELIGIBLE",
+                                invoice_id,
+                            )
                 if user_id and plan == "branding":
                     user = db.query(User).filter(User.id == user_id).first()
 
@@ -1736,14 +2754,180 @@ async def stripe_webhook(request: Request):
                     if hasattr(subscription, "to_dict")
                     else dict(subscription)
                 )
-
                 metadata = subscription_data.get("metadata") or {}
+
                 user_id = metadata.get("user_id")
                 plan = metadata.get("plan")
+
+                subscription_items = (
+                    (subscription_data.get("items") or {}).get("data") or []
+                )
+
+                # Determine Business plan from the actual Stripe Price ID.
+                subscription_price_ids = set()
+                subscription_currency = None
+
+                for subscription_item in subscription_items:
+                    price_object = subscription_item.get("price") or {}
+                    if isinstance(price_object, dict):
+                        item_price_id = price_object.get("id")
+                        item_currency = price_object.get("currency")
+                    else:
+                        item_price_id = price_object
+                        item_currency = None
+
+                    if item_price_id:
+                        subscription_price_ids.add(item_price_id)
+                    if item_currency:
+                        subscription_currency = str(item_currency).upper()
+
+                price_currency = subscription_currency or ""
+                configured_prices = STRIPE_PRICE_IDS.get(price_currency, {})
+
+                if (
+                    configured_prices.get("professional")
+                    and configured_prices["professional"] in subscription_price_ids
+                ):
+                    plan = "professional"
+                elif (
+                    configured_prices.get("pro")
+                    and configured_prices["pro"] in subscription_price_ids
+                ):
+                    plan = "pro"
+                elif plan in ("pro", "professional"):
+                    # Do not activate Business entitlements if Price ID is unknown.
+                    plan = None
+
+                # Determine the actual Business plan from the
+                # current Stripe subscription price.
+                invoice_currency = subscription_currency or str(
+                    invoice_currency = subscription_currency or ""
+                ).upper()
+
+                current_price_ids = set()
+
+                for item in subscription_items:
+                    price_object = item.get("price") or {}
+                    price_id = (
+                        price_object.get("id")
+                        if isinstance(price_object, dict)
+                        else price_object
+                    )
+
+                    if price_id:
+                        current_price_ids.add(price_id)
+
+                configured_prices = STRIPE_PRICE_IDS.get(
+                    invoice_currency, {}
+                )
+
+                if (
+                    configured_prices.get("professional")
+                    and configured_prices["professional"] in current_price_ids
+                ):
+                    plan = "professional"
+
+                    # Synchronize metadata only after Stripe has
+                    # confirmed the successful invoice payment.
+                    if metadata.get("plan") != "professional":
+                        stripe.Subscription.modify(
+                            subscription_id,
+                            metadata={
+                                **metadata,
+                                "plan": "professional",
+                            },
+                        )
+
+                elif (
+                    configured_prices.get("pro")
+                    and configured_prices["pro"] in current_price_ids
+                ):
+                    plan = "pro"
+
+                elif (
+                    configured_prices.get("home_measure_monthly")
+                    and configured_prices["home_measure_monthly"] in current_price_ids
+                ):
+                    plan = "home_measure_monthly"
+
                 stripe_status = subscription_data.get("status")
                 subscription_id = subscription_data.get("id") or subscription_id
 
-                if user_id and plan == "professional":
+                # Home Measure My Property subscription state.
+                if user_id and plan == "home_measure_monthly":
+                    stripe_period_start_ts = (
+                        subscription_data.get("current_period_start")
+                        or (
+                            subscription_items[0].get("current_period_start")
+                            if subscription_items else None
+                        )
+                    )
+
+                    stripe_period_end_ts = (
+                        subscription_data.get("current_period_end")
+                        or (
+                            subscription_items[0].get("current_period_end")
+                            if subscription_items else None
+                        )
+                    )
+
+                    home_period_start = (
+                        datetime.fromtimestamp(
+                            stripe_period_start_ts,
+                            tz=timezone.utc,
+                        )
+                        if stripe_period_start_ts else None
+                    )
+
+                    home_period_end = (
+                        datetime.fromtimestamp(
+                            stripe_period_end_ts,
+                            tz=timezone.utc,
+                        )
+                        if stripe_period_end_ts else None
+                    )
+
+                    if event_type == "customer.subscription.deleted":
+                        home_status = "inactive"
+                    elif stripe_status in (
+                        "canceled",
+                        "unpaid",
+                        "incomplete_expired",
+                    ):
+                        home_status = "inactive"
+                    elif stripe_status in ("active", "trialing"):
+                        home_status = "active"
+                    else:
+                        home_status = None
+
+                    if home_status:
+                        db.execute(
+                            text("""
+                                UPDATE home_wellness_entitlements
+                                SET
+                                    status = :status,
+                                    current_period_start = :period_start,
+                                    current_period_end = :period_end,
+                                    cancel_at_period_end = :cancel_at_period_end,
+                                    updated_at = CURRENT_TIMESTAMP
+                                WHERE
+                                    user_id = :user_id
+                                    AND stripe_subscription_id = :subscription_id
+                                    AND entitlement_type = 'measure_monthly'
+                            """),
+                            {
+                                "status": home_status,
+                                "period_start": home_period_start,
+                                "period_end": home_period_end,
+                                "cancel_at_period_end": bool(
+                                    subscription_data.get("cancel_at_period_end")
+                                ),
+                                "user_id": str(user_id),
+                                "subscription_id": subscription_id,
+                            },
+                        )
+
+                if user_id and plan in ("pro", "professional"):
                     # A failed invoice alone does not immediately revoke access.
                     # Only terminal Stripe subscription states deactivate it.
                     if event_type == "customer.subscription.deleted":
@@ -1778,6 +2962,20 @@ async def stripe_webhook(request: Request):
 
             db.commit()
 
+        elif event_type == "checkout.session.async_payment_failed":
+            session = event["data"]["object"]
+
+            print(
+                "HOME CHECKOUT ASYNC PAYMENT FAILED:",
+                {
+                    "session_id": session.get("id"),
+                    "payment_status": session.get("payment_status"),
+                    "metadata": session.get("metadata") or {},
+                },
+            )
+
+            # No entitlement is created for an unsuccessful payment.
+            db.commit()
 
         else:
             # We received a valid Stripe event that this V1 backend does not

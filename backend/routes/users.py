@@ -47,6 +47,7 @@ def me(
 
     home_full_report_unlocked = False
     home_simple_report_unlocked = False
+    home_phr_access_active = False
 
     home_simple_report_usage_status = None
     home_simple_report_purchased = False
@@ -271,8 +272,50 @@ LIMIT 1
             )
             home_simple_report_unlocked = False
 
+    # -----------------------------------------------
+    # HOME PROPERTY HEALTH RECORD ACCESS
+    # Project-scoped: Simple Report OR Measure Monthly
+    # -----------------------------------------------
+    if project_id is not None:
+        try:
+            result = db.execute(
+                text("""
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM home_wellness_entitlements e
+                        WHERE e.project_id = :project_id
+                          AND e.user_id = :user_id
+                          AND e.entitlement_type IN (
+                              'simple_report',
+                              'measure_monthly'
+                          )
+                          AND e.status = 'active'
+                          AND (
+                              e.starts_at IS NULL
+                              OR e.starts_at <= CURRENT_TIMESTAMP
+                          )
+                          AND (
+                              e.expires_at IS NULL
+                              OR e.expires_at > CURRENT_TIMESTAMP
+                          )
+                    )
+                """),
+                {
+                    "project_id": str(project_id),
+                    "user_id": str(current_user.id),
+                },
+            ).scalar()
 
-                # ---------------------------------------------------------
+            home_phr_access_active = bool(result)
+
+        except Exception as e:
+            print(
+                "HOME PHR ACCESS CHECK FAILED:",
+                repr(e)
+            )
+            home_phr_access_active = False
+
+    # ---------------------------------------------------------
     # HOME DEEPER ANALYSIS ENTITLEMENT
     # Project-scoped ONLY
     # ---------------------------------------------------------
@@ -381,6 +424,7 @@ LIMIT 1
         "is_admin": current_user.is_admin,
         "home_full_report_unlocked": home_full_report_unlocked,
         "home_simple_report_unlocked": home_simple_report_unlocked,
+        "home_phr_access_active": home_phr_access_active,
         "home_simple_report_purchased": home_simple_report_purchased,
         "home_deeper_analysis_purchased": home_deeper_analysis_purchased,
         "home_deeper_analysis_unlocked": home_deeper_analysis_unlocked,

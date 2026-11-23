@@ -623,14 +623,47 @@ def get_project(
     )
     project_data = dict(project.data or {})
 
+    home_phr_access_active = False
+
+    if project_data.get("type") == "home":
+        phr_access = db.execute(
+            text("""
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM home_wellness_entitlements e
+                    WHERE e.project_id = :project_id
+                      AND e.user_id = :user_id
+                      AND e.entitlement_type IN (
+                          'simple_report',
+                          'measure_monthly'
+                      )
+                      AND e.status = 'active'
+                      AND (
+                          e.starts_at IS NULL
+                          OR e.starts_at <= CURRENT_TIMESTAMP
+                      )
+                      AND (
+                          e.expires_at IS NULL
+                          OR e.expires_at > CURRENT_TIMESTAMP
+                      )
+                )
+            """),
+            {
+                "project_id": str(project.id),
+                "user_id": str(current_user.id),
+            },
+        ).scalar()
+
+        home_phr_access_active = bool(phr_access)
+
     # Database Project.id is the canonical project identity
     project_data["id"] = project.id
     project_data["project_id"] = project.id
-
     response = {
         "id": project.id,
         "name": project.name,
         "data": project_data,
+        "phr_access_active": home_phr_access_active,
     }
 
     if professional_access is not None:
@@ -686,7 +719,11 @@ def get_project(
                         "id": health_record.phr_uid,
                         "phrReference": health_record.phr_reference,
                         "status": health_record.status,
-                        "recordData": health_record.record_data or {},
+                        "recordData": (
+                            health_record.record_data or {}
+                            if home_phr_access_active
+                            else {}
+                        ),
                         "createdAt": (
                             health_record.created_at.isoformat()
                             if health_record.created_at else None
@@ -702,6 +739,7 @@ def get_project(
                         .filter(
                             Assessment.property_health_record_id == health_record.id,
                             Assessment.property_id == property_record.id,
+                            Assessment.assessment_type == "home",
                         )
                         .order_by(Assessment.created_at.desc())
                         .all()
@@ -896,6 +934,9 @@ async def upload_floor_plan(
         current_user=current_user,
         project_id=project.id,
     )
+
+    if professional_access is not None:
+      require_active_edit(professional_access)
 
     # Frozen Draft is allowed to download its own plan.
     # Only project ownership and Assessment linkage are validated.
