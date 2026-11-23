@@ -837,7 +837,7 @@ def init_db():
                     )
                 )
 
-                            # Ensure Home Simple Report pricing exists for both regions.
+            # Ensure Home Simple Report pricing exists for both regions.
             connection.execute(
                 text(
                     """
@@ -906,7 +906,144 @@ def init_db():
                 )
             )
 
-                        # ==========================================
+            # Ensure Home Measure Monthly pricing exists for both regions.
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pricing
+                        (
+                            region,
+                            currency,
+                            product_key,
+                            name,
+                            price,
+                            billing,
+                            credits,
+                            available
+                        )
+                    SELECT
+                        'EU',
+                        'EUR',
+                        'HOME_MEASURE_MONTHLY',
+                        'Measure My Property',
+                        19,
+                        'monthly',
+                        0,
+                        TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM pricing
+                        WHERE region = 'EU'
+                          AND currency = 'EUR'
+                          AND product_key = 'HOME_MEASURE_MONTHLY'
+                    )
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pricing
+                        (
+                            region,
+                            currency,
+                            product_key,
+                            name,
+                            price,
+                            billing,
+                            credits,
+                            available
+                        )
+                    SELECT
+                        'US',
+                        'USD',
+                        'HOME_MEASURE_MONTHLY',
+                        'Measure My Property',
+                        19,
+                        'monthly',
+                        0,
+                        TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM pricing
+                        WHERE region = 'US'
+                          AND currency = 'USD'
+                          AND product_key = 'HOME_MEASURE_MONTHLY'
+                    )
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pricing
+                        (
+                            region,
+                            currency,
+                            product_key,
+                            name,
+                            price,
+                            billing,
+                            credits,
+                            available
+                        )
+                    SELECT
+                        'US',
+                        'USD',
+                        'HOME_DEEPER_ANALYSIS_FIRST',
+                        'Deeper Understanding',
+                        49,
+                        'one_time',
+                        0,
+                        TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM pricing
+                        WHERE region = 'US'
+                          AND currency = 'USD'
+                          AND product_key = 'HOME_DEEPER_ANALYSIS_FIRST'
+                    )
+                    """
+                )
+            )
+
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO pricing
+                        (
+                            region,
+                            currency,
+                            product_key,
+                            name,
+                            price,
+                            billing,
+                            credits,
+                            available
+                        )
+                    SELECT
+                        'EU',
+                        'EUR',
+                        'HOME_DEEPER_ANALYSIS_FIRST',
+                        'Deeper Understanding',
+                        49,
+                        'one_time',
+                        0,
+                        TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM pricing
+                        WHERE region = 'EU'
+                          AND currency = 'EUR'
+                          AND product_key = 'HOME_DEEPER_ANALYSIS_FIRST'
+                    )
+                    """
+                )
+            )
+
+            # ==========================================
             # BACKFILL PROPERTY REFERENCE NUMBERS
             # ==========================================
 
