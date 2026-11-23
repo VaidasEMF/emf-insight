@@ -910,6 +910,30 @@ def create_checkout(
                     "Home project not found",
                 )
 
+        if plan == "home_deeper_repeat":
+            first_purchase_exists = db.execute(
+                text("""
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM home_wellness_transactions
+                        WHERE user_id = :user_id
+                          AND project_id = :project_id
+                          AND product_key = 'home_deeper_first'
+                          AND status = 'completed'
+                    )
+                """),
+                {
+                    "user_id": str(current_user.id),
+                    "project_id": str(project_id),
+                },
+            ).scalar()
+
+            if not first_purchase_exists:
+                raise HTTPException(
+                    403,
+                    "The first Deeper Analysis purchase is required before a Repeat purchase",
+                )
+
         # Business Pro and Professional are recurring subscriptions.
         # Business Single and Home Full Report are one-time payments.
         mode = "subscription" if plan in {

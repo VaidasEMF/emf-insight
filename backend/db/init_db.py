@@ -466,7 +466,27 @@ def init_db():
                 )
             )
 
-            
+            connection.execute(
+                text("""
+                    ALTER TABLE home_wellness_transactions
+                    ADD COLUMN IF NOT EXISTS usage_status VARCHAR(30)
+                    NOT NULL DEFAULT 'not_used'
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE home_wellness_transactions
+                    ADD COLUMN IF NOT EXISTS report_id INTEGER
+                """)
+            )
+
+            connection.execute(
+                text("""
+                    ALTER TABLE home_wellness_transactions
+                    ADD COLUMN IF NOT EXISTS used_at TIMESTAMP
+                """)
+            )
 
             # =====================
             # USER LOCATION

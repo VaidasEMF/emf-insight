@@ -787,20 +787,14 @@ def create_home_deeper_analysis(
     )
 
     if not project:
-        raise HTTPException(
-            404,
-            "Project not found",
-        )
+        raise HTTPException(404, "Project not found")
 
     # =====================
     # OWNERSHIP CHECK
     # =====================
 
     if project.user_id != current_user.id:
-        raise HTTPException(
-            403,
-            "Forbidden",
-        )
+        raise HTTPException(403, "Forbidden")
 
     # =====================
     # HOME WORKSPACE CHECK
@@ -814,76 +808,158 @@ def create_home_deeper_analysis(
             "Deeper Analysis is available only for Home Wellness projects",
         )
 
-    # =====================
-    # €49 ENTITLEMENT CHECK
-    # =====================
+    try:
+        # =====================
+        # FIRST PURCHASE / ENTITLEMENT CHECK
+        # =====================
 
-    entitlement = db.execute(
-        text("""
-            SELECT
-                t.id AS transaction_id,
-                t.usage_status
-            FROM home_wellness_entitlements e
-            INNER JOIN home_wellness_transactions t
-                ON t.user_id = e.user_id
-                AND t.project_id = e.project_id
-                AND t.product_key = 'home_deeper_first'
-                AND t.status = 'completed'
-            WHERE e.project_id = :project_id
-                AND e.user_id = :user_id
-                AND e.entitlement_type = 'deeper_analysis'
-                AND e.status = 'active'
-                AND (
-                    e.starts_at IS NULL
-                    OR e.starts_at <= CURRENT_TIMESTAMP
+        first_purchase_exists = db.execute(
+            text("""
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM home_wellness_entitlements e
+                    WHERE e.project_id = :project_id
+                      AND e.user_id = :user_id
+                      AND e.entitlement_type = 'deeper_analysis'
+                      AND e.status = 'active'
+                      AND (
+                          e.starts_at IS NULL
+                          OR e.starts_at <= CURRENT_TIMESTAMP
+                      )
+                      AND EXISTS (
+                          SELECT 1
+                          FROM home_wellness_transactions f
+                          WHERE f.user_id = e.user_id
+                            AND f.project_id = e.project_id
+                            AND f.product_key = 'home_deeper_first'
+                            AND f.status = 'completed'
+                      )
                 )
-            ORDER BY e.created_at DESC, t.created_at DESC
-            LIMIT 1
-        """),
-        {
-            "project_id": str(project_id),
-            "user_id": str(current_user.id),
-        },
-    ).first()
+            """),
+            {
+                "project_id": str(project_id),
+                "user_id": str(current_user.id),
+            },
+        ).scalar()
 
-    if not entitlement:
-        raise HTTPException(
-            403,
-            "Deeper Analysis purchase required",
+        if not first_purchase_exists:
+            raise HTTPException(
+                403,
+                "Deeper Analysis purchase required",
+            )
+
+        # =====================
+        # SELECT ONE UNUSED CREDIT
+        # FIRST PURCHASE HAS PRIORITY
+        # =====================
+
+        credit = db.execute(
+            text("""
+                SELECT
+                    t.id,
+                    t.product_key
+                FROM home_wellness_transactions t
+                WHERE t.user_id = :user_id
+                  AND t.project_id = :project_id
+                  AND t.status = 'completed'
+                  AND t.usage_status = 'not_used'
+                  AND t.product_key IN (
+                      'home_deeper_first',
+                      'home_deeper_repeat'
+                  )
+                ORDER BY
+                    CASE
+                        WHEN t.product_key = 'home_deeper_first'
+                        THEN 0
+                        ELSE 1
+                    END,
+                    t.created_at ASC,
+                    t.id ASC
+                LIMIT 1
+                FOR UPDATE OF t
+            """),
+            {
+                "user_id": str(current_user.id),
+                "project_id": str(project_id),
+            },
+        ).first()
+
+        if not credit:
+            raise HTTPException(
+                409,
+                "No unused Deeper Analysis credits available",
+            )
+
+        # =====================
+        # RUN ANALYSIS
+        # =====================
+
+        from engine.analysis.home.deeper_analysis import (
+            run_deeper_analysis,
         )
 
-    if entitlement.usage_status == "used":
-        raise HTTPException(
-            409,
-            "Deeper Analysis has already been used",
-        )
+        result = run_deeper_analysis(project_data)
 
-    # =====================
-    # RUN ANALYSIS
-    # =====================
+        if not result.get("success"):
+            db.rollback()
 
-    from engine.analysis.home.deeper_analysis import (
-        run_deeper_analysis,
-    )
+            raise HTTPException(
+                422,
+                detail={
+                    "message": "Deeper Analysis could not be completed",
+                    "errors": result.get("errors", []),
+                    "warnings": result.get("warnings", []),
+                },
+            )
 
-    result = run_deeper_analysis(project_data)
+        # =====================
+        # MARK SELECTED CREDIT AS USED
+        # =====================
 
-    if not result.get("success"):
-        raise HTTPException(
-            422,
-            detail={
-                "message": "Deeper Analysis could not be completed",
-                "errors": result.get("errors", []),
-                "warnings": result.get("warnings", []),
+        update_result = db.execute(
+            text("""
+                UPDATE home_wellness_transactions
+                SET
+                    usage_status = 'used',
+                    used_at = CURRENT_TIMESTAMP
+                WHERE id = :transaction_id
+                  AND user_id = :user_id
+                  AND project_id = :project_id
+                  AND usage_status = 'not_used'
+            """),
+            {
+                "transaction_id": credit.id,
+                "user_id": str(current_user.id),
+                "project_id": str(project_id),
             },
         )
 
-    return {
-        "status": "ok",
-        "project_id": project_id,
-        "analysis": result.get("analysis"),
-        "warnings": result.get("warnings", []),
-    }
+        if update_result.rowcount != 1:
+            db.rollback()
+
+            raise HTTPException(
+                409,
+                "Deeper Analysis credit could not be reserved",
+            )
+
+        db.commit()
+
+        return {
+            "status": "ok",
+            "project_id": project_id,
+            "analysis": result.get("analysis"),
+            "warnings": result.get("warnings", []),
+            "credit_used": credit.product_key,
+        }
+
+    except HTTPException:
+        if db.in_transaction():
+            db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
 
 # =====================
 # UPLOAD FLOOR PLAN
