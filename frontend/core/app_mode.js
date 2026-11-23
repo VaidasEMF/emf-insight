@@ -2161,12 +2161,26 @@ async function setAppMode(
     ) {
         localStorage.removeItem("openHomeSimpleReport");
 
-        await window.HomeMeasurements?.start("report");
+        const homeProject =
+            window.AppState?.homeProject ||
+            window.AppState?.project ||
+            window.project;
 
-        if (typeof window.generatePDF === "function") {
-            await window.generatePDF("simple");
+        const projectId =
+            homeProject?.project_id ||
+            homeProject?.id;
+
+        if (!projectId) {
+            console.error("[HOME SIMPLE REPORT] Home project ID is unavailable");
+            alert("Unable to identify the selected Property project.");
         } else {
-            console.error("[HOME SIMPLE REPORT] generatePDF is unavailable");
+            currentProjectId = String(projectId);
+
+            if (typeof window.generatePDF === "function") {
+                await window.generatePDF("simple");
+            } else {
+                console.error("[HOME SIMPLE REPORT] generatePDF is unavailable");
+            }
         }
     }
 
