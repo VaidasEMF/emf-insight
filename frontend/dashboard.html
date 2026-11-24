@@ -13228,6 +13228,14 @@ ${workspace === "home" && key === "simpleReport"
         </div>
 
         <div class="price-amount deeper-price-list">
+    ${isDeeperRepeat
+                                ? `
+            <div class="deeper-price-option">
+                <strong>${formatPrice(item.repeatPrices[pricingCurrency])}</strong>
+                <span class="price-period">Repeat analysis</span>
+            </div>
+        `
+                                : `
             <div class="deeper-price-option">
                 <strong>${formatPrice(item.prices[pricingCurrency])}</strong>
                 <span class="price-period">First analysis</span>
@@ -13236,7 +13244,9 @@ ${workspace === "home" && key === "simpleReport"
                 <strong>${formatPrice(item.repeatPrices[pricingCurrency])}</strong>
                 <span class="price-period">Repeat analysis</span>
             </div>
-        </div>
+        `
+                            }
+</div>
 
         <div class="deeper-availability">
             <span>ⓘ</span>
@@ -29426,13 +29436,17 @@ ${request.contact_expires_at
                 const rows = paginatedProjects.map(project => {
                     const id = String(project.id ?? project.project_id);
                     const entitlement = entitlements[id]?.data || {};
-
-                    const purchased =
+                    const simpleReportPurchased =
                         entitlement.home_simple_report_purchased === true;
 
-                    const unlocked =
-                        entitlement.home_simple_report_unlocked === true;
+                    const subscriptionActive =
+                        entitlement.home_measure_monthly_active === true;
 
+                    const purchased = simpleReportPurchased;
+
+                    const unlocked =
+                        entitlement.home_simple_report_unlocked === true ||
+                        subscriptionActive;
                     const reportGenerated =
                         entitlement.home_simple_report_usage_status === "used" ||
                         !!entitlement.home_simple_report_id;
