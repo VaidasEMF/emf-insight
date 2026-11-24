@@ -5375,6 +5375,22 @@
                                         property's EMF environment.</p>
                                 </div>
                             </div>
+                            <div id="homeBillingSelectedProperty" style="
+        margin: 0 0 14px;
+        padding: 11px 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #475467;
+    ">
+                                <span style="font-weight: 600;">Selected Property:</span>
+                                <span id="homeBillingSelectedPropertyName">Loading...</span>
+                                <span style="margin-left: 8px; color: #667085;">
+                                    Project #<span id="homeBillingSelectedPropertyId">—</span>
+                                </span>
+                            </div>
+
                             <div class="pricing-grid" id="homePricingGrid"></div>
 
                             <div style="height: 22px;"></div>
@@ -20562,9 +20578,31 @@ ${request.has_active_unlock
                 const workspaceMode =
                     localStorage.getItem("workspaceMode") || "business";
 
+                let homeUserId = null;
+
+                try {
+                    homeUserId = token
+                        ? JSON.parse(
+                            atob(token.split(".")[1])
+                        ).sub
+                        : null;
+                } catch (error) {
+                    console.warn(
+                        "Could not resolve user ID for Home project:",
+                        error
+                    );
+                }
+
                 const projectId =
                     workspaceMode === "home"
                         ? (
+                            (homeUserId
+                                ? localStorage.getItem(
+                                    `home_project_id_${homeUserId}`
+                                )
+                                : null
+                            ) ||
+                            localStorage.getItem("home_project_id") ||
                             localStorage.getItem("homeProjectId") ||
                             null
                         )
@@ -24887,6 +24925,61 @@ ${request.contact_expires_at
             }
         }
 
+        function renderHomeBillingSelectedProperty() {
+            const nameElement = document.getElementById(
+                "homeBillingSelectedPropertyName"
+            );
+
+            const idElement = document.getElementById(
+                "homeBillingSelectedPropertyId"
+            );
+
+            if (!nameElement || !idElement) return;
+
+            let userId = null;
+
+            try {
+                const token = localStorage.getItem("token");
+
+                userId = token
+                    ? JSON.parse(atob(token.split(".")[1])).sub
+                    : null;
+            } catch (error) {
+                console.warn("Could not resolve Home user ID", error);
+            }
+
+            const selectedProjectId =
+                (userId
+                    ? localStorage.getItem(`home_project_id_${userId}`)
+                    : null
+                ) ||
+                localStorage.getItem("home_project_id") ||
+                localStorage.getItem("homeProjectId");
+
+            const projects = Array.isArray(window.homeBillingProjects)
+                ? window.homeBillingProjects
+                : [];
+
+            const selectedProject = projects.find(project =>
+                String(project.id ?? project.project_id) ===
+                String(selectedProjectId)
+            );
+
+            if (!selectedProject) {
+                nameElement.textContent = selectedProjectId
+                    ? "Property not found"
+                    : "No Property selected";
+
+                idElement.textContent = "—";
+                return;
+            }
+
+            nameElement.textContent =
+                selectedProject.name || "Home Wellness Property";
+
+            idElement.textContent =
+                selectedProject.id ?? selectedProject.project_id;
+        }
 
         async function loadProjects() {
             const container = document.getElementById("projectsContainer");
@@ -24956,6 +25049,8 @@ ${request.contact_expires_at
                 window.homeBillingProjects = allProjects.filter(project => {
                     return getProjectType(project) === "home";
                 });
+
+                renderHomeBillingSelectedProperty();
 
                 document.getElementById("businessProjectCount").textContent =
                     currentMode === "business" ? projects.length : "?";
@@ -25069,7 +25164,6 @@ ${request.contact_expires_at
             sessionStorage.removeItem("professionalAssessmentContext");
 
             localStorage.setItem("workspaceMode", mode);
-
             if (mode === "home") {
 
                 localStorage.setItem(
@@ -25077,8 +25171,23 @@ ${request.contact_expires_at
                     projectId
                 );
 
-                // Do not let an old legacy Business project
-                // determine the Home startup.
+                let userId = null;
+
+                try {
+                    userId = token
+                        ? JSON.parse(atob(token.split(".")[1])).sub
+                        : null;
+                } catch (error) {
+                    console.warn("Could not resolve Home user ID.", error);
+                }
+
+                if (userId) {
+                    localStorage.setItem(
+                        `home_project_id_${userId}`,
+                        String(projectId)
+                    );
+                }
+
                 localStorage.removeItem("project_id");
 
             } else {
