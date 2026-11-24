@@ -595,6 +595,15 @@ def get_my_payments(
             elif plan == "home_full_report":
                 product = "Full EMF Insight Report"
                 workspace = "Home"
+            elif plan == "home_measure_monthly":
+                product = "EMF Self-Assessment"
+                workspace = "Home"
+            elif plan == "home_deeper_first":
+                product = "Deeper EMF Analysis – First Assessment"
+                workspace = "Home"
+            elif plan == "home_deeper_repeat":
+                product = "Deeper EMF Analysis – Follow-up Assessment"
+                workspace = "Home"
             elif plan == "single":
                 product = "Business Single Report"
                 workspace = "Business"
