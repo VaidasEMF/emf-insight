@@ -932,6 +932,10 @@
 
         .price-card {
             position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
             border: 1px solid var(--line);
             border-radius: 14px;
             padding: 18px;
@@ -948,16 +952,19 @@
         }
 
         .price-card h4 {
-            margin: 0;
-            font-size: 14px;
+            margin: 0 0 4px;
+            font-size: 16px;
+            font-weight: 750;
+            line-height: 1.35;
+            color: #1e293b;
         }
 
         .price-description {
-            min-height: 34px;
-            margin: 5px 0 0;
-            color: var(--muted);
-            font-size: 10px;
-            line-height: 1.45;
+            min-height: 42px;
+            margin: 6px 0 0;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.5;
         }
 
         .price-amount {
@@ -981,7 +988,8 @@
         }
 
         .price-actions {
-            margin-top: 16px;
+            margin-top: auto;
+            padding-top: 16px;
         }
 
         .price-badge {
@@ -993,6 +1001,252 @@
             font-size: 9px;
             font-weight: 800;
         }
+
+
+        /* Home Wellness card refinements */
+
+        .price-card .price-badge {
+            align-self: flex-start;
+            width: fit-content;
+            max-width: 100%;
+        }
+
+        .price-card .price-details-link {
+            width: fit-content;
+            max-width: 100%;
+            margin-top: 12px;
+            padding: 7px 11px;
+            font-size: 11px;
+        }
+
+        .price-card .price-amount {
+            margin-top: 12px;
+        }
+
+        .price-card .price-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price-card .price-actions button {
+            width: auto;
+        }
+
+
+
+        /* Deeper Understanding dual pricing */
+        .price-card .deeper-price-list {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .price-card .deeper-price-option {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .price-card .deeper-price-option+.deeper-price-option {
+            border-left: 1px solid #cbd5e1;
+            padding-left: 12px;
+        }
+
+        .price-card .deeper-price-option strong {
+            font-size: 25px;
+            font-weight: 820;
+        }
+
+        .price-card .deeper-price-option .price-period {
+            margin-left: 0;
+            font-size: 12px;
+            color: #334155;
+            white-space: nowrap;
+        }
+
+
+        /* Deeper Understanding card heading */
+        .deeper-card-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .deeper-card-icon {
+            width: 52px;
+            height: 52px;
+            flex: 0 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #ccfbf1;
+            color: #0f766e;
+        }
+
+        .deeper-card-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .deeper-card-heading-content {
+            min-width: 0;
+        }
+
+        .deeper-card-heading-content h4 {
+            margin: 0 0 7px;
+        }
+
+        .price-badge.deeper-payment-badge {
+            display: inline-block;
+            background: #bff5ee;
+            color: #0f766e;
+            font-size: 10px;
+            padding: 5px 9px;
+        }
+
+        .deeper-availability {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin: 10px 0 14px;
+            padding: 8px 10px;
+            border-radius: 20px;
+            background: #ccfbf1;
+            color: #115e59;
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+
+        /* Home Wellness card headings */
+        .home-card-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .home-card-icon {
+            width: 52px;
+            height: 52px;
+            flex: 0 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+        }
+
+        .home-card-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .home-card-heading-content {
+            min-width: 0;
+        }
+
+        .home-card-heading-content h4 {
+            margin: 0 0 7px;
+        }
+
+        .home-simple-heading .home-card-icon {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .home-measure-heading .home-card-icon {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .price-badge.simple-payment-badge {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 10px;
+            padding: 5px 9px;
+        }
+
+        .price-badge.measure-payment-badge {
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 10px;
+            padding: 5px 9px;
+        }
+
+        /* Active Measure My Property subscription */
+
+        .measure-monthly-access-info {
+            margin: 14px 0;
+            padding: 14px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            color: #1e3a8a;
+        }
+
+        .measure-subscription-status {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .measure-status-dot {
+            width: 9px;
+            height: 9px;
+            flex: 0 0 9px;
+            border-radius: 50%;
+            background: #16a34a;
+        }
+
+        .measure-subscription-status strong {
+            font-size: 13px;
+            font-weight: 750;
+            color: #166534;
+        }
+
+        .measure-status-price {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1d4ed8;
+        }
+
+        .measure-subscription-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-top: 1px solid #dbeafe;
+            font-size: 12px;
+        }
+
+        .measure-subscription-row span {
+            color: #475569;
+        }
+
+        .measure-subscription-row strong {
+            color: #1e3a8a;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .measure-subscription-note {
+            margin: 10px 0 0;
+            padding-top: 10px;
+            border-top: 1px solid #dbeafe;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #475569;
+        }
+
 
         /* Purchased Home Simple Report */
         .price-card.simple-report-purchased .price-badge {
@@ -5186,6 +5440,53 @@
                                     <div id="paymentHistoryMessage"
                                         style="color:var(--muted);font-size:12px;margin-bottom:10px;">
                                         Loading payment history...
+                                    </div>
+
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+                                        <input id="paymentHistorySearch" type="search" placeholder="Search payments..."
+                                            style="flex:1;min-width:180px;" />
+
+                                        <select id="paymentHistoryWorkspace" style="min-width:150px;">
+                                            <option value="all">All workspaces</option>
+                                            <option value="home">Home Wellness</option>
+                                            <option value="business">Business Survey</option>
+                                        </select>
+
+                                        <select id="paymentHistoryStatus" style="min-width:130px;">
+                                            <option value="all">All statuses</option>
+                                            <option value="paid">Paid</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="expired">Expired</option>
+                                            <option value="failed">Failed</option>
+                                        </select>
+                                    </div>
+
+                                    <div id="paymentHistoryPagination"
+                                        style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;">
+
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <label for="paymentHistoryPageSize"
+                                                style="font-size:12px;color:var(--muted);">
+                                                Rows per page:
+                                            </label>
+                                            <select id="paymentHistoryPageSize" style="min-width:75px;">
+                                                <option value="10" selected>10</option>
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                        </div>
+
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span id="paymentHistoryPageInfo"
+                                                style="font-size:12px;color:var(--muted);"></span>
+                                            <button type="button" id="paymentHistoryPrev" class="btn-secondary">
+                                                Previous
+                                            </button>
+                                            <button type="button" id="paymentHistoryNext" class="btn-secondary">
+                                                Next
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <table style="width:100%;border-collapse:collapse;min-width:700px;">
@@ -12730,7 +13031,15 @@ ADMIN PAYMENTS
         }
 
         function renderPriceCard(item, key, workspace) {
-            const price = item.prices[pricingCurrency];
+            const isDeeperRepeat =
+                workspace === "home" &&
+                key === "deeperUnderstanding" &&
+                Number(window.currentUser?.home_deeper_analysis_credits_purchased || 0) > 0;
+
+            const price = isDeeperRepeat
+                ? item.repeatPrices?.[pricingCurrency]
+                : item.prices[pricingCurrency];
+
             const isTbd = item.type === "tbd" || typeof price !== "number";
             const featured = false;
             const credits = item.credits
@@ -12746,7 +13055,9 @@ ADMIN PAYMENTS
 
             const checkoutPlan =
                 workspace === "home"
-                    ? homeCheckoutPlans[key]
+                    ? key === "deeperUnderstanding" && isDeeperRepeat
+                        ? "home_deeper_repeat"
+                        : homeCheckoutPlans[key]
                     : key;
 
             const isSimpleReportPurchased =
@@ -12805,7 +13116,7 @@ ADMIN PAYMENTS
                     ? "Get a clear overview of your property's EMF environment, lifestyle zones and identified sources."
                     : key === "measureMonthly"
                         ? "Measure your property and monitor changes in your EMF environment."
-                        : "Gain a deeper understanding of your property's EMF environment with an in-depth analysis."
+                        : "A comprehensive analysis of your measured EMF environment with detailed insights and personalised recommendations."
                 : key === "single"
                     ? "1 Professional Assessment, 1 report and 1 Contact Point."
                     : key === "pro"
@@ -12813,14 +13124,89 @@ ADMIN PAYMENTS
                         : "25 Professional Assessments, 25 reports and 10 Contact Points each month.";
             return `
          <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""} ${isSimpleReportPurchased ? "simple-report-purchased" : ""} ${workspace === "home" ? key === "simpleReport" ? "home-card-simple" : key === "measureMonthly" ? "home-card-measure" : key === "deeperUnderstanding" ? "home-card-deeper" : "" : ""}">
-            ${isSimpleReportPurchased
-                    ? `<span class="price-badge">PURCHASED</span>`
-                    : isMeasureMonthlyActive
-                        ? `<span class="price-badge">ACTIVE</span>`
-                        : featured
-                            ? `<span class="price-badge">Current beta offer</span>`
-                            : ""}
-            <h4>${escapeHtml(item.name)}</h4>
+${workspace === "home" && key === "simpleReport"
+                    ? `
+        <div class="home-card-heading home-simple-heading">
+            <div class="home-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+                    <path d="M14 2v6h6"/>
+                    <path d="M8 13h8M8 17h8"/>
+                </svg>
+            </div>
+            <div class="home-card-heading-content">
+                <h4>${escapeHtml(item.name)}</h4>
+                <span class="price-badge simple-payment-badge">
+                    ${isSimpleReportPurchased ? "PURCHASED" : "ONE-TIME PAYMENT"}
+                </span>
+            </div>
+        </div>
+    `
+                    : workspace === "home" && key === "measureMonthly"
+                        ? `
+        <div class="home-card-heading home-measure-heading">
+            <div class="home-card-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="3" y="13" width="5" height="8" rx="2"/>
+                    <rect x="10" y="7" width="5" height="14" rx="2"/>
+                    <rect x="17" y="2" width="5" height="19" rx="2"/>
+                </svg>
+            </div>
+            <div class="home-card-heading-content">
+                <h4>${escapeHtml(item.name)}</h4>
+                <span class="price-badge measure-payment-badge">
+                    ${isMeasureMonthlyActive ? "ACTIVE" : "SUBSCRIPTION"}
+                </span>
+            </div>
+        </div>
+    `
+                        : workspace === "home" && key === "deeperUnderstanding"
+                            ? `
+        <div class="deeper-card-heading">
+            <div class="deeper-card-icon">
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 3h6"/>
+                    <path d="M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/>
+                    <path d="M8 15h8"/>
+                </svg>
+            </div>
+            <div class="deeper-card-heading-content">
+                <h4>${escapeHtml(item.name)}</h4>
+                <span class="price-badge deeper-payment-badge">
+                    PAID ANALYSIS (PER ASSESSMENT)
+                </span>
+            </div>
+        </div>
+
+        <div class="price-amount deeper-price-list">
+            <div class="deeper-price-option">
+                <strong>${formatPrice(item.prices[pricingCurrency])}</strong>
+                <span class="price-period">First analysis</span>
+            </div>
+            <div class="deeper-price-option">
+                <strong>${formatPrice(item.repeatPrices[pricingCurrency])}</strong>
+                <span class="price-period">Repeat analysis</span>
+            </div>
+        </div>
+
+        <div class="deeper-availability">
+            <span>ⓘ</span>
+            Available after measurements
+        </div>
+    `
+                            : `
+        ${isSimpleReportPurchased
+                                ? `<span class="price-badge">PURCHASED</span>`
+                                : isMeasureMonthlyActive
+                                    ? `<span class="price-badge">ACTIVE</span>`
+                                    : featured
+                                        ? `<span class="price-badge">Current beta offer</span>`
+                                        : ""}
+        <h4>${escapeHtml(item.name)}</h4>
+    `
+                }
            ${isSimpleReportPurchased ? `
     <div class="simple-report-access-info">
 
@@ -12858,35 +13244,60 @@ ADMIN PAYMENTS
         </div>
 
     </div>
-` : ""}
-            ${isMeasureMonthlyActive ? `
-    <div class="measure-monthly-access-info">
-        <div>
-            <strong>Subscription active</strong>
-        </div>
-        <div>
-            Current billing period started:
-            <strong>${measureMonthlyStartedAt ? escapeHtml(new Date(measureMonthlyStartedAt).toLocaleDateString()) : "Not available"}</strong>
-        </div>
-        <div>
-            ${measureMonthlyCancelAtPeriodEnd ? "Access ends:" : "Next payment:"}
-            <strong>${measureMonthlyNextPaymentAt ? escapeHtml(new Date(measureMonthlyNextPaymentAt).toLocaleDateString()) : "Not available"}</strong>
-        </div>
-    </div>
-` : ""}
+` : ""
+                }
+                      ${isMeasureMonthlyActive ? `
+                <div class="measure-monthly-access-info">
+                    <div class="measure-subscription-status">
+                        <span class="measure-status-dot"></span>
+                        <strong>Subscription active</strong>
+                        <span class="measure-status-price">€19 / month</span>
+                    </div>
+
+                    <div class="measure-subscription-row">
+                        <span>Subscription started</span>
+                        <strong>${measureMonthlyStartedAt
+                        ? escapeHtml(new Date(measureMonthlyStartedAt).toLocaleDateString())
+                        : "Not available"}</strong>
+                    </div>
+
+                    <div class="measure-subscription-row">
+                        <span>${measureMonthlyCancelAtPeriodEnd ? "Access ends" : "Next payment"}</span>
+                        <strong>${measureMonthlyNextPaymentAt
+                        ? escapeHtml(new Date(measureMonthlyNextPaymentAt).toLocaleDateString())
+                        : "Not available"}</strong>
+                    </div>
+
+                    <p class="measure-subscription-note">
+                        ${measureMonthlyCancelAtPeriodEnd
+                        ? "Your subscription will remain active until the end of this billing period."
+                        : "Your guided measurements and Property Health Record access are active."}
+                    </p>
+                </div>
+            ` : ""
+                }
+
             <p class="price-description">${isSimpleReportPurchased
                     ? "Your payment has been received. No additional payment is required."
                     : description}</p>
-            <div class="price-amount">
-    ${isSimpleReportPurchased
-                    ? `Paid · ${formatPrice(price)}`
-                    : isTbd
-                        ? "TBD"
-                        : formatPrice(price)}
-                ${!isTbd && item.type === "monthly"
-                    ? `<span class="price-period">${period}</span>`
-                    : ""}
-            </div>
+${workspace === "home" && key === "deeperUnderstanding"
+                    ? `
+    `
+                    : `
+        <div class="price-amount">
+            ${isSimpleReportPurchased
+                        ? `Paid · ${formatPrice(price)}`
+                        : isTbd
+                            ? "TBD"
+                            : formatPrice(price)}
+            ${!isTbd && item.type === "monthly"
+                        ? `<span class="price-period">${period}</span>`
+                        : ""}
+        </div>
+    `
+                }
+
+
 
 ${!isTbd && !isSimpleReportPurchased
                     ? `<button
@@ -12896,10 +13307,11 @@ ${!isTbd && !isSimpleReportPurchased
         >
             View plan details →
        </button>`
-                    : ""}
+                    : ""
+                }
 
-                            <div class="price-actions">
-    ${workspace === "home" && key === "simpleReport" && isSimpleReportPurchased
+        <div class="price-actions">
+            ${workspace === "home" && key === "simpleReport" && isSimpleReportPurchased
                     ? simpleReportUsed && simpleReportId
                         ? `<button
             type="button"
@@ -12918,26 +13330,26 @@ ${!isTbd && !isSimpleReportPurchased
                     : workspace === "home" && key === "measureMonthly" && isMeasureMonthlyActive
                         ? `<button type="button" class="btn-primary" disabled>Subscription Active</button>`
                         : pricingButton(
-                        isTbd
-                            ? "Coming later"
-                            : workspace === "home"
-                                ? key === "simpleReport"
-                                    ? "Purchase Simple Report"
-                                    : key === "measureMonthly"
-                                        ? "Subscribe"
-                                        : "Purchase Deeper Understanding"
-                                : key === "single"
-                                    ? "Buy Single"
-                                    : key === "pro"
-                                        ? "Choose Pro"
-                                        : "Choose Professional",
-                        checkoutPlan,
-                        !isTbd
-                    )
+                            isTbd
+                                ? "Coming later"
+                                : workspace === "home"
+                                    ? key === "simpleReport"
+                                        ? "Purchase Simple Report"
+                                        : key === "measureMonthly"
+                                            ? "Subscribe"
+                                            : "Get Deeper Understanding"
+                                    : key === "single"
+                                        ? "Buy Single"
+                                        : key === "pro"
+                                            ? "Choose Pro"
+                                            : "Choose Professional",
+                            checkoutPlan,
+                            !isTbd
+                        )
                 }
-</div>
+        </div>
         </article>
-    `;
+            `;
         }
 
 
@@ -13407,6 +13819,10 @@ ${!isTbd && !isSimpleReportPurchased
                             prices: {
                                 EUR: eu?.products?.HOME_DEEPER_ANALYSIS_FIRST?.price,
                                 USD: us?.products?.HOME_DEEPER_ANALYSIS_FIRST?.price
+                            },
+                            repeatPrices: {
+                                EUR: eu?.products?.HOME_DEEPER_ANALYSIS_REPEAT?.price,
+                                USD: us?.products?.HOME_DEEPER_ANALYSIS_REPEAT?.price
                             }
                         }
                     },
@@ -25381,14 +25797,89 @@ ${request.contact_expires_at
                     unknown: "Unknown"
                 }[String(status || "").toLowerCase()] || String(status || "Unknown"));
 
-                tbody.innerHTML = payments.map(payment => {
-                    const receiptUrl = payment.receipt_url || "";
-                    const safeReceiptUrl =
-                        /^https:\/\/pay\.stripe\.com\/receipts\/payment\//i.test(receiptUrl)
-                            ? receiptUrl
-                            : "";
+                const searchInput = document.getElementById("paymentHistorySearch");
+                const workspaceSelect = document.getElementById("paymentHistoryWorkspace");
+                const statusSelect = document.getElementById("paymentHistoryStatus");
 
-                    return `
+                const getFilteredPayments = () => {
+                    const query = (searchInput?.value || "").trim().toLowerCase();
+                    const workspace = workspaceSelect?.value || "all";
+                    const status = statusSelect?.value || "all";
+
+                    return payments.filter(payment => {
+                        const paymentWorkspace = String(payment.workspace || "").toLowerCase();
+                        const paymentStatus = String(payment.status || "").toLowerCase();
+
+                        const searchText = [
+                            payment.product,
+                            payment.workspace,
+                            payment.project_id,
+                            payment.amount,
+                            payment.currency,
+                            payment.status
+                        ].join(" ").toLowerCase();
+
+                        if (query && !searchText.includes(query)) return false;
+
+                        if (workspace === "home" && !paymentWorkspace.includes("home")) {
+                            return false;
+                        }
+
+                        if (
+                            workspace === "business" &&
+                            !paymentWorkspace.includes("business")
+                        ) {
+                            return false;
+                        }
+
+                        if (status !== "all" && paymentStatus !== status) {
+                            return false;
+                        }
+
+                        return true;
+                    });
+                };
+
+                let currentPage = 1;
+
+                const pageSizeSelect =
+                    document.getElementById("paymentHistoryPageSize");
+                const pageInfo =
+                    document.getElementById("paymentHistoryPageInfo");
+                const prevButton =
+                    document.getElementById("paymentHistoryPrev");
+                const nextButton =
+                    document.getElementById("paymentHistoryNext");
+
+                let pageSize = Number(pageSizeSelect?.value || 10);
+
+                const renderPayments = () => {
+                    const filteredPayments = getFilteredPayments();
+
+                    const totalPages = Math.max(
+                        1,
+                        Math.ceil(filteredPayments.length / pageSize)
+                    );
+
+                    currentPage = Math.min(currentPage, totalPages);
+
+                    const startIndex = (currentPage - 1) * pageSize;
+
+                    const pagePayments = filteredPayments.slice(
+                        startIndex,
+                        startIndex + pageSize
+                    );
+
+                    tbody.innerHTML = pagePayments.length
+                        ? pagePayments.map(payment => {
+                            const receiptUrl = payment.receipt_url || "";
+
+                            const safeReceiptUrl =
+                                /^https:\/\/pay\.stripe\.com\/receipts\/payment\//i.test(receiptUrl)
+                                    ? receiptUrl
+                                    : "";
+
+                            return `
                 <tr style="border-bottom:1px solid var(--line);">
                     <td style="padding:12px 8px;white-space:nowrap;">
                         ${escapeHtml(formatDate(payment.date))}
@@ -25401,8 +25892,8 @@ ${request.contact_expires_at
                     </td>
                     <td style="padding:12px 8px;">
                         ${payment.project_id
-                            ? "#" + escapeHtml(payment.project_id)
-                            : "—"}
+                                    ? "#" + escapeHtml(payment.project_id)
+                                    : "—"}
                     </td>
                     <td style="padding:12px 8px;white-space:nowrap;">
                         ${escapeHtml(formatAmount(payment))}
@@ -25412,19 +25903,95 @@ ${request.contact_expires_at
                     </td>
                     <td style="padding:12px 8px;white-space:nowrap;">
                         ${safeReceiptUrl
-                            ? `<a href="${escapeHtml(safeReceiptUrl)}"
+                                    ? `<a href="${escapeHtml(safeReceiptUrl)}"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   style="color:var(--primary);font-weight:600;">
                                   View receipt ↗
                                </a>`
-                            : "—"}
+                                    : "—"}
                     </td>
                 </tr>
             `;
-                }).join("");
+                        }).join("")
+                        : `<tr>
+            <td colspan="6" style="padding:14px 8px;">
+                No matching payments found.
+            </td>
+        </tr>`;
 
-                message.textContent = `${payments.length} payment(s) found.`;
+                    const showingFrom = filteredPayments.length
+                        ? startIndex + 1
+                        : 0;
+
+                    const showingTo = Math.min(
+                        startIndex + pageSize,
+                        filteredPayments.length
+                    );
+
+                    message.textContent =
+                        `${filteredPayments.length} of ${payments.length} payment(s) found.`;
+
+                    if (pageInfo) {
+                        pageInfo.textContent =
+                            `Showing ${showingFrom}–${showingTo} of ${filteredPayments.length}`;
+                    }
+
+                    if (prevButton) {
+                        prevButton.disabled = currentPage <= 1;
+                    }
+
+                    if (nextButton) {
+                        nextButton.disabled = currentPage >= totalPages;
+                    }
+                };
+
+                if (searchInput) {
+                    searchInput.oninput = () => {
+                        currentPage = 1;
+                        renderPayments();
+                    };
+                }
+
+                if (workspaceSelect) {
+                    workspaceSelect.onchange = () => {
+                        currentPage = 1;
+                        renderPayments();
+                    };
+                }
+
+                if (statusSelect) {
+                    statusSelect.onchange = () => {
+                        currentPage = 1;
+                        renderPayments();
+                    };
+                }
+
+                if (pageSizeSelect) {
+                    pageSizeSelect.onchange = () => {
+                        pageSize = Number(pageSizeSelect.value);
+                        currentPage = 1;
+                        renderPayments();
+                    };
+                }
+
+                if (prevButton) {
+                    prevButton.onclick = () => {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            renderPayments();
+                        }
+                    };
+                }
+
+                if (nextButton) {
+                    nextButton.onclick = () => {
+                        currentPage++;
+                        renderPayments();
+                    };
+                }
+
+                renderPayments();
 
             } catch (error) {
                 console.error("Payment history error:", error);
@@ -28647,6 +29214,9 @@ ${request.contact_expires_at
             const entitlements = window.homeBillingEntitlements || {};
             const reports = window.homeBillingReports || [];
 
+            let homeBillingCurrentPage = 1;
+            let homeBillingPageSize = 10;
+
             const esc = value => escapeHtml(String(value ?? ""));
 
             function renderRows(search = "", filter = "all") {
@@ -28702,7 +29272,18 @@ ${request.contact_expires_at
                     return true;
                 });
 
-                const rows = filtered.map(project => {
+                const totalPages = Math.max(1, Math.ceil(filtered.length / homeBillingPageSize));
+
+                homeBillingCurrentPage = Math.min(homeBillingCurrentPage, totalPages);
+
+                const startIndex = (homeBillingCurrentPage - 1) * homeBillingPageSize;
+
+                const paginatedProjects = filtered.slice(
+                    startIndex,
+                    startIndex + homeBillingPageSize
+                );
+
+                const rows = paginatedProjects.map(project => {
                     const id = String(project.id ?? project.project_id);
                     const entitlement = entitlements[id]?.data || {};
 
@@ -28905,6 +29486,29 @@ ${request.contact_expires_at
                 if (count) {
                     count.textContent = `${filtered.length} of ${projects.length} properties`;
                 }
+
+                const pageInfo = container.querySelector("#homeBillingPageInfo");
+                const prevButton = container.querySelector("#homeBillingPrev");
+                const nextButton = container.querySelector("#homeBillingNext");
+
+                const showingFrom = filtered.length ? startIndex + 1 : 0;
+                const showingTo = Math.min(
+                    startIndex + homeBillingPageSize,
+                    filtered.length
+                );
+
+                if (pageInfo) {
+                    pageInfo.textContent =
+                        `Showing ${showingFrom}–${showingTo} of ${filtered.length}`;
+                }
+
+                if (prevButton) {
+                    prevButton.disabled = homeBillingCurrentPage <= 1;
+                }
+
+                if (nextButton) {
+                    nextButton.disabled = homeBillingCurrentPage >= totalPages;
+                }
             }
 
             container.innerHTML = `
@@ -28970,6 +29574,35 @@ ${request.contact_expires_at
 
         <tbody id="homeBillingPropertiesList"></tbody>
     </table>
+
+    <div id="homeBillingPagination"
+     style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 10px;">
+
+    <div style="display:flex;align-items:center;gap:8px;">
+        <label for="homeBillingPageSize" style="font-size:12px;color:var(--muted);">
+            Rows per page:
+        </label>
+        <select id="homeBillingPageSize"
+                style="min-width:75px;">
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;">
+        <span id="homeBillingPageInfo"
+              style="font-size:12px;color:var(--muted);">
+        </span>
+
+        <button type="button" id="homeBillingPrev"
+                class="btn-secondary">Previous</button>
+
+        <button type="button" id="homeBillingNext"
+                class="btn-secondary">Next</button>
+    </div>
+</div>
 </div>
 `;
             const propertiesList =
@@ -28996,10 +29629,34 @@ ${request.contact_expires_at
             const filterSelect = container.querySelector("#homeBillingFilter");
 
             searchInput.addEventListener("input", () => {
+                homeBillingCurrentPage = 1;
                 renderRows(searchInput.value, filterSelect.value);
             });
 
             filterSelect.addEventListener("change", () => {
+                homeBillingCurrentPage = 1;
+                renderRows(searchInput.value, filterSelect.value);
+            });
+
+            const pageSizeSelect = container.querySelector("#homeBillingPageSize");
+            const prevButton = container.querySelector("#homeBillingPrev");
+            const nextButton = container.querySelector("#homeBillingNext");
+
+            pageSizeSelect.addEventListener("change", () => {
+                homeBillingPageSize = Number(pageSizeSelect.value);
+                homeBillingCurrentPage = 1;
+                renderRows(searchInput.value, filterSelect.value);
+            });
+
+            prevButton.addEventListener("click", () => {
+                if (homeBillingCurrentPage > 1) {
+                    homeBillingCurrentPage--;
+                    renderRows(searchInput.value, filterSelect.value);
+                }
+            });
+
+            nextButton.addEventListener("click", () => {
+                homeBillingCurrentPage++;
                 renderRows(searchInput.value, filterSelect.value);
             });
 
