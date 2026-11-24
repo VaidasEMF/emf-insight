@@ -49,6 +49,12 @@ def me(
     home_simple_report_unlocked = False
     home_phr_access_active = False
 
+    # HOME MEASURE MY PROPERTY SUBSCRIPTION
+    home_measure_monthly_active = False
+    home_measure_monthly_started_at = None
+    home_measure_monthly_next_payment_at = None
+    home_measure_monthly_cancel_at_period_end = False
+
     home_simple_report_usage_status = None
     home_simple_report_purchased = False
     home_simple_report_id = None
@@ -59,6 +65,10 @@ def me(
     home_deeper_analysis_purchased = False
     home_deeper_analysis_unlocked = False
     home_deeper_analysis_usage_status = None
+
+    home_deeper_analysis_credits_purchased = 0
+    home_deeper_analysis_credits_used = 0
+    home_deeper_analysis_credits_available = 0
 
     professional_demo_active = False
     professional_demo_expires_at = None
@@ -308,6 +318,49 @@ LIMIT 1
 
             home_phr_access_active = bool(result)
 
+            # HOME MEASURE MY PROPERTY SUBSCRIPTION
+            measure_subscription = db.execute(
+                text("""
+                    SELECT
+                        starts_at,
+                        current_period_start,
+                        current_period_end,
+                        cancel_at_period_end
+                    FROM home_wellness_entitlements
+                    WHERE project_id = :project_id
+                      AND user_id = :user_id
+                      AND entitlement_type = 'measure_monthly'
+                      AND status = 'active'
+                      AND (
+                          starts_at IS NULL
+                          OR starts_at <= CURRENT_TIMESTAMP
+                      )
+                      AND (
+                          expires_at IS NULL
+                          OR expires_at > CURRENT_TIMESTAMP
+                      )
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                """),
+                {
+                    "project_id": str(project_id),
+                    "user_id": str(current_user.id),
+                },
+            ).first()
+
+            if measure_subscription:
+                home_measure_monthly_active = True
+                home_measure_monthly_started_at = (
+                    measure_subscription.starts_at
+                    or measure_subscription.current_period_start
+                )
+                home_measure_monthly_next_payment_at = (
+                    measure_subscription.current_period_end
+                )
+                home_measure_monthly_cancel_at_period_end = bool(
+                    measure_subscription.cancel_at_period_end
+                )
+
         except Exception as e:
             print(
                 "HOME PHR ACCESS CHECK FAILED:",
@@ -360,6 +413,42 @@ LIMIT 1
                 )
                 home_deeper_analysis_usage_status = (
                     result.usage_status or "not_used"
+                )
+
+            credit_counts = db.execute(
+                text("""
+                    SELECT
+                        COUNT(*) AS purchased,
+                        COUNT(*) FILTER (
+                            WHERE usage_status = 'used'
+                        ) AS used,
+                        COUNT(*) FILTER (
+                            WHERE usage_status = 'not_used'
+                        ) AS available
+                    FROM home_wellness_transactions
+                    WHERE user_id = :user_id
+                      AND project_id = :project_id
+                      AND status = 'completed'
+                      AND product_key IN (
+                          'home_deeper_first',
+                          'home_deeper_repeat'
+                      )
+                """),
+                {
+                    "user_id": str(current_user.id),
+                    "project_id": str(project_id),
+                },
+            ).first()
+
+            if credit_counts:
+                home_deeper_analysis_credits_purchased = (
+                    credit_counts.purchased or 0
+                )
+                home_deeper_analysis_credits_used = (
+                    credit_counts.used or 0
+                )
+                home_deeper_analysis_credits_available = (
+                    credit_counts.available or 0
                 )
 
         except Exception as e:
@@ -430,6 +519,9 @@ LIMIT 1
         "home_deeper_analysis_unlocked": home_deeper_analysis_unlocked,
         "home_deeper_analysis_usage_status": home_deeper_analysis_usage_status,
 
+        "home_deeper_analysis_credits_purchased": home_deeper_analysis_credits_purchased,
+        "home_deeper_analysis_credits_used": home_deeper_analysis_credits_used,
+        "home_deeper_analysis_credits_available": home_deeper_analysis_credits_available,
 
         "home_simple_report_usage_status": home_simple_report_usage_status,
         "home_simple_report_id": home_simple_report_id,
@@ -448,6 +540,17 @@ LIMIT 1
             if professional_demo_expires_at
             else None
         ),
+
+        "home_measure_monthly_active": home_measure_monthly_active,
+        "home_measure_monthly_started_at": (
+            home_measure_monthly_started_at.isoformat()
+            if home_measure_monthly_started_at else None
+        ),
+        "home_measure_monthly_next_payment_at": (
+            home_measure_monthly_next_payment_at.isoformat()
+            if home_measure_monthly_next_payment_at else None
+        ),
+        "home_measure_monthly_cancel_at_period_end": home_measure_monthly_cancel_at_period_end,
     }
 
 

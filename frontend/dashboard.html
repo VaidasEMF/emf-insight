@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1075,6 +1075,26 @@
 
         .price-card.simple-report-purchased .price-actions .btn-primary {
             width: 100%;
+        }
+
+        /* Home Wellness pricing card themes */
+
+        /* Simple Property EMF Report — light green */
+        .price-card.home-card-simple {
+            background: #f2fbf5;
+            border: 1px solid #a7e4bd;
+        }
+
+        /* Measure My Property — light blue */
+        .price-card.home-card-measure {
+            background: #f1f8fe;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Deeper Understanding — light teal */
+        .price-card.home-card-deeper {
+            background: #effcf9;
+            border: 1px solid #99e6d5;
         }
 
 
@@ -12734,6 +12754,20 @@ ADMIN PAYMENTS
                 key === "simpleReport" &&
                 window.currentUser?.home_simple_report_purchased === true;
 
+            const isMeasureMonthlyActive =
+                workspace === "home" &&
+                key === "measureMonthly" &&
+                window.currentUser?.home_measure_monthly_active === true;
+
+            const measureMonthlyStartedAt =
+                window.currentUser?.home_measure_monthly_started_at || null;
+
+            const measureMonthlyNextPaymentAt =
+                window.currentUser?.home_measure_monthly_next_payment_at || null;
+
+            const measureMonthlyCancelAtPeriodEnd =
+                window.currentUser?.home_measure_monthly_cancel_at_period_end === true;
+
             const simpleReportUsed =
                 window.currentUser?.home_simple_report_usage_status === "used";
 
@@ -12742,7 +12776,7 @@ ADMIN PAYMENTS
 
             const simpleReportProjectId =
                 window.currentUser?.home_simple_report_project_id ||
-                localStorage.getItem("home_project_id") ||
+                localStorage.getItem("homeProjectId") ||
                 null;
 
             const simpleReportExpiresAt =
@@ -12778,12 +12812,14 @@ ADMIN PAYMENTS
                         ? "5 Professional Assessments, 5 reports and 3 Contact Points each month."
                         : "25 Professional Assessments, 25 reports and 10 Contact Points each month.";
             return `
-         <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""} ${isSimpleReportPurchased ? "simple-report-purchased" : ""}">
+         <article class="price-card ${featured ? "featured" : ""} ${isTbd ? "muted" : ""} ${isSimpleReportPurchased ? "simple-report-purchased" : ""} ${workspace === "home" ? key === "simpleReport" ? "home-card-simple" : key === "measureMonthly" ? "home-card-measure" : key === "deeperUnderstanding" ? "home-card-deeper" : "" : ""}">
             ${isSimpleReportPurchased
                     ? `<span class="price-badge">PURCHASED</span>`
-                    : featured
-                        ? `<span class="price-badge">Current beta offer</span>`
-                        : ""}
+                    : isMeasureMonthlyActive
+                        ? `<span class="price-badge">ACTIVE</span>`
+                        : featured
+                            ? `<span class="price-badge">Current beta offer</span>`
+                            : ""}
             <h4>${escapeHtml(item.name)}</h4>
            ${isSimpleReportPurchased ? `
     <div class="simple-report-access-info">
@@ -12821,6 +12857,21 @@ ADMIN PAYMENTS
             <small>Access expires: ${escapeHtml(simpleReportExpiryLabel)}</small>
         </div>
 
+    </div>
+` : ""}
+            ${isMeasureMonthlyActive ? `
+    <div class="measure-monthly-access-info">
+        <div>
+            <strong>Subscription active</strong>
+        </div>
+        <div>
+            Current billing period started:
+            <strong>${measureMonthlyStartedAt ? escapeHtml(new Date(measureMonthlyStartedAt).toLocaleDateString()) : "Not available"}</strong>
+        </div>
+        <div>
+            ${measureMonthlyCancelAtPeriodEnd ? "Access ends:" : "Next payment:"}
+            <strong>${measureMonthlyNextPaymentAt ? escapeHtml(new Date(measureMonthlyNextPaymentAt).toLocaleDateString()) : "Not available"}</strong>
+        </div>
     </div>
 ` : ""}
             <p class="price-description">${isSimpleReportPurchased
@@ -12864,7 +12915,9 @@ ${!isTbd && !isSimpleReportPurchased
         >
             Generate My Simple Report
         </button>`
-                    : pricingButton(
+                    : workspace === "home" && key === "measureMonthly" && isMeasureMonthlyActive
+                        ? `<button type="button" class="btn-primary" disabled>Subscription Active</button>`
+                        : pricingButton(
                         isTbd
                             ? "Coming later"
                             : workspace === "home"
@@ -20095,7 +20148,10 @@ ${request.has_active_unlock
 
                 const projectId =
                     workspaceMode === "home"
-                        ? localStorage.getItem("home_project_id")
+                        ? (
+                            localStorage.getItem("homeProjectId") ||
+                            null
+                        )
                         : null;
 
                 console.log("[DASHBOARD LOAD USER]", {
@@ -25412,7 +25468,8 @@ ${request.contact_expires_at
                 if (
                     plan === "home_full_report" ||
                     plan === "home_simple_report" ||
-                    plan === "home_deeper_first"
+                    plan === "home_deeper_first" ||
+                    plan === "home_measure_monthly"
                 ) {
                     const userId =
                         window.currentUser?.id ||
