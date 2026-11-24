@@ -10,6 +10,7 @@ from models.project import Project
 from models.property import Property
 from models.property_health_record import PropertyHealthRecord
 from models.assessment import Assessment
+from models.home_deeper_analysis import HomeDeeperAnalysis
 from services.professional_assessment_access import (
     get_professional_project_access,
     require_active_edit,
@@ -913,6 +914,20 @@ def create_home_deeper_analysis(
             )
 
         # =====================
+        # SAVE DEEPER ANALYSIS
+        # =====================
+
+        saved_analysis = HomeDeeperAnalysis(
+            project_id=project_id,
+            credit_product_key=credit.product_key,
+            analysis_data=result.get("analysis"),
+            warnings=result.get("warnings", []),
+        )
+
+        db.add(saved_analysis)
+        db.flush()
+
+        # =====================
         # MARK SELECTED CREDIT AS USED
         # =====================
 
@@ -947,6 +962,7 @@ def create_home_deeper_analysis(
         return {
             "status": "ok",
             "project_id": project_id,
+            "analysis_id": saved_analysis.id,
             "analysis": result.get("analysis"),
             "warnings": result.get("warnings", []),
             "credit_used": credit.product_key,
@@ -960,6 +976,165 @@ def create_home_deeper_analysis(
     except Exception:
         db.rollback()
         raise
+
+# ==================================================
+# GET SAVED HOME DEEPER ANALYSIS
+# ==================================================
+
+@router.get("/project/{project_id}/deeper-analysis/{analysis_id}")
+def get_home_deeper_analysis(
+    project_id: int,
+    analysis_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    # =====================
+    # LOAD PROJECT
+    # =====================
+
+    project = (
+        db.query(Project)
+        .filter(Project.id == project_id)
+        .first()
+    )
+
+    if not project:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    # =====================
+    # OWNERSHIP CHECK
+    # =====================
+
+    if project.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden",
+        )
+
+    project_data = project.data or {}
+
+    if project_data.get("type") != "home":
+        raise HTTPException(
+            status_code=400,
+            detail="Deeper Analysis is available only for Home Wellness projects",
+        )
+
+    # =====================
+    # LOAD SAVED ANALYSIS
+    # =====================
+
+    saved_analysis = (
+        db.query(HomeDeeperAnalysis)
+        .filter(
+            HomeDeeperAnalysis.id == analysis_id,
+            HomeDeeperAnalysis.project_id == project_id,
+        )
+        .first()
+    )
+
+    if not saved_analysis:
+        raise HTTPException(
+            status_code=404,
+            detail="Deeper Analysis report not found",
+        )
+
+    return {
+        "status": "ok",
+        "project_id": project_id,
+        "analysis_id": saved_analysis.id,
+        "analysis": saved_analysis.analysis_data,
+        "warnings": saved_analysis.warnings or [],
+        "credit_used": saved_analysis.credit_product_key,
+        "created_at": (
+            saved_analysis.created_at.isoformat()
+            if saved_analysis.created_at else None
+        ),
+    }
+
+# ==================================================
+# LIST SAVED HOME DEEPER ANALYSES
+# ==================================================
+
+@router.get("/project/{project_id}/deeper-analyses")
+def get_home_deeper_analyses(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    # =====================
+    # LOAD PROJECT
+    # =====================
+
+    project = (
+        db.query(Project)
+        .filter(Project.id == project_id)
+        .first()
+    )
+
+    if not project:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    # =====================
+    # OWNERSHIP CHECK
+    # =====================
+
+    if project.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden",
+        )
+
+    # =====================
+    # HOME WORKSPACE CHECK
+    # =====================
+
+    project_data = project.data or {}
+
+    if project_data.get("type") != "home":
+        raise HTTPException(
+            status_code=400,
+            detail="Deeper Analysis is available only for Home Wellness projects",
+        )
+
+    # =====================
+    # LOAD SAVED ANALYSES
+    # =====================
+
+    analyses = (
+        db.query(HomeDeeperAnalysis)
+        .filter(
+            HomeDeeperAnalysis.project_id == project_id,
+        )
+        .order_by(
+            HomeDeeperAnalysis.created_at.desc(),
+            HomeDeeperAnalysis.id.desc(),
+        )
+        .all()
+    )
+
+    return {
+        "status": "ok",
+        "project_id": project_id,
+        "analyses": [
+            {
+                "analysis_id": item.id,
+                "credit_used": item.credit_product_key,
+                "created_at": (
+                    item.created_at.isoformat()
+                    if item.created_at else None
+                ),
+            }
+            for item in analyses
+        ],
+    }
 
 # =====================
 # UPLOAD FLOOR PLAN

@@ -6089,6 +6089,18 @@ async function refreshHomeReportEntitlement() {
         window.homeDeeperAnalysisUnlocked =
             me.home_deeper_analysis_unlocked === true;
 
+        window.homeDeeperAnalysisCreditsPurchased =
+            Number(me.home_deeper_analysis_credits_purchased || 0);
+
+        window.homeDeeperAnalysisCreditsUsed =
+            Number(me.home_deeper_analysis_credits_used || 0);
+
+        window.homeDeeperAnalysisCreditsAvailable =
+            Number(me.home_deeper_analysis_credits_available || 0);
+
+        window.homeDeeperAnalysisUsageStatus =
+            me.home_deeper_analysis_usage_status || null;
+
         window.homeFullReportUnlocked =
             me.home_full_report_unlocked === true;
 

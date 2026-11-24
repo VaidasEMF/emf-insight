@@ -1086,6 +1086,162 @@ margin-top:8px;
     }
 
 
+    function renderHomeDeeperReport(reportData) {
+        const container = document.getElementById(
+            "homeDeeperReportContent"
+        );
+
+        if (!container) return;
+
+        const analysis = reportData?.analysis;
+        const sections = analysis?.sections;
+
+        if (!analysis || !sections) {
+            container.innerHTML =
+                "<p>Report data is unavailable.</p>";
+            return;
+        }
+
+        const sectionDefinitions = [
+            {
+                key: "assessment_overview",
+                title: "1. Assessment Overview"
+            },
+            {
+                key: "measurement_summary",
+                title: "2. Measurement Summary"
+            },
+            {
+                key: "lifestyle_area_analysis",
+                title: "3. Lifestyle Area Analysis"
+            },
+            {
+                key: "exposure_context",
+                title: "4. Exposure & Context"
+            },
+            {
+                key: "risk_confidence",
+                title: "5. Risk & Confidence"
+            },
+            {
+                key: "prioritised_recommendations",
+                title: "6. Prioritised Recommendations"
+            },
+            {
+                key: "assessment_limitations",
+                title: "7. Assessment Limitations"
+            }
+        ];
+
+        function formatLabel(value) {
+            return String(value)
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, char => char.toUpperCase());
+        }
+
+        function renderValue(value) {
+            if (value === null || value === undefined) {
+                return `<span style="color:#94a3b8;">Not available</span>`;
+            }
+
+            if (typeof value === "boolean") {
+                return value ? "Yes" : "No";
+            }
+
+            if (Array.isArray(value)) {
+                if (!value.length) {
+                    return `<span style="color:#94a3b8;">None</span>`;
+                }
+
+                return `
+                    <ul style="margin:8px 0;padding-left:22px;">
+                        ${value.map(item => `
+                            <li style="margin-bottom:8px;">
+                                ${renderValue(item)}
+                            </li>
+                        `).join("")}
+                    </ul>
+                `;
+            }
+
+            if (typeof value === "object") {
+                return `
+                    <div style="display:grid;gap:10px;">
+                        ${Object.entries(value).map(([key, item]) => `
+                            <div>
+                                <div style="
+                                    font-size:12px;
+                                    font-weight:700;
+                                    color:#64748b;
+                                    margin-bottom:3px;
+                                ">
+                                    ${escapeHtml(formatLabel(key))}
+                                </div>
+
+                                <div style="color:#1e293b;">
+                                    ${renderValue(item)}
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                `;
+            }
+
+            return escapeHtml(value);
+        }
+
+        container.innerHTML = `
+            <div style="
+                display:grid;
+                gap:20px;
+            ">
+
+                ${sectionDefinitions.map(section => {
+            const sectionData = sections[section.key];
+
+            if (
+                sectionData === undefined ||
+                sectionData === null
+            ) {
+                return "";
+            }
+
+            return `
+                        <section style="
+                            background:white;
+                            border:1px solid #e2e8f0;
+                            border-radius:12px;
+                            padding:22px;
+                        ">
+
+                            <h3 style="
+                                font-size:18px;
+                                font-weight:700;
+                                color:#0f172a;
+                                margin:0 0 18px;
+                            ">
+                                ${section.title}
+                            </h3>
+
+                            <div style="
+                                display:grid;
+                                gap:14px;
+                                color:#334155;
+                                line-height:1.6;
+                            ">
+                                ${renderValue(sectionData)}
+                            </div>
+
+                        </section>
+                    `;
+        }).join("")}
+
+            </div>
+        `;
+    }
+
+
+
     function showPage(page) {
         const workspace = document.getElementById("homeMeasurementsWorkspace");
         if (!workspace) return;
@@ -1118,6 +1274,10 @@ margin-top:8px;
             report: {
                 title: "Property Health Report",
                 subtitle: "Unlock a detailed analysis and personalised recommendations."
+            },
+            deeperReport: {
+                title: "Deeper Understanding Report",
+                subtitle: "Your saved measurement-based analysis and personalised recommendations."
             }
         };
 
@@ -2618,34 +2778,167 @@ ${window.AppState?.project?.homeMeasurementState
                     </button>
                 </div>
             ` : `
-                <div style="
-                    padding:20px;
-                    border:1px solid #bbf7d0;
-                    border-radius:12px;
-                    background:#f0fdf4;
-                ">
-                    <strong>Deeper Understanding unlocked</strong>
-                    <p style="font-size:13px;color:#166534;">
-                        Your purchase is confirmed. Continue to your detailed
-                        EMF analysis.
-                    </p>
-                    <button
-                        type="button"
-                        id="homeDeeperStart"
-                        style="
-                            width:100%;
-                            padding:14px;
-                            border:0;
-                            border-radius:9px;
-                            background:#15803d;
-                            color:white;
-                            font-weight:700;
-                            cursor:pointer;
-                        "
-                    >
-                        Start Deeper Analysis →
-                    </button>
+<div style="
+    padding:16px;
+    border:1px solid #d7e9e9;
+    border-radius:12px;
+    background:linear-gradient(135deg,#f5ffff 0%,#ffffff 100%);
+    box-shadow:0 2px 8px rgba(15,23,42,0.04);
+">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:8px;
+    ">
+        <span style="
+            display:inline-flex;
+            align-items:center;
+            gap:5px;
+            padding:4px 9px;
+            border-radius:20px;
+            background:#dcfce7;
+            color:#15803d;
+            font-size:10px;
+            font-weight:800;
+        ">
+            ✓ PURCHASED
+        </span>
+
+        <span style="
+            width:30px;
+            height:30px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:9px;
+            background:#e0f2f1;
+            color:#087f8c;
+            font-size:20px;
+        ">◈</span>
+    </div>
+
+    <h3 style="
+        margin:0 0 4px;
+        font-size:17px;
+        font-weight:800;
+        color:#172554;
+    ">
+        Deeper Understanding
+    </h3>
+
+    <p style="
+        margin:0 0 10px;
+        font-size:12px;
+        line-height:1.4;
+        color:#64748b;
+    ">
+        Gain a deeper understanding of your property's EMF
+        environment with an in-depth analysis.
+    </p>
+
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:8px;
+        padding:9px 10px;
+        margin-bottom:10px;
+        border-radius:9px;
+        background:#e5f5f3;
+    ">
+        <div style="display:flex;align-items:center;gap:9px;">
+            <span style="font-size:22px;color:#087f8c;">◈</span>
+            <div>
+                <div style="font-size:11px;color:#334155;">
+                    Analysis credits
                 </div>
+                <div style="
+                    font-size:14px;
+                    font-weight:800;
+                    color:#087f8c;
+                ">
+                    ${Number(window.homeDeeperAnalysisCreditsAvailable || 0)} available
+                </div>
+            </div>
+        </div>
+
+        <div style="
+            font-size:10px;
+            color:#475569;
+            white-space:nowrap;
+        ">
+            ${Number(window.homeDeeperAnalysisCreditsPurchased || 0)} purchased · ${Number(window.homeDeeperAnalysisCreditsUsed || 0)} used
+        </div>
+    </div>
+
+    <ul style="
+        list-style:none;
+        padding:0;
+        margin:0 0 10px;
+        font-size:11px;
+        line-height:1.8;
+        color:#334155;
+    ">
+        <li>✓ Detailed EMF analysis & interpretation</li>
+        <li>✓ Health risk assessment</li>
+        <li>✓ Personalised recommendations & action plan</li>
+    </ul>
+
+    <div style="
+        margin:0 0 10px;
+        font-size:14px;
+        font-weight:800;
+        color:#15803d;
+    ">
+        Paid · €49
+    </div>
+
+    <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:6px;
+    ">
+        <button
+            type="button"
+            id="homeDeeperOpenReport"
+            style="
+                min-width:0;
+                padding:10px 7px;
+                border:0;
+                border-radius:8px;
+                background:#087f8c;
+                color:#ffffff;
+                font-size:10px;
+                font-weight:700;
+                cursor:pointer;
+            "
+        >
+            ↗ Open Deeper Report
+        </button>
+
+        <button
+            type="button"
+            id="homeDeeperBuyAdditional"
+            style="
+                min-width:0;
+                padding:10px 7px;
+                border:1px solid #38a5c3;
+                border-radius:8px;
+                background:#ffffff;
+                color:#164e63;
+                font-size:10px;
+                font-weight:700;
+                cursor:pointer;
+            "
+        >
+            + Buy Additional · €29
+        </button>
+    </div>
+
+</div>
+
             `}
 
         </div>
@@ -2653,56 +2946,208 @@ ${window.AppState?.project?.homeMeasurementState
     </div>
 `,
             report: `
-    <h2>Simple Property EMF Report</h2>
+                <h2>Simple Property EMF Report</h2>
 
-    <p>
-        Get a clear overview of your property's EMF environment.
-    </p>
+                <p>
+                    Get a clear overview of your property's EMF environment.
+                </p>
 
-    <p>
-        Your report includes a property overview
-        with a summary of the measured environment.
-    </p>
+                <p>
+                    Your report includes a property overview
+                    with a summary of the measured environment.
+                </p>
 
-    <div style="margin-top:24px;">
+                <div style="margin-top:24px;">
 
-        <div
-            id="homeSimpleReportPrice"
-            style="font-size:28px;font-weight:700;margin-bottom:16px;"
-        >
-            Loading price...
-        </div>
+                    <div
+                        id="homeSimpleReportPrice"
+                        style="font-size:28px;font-weight:700;margin-bottom:16px;"
+                    >
+                        Loading price...
+                    </div>
 
-        <div
-            id="homeSimpleReportStatus"
-            style="margin-bottom:16px;"
-        ></div>
+                    <div
+                        id="homeSimpleReportStatus"
+                        style="margin-bottom:16px;"
+                    ></div>
 
-        <button
-            type="button"
-            id="homeSimpleReportAction"
-            style="
-                padding:14px 24px;
-                border:0;
-                border-radius:8px;
-                background:#2563eb;
-                color:white;
-                font-weight:700;
-                cursor:pointer;
-            "
-        >
-            Purchase Simple Report
-        </button>
+                    <button
+                        type="button"
+                        id="homeSimpleReportAction"
+                        style="
+                            padding:14px 24px;
+                            border:0;
+                            border-radius:8px;
+                            background:#2563eb;
+                            color:white;
+                            font-weight:700;
+                            cursor:pointer;
+                        "
+                    >
+                        Purchase Simple Report
+                    </button>
 
-    </div>
-`
+                </div>
+            `,
+
+            deeperReport: `
+                <div style="max-width:1000px;margin:0 auto;">
+
+                    <button
+                        type="button"
+                        id="homeDeeperReportBack"
+                        style="
+                            padding:10px 16px;
+                            border:1px solid #cbd5e1;
+                            border-radius:8px;
+                            background:white;
+                            cursor:pointer;
+                            margin-bottom:20px;
+                        "
+                    >
+                        ← Back
+                    </button>
+
+                    <div id="homeDeeperReportContent">
+                        Loading your Deeper Understanding Report...
+                    </div>
+
+                </div>
+            `
         };
 
         content.innerHTML = `
-        <div class="home-measurements-placeholder">
-            ${pageContent[activePage] || pageContent.overview}
-        </div>
-    `;
+            <div class="home-measurements-placeholder">
+                ${pageContent[activePage] || pageContent.overview}
+            </div>
+        `;
+
+        // RENDER SAVED DEEPER UNDERSTANDING REPORT
+        if (activePage === "deeperReport") {
+            renderHomeDeeperReport(
+                window.homeDeeperSavedReport
+            );
+        }
+
+        // DEEPER REPORT NAVIGATION
+        content.querySelector("#homeDeeperReportBack")
+            ?.addEventListener("click", () => {
+                showPage("results");
+            });
+
+
+        // DEEPER UNDERSTANDING — OPEN SAVED REPORT
+        content.querySelector("#homeDeeperOpenReport")
+            ?.addEventListener("click", async () => {
+
+                const reportButton = content.querySelector(
+                    "#homeDeeperOpenReport"
+                );
+
+                const project = window.AppState?.project;
+
+                const projectId =
+                    project?.project_id ||
+                    project?.id;
+
+                const reportContent = content.querySelector(
+                    "#homeDeeperReportContent"
+                );
+
+                if (!projectId) {
+                    alert("Home Property project ID not found.");
+                    return;
+                }
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    alert("Please log in again.");
+                    return;
+                }
+
+                const apiBase =
+                    window.location.hostname === "localhost" ||
+                        window.location.hostname === "127.0.0.1"
+                        ? "http://127.0.0.1:8000"
+                        : "https://emf-insight.onrender.com";
+
+                try {
+                    reportButton.disabled = true;
+                    reportButton.textContent = "Opening report...";
+
+                    // 1. LOAD SAVED ANALYSES
+                    const listResponse = await fetch(
+                        `${apiBase}/project/${projectId}/deeper-analyses`,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                    if (!listResponse.ok) {
+                        throw new Error(
+                            `Unable to load analyses: ${listResponse.status}`
+                        );
+                    }
+
+                    const listData = await listResponse.json();
+                    const analyses = listData.analyses || [];
+
+                    if (!analyses.length) {
+                        alert("No completed Deeper Understanding Report found.");
+                        return;
+                    }
+
+                    // 2. SELECT LATEST SAVED ANALYSIS
+                    const analysisId = analyses[0].analysis_id;
+
+                    // 3. LOAD FULL SAVED ANALYSIS
+                    const reportResponse = await fetch(
+                        `${apiBase}/project/${projectId}/deeper-analysis/${analysisId}`,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                    if (!reportResponse.ok) {
+                        throw new Error(
+                            `Unable to load report: ${reportResponse.status}`
+                        );
+                    }
+
+                    const reportData = await reportResponse.json();
+
+                    if (!reportData.analysis) {
+                        throw new Error("Report data is empty.");
+                    }
+
+                    // 4. OPEN DEEPER REPORT PAGE
+                    window.homeDeeperSavedReport = reportData;
+
+                    showPage("deeperReport");
+
+                } catch (error) {
+                    console.error(
+                        "[HOME DEEPER REPORT] Loading error:",
+                        error
+                    );
+
+                    alert("Unable to open your Deeper Understanding Report.");
+
+                } finally {
+                    reportButton.disabled = false;
+                    reportButton.textContent = "↗ Open Deeper Report";
+                }
+            });
+
 
         // RESULTS NAVIGATION
         content.querySelector("#homeResultsBack")
@@ -2718,6 +3163,18 @@ ${window.AppState?.project?.homeMeasurementState
 
                 window.buyPlan("home_deeper_first");
             });
+
+        // DEEPER UNDERSTANDING — €29 ADDITIONAL PURCHASE
+        content.querySelector("#homeDeeperBuyAdditional")
+            ?.addEventListener("click", () => {
+                if (typeof window.buyPlan !== "function") {
+                    alert("Payment service is currently unavailable.");
+                    return;
+                }
+
+                window.buyPlan("home_deeper_repeat");
+            });
+
         // SIMPLE PROPERTY REPORT — PRICING AND CHECKOUT
         if (activePage === "report") {
             const priceElement = content.querySelector(

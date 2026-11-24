@@ -17,6 +17,7 @@ from models.project_version import ProjectVersion
 from models.property import Property
 from models.property_health_record import PropertyHealthRecord
 from models.assessment import Assessment
+from models.home_deeper_analysis import HomeDeeperAnalysis
 
 def init_db():
 
