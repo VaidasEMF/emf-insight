@@ -2708,7 +2708,7 @@ ${window.AppState?.project?.homeMeasurementState
                     <div style="font-size:14px;font-weight:700;">
                         ${resultsCompletion?.overallPercent ?? 0}% completed
                     </div>
-           ` : !window.homeDeeperAnalysisPurchased ? `
+           ` : Number(window.homeDeeperAnalysisCreditsPurchased || 0) <= 0 ? `
                 <div style="
                     padding:20px;
                     border:1px solid #cbd5e1;
