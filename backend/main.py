@@ -2189,6 +2189,7 @@ async def stripe_webhook(request: Request):
         # =============================================================
         elif event_type == "invoice.paid":
             invoice = event["data"]["object"]
+            invoice = invoice.to_dict()
 
             subscription_id = invoice.get("subscription")
 
@@ -2277,7 +2278,7 @@ async def stripe_webhook(request: Request):
                         subscription_currency = str(item_currency).upper()
 
                 invoice_currency = subscription_currency or ""
-                configured_prices = STRIPE_PRICE_IDS.get(price_currency, {})
+                configured_prices = STRIPE_PRICE_IDS.get(invoice_currency, {})
 
                 if (
                     configured_prices.get("professional")
