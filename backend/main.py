@@ -1371,23 +1371,40 @@ async def stripe_webhook(request: Request):
             if session.get("subscription"):
                 subscription_data = stripe.Subscription.retrieve(
                     session["subscription"]
-                ).to_dict_recursive()
+                )
 
             subscription_items = (
-                (subscription_data.get("items") or {}).get("data") or []
-                if subscription_data else []
+                subscription_data["items"]["data"]
+                if subscription_data and "items" in subscription_data
+                else []
             )
 
             first_item = subscription_items[0] if subscription_items else {}
 
             period_start_ts = (
-                (subscription_data.get("current_period_start") if subscription_data else None)
-                or first_item.get("current_period_start")
+                (
+                    subscription_data["current_period_start"]
+                    if subscription_data and "current_period_start" in subscription_data
+                    else None
+                )
+                or (
+                    first_item["current_period_start"]
+                    if "current_period_start" in first_item
+                    else None
+                )
             )
 
             period_end_ts = (
-                (subscription_data.get("current_period_end") if subscription_data else None)
-                or first_item.get("current_period_end")
+                (
+                    subscription_data["current_period_end"]
+                    if subscription_data and "current_period_end" in subscription_data
+                    else None
+                )
+                or (
+                    first_item["current_period_end"]
+                    if "current_period_end" in first_item
+                    else None
+                )
             )
 
             period_start = (
