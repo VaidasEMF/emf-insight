@@ -1371,7 +1371,7 @@ async def stripe_webhook(request: Request):
             if session.get("subscription"):
                 subscription_data = stripe.Subscription.retrieve(
                     session["subscription"]
-                )
+                ).to_dict_recursive()
 
             subscription_items = (
                 (subscription_data.get("items") or {}).get("data") or []
