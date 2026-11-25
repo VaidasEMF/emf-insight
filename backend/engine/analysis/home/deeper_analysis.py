@@ -92,7 +92,7 @@ def validate_input(project):
                 or zone.get("type")
             )
 
-            if zone_type in {"sleep", "child", "work", "rest"}:
+            if zone_type in {"sleep", "child", "work", "rest", "relax"}:
                 lifestyle_zones.append(zone)
 
     if not lifestyle_zones:

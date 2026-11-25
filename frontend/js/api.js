@@ -7299,9 +7299,81 @@ async function loadProject(
         });
 
 
+
         if (currentWorkspace === "home") {
+
+            // LOAD ACTIVE MEASUREMENT CYCLE
+            try {
+                const cycleResponse = await fetch(
+                    `${API}/project/${loadedProjectId}/measurement-cycles/active`,
+                    {
+                        method: "GET",
+                        headers: getAuthHeaders(),
+                        cache: "no-store"
+                    }
+                );
+
+                if (!cycleResponse.ok) {
+                    throw new Error(
+                        `Active Measurement Cycle request failed: ${cycleResponse.status}`
+                    );
+                }
+
+                const cycleData = await cycleResponse.json();
+
+                project.activeMeasurementCycle =
+                    cycleData.active_cycle || null;
+
+                console.log(
+                    "[HOME MEASUREMENT CYCLE RESTORED]",
+                    project.activeMeasurementCycle
+                );
+
+                // LOAD ACTIVE MEASUREMENT CYCLE DATA
+                project.activeMeasurementCycleData = null;
+
+                if (project.activeMeasurementCycle) {
+
+                    const cycleDataResponse = await fetch(
+                        `${API}/project/${loadedProjectId}/measurement-cycles/active/data`,
+                        {
+                            method: "GET",
+                            headers: getAuthHeaders(),
+                            cache: "no-store"
+                        }
+                    );
+
+                    if (!cycleDataResponse.ok) {
+                        throw new Error(
+                            `Measurement Cycle Data request failed: ${cycleDataResponse.status}`
+                        );
+                    }
+
+                    const cycleDataResult = await cycleDataResponse.json();
+
+                    project.activeMeasurementCycleData =
+                        cycleDataResult.cycle_data?.data || null;
+
+                    console.log(
+                        "[HOME MEASUREMENT CYCLE DATA RESTORED]",
+                        project.activeMeasurementCycleData
+                    );
+                }
+
+            } catch (error) {
+
+                project.activeMeasurementCycleLoadError = true;
+
+                console.error(
+                    "[HOME MEASUREMENT CYCLE LOAD FAILED]",
+                    error
+                );
+            }
+
+            // RESTORE HOME WORKSPACE
             window.HomeMeasurements?.restoreWorkspace?.();
         }
+
 
         // ==================================================
         // FINAL DEBUG

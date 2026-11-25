@@ -75,6 +75,7 @@ from routes.users import (
 
 from routes.projects import (
     router as projects_router,
+    _calculate_measurement_cycle_completion,
 )
 
 from routes.professional_requests import (
@@ -103,6 +104,9 @@ from routes.admin_payments import (
     router as admin_payments_router,
 )
 
+from models.measurement_cycle import MeasurementCycle
+from models.measurement_cycle_data import MeasurementCycleData
+from models.measurement_cycle_floor import MeasurementCycleFloor
 
 app = FastAPI()
 
@@ -910,16 +914,24 @@ def create_checkout(
                     "Home project not found",
                 )
 
+        repeat_reservation_id = None
+        repeat_measurement_cycle_id = None
+
         if plan == "home_deeper_repeat":
+
+            # --------------------------------------------------
+            # 1. First Deeper Analysis purchase is required.
+            # --------------------------------------------------
+
             first_purchase_exists = db.execute(
                 text("""
                     SELECT EXISTS (
                         SELECT 1
                         FROM home_wellness_transactions
                         WHERE user_id = :user_id
-                          AND project_id = :project_id
-                          AND product_key = 'home_deeper_first'
-                          AND status = 'completed'
+                        AND project_id = :project_id
+                        AND product_key = 'home_deeper_first'
+                        AND status = 'completed'
                     )
                 """),
                 {
@@ -934,6 +946,295 @@ def create_checkout(
                     "The first Deeper Analysis purchase is required before a Repeat purchase",
                 )
 
+            # --------------------------------------------------
+            # 2. Load the original Property and PHR.
+            # --------------------------------------------------
+
+            project_record = db.execute(
+                text("""
+                    SELECT data
+                    FROM projects
+                    WHERE id = :project_id
+                    AND user_id = :user_id
+                """),
+                {
+                    "project_id": str(project_id),
+                    "user_id": str(current_user.id),
+                },
+            ).mappings().first()
+
+            project_data = (
+                project_record["data"]
+                if project_record and isinstance(project_record["data"], dict)
+                else {}
+            )
+
+            property_uid = project_data.get("propertyId")
+            phr_uid = project_data.get("propertyHealthRecordId")
+
+            if not property_uid or not phr_uid:
+                raise HTTPException(
+                    409,
+                    "Property Health Record information is missing for this project",
+                )
+
+            property_record = db.query(Property).filter(
+                Property.property_uid == property_uid,
+                Property.owner_user_id == current_user.id,
+            ).first()
+
+            if not property_record:
+                raise HTTPException(
+                    404,
+                    "Property not found",
+                )
+
+            health_record = db.query(PropertyHealthRecord).filter(
+                PropertyHealthRecord.property_id == property_record.id,
+                PropertyHealthRecord.phr_uid == phr_uid,
+            ).first()
+
+            if not health_record:
+                raise HTTPException(
+                    404,
+                    "Property Health Record not found",
+                )
+
+            # --------------------------------------------------
+            # 3. Find the latest existing Deeper Analysis.
+            # --------------------------------------------------
+
+            latest_analysis = db.execute(
+                text("""
+                    SELECT created_at
+                    FROM home_deeper_analyses
+                    WHERE project_id = :project_id
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                """),
+                {
+                    "project_id": project_id,
+                },
+            ).first()
+
+            latest_analysis_created_at = (
+                latest_analysis.created_at
+                if latest_analysis
+                else None
+            )
+
+            # --------------------------------------------------
+            # 4. Expire outdated pending reservations.
+            # --------------------------------------------------
+
+            db.execute(
+                text("""
+                    UPDATE home_deeper_repeat_reservations
+                    SET status = 'expired'
+                    WHERE project_id = :project_id
+                    AND user_id = :user_id
+                    AND status = 'pending'
+                    AND expires_at <= CURRENT_TIMESTAMP
+                """),
+                {
+                    "project_id": project_id,
+                    "user_id": str(current_user.id),
+                },
+            )
+
+            db.flush()
+
+            # --------------------------------------------------
+            # 5. Find completed cycles for this exact Property/PHR.
+            # --------------------------------------------------
+
+            candidate_cycles = (
+                db.query(MeasurementCycle)
+                .filter(
+                    MeasurementCycle.project_id == project_id,
+                    MeasurementCycle.property_id == property_record.id,
+                    MeasurementCycle.property_health_record_id == health_record.id,
+                    MeasurementCycle.status == "completed",
+                )
+                .order_by(MeasurementCycle.started_at.desc())
+                .all()
+            )
+
+            selected_repeat_cycle = None
+
+            for cycle in candidate_cycles:
+
+                # The cycle must have started after the latest analysis.
+                if (
+                    latest_analysis_created_at
+                    and cycle.started_at <= latest_analysis_created_at
+                ):
+                    continue
+
+                # A cycle can only be used by one Deeper Analysis.
+                already_used = db.execute(
+                    text("""
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM home_deeper_analyses
+                            WHERE measurement_cycle_id = :cycle_id
+                        )
+                    """),
+                    {
+                        "cycle_id": cycle.id,
+                    },
+                ).scalar()
+
+                if already_used:
+                    continue
+
+                # A pending or completed reservation blocks reuse.
+                already_reserved = db.execute(
+                    text("""
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM home_deeper_repeat_reservations
+                            WHERE measurement_cycle_id = :cycle_id
+                            AND status IN ('pending', 'completed')
+                        )
+                    """),
+                    {
+                        "cycle_id": cycle.id,
+                    },
+                ).scalar()
+
+                if already_reserved:
+                    continue
+
+                # --------------------------------------------------
+                # 6. Load and validate the saved cycle data.
+                # --------------------------------------------------
+
+                cycle_data = (
+                    db.query(MeasurementCycleData)
+                    .filter(
+                        MeasurementCycleData.measurement_cycle_id == cycle.id
+                    )
+                    .first()
+                )
+
+                if not cycle_data:
+                    continue
+
+                if cycle_data.schema_version != 1:
+                    continue
+
+                saved_data = cycle_data.data
+
+                if not isinstance(saved_data, dict):
+                    continue
+
+                floors_data = saved_data.get("floors")
+
+                if not isinstance(floors_data, dict):
+                    continue
+
+                # Verify that the saved floor IDs match the cycle links.
+                linked_floor_ids = {
+                    str(row.floor_id)
+                    for row in (
+                        db.query(MeasurementCycleFloor.floor_id)
+                        .filter(
+                            MeasurementCycleFloor.measurement_cycle_id == cycle.id
+                        )
+                        .all()
+                    )
+                }
+
+                saved_floor_ids = {
+                    str(floor_id)
+                    for floor_id in floors_data.keys()
+                }
+
+                if not linked_floor_ids or linked_floor_ids != saved_floor_ids:
+                    continue
+
+                # --------------------------------------------------
+                # 7. Apply the existing Home Wellness eligibility rules.
+                # --------------------------------------------------
+
+                completion = _calculate_measurement_cycle_completion(
+                    floors_data
+                )
+
+                if not completion.get("eligible"):
+                    continue
+
+                # --------------------------------------------------
+                # 8. First valid cycle is selected.
+                # --------------------------------------------------
+
+                selected_repeat_cycle = cycle
+                break
+
+            if not selected_repeat_cycle:
+                raise HTTPException(
+                    409,
+                    "No eligible unused Measurement Cycle is available for Repeat Analysis",
+                )
+
+            repeat_measurement_cycle_id = selected_repeat_cycle.id
+
+            # --------------------------------------------------
+            # 9. Create a 30-minute Repeat Analysis reservation.
+            # --------------------------------------------------
+
+            reservation_expires_at = (
+                datetime.now(timezone.utc)
+                + timedelta(minutes=30)
+            )
+
+            reservation_result = db.execute(
+                text("""
+                    INSERT INTO home_deeper_repeat_reservations (
+                        measurement_cycle_id,
+                        project_id,
+                        property_id,
+                        property_health_record_id,
+                        user_id,
+                        status,
+                        expires_at
+                    )
+                    VALUES (
+                        :cycle_id,
+                        :project_id,
+                        :property_id,
+                        :phr_id,
+                        :user_id,
+                        'pending',
+                        :expires_at
+                    )
+                    ON CONFLICT (measurement_cycle_id)
+                    WHERE status IN ('pending', 'completed')
+                    DO NOTHING
+                    RETURNING id
+                """),
+                {
+                    "cycle_id": repeat_measurement_cycle_id,
+                    "project_id": project_id,
+                    "property_id": property_record.id,
+                    "phr_id": health_record.id,
+                    "user_id": str(current_user.id),
+                    "expires_at": reservation_expires_at,
+                },
+            ).scalar()
+
+            if not reservation_result:
+                db.rollback()
+                raise HTTPException(
+                    409,
+                    "This Measurement Cycle is already reserved or used",
+                )
+
+            repeat_reservation_id = reservation_result
+
+            # Commit the reservation before contacting Stripe.
+            db.commit()
         # Business Pro and Professional are recurring subscriptions.
         # Business Single and Home Full Report are one-time payments.
         mode = "subscription" if plan in {
@@ -941,6 +1242,18 @@ def create_checkout(
             "professional",
             "home_measure_monthly",
         } else "payment"
+
+        # Repeat Analysis Checkout expires after 30 minutes.
+        stripe_checkout_expires_at = (
+            int(
+                (
+                    datetime.now(timezone.utc)
+                    + timedelta(minutes=30)
+                ).timestamp()
+            )
+            if plan == "home_deeper_repeat"
+            else None
+        )
 
         try:
             session = stripe.checkout.Session.create(
@@ -973,7 +1286,22 @@ def create_checkout(
                         }
                         else {}
                     ),
+                    **(
+                        {
+                            "reservation_id": str(repeat_reservation_id),
+                            "measurement_cycle_id": str(
+                                repeat_measurement_cycle_id
+                            ),
+                        }
+                        if plan == "home_deeper_repeat"
+                        else {}
+                    ),
                 },
+                **(
+                    {"expires_at": stripe_checkout_expires_at}
+                    if plan == "home_deeper_repeat"
+                    else {}
+                ),
                 subscription_data={
                     "metadata": {
                         "user_id": str(current_user.id),
@@ -990,12 +1318,73 @@ def create_checkout(
 
         except Exception as exc:
             print("Stripe checkout error:", repr(exc))
+
+            if (
+                plan == "home_deeper_repeat"
+                and repeat_reservation_id
+            ):
+                db.execute(
+                    text("""
+                        UPDATE home_deeper_repeat_reservations
+                        SET status = 'expired'
+                        WHERE id = :reservation_id
+                          AND status = 'pending'
+                    """),
+                    {
+                        "reservation_id": repeat_reservation_id,
+                    },
+                )
+                db.commit()
+
             raise HTTPException(
                 502,
                 "Unable to create Stripe checkout session",
             )
 
+        # Save the Stripe session ID and synchronize expiration.
+        if (
+            plan == "home_deeper_repeat"
+            and repeat_reservation_id
+        ):
+            session_update_result = db.execute(
+                text("""
+                    UPDATE home_deeper_repeat_reservations
+                    SET stripe_session_id = :session_id,
+                        expires_at = :expires_at
+                    WHERE id = :reservation_id
+                    AND status = 'pending'
+                """),
+                {
+                    "session_id": session.id,
+                    "expires_at": datetime.fromtimestamp(
+                        session.expires_at,
+                        tz=timezone.utc,
+                    ),
+                    "reservation_id": repeat_reservation_id,
+                },
+            )
+
+            if session_update_result.rowcount != 1:
+                db.rollback()
+
+                try:
+                    stripe.checkout.Session.expire(session.id)
+                except Exception as expire_exc:
+                    print(
+                        "WARNING: Could not expire orphaned Stripe session:",
+                        session.id,
+                        repr(expire_exc),
+                    )
+
+                raise HTTPException(
+                    409,
+                    "Repeat Analysis reservation is no longer active. Please try again.",
+                )
+
+            db.commit()
+
         return {"url": session.url}
+
 
     finally:
         db.close()
@@ -2039,36 +2428,357 @@ async def stripe_webhook(request: Request):
 
             elif plan == "home_deeper_repeat":
                 project_id = metadata.get("project_id")
+                reservation_id = metadata.get("reservation_id")
+                measurement_cycle_id = metadata.get("measurement_cycle_id")
                 stripe_session_id = session.get("id")
 
-                if not project_id:
+                if not all((
+                    project_id,
+                    reservation_id,
+                    measurement_cycle_id,
+                    stripe_session_id,
+                )):
                     raise RuntimeError(
-                        f"Deeper Repeat payment has no project_id. "
+                        "Deeper Repeat payment metadata is incomplete. "
                         f"Stripe session: {stripe_session_id}"
                     )
 
-                # Verify project ownership.
-                project = db.execute(
+                try:
+                    project_id = int(project_id)
+                    reservation_id = int(reservation_id)
+                    measurement_cycle_id = int(measurement_cycle_id)
+                except (TypeError, ValueError):
+                    raise RuntimeError(
+                        "Deeper Repeat payment metadata contains invalid IDs"
+                    )
+
+                if str(metadata.get("user_id")) != str(user.id):
+                    raise RuntimeError(
+                        "Deeper Repeat metadata user mismatch"
+                    )
+
+                # Lock the reservation to prevent concurrent processing.
+                reservation = db.execute(
                     text("""
-                        SELECT id
-                        FROM projects
-                        WHERE id = :project_id
-                          AND user_id = :user_id
+                        SELECT
+                            id,
+                            measurement_cycle_id,
+                            project_id,
+                            property_id,
+                            property_health_record_id,
+                            user_id,
+                            stripe_session_id,
+                            status,
+                            expires_at
+                        FROM home_deeper_repeat_reservations
+                        WHERE id = :reservation_id
+                        FOR UPDATE
                     """),
                     {
-                        "project_id": str(project_id),
-                        "user_id": str(user.id),
+                        "reservation_id": reservation_id,
+                    },
+                ).mappings().first()
+
+                if not reservation:
+                    raise RuntimeError(
+                        f"Deeper Repeat reservation not found: {reservation_id}"
+                    )
+
+                if reservation["status"] != "pending":
+                    raise RuntimeError(
+                        "Deeper Repeat reservation is not pending. "
+                        f"Reservation: {reservation_id}, "
+                        f"status: {reservation['status']}"
+                    )
+
+                if reservation["expires_at"] is None:
+                    raise RuntimeError(
+                        "Deeper Repeat reservation has no expiry"
+                    )
+
+                # Stripe Checkout and the DB reservation share the 30-minute TTL.
+                reservation_valid = db.execute(
+                    text("""
+                        SELECT 1
+                        WHERE :expires_at > CURRENT_TIMESTAMP
+                    """),
+                    {
+                        "expires_at": reservation["expires_at"],
                     },
                 ).first()
 
-                if not project:
+                if not reservation_valid:
                     raise RuntimeError(
-                        f"Deeper Repeat project not found or not owned. "
-                        f"Project: {project_id}, User: {user.id}"
+                        f"Deeper Repeat reservation expired: {reservation_id}"
                     )
 
-                # Record the successful repeat purchase.
-                # No additional PHR entitlement is created.
+                if (
+                    str(reservation["user_id"]) != str(user.id)
+                    or reservation["project_id"] != project_id
+                    or reservation["measurement_cycle_id"] != measurement_cycle_id
+                ):
+                    raise RuntimeError(
+                        "Deeper Repeat reservation ownership or cycle mismatch"
+                    )
+
+                if (
+                    reservation["stripe_session_id"]
+                    and reservation["stripe_session_id"] != stripe_session_id
+                ):
+                    raise RuntimeError(
+                        "Deeper Repeat Stripe session mismatch"
+                    )
+
+                # Verify the Home project and retrieve its Property references.
+                project = db.execute(
+                    text("""
+                        SELECT id, data
+                        FROM projects
+                        WHERE id = :project_id
+                          AND user_id = :user_id
+                        FOR UPDATE
+                    """),
+                    {
+                        "project_id": project_id,
+                        "user_id": str(user.id),
+                    },
+                ).mappings().first()
+
+                if not project:
+                    raise RuntimeError(
+                        "Deeper Repeat project not found or not owned"
+                    )
+
+                project_data = project["data"] or {}
+
+                property_uid = project_data.get("propertyId")
+                phr_uid = project_data.get("propertyHealthRecordId")
+
+                if not property_uid or not phr_uid:
+                    raise RuntimeError(
+                        "Deeper Repeat project has no Property or PHR reference"
+                    )
+
+                property_record = db.execute(
+                    text("""
+                        SELECT id
+                        FROM properties
+                        WHERE property_uid = :property_uid
+                          AND owner_user_id = :user_id
+                        FOR UPDATE
+                    """),
+                    {
+                        "property_uid": property_uid,
+                        "user_id": user.id,
+                    },
+                ).mappings().first()
+
+                if not property_record:
+                    raise RuntimeError(
+                        "Deeper Repeat Property not found or not owned"
+                    )
+
+                health_record = db.execute(
+                    text("""
+                        SELECT id, property_id
+                        FROM property_health_records
+                        WHERE phr_uid = :phr_uid
+                          AND property_id = :property_id
+                        FOR UPDATE
+                    """),
+                    {
+                        "phr_uid": phr_uid,
+                        "property_id": property_record["id"],
+                    },
+                ).mappings().first()
+
+                if not health_record:
+                    raise RuntimeError(
+                        "Deeper Repeat Property Health Record mismatch"
+                    )
+
+                if (
+                    reservation["property_id"] != property_record["id"]
+                    or reservation["property_health_record_id"] != health_record["id"]
+                ):
+                    raise RuntimeError(
+                        "Deeper Repeat reservation Property/PHR mismatch"
+                    )
+
+                # Verify the exact Measurement Cycle reserved at checkout.
+                cycle = db.execute(
+                    text("""
+                        SELECT
+                            id,
+                            project_id,
+                            property_id,
+                            property_health_record_id,
+                            status,
+                            started_at
+                        FROM measurement_cycles
+                        WHERE id = :cycle_id
+                        FOR UPDATE
+                    """),
+                    {
+                        "cycle_id": measurement_cycle_id,
+                    },
+                ).mappings().first()
+
+                if not cycle:
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Cycle not found"
+                    )
+
+                if (
+                    cycle["status"] != "completed"
+                    or cycle["project_id"] != project_id
+                    or cycle["property_id"] != property_record["id"]
+                    or cycle["property_health_record_id"] != health_record["id"]
+                ):
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Cycle ownership or status mismatch"
+                    )
+
+                # A cycle must not have been consumed by another analysis.
+                existing_analysis = db.execute(
+                    text("""
+                        SELECT id
+                        FROM home_deeper_analyses
+                        WHERE measurement_cycle_id = :cycle_id
+                        LIMIT 1
+                    """),
+                    {
+                        "cycle_id": measurement_cycle_id,
+                    },
+                ).first()
+
+                if existing_analysis:
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Cycle has already been used"
+                    )
+
+                # Ensure this cycle started after the latest analysis.
+                older_analysis_check = db.execute(
+                    text("""
+                        SELECT id
+                        FROM home_deeper_analyses
+                        WHERE project_id = :project_id
+                          AND created_at >= :cycle_started_at
+                        LIMIT 1
+                    """),
+                    {
+                        "project_id": project_id,
+                        "cycle_started_at": cycle["started_at"],
+                    },
+                ).first()
+
+                if older_analysis_check:
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Cycle is not newer "
+                        "than the latest analysis"
+                    )
+
+                # Load and validate the saved Measurement Cycle data.
+                cycle_data_record = db.execute(
+                    text("""
+                        SELECT schema_version, data
+                        FROM measurement_cycle_data
+                        WHERE measurement_cycle_id = :cycle_id
+                        FOR UPDATE
+                    """),
+                    {
+                        "cycle_id": measurement_cycle_id,
+                    },
+                ).mappings().first()
+
+                if (
+                    not cycle_data_record
+                    or cycle_data_record["schema_version"] != 1
+                    or not isinstance(cycle_data_record["data"], dict)
+                ):
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Cycle data is missing or invalid"
+                    )
+
+                cycle_data = cycle_data_record["data"]
+                floors_data = cycle_data.get("floors")
+
+                if not isinstance(floors_data, dict) or not floors_data:
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Cycle has no saved floors"
+                    )
+
+                # Verify that saved floors match the cycle's registered floor links.
+                linked_floor_rows = db.execute(
+                    text("""
+                        SELECT floor_id
+                        FROM measurement_cycle_floors
+                        WHERE measurement_cycle_id = :cycle_id
+                    """),
+                    {
+                        "cycle_id": measurement_cycle_id,
+                    },
+                ).mappings().all()
+
+                linked_floor_ids = {
+                    str(row["floor_id"])
+                    for row in linked_floor_rows
+                }
+
+                saved_floor_ids = {
+                    str(floor_id)
+                    for floor_id in floors_data.keys()
+                }
+
+                if not linked_floor_ids or saved_floor_ids != linked_floor_ids:
+                    raise RuntimeError(
+                        "Deeper Repeat saved floors do not match cycle floor links"
+                    )
+
+                # Recalculate eligibility using the existing Home Wellness rules.
+                completion = _calculate_measurement_cycle_completion(floors_data)
+
+                if not completion.get("eligible"):
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Cycle is no longer eligible. "
+                        f"Overall: {completion.get('overall_percent')}%"
+                    )
+
+                if not isinstance(
+                    cycle_data.get("homeMeasurementProfile"),
+                    dict,
+                ):
+                    raise RuntimeError(
+                        "Deeper Repeat Measurement Profile is missing"
+                    )
+
+                # Complete the reservation and record the purchase atomically.
+                completed_reservation = db.execute(
+                    text("""
+                        UPDATE home_deeper_repeat_reservations
+                        SET
+                            status = 'completed',
+                            completed_at = CURRENT_TIMESTAMP,
+                            stripe_session_id = COALESCE(
+                                stripe_session_id,
+                                :stripe_session_id
+                            )
+                        WHERE id = :reservation_id
+                          AND status = 'pending'
+                          AND expires_at > CURRENT_TIMESTAMP
+                        RETURNING id
+                    """),
+                    {
+                        "reservation_id": reservation_id,
+                        "stripe_session_id": stripe_session_id,
+                    },
+                ).first()
+
+                if not completed_reservation:
+                    raise RuntimeError(
+                        "Deeper Repeat reservation could not be completed"
+                    )
+
                 db.execute(
                     text("""
                         INSERT INTO home_wellness_transactions (
@@ -2105,11 +2815,17 @@ async def stripe_webhook(request: Request):
 
                 print(
                     "HOME DEEPER REPEAT PURCHASE RECORDED",
-                    user.email,
-                    project_id,
-                    stripe_session_id,
+                    {
+                        "user_id": str(user.id),
+                        "project_id": project_id,
+                        "property_id": property_record["id"],
+                        "phr_id": health_record["id"],
+                        "reservation_id": reservation_id,
+                        "measurement_cycle_id": measurement_cycle_id,
+                        "overall_percent": completion["overall_percent"],
+                        "stripe_session_id": stripe_session_id,
+                    },
                 )
-
 
             elif plan == "home_full_report":
                 # Home Full Report is deliberately separate from Business credits

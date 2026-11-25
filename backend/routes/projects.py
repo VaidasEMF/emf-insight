@@ -22,6 +22,8 @@ from datetime import datetime, timezone
 
 import uuid
 
+import math
+
 from sqlalchemy import func, text
 
 from fastapi import (
@@ -31,6 +33,7 @@ from fastapi import (
     UploadFile,
     File,
     Form,
+    Body,
 )
 
 from pathlib import Path
@@ -38,6 +41,10 @@ from storage import supabase
 
 from fastapi.responses import StreamingResponse
 from io import BytesIO
+
+from models.measurement_cycle import MeasurementCycle
+from models.measurement_cycle_floor import MeasurementCycleFloor
+from models.measurement_cycle_data import MeasurementCycleData
 
 router = APIRouter()
 
@@ -766,6 +773,1411 @@ def get_project(
 
     return response
 
+
+# =====================
+# HOME MEASUREMENT CYCLE
+# =====================
+
+@router.post("/project/{project_id}/measurement-cycles")
+def create_measurement_cycle(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    try:
+
+        # =====================
+        # LOAD AND LOCK PROJECT
+        # =====================
+
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .with_for_update()
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(404, "Project not found")
+
+        if project.user_id != current_user.id:
+            raise HTTPException(403, "Forbidden")
+
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(
+                422,
+                "Invalid Home Project data",
+            )
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                400,
+                "Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # =====================
+        # LOAD PROPERTY / PHR
+        # =====================
+
+        property_uid = project_data.get("propertyId")
+        phr_uid = project_data.get("propertyHealthRecordId")
+
+        if not property_uid or not phr_uid:
+            raise HTTPException(
+                400,
+                "Home project is missing Property or PHR ID",
+            )
+
+        # Lock Property to serialize cycle numbering
+        # across all Home Projects belonging to this Property.
+
+        property_record = (
+            db.query(Property)
+            .filter(Property.property_uid == property_uid)
+            .with_for_update()
+            .first()
+        )
+
+        if not property_record:
+            raise HTTPException(404, "Property not found")
+
+        if property_record.owner_user_id != current_user.id:
+            raise HTTPException(
+                403,
+                "Property belongs to another user",
+            )
+
+        # =====================
+        # VERIFY PROPERTY HEALTH RECORD
+        # =====================
+
+        health_record = (
+            db.query(PropertyHealthRecord)
+            .filter(
+                PropertyHealthRecord.property_id == property_record.id
+            )
+            .first()
+        )
+
+        if not health_record:
+            raise HTTPException(
+                404,
+                "Property Health Record not found",
+            )
+
+        if health_record.phr_uid != phr_uid:
+            raise HTTPException(
+                409,
+                "Property Health Record does not match the project",
+            )
+
+        # =====================
+        # CHECK ACTIVE CYCLE
+        # =====================
+
+        active_cycle = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id,
+                MeasurementCycle.status == "in_progress",
+            )
+            .first()
+        )
+
+        if active_cycle:
+            raise HTTPException(
+                409,
+                "This Home Project already has an active Measurement Cycle",
+            )
+
+        # =====================
+        # VALIDATE ALL PROPERTY FLOORS
+        # =====================
+
+        floors = project_data.get("floors", [])
+
+        if not isinstance(floors, list) or not floors:
+            raise HTTPException(
+                400,
+                "Property has no floors configured",
+            )
+
+        validated_floors = []
+        seen_floor_ids = set()
+
+        for floor in floors:
+
+            if not isinstance(floor, dict):
+                raise HTTPException(
+                    422,
+                    "Invalid floor configuration",
+                )
+
+            floor_id = floor.get("id")
+            active_version_id = floor.get("activePlanVersionId")
+            versions = floor.get("planVersions", [])
+
+            if not floor_id:
+                raise HTTPException(
+                    422,
+                    "A floor is missing its ID",
+                )
+
+            floor_id = str(floor_id)
+
+            if floor_id in seen_floor_ids:
+                raise HTTPException(
+                    422,
+                    f"Duplicate floor ID: {floor_id}",
+                )
+
+            seen_floor_ids.add(floor_id)
+
+            if not active_version_id:
+                raise HTTPException(
+                    422,
+                    f"Floor '{floor_id}' has no active Floor Plan version",
+                )
+
+            if not isinstance(versions, list):
+                raise HTTPException(
+                    422,
+                    f"Floor '{floor_id}' has invalid plan version data",
+                )
+
+            active_version_id = str(active_version_id)
+
+            active_version = next(
+                (
+                    version for version in versions
+                    if isinstance(version, dict)
+                    and str(version.get("id")) == active_version_id
+                ),
+                None,
+            )
+
+            if not active_version:
+                raise HTTPException(
+                    422,
+                    f"Floor '{floor_id}' has an invalid active Floor Plan version",
+                )
+
+            validated_floors.append({
+                "floor_id": floor_id,
+                "plan_version_id": active_version_id,
+            })
+
+        # =====================
+        # NEXT PROPERTY CYCLE NUMBER
+        # =====================
+
+        max_cycle_number = (
+            db.query(func.max(MeasurementCycle.cycle_number))
+            .filter(
+                MeasurementCycle.property_id == property_record.id
+            )
+            .scalar()
+        )
+
+        next_cycle_number = (max_cycle_number or 0) + 1
+
+        # =====================
+        # CREATE MEASUREMENT CYCLE
+        # =====================
+
+        cycle = MeasurementCycle(
+            cycle_uid=f"cycle_{uuid.uuid4().hex}",
+            property_id=property_record.id,
+            property_health_record_id=health_record.id,
+            project_id=project_id,
+            cycle_number=next_cycle_number,
+            status="in_progress",
+        )
+
+        db.add(cycle)
+        db.flush()
+
+        # =====================
+        # CREATE CYCLE FLOORS
+        # =====================
+
+        for floor_data in validated_floors:
+
+            db.add(
+                MeasurementCycleFloor(
+                    measurement_cycle_id=cycle.id,
+                    floor_id=floor_data["floor_id"],
+                    plan_version_id=floor_data["plan_version_id"],
+                )
+            )
+
+                    # =====================
+        # CREATE INITIAL CYCLE DATA
+        # =====================
+
+        db.add(
+            MeasurementCycleData(
+                measurement_cycle_id=cycle.id,
+                schema_version=1,
+                data={
+                    "schemaVersion": 1,
+                    "floors": {},
+                },
+            )
+        )
+
+        # =====================
+        # COMMIT
+        # =====================
+
+        db.commit()
+
+        return {
+            "status": "ok",
+            "cycle_id": cycle.id,
+            "cycle_uid": cycle.cycle_uid,
+            "property_id": property_record.id,
+            "property_health_record_id": health_record.id,
+            "project_id": project_id,
+            "cycle_number": cycle.cycle_number,
+            "cycle_status": cycle.status,
+            "floors": validated_floors,
+        }
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
+
+# =================================================
+# GET ACTIVE MEASUREMENT CYCLE
+# =================================================
+
+@router.get("/project/{project_id}/measurement-cycles/active")
+def get_active_measurement_cycle(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        # FIND PROJECT
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found",
+            )
+
+        # OWNERSHIP CHECK
+        if project.user_id != current_user.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden",
+            )
+
+        # HOME PROJECT VALIDATION
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Invalid project data",
+            )
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                status_code=400,
+                detail="Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # FIND ACTIVE CYCLE
+        cycle = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id,
+                MeasurementCycle.status == "in_progress",
+            )
+            .first()
+        )
+
+        # NO ACTIVE CYCLE
+        if not cycle:
+            return {
+                "status": "ok",
+                "active_cycle": None,
+            }
+
+        # LOAD CYCLE FLOORS
+        cycle_floors = (
+            db.query(MeasurementCycleFloor)
+            .filter(
+                MeasurementCycleFloor.measurement_cycle_id == cycle.id
+            )
+            .order_by(MeasurementCycleFloor.id.asc())
+            .all()
+        )
+
+        return {
+            "status": "ok",
+            "active_cycle": {
+                "cycle_id": cycle.id,
+                "cycle_uid": cycle.cycle_uid,
+                "property_id": cycle.property_id,
+                "property_health_record_id": cycle.property_health_record_id,
+                "project_id": cycle.project_id,
+                "cycle_number": cycle.cycle_number,
+                "cycle_status": cycle.status,
+                "started_at": cycle.started_at,
+                "floors": [
+                    {
+                        "floor_id": floor.floor_id,
+                        "plan_version_id": floor.plan_version_id,
+                    }
+                    for floor in cycle_floors
+                ],
+            },
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        raise
+
+
+# =================================================
+# GET MEASUREMENT CYCLE HISTORY
+# =================================================
+
+@router.get("/project/{project_id}/measurement-cycles")
+def get_measurement_cycle_history(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        # FIND PROJECT
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found",
+            )
+
+        # OWNERSHIP CHECK
+        if project.user_id != current_user.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden",
+            )
+
+        # HOME PROJECT VALIDATION
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Invalid project data",
+            )
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                status_code=400,
+                detail="Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # LOAD ALL PROJECT CYCLES
+        cycles = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id
+            )
+            .order_by(
+                MeasurementCycle.cycle_number.desc()
+            )
+            .all()
+        )
+
+        history = []
+
+        for cycle in cycles:
+
+            # LOAD SAVED CYCLE DATA
+            cycle_data = (
+                db.query(MeasurementCycleData)
+                .filter(
+                    MeasurementCycleData.measurement_cycle_id == cycle.id
+                )
+                .first()
+            )
+
+            # LOAD LINKED FLOORS
+            cycle_floors = (
+                db.query(MeasurementCycleFloor)
+                .filter(
+                    MeasurementCycleFloor.measurement_cycle_id == cycle.id
+                )
+                .order_by(
+                    MeasurementCycleFloor.id.asc()
+                )
+                .all()
+            )
+
+            completion = None
+
+            if (
+                cycle_data
+                and cycle_data.schema_version == 1
+                and isinstance(cycle_data.data, dict)
+            ):
+                floors_data = cycle_data.data.get("floors")
+
+                if isinstance(floors_data, dict):
+                    completion = (
+                        _calculate_measurement_cycle_completion(
+                            floors_data
+                        )
+                    )
+
+            history.append({
+                "cycle_id": cycle.id,
+                "cycle_uid": cycle.cycle_uid,
+                "property_id": cycle.property_id,
+                "property_health_record_id": cycle.property_health_record_id,
+                "project_id": cycle.project_id,
+                "cycle_number": cycle.cycle_number,
+                "cycle_status": cycle.status,
+                "started_at": cycle.started_at,
+                "completed_at": cycle.completed_at,
+                "floors": [
+                    {
+                        "floor_id": floor.floor_id,
+                        "plan_version_id": floor.plan_version_id,
+                    }
+                    for floor in cycle_floors
+                ],
+                "completion": completion,
+            })
+
+        return {
+            "status": "ok",
+            "project_id": project_id,
+            "total_cycles": len(history),
+            "cycles": history,
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        raise
+
+
+# =================================================
+# GET ACTIVE MEASUREMENT CYCLE DATA
+# =================================================
+
+@router.get("/project/{project_id}/measurement-cycles/active/data")
+def get_active_measurement_cycle_data(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        # FIND PROJECT
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found",
+            )
+
+        # OWNERSHIP CHECK
+        if project.user_id != current_user.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden",
+            )
+
+        # HOME PROJECT VALIDATION
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Invalid project data",
+            )
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                status_code=400,
+                detail="Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # FIND ACTIVE CYCLE
+        cycle = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id,
+                MeasurementCycle.status == "in_progress",
+            )
+            .first()
+        )
+
+        if not cycle:
+            return {
+                "status": "ok",
+                "active_cycle": None,
+                "cycle_data": None,
+            }
+
+        # LOAD CYCLE DATA
+        cycle_data = (
+            db.query(MeasurementCycleData)
+            .filter(
+                MeasurementCycleData.measurement_cycle_id == cycle.id
+            )
+            .first()
+        )
+
+        if not cycle_data:
+            return {
+                "status": "ok",
+                "active_cycle": {
+                    "cycle_id": cycle.id,
+                    "cycle_uid": cycle.cycle_uid,
+                    "cycle_number": cycle.cycle_number,
+                    "cycle_status": cycle.status,
+                },
+                "cycle_data": None,
+            }
+
+        return {
+            "status": "ok",
+            "active_cycle": {
+                "cycle_id": cycle.id,
+                "cycle_uid": cycle.cycle_uid,
+                "cycle_number": cycle.cycle_number,
+                "cycle_status": cycle.status,
+            },
+            "cycle_data": {
+                "schema_version": cycle_data.schema_version,
+                "data": cycle_data.data,
+                "created_at": cycle_data.created_at,
+                "updated_at": cycle_data.updated_at,
+            },
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
+# =================================================
+# PREVIEW ACTIVE MEASUREMENT CYCLE COMPLETION
+# READ ONLY
+# =================================================
+
+@router.get(
+    "/project/{project_id}/measurement-cycles/active/completion"
+)
+def preview_active_measurement_cycle_completion(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        # FIND PROJECT
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found",
+            )
+
+        # OWNERSHIP CHECK
+        if project.user_id != current_user.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden",
+            )
+
+        # HOME PROJECT VALIDATION
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Invalid project data",
+            )
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                status_code=400,
+                detail="Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # FIND ACTIVE CYCLE
+        cycle = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id,
+                MeasurementCycle.status == "in_progress",
+            )
+            .first()
+        )
+
+        if not cycle:
+            return {
+                "status": "ok",
+                "active_cycle": None,
+                "completion": None,
+                "read_only": True,
+            }
+
+        # LOAD LINKED FLOORS
+        cycle_floors = (
+            db.query(MeasurementCycleFloor)
+            .filter(
+                MeasurementCycleFloor.measurement_cycle_id == cycle.id
+            )
+            .all()
+        )
+
+        expected_floor_ids = {
+            str(item.floor_id)
+            for item in cycle_floors
+        }
+
+        if not expected_floor_ids:
+            return {
+                "status": "ok",
+                "active_cycle": {
+                    "cycle_id": cycle.id,
+                    "cycle_number": cycle.cycle_number,
+                    "cycle_status": cycle.status,
+                },
+                "completion": {
+                    "eligible": False,
+                    "reason": "No floors linked to this cycle",
+                },
+                "read_only": True,
+            }
+
+        # LOAD CYCLE DATA
+        cycle_data = (
+            db.query(MeasurementCycleData)
+            .filter(
+                MeasurementCycleData.measurement_cycle_id == cycle.id
+            )
+            .first()
+        )
+
+        if not cycle_data:
+            return {
+                "status": "ok",
+                "active_cycle": {
+                    "cycle_id": cycle.id,
+                    "cycle_number": cycle.cycle_number,
+                    "cycle_status": cycle.status,
+                },
+                "completion": {
+                    "eligible": False,
+                    "reason": "Measurement Cycle data not found",
+                },
+                "read_only": True,
+            }
+
+        if cycle_data.schema_version != 1:
+            raise HTTPException(
+                status_code=422,
+                detail="Unsupported Measurement Cycle schema version",
+            )
+
+        document = cycle_data.data
+
+        if not isinstance(document, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Invalid Measurement Cycle data",
+            )
+
+        floors_data = document.get("floors")
+
+        if not isinstance(floors_data, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Measurement Cycle floors must be an object",
+            )
+
+        saved_floor_ids = {
+            str(floor_id)
+            for floor_id in floors_data.keys()
+        }
+
+        if saved_floor_ids != expected_floor_ids:
+            return {
+                "status": "ok",
+                "active_cycle": {
+                    "cycle_id": cycle.id,
+                    "cycle_number": cycle.cycle_number,
+                    "cycle_status": cycle.status,
+                },
+                "completion": {
+                    "eligible": False,
+                    "reason": "Saved floors do not match cycle floors",
+                    "expected_floor_ids": sorted(expected_floor_ids),
+                    "saved_floor_ids": sorted(saved_floor_ids),
+                },
+                "read_only": True,
+            }
+
+        # CALCULATE COMPLETION
+        completion = _calculate_measurement_cycle_completion(
+            floors_data
+        )
+
+        return {
+            "status": "ok",
+            "active_cycle": {
+                "cycle_id": cycle.id,
+                "cycle_uid": cycle.cycle_uid,
+                "cycle_number": cycle.cycle_number,
+                "cycle_status": cycle.status,
+            },
+            "completion": completion,
+            "read_only": True,
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        # No database changes are performed by this endpoint.
+        raise
+
+# =================================================
+# SAVE ACTIVE MEASUREMENT CYCLE DATA
+# =================================================
+
+@router.put("/project/{project_id}/measurement-cycles/active/data")
+def save_active_measurement_cycle_data(
+    project_id: int,
+    payload: dict = Body(...),
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        # =====================
+        # VALIDATE PAYLOAD
+        # =====================
+
+        if not isinstance(payload, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Measurement Cycle data must be a JSON object",
+            )
+
+        schema_version = payload.get("schemaVersion")
+
+        if schema_version != 1:
+            raise HTTPException(
+                status_code=422,
+                detail="Unsupported Measurement Cycle schema version",
+            )
+
+        floors_data = payload.get("floors")
+
+        if not isinstance(floors_data, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Measurement Cycle floors must be an object",
+            )
+
+                # =====================
+        # VALIDATE MEASUREMENT PROFILE
+        # =====================
+
+        measurement_profile = payload.get("homeMeasurementProfile")
+
+        if not isinstance(measurement_profile, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Measurement Cycle profile is missing or invalid",
+            )
+
+        measurement_types = measurement_profile.get("measurementTypes")
+
+        supported_types = {"rf", "electric", "magnetic"}
+
+        if (
+            not isinstance(measurement_types, list)
+            or not measurement_types
+            or any(
+                modality not in supported_types
+                for modality in measurement_types
+            )
+            or len(measurement_types) != len(set(measurement_types))
+        ):
+            raise HTTPException(
+                status_code=422,
+                detail="Measurement Cycle modalities are missing or invalid",
+            )
+
+        # =====================
+        # LOAD AND LOCK PROJECT
+        # =====================
+
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .with_for_update()
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found",
+            )
+
+        if project.user_id != current_user.id:
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden",
+            )
+
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="Invalid project data",
+            )
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                status_code=400,
+                detail="Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # =====================
+        # LOAD AND LOCK ACTIVE CYCLE
+        # =====================
+
+        cycle = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id,
+                MeasurementCycle.status == "in_progress",
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if not cycle:
+            raise HTTPException(
+                status_code=404,
+                detail="No active Measurement Cycle found",
+            )
+
+        # =====================
+        # VALIDATE FLOOR REFERENCES
+        # =====================
+
+        cycle_floors = (
+            db.query(MeasurementCycleFloor)
+            .filter(
+                MeasurementCycleFloor.measurement_cycle_id == cycle.id
+            )
+            .all()
+        )
+
+        allowed_floor_ids = {
+            str(floor.floor_id)
+            for floor in cycle_floors
+        }
+
+        for floor_id in floors_data.keys():
+            if str(floor_id) not in allowed_floor_ids:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Floor '{floor_id}' does not belong to this Measurement Cycle",
+                )
+
+        # =====================
+        # LOAD OR CREATE DATA DOCUMENT
+        # =====================
+
+        cycle_data = (
+            db.query(MeasurementCycleData)
+            .filter(
+                MeasurementCycleData.measurement_cycle_id == cycle.id
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if cycle_data:
+            cycle_data.schema_version = schema_version
+            cycle_data.data = payload
+
+        else:
+            cycle_data = MeasurementCycleData(
+                measurement_cycle_id=cycle.id,
+                schema_version=schema_version,
+                data=payload,
+            )
+
+            db.add(cycle_data)
+
+        # =====================
+        # COMMIT
+        # =====================
+
+        db.commit()
+        db.refresh(cycle_data)
+
+        return {
+            "status": "ok",
+            "cycle_id": cycle.id,
+            "cycle_number": cycle.cycle_number,
+            "cycle_status": cycle.status,
+            "schema_version": cycle_data.schema_version,
+            "updated_at": cycle_data.updated_at,
+        }
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
+
+def _generate_lifestyle_measurement_point_ids(zone, floor):
+    """
+    Mirrors frontend generateLifestyleMeasurementPoints().
+    Returns expected measurement point IDs for one lifestyle zone.
+    """
+
+    if not isinstance(zone, dict) or not isinstance(floor, dict):
+        return []
+
+    try:
+        zone_x = float(zone.get("x"))
+        zone_y = float(zone.get("y"))
+        scale = float(floor.get("currentScale"))
+
+        dimensions = zone.get("measurementZoneDimensions") or {}
+
+        if not isinstance(dimensions, dict):
+            return []
+
+        width = float(dimensions.get("width"))
+        depth = float(dimensions.get("depth"))
+
+    except (TypeError, ValueError):
+        return []
+
+    if not all(math.isfinite(value) for value in [
+        zone_x, zone_y, scale, width, depth
+    ]):
+        return []
+
+    if scale <= 0 or width <= 0 or depth <= 0:
+        return []
+
+    preset_key = (
+        zone.get("lifestylePreset")
+        or zone.get("lifestylePresetKey")
+    )
+
+    furniture = zone.get("furnitureDimensions") or {}
+
+    if not isinstance(furniture, dict):
+        furniture = {}
+
+    try:
+        furniture_width = float(furniture.get("width"))
+        furniture_depth = float(furniture.get("depth"))
+    except (TypeError, ValueError):
+        furniture_width = 0
+        furniture_depth = 0
+
+    has_furniture_dimensions = (
+        math.isfinite(furniture_width)
+        and furniture_width > 0
+        and math.isfinite(furniture_depth)
+        and furniture_depth > 0
+    )
+
+    is_double_or_king = preset_key in ("double", "king")
+
+    if is_double_or_king and has_furniture_dimensions:
+        positions = [1, 2, 3]
+    else:
+        positions = [1, 2, 3, 4, 5]
+
+    point_count = (
+        5
+        if zone.get("zoneType") == "child"
+        and preset_key == "combined"
+        else 3
+    )
+
+    return [
+        f"measurement_{zone.get('id')}_{index}"
+        for index in range(1, min(len(positions), point_count) + 1)
+    ]
+
+
+def _calculate_measurement_cycle_completion(floors_data):
+    """
+    Calculate Measurement Cycle completion using the
+    existing Home Wellness eligibility rules.
+    """
+
+    lifestyle_types = {
+        "sleep",
+        "rest",
+        "relax",
+        "work",
+        "child",
+        # Legacy zone types
+        "bed",
+        "work_area",
+        "child_area",
+    }
+
+    areas = []
+
+    for floor_id, floor in floors_data.items():
+
+        if not isinstance(floor, dict):
+            continue
+
+        zones = floor.get("zones") or []
+
+        if not isinstance(zones, list):
+            continue
+
+        for zone in zones:
+
+            if not isinstance(zone, dict):
+                continue
+
+            zone_type = (
+                zone.get("zoneType")
+                or zone.get("type")
+            )
+
+            if zone_type not in lifestyle_types:
+                continue
+
+            expected_point_ids = (
+                _generate_lifestyle_measurement_point_ids(
+                    zone,
+                    floor,
+                )
+            )
+
+            if not expected_point_ids:
+                continue
+
+            existing_points = zone.get("measurementPoints") or []
+
+            if not isinstance(existing_points, list):
+                existing_points = []
+
+            existing_by_id = {
+                str(point.get("id")): point
+                for point in existing_points
+                if isinstance(point, dict)
+                and point.get("id") is not None
+            }
+
+            measured_count = sum(
+                1
+                for point_id in expected_point_ids
+                if (
+                    existing_by_id.get(point_id, {}).get("status")
+                    == "measured"
+                )
+            )
+
+            total_count = len(expected_point_ids)
+
+            percent = int(
+                math.floor(
+                    (measured_count / total_count) * 100 + 0.5
+                )
+            )
+
+            areas.append({
+                "floor_id": str(floor_id),
+                "zone_id": zone.get("id"),
+                "type": zone_type,
+                "total_points": total_count,
+                "measured_points": measured_count,
+                "percent": percent,
+                "eligible": percent >= 50,
+            })
+
+    total_points = sum(
+        area["total_points"] for area in areas
+    )
+
+    measured_points = sum(
+        area["measured_points"] for area in areas
+    )
+
+    overall_percent = (
+        int(math.floor(
+            (measured_points / total_points) * 100 + 0.5
+        ))
+        if total_points > 0
+        else 0
+    )
+
+    all_areas_eligible = (
+        len(areas) > 0
+        and all(area["eligible"] for area in areas)
+    )
+
+    eligible = (
+        overall_percent >= 60
+        and all_areas_eligible
+    )
+
+    return {
+        "eligible": eligible,
+        "overall_percent": overall_percent,
+        "measured_points": measured_points,
+        "total_points": total_points,
+        "areas": areas,
+    }
+
+
+@router.post(
+    "/project/{project_id}/measurement-cycles/active/complete"
+)
+def complete_active_measurement_cycle(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        # =====================
+        # LOAD AND LOCK PROJECT
+        # =====================
+
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .with_for_update()
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(404, "Project not found")
+
+        if project.user_id != current_user.id:
+            raise HTTPException(403, "Forbidden")
+
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(422, "Invalid project data")
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                400,
+                "Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # =====================
+        # LOAD AND LOCK ACTIVE CYCLE
+        # =====================
+
+        cycle = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id,
+                MeasurementCycle.status == "in_progress",
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if not cycle:
+            raise HTTPException(
+                404,
+                "No active Measurement Cycle found",
+            )
+
+        # =====================
+        # LOAD CYCLE FLOOR LINKS
+        # =====================
+
+        cycle_floors = (
+            db.query(MeasurementCycleFloor)
+            .filter(
+                MeasurementCycleFloor.measurement_cycle_id == cycle.id
+            )
+            .all()
+        )
+
+        expected_floor_ids = {
+            str(item.floor_id)
+            for item in cycle_floors
+        }
+
+        if not expected_floor_ids:
+            raise HTTPException(
+                422,
+                "Measurement Cycle has no linked floors",
+            )
+
+        # =====================
+        # LOAD AND LOCK CYCLE DATA
+        # =====================
+
+        cycle_data = (
+            db.query(MeasurementCycleData)
+            .filter(
+                MeasurementCycleData.measurement_cycle_id == cycle.id
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if not cycle_data or cycle_data.schema_version != 1:
+            raise HTTPException(
+                422,
+                "Measurement Cycle data is missing or invalid",
+            )
+
+        document = cycle_data.data or {}
+
+        if not isinstance(document, dict):
+            raise HTTPException(
+                422,
+                "Invalid Measurement Cycle data document",
+            )
+
+        floors_data = document.get("floors")
+
+        if not isinstance(floors_data, dict):
+            raise HTTPException(
+                422,
+                "Measurement Cycle floors data is missing",
+            )
+
+        saved_floor_ids = {
+            str(floor_id)
+            for floor_id in floors_data.keys()
+        }
+
+        if saved_floor_ids != expected_floor_ids:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "Measurement Cycle does not contain data for all linked floors",
+                    "expected_floor_ids": sorted(expected_floor_ids),
+                    "saved_floor_ids": sorted(saved_floor_ids),
+                },
+            )
+        # =====================
+        # CALCULATE COMPLETION
+        # =====================
+
+        completion = _calculate_measurement_cycle_completion(
+            floors_data
+        )
+
+        eligible = completion["eligible"]
+        overall_percent = completion["overall_percent"]
+        measured_points = completion["measured_points"]
+        total_points = completion["total_points"]
+        areas = completion["areas"]
+        # =====================
+
+        if not eligible:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "Measurement Cycle has not reached the required completion threshold",
+                    "overall_percent": overall_percent,
+                    "required_overall_percent": 60,
+                    "measured_points": measured_points,
+                    "total_points": total_points,
+                    "areas": areas,
+                },
+            )
+
+        # =====================
+        # COMPLETE CYCLE
+        # =====================
+
+        cycle.status = "completed"
+        cycle.completed_at = datetime.now(timezone.utc)
+
+        db.commit()
+        db.refresh(cycle)
+
+        return {
+            "status": "ok",
+            "cycle_id": cycle.id,
+            "cycle_number": cycle.cycle_number,
+            "cycle_status": cycle.status,
+            "completed_at": cycle.completed_at,
+            "eligible": True,
+            "overall_percent": overall_percent,
+            "measured_points": measured_points,
+            "total_points": total_points,
+            "areas": areas,
+        }
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
+
 # =====================
 # HOME DEEPER ANALYSIS
 # =====================
@@ -784,6 +2196,7 @@ def create_home_deeper_analysis(
     project = (
         db.query(Project)
         .filter(Project.id == project_id)
+        .with_for_update()
         .first()
     )
 
@@ -807,6 +2220,51 @@ def create_home_deeper_analysis(
         raise HTTPException(
             400,
             "Deeper Analysis is available only for Home Wellness projects",
+        )
+
+    # =====================
+    # LOAD PROPERTY / PHR
+    # =====================
+
+    property_uid = project_data.get("propertyId")
+    phr_uid = project_data.get("propertyHealthRecordId")
+
+    if not property_uid or not phr_uid:
+        raise HTTPException(
+            409,
+            "Home Project is missing Property or PHR ID",
+        )
+
+    property_record = (
+        db.query(Property)
+        .filter(Property.property_uid == property_uid)
+        .first()
+    )
+
+    if not property_record:
+        raise HTTPException(
+            404,
+            "Property not found",
+        )
+
+    if property_record.owner_user_id != current_user.id:
+        raise HTTPException(
+            403,
+            "Property belongs to another user",
+        )
+
+    health_record = (
+        db.query(PropertyHealthRecord)
+        .filter(
+            PropertyHealthRecord.property_id == property_record.id
+        )
+        .first()
+    )
+
+    if not health_record or health_record.phr_uid != phr_uid:
+        raise HTTPException(
+            409,
+            "Property Health Record does not match the project",
         )
 
     try:
@@ -858,7 +2316,8 @@ def create_home_deeper_analysis(
             text("""
                 SELECT
                     t.id,
-                    t.product_key
+                    t.product_key,
+                    t.stripe_session_id
                 FROM home_wellness_transactions t
                 WHERE t.user_id = :user_id
                   AND t.project_id = :project_id
@@ -891,6 +2350,124 @@ def create_home_deeper_analysis(
                 "No unused Deeper Analysis credits available",
             )
 
+                # =====================
+        # REPEAT ANALYSIS CYCLE
+        # =====================
+
+        measurement_cycle_id = None
+
+        if credit.product_key == "home_deeper_repeat":
+
+            if not credit.stripe_session_id:
+                raise HTTPException(
+                    409,
+                    "Repeat Analysis credit has no Stripe session reference",
+                )
+
+            # Find the exact completed reservation for this purchase.
+            reservation = db.execute(
+                text("""
+                    SELECT
+                        id,
+                        measurement_cycle_id,
+                        project_id,
+                        property_id,
+                        property_health_record_id,
+                        user_id,
+                        status,
+                        stripe_session_id
+                    FROM home_deeper_repeat_reservations
+                    WHERE stripe_session_id = :stripe_session_id
+                      AND status = 'completed'
+                    FOR UPDATE
+                """),
+                {
+                    "stripe_session_id": credit.stripe_session_id,
+                },
+            ).mappings().first()
+
+            if not reservation:
+                raise HTTPException(
+                    409,
+                    "Completed Repeat Analysis reservation not found",
+                )
+
+            if (
+                str(reservation["user_id"]) != str(current_user.id)
+                or reservation["project_id"] != project_id
+                or reservation["property_id"] != property_record.id
+                or reservation["property_health_record_id"] != health_record.id
+            ):
+                raise HTTPException(
+                    409,
+                    "Repeat Analysis reservation does not match this Property",
+                )
+
+            measurement_cycle_id = reservation["measurement_cycle_id"]
+
+            if not measurement_cycle_id:
+                raise HTTPException(
+                    409,
+                    "Repeat Analysis reservation has no Measurement Cycle",
+                )
+
+            # Load only the Measurement Cycle linked to this purchase.
+            cycle = (
+                db.query(MeasurementCycle)
+                .filter(
+                    MeasurementCycle.id == measurement_cycle_id,
+                    MeasurementCycle.project_id == project_id,
+                    MeasurementCycle.property_id == property_record.id,
+                    MeasurementCycle.property_health_record_id == health_record.id,
+                    MeasurementCycle.status == "completed",
+                )
+                .with_for_update()
+                .first()
+            )
+
+            if not cycle:
+                raise HTTPException(
+                    409,
+                    "Reserved Measurement Cycle is missing or invalid",
+                )
+
+            cycle_data = (
+                db.query(MeasurementCycleData)
+                .filter(
+                    MeasurementCycleData.measurement_cycle_id == cycle.id
+                )
+                .with_for_update()
+                .first()
+            )
+
+            if (
+                not cycle_data
+                or cycle_data.schema_version != 1
+                or not isinstance(cycle_data.data, dict)
+            ):
+                raise HTTPException(
+                    409,
+                    "Measurement Cycle data is missing or invalid",
+                )
+
+            cycle_payload = cycle_data.data
+
+            if (
+                not isinstance(cycle_payload.get("floors"), dict)
+                or not isinstance(cycle_payload.get("homeMeasurementProfile"), dict)
+            ):
+                raise HTTPException(
+                    409,
+                    "Measurement Cycle data is incomplete",
+                )
+
+            analysis_input = {
+                **project_data,
+                **cycle_payload,
+                "floors": list(cycle_payload["floors"].values()),
+                "type": "home",
+            }
+
         # =====================
         # RUN ANALYSIS
         # =====================
@@ -899,7 +2476,10 @@ def create_home_deeper_analysis(
             run_deeper_analysis,
         )
 
-        result = run_deeper_analysis(project_data)
+        if credit.product_key == "home_deeper_first":
+            analysis_input = project_data
+
+        result = run_deeper_analysis(analysis_input)
 
         if not result.get("success"):
             db.rollback()
@@ -919,6 +2499,9 @@ def create_home_deeper_analysis(
 
         saved_analysis = HomeDeeperAnalysis(
             project_id=project_id,
+            property_id=property_record.id,
+            property_health_record_id=health_record.id,
+            measurement_cycle_id=measurement_cycle_id,
             credit_product_key=credit.product_key,
             analysis_data=result.get("analysis"),
             warnings=result.get("warnings", []),

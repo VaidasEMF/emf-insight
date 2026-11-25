@@ -1,4 +1,5 @@
-﻿from datetime import datetime
+﻿
+from datetime import datetime
 
 from sqlalchemy import (
     Integer,
@@ -30,6 +31,24 @@ class HomeDeeperAnalysis(Base):
     project_id: Mapped[int] = mapped_column(
         ForeignKey("projects.id"),
         nullable=False,
+        index=True,
+    )
+
+    property_id: Mapped[int | None] = mapped_column(
+        ForeignKey("properties.id"),
+        nullable=True,
+        index=True,
+    )
+
+    property_health_record_id: Mapped[int | None] = mapped_column(
+        ForeignKey("property_health_records.id"),
+        nullable=True,
+        index=True,
+    )
+
+    measurement_cycle_id: Mapped[int | None] = mapped_column(
+        ForeignKey("measurement_cycles.id"),
+        nullable=True,
         index=True,
     )
 

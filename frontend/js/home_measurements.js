@@ -971,7 +971,7 @@ margin-top:8px;
             });
 
         content.querySelector("#homeGuidedSaveNext")
-            ?.addEventListener("click", () => {
+            ?.addEventListener("click", async () => {
                 const newReadings = { ...(activePoint.readings || {}) };
                 let enteredCount = 0;
 
@@ -1014,7 +1014,9 @@ margin-top:8px;
                     zone.measurementLocked = true;
                 }
 
-                saveHomeProject();
+                await saveHomeProject();
+                await saveActiveMeasurementCycleData();
+
                 window.renderFrame?.();
 
                 console.log("[GUIDED] Measurement saved", {
@@ -2734,7 +2736,7 @@ ${window.AppState?.project?.homeMeasurementState
                     <div style="font-size:14px;font-weight:700;">
                         ${resultsCompletion?.overallPercent ?? 0}% completed
                     </div>
-           ` : Number(window.homeDeeperAnalysisCreditsPurchased || 0) <= 0 ? `
+           ` : window.homeDeeperAnalysisPurchased !== true ? `
                 <div style="
                     padding:20px;
                     border:1px solid #cbd5e1;
@@ -3535,6 +3537,118 @@ ${window.AppState?.project?.homeMeasurementState
         return result;
     }
 
+    async function saveActiveMeasurementCycleData() {
+        if (window.AppMode?.current !== HOME_MODE) {
+            return false;
+        }
+
+        const project = window.AppState?.project;
+
+        if (!project || !Array.isArray(project.floors)) {
+            console.error("[HOME CYCLE SAVE] Project floors unavailable");
+            return false;
+        }
+
+        const projectId = project.project_id || project.id;
+
+        if (!projectId) {
+            console.error("[HOME CYCLE SAVE] Project ID unavailable");
+            return false;
+        }
+
+        if (!project.activeMeasurementCycle) {
+            console.warn("[HOME CYCLE SAVE] No active Measurement Cycle");
+            return false;
+        }
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error("[HOME CYCLE SAVE] Authentication token unavailable");
+            return false;
+        }
+
+        const apiBase =
+            window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1"
+                ? "http://127.0.0.1:8000"
+                : "https://emf-insight.onrender.com";
+
+        const floors = {};
+
+        for (const floor of project.floors) {
+            if (!floor?.id) {
+                console.error("[HOME CYCLE SAVE] Floor ID missing", floor);
+                return false;
+            }
+
+            const { image, ...floorData } = floor;
+
+            floors[String(floor.id)] = floorData;
+        }
+
+        const measurementProfile = project.homeMeasurementProfile;
+
+        if (
+            !measurementProfile ||
+            !Array.isArray(measurementProfile.measurementTypes) ||
+            measurementProfile.measurementTypes.length === 0
+        ) {
+            console.error(
+                "[HOME CYCLE SAVE] Measurement profile is missing or invalid",
+                measurementProfile
+            );
+            return false;
+        }
+
+        const payload = {
+            schemaVersion: 1,
+            homeMeasurementProfile: {
+                ...measurementProfile,
+                measurementTypes: [...measurementProfile.measurementTypes]
+            },
+            floors
+        };
+
+        try {
+            const response = await fetch(
+                `${apiBase}/project/${projectId}/measurement-cycles/active/data`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+
+                throw new Error(
+                    `Cycle data save failed: ${response.status} ${errorText}`
+                );
+            }
+
+            const result = await response.json();
+
+            project.activeMeasurementCycleData = payload;
+
+            console.log("[HOME CYCLE SAVE] Measurement Cycle data saved", {
+                cycleId: project.activeMeasurementCycle.cycle_id,
+                floors: Object.keys(floors).length,
+                result
+            });
+
+            return true;
+
+        } catch (error) {
+            console.error("[HOME CYCLE SAVE FAILED]", error);
+            return false;
+        }
+    }
+
 
     function getHomeMeasurementProfile() {
         const project = window.AppState?.project;
@@ -4171,7 +4285,7 @@ ${window.AppState?.project?.homeMeasurementState
             modal.remove();
         };
 
-        const saveReadings = () => {
+        const saveReadings = async () => {
             const newReadings = { ...readings };
             let enteredCount = 0;
 
@@ -4215,7 +4329,8 @@ ${window.AppState?.project?.homeMeasurementState
                 zone.measurementLocked = true;
             }
 
-            saveHomeProject();
+            await saveHomeProject();
+            await saveActiveMeasurementCycleData();
 
             window.renderFrame?.();
 

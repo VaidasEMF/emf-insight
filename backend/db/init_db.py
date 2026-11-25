@@ -18,6 +18,9 @@ from models.property import Property
 from models.property_health_record import PropertyHealthRecord
 from models.assessment import Assessment
 from models.home_deeper_analysis import HomeDeeperAnalysis
+from models.measurement_cycle import MeasurementCycle
+from models.measurement_cycle_floor import MeasurementCycleFloor
+from models.measurement_cycle_data import MeasurementCycleData
 
 def init_db():
 
@@ -45,6 +48,42 @@ def init_db():
 
     if engine.dialect.name == "postgresql":
         with engine.begin() as connection:
+            # ==========================================
+            # HOME DEEPER ANALYSIS → PHR / CYCLE LINKS
+            # ==========================================
+
+            connection.execute(text("""
+                ALTER TABLE home_deeper_analyses
+                ADD COLUMN IF NOT EXISTS property_id INTEGER
+                REFERENCES properties(id)
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE home_deeper_analyses
+                ADD COLUMN IF NOT EXISTS property_health_record_id INTEGER
+                REFERENCES property_health_records(id)
+            """))
+
+            connection.execute(text("""
+                ALTER TABLE home_deeper_analyses
+                ADD COLUMN IF NOT EXISTS measurement_cycle_id INTEGER
+                REFERENCES measurement_cycles(id)
+            """))
+
+            connection.execute(text("""
+                CREATE INDEX IF NOT EXISTS ix_home_deeper_analyses_property_id
+                ON home_deeper_analyses (property_id)
+            """))
+
+            connection.execute(text("""
+                CREATE INDEX IF NOT EXISTS ix_home_deeper_analyses_property_health_record_id
+                ON home_deeper_analyses (property_health_record_id)
+            """))
+
+            connection.execute(text("""
+                CREATE INDEX IF NOT EXISTS ix_home_deeper_analyses_measurement_cycle_id
+                ON home_deeper_analyses (measurement_cycle_id)
+            """))
             connection.execute(text("""
                 ALTER TABLE reports
                 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP
