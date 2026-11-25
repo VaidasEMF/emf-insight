@@ -2145,6 +2145,27 @@ aria-pressed="${currentMethod === "buy_meter"}"
     </div>
 ` : ''}
 
+${completion?.eligible ? `
+    <button
+        type="button"
+        id="homeGuidedViewResults"
+        style="
+            width:100%;
+            margin:12px 0 18px;
+            padding:14px;
+            border:0;
+            border-radius:9px;
+            background:#087f8c;
+            color:white;
+            font-size:14px;
+            font-weight:700;
+            cursor:pointer;
+        "
+    >
+        View Measurement Results →
+    </button>
+` : ''}
+
 <h3>Select a Lifestyle Area</h3>
 
                     <div id="homeGuidedLifestyleAreaList">
@@ -2304,6 +2325,11 @@ ${window.AppState?.project?.homeMeasurementState
                 });
 
             content.querySelector("#homeGuidedCompleteContinue")
+                ?.addEventListener("click", () => {
+                    showPage("results");
+                });
+
+            content.querySelector("#homeGuidedViewResults")
                 ?.addEventListener("click", () => {
                     showPage("results");
                 });
