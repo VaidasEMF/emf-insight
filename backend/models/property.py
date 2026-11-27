@@ -92,3 +92,8 @@ class Property(Base):
         "Assessment",
         back_populates="property",
     )
+
+    projects = relationship(
+        "Project",
+        back_populates="property",
+    )

@@ -7,10 +7,7 @@ import uuid
 import traceback
 from datetime import datetime, timedelta, timezone
 
-from dotenv import load_dotenv
 from sqlalchemy import text
-
-load_dotenv()
 
 from fastapi import (
     FastAPI,
@@ -476,22 +473,6 @@ def _ensure_professional_contact_points_tables(db):
         )
     """))
 
-    db.execute(text("""
-        CREATE TABLE IF NOT EXISTS professional_request_contacts (
-            id SERIAL PRIMARY KEY,
-            request_id INTEGER NOT NULL,
-            professional_user_id VARCHAR(255) NOT NULL,
-            unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            expires_at TIMESTAMP NOT NULL,
-            duration_days INTEGER NOT NULL DEFAULT 14
-        )
-    """))
-
-    db.execute(text("""
-        ALTER TABLE professional_request_contacts
-        ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP
-    """))
-
     db.execute(
         text("""
             CREATE TABLE IF NOT EXISTS professional_request_contact_feedback (
@@ -504,11 +485,6 @@ def _ensure_professional_contact_points_tables(db):
     )
 
     db.commit()
-
-    db.execute(text("""
-        ALTER TABLE professional_request_contacts
-        ADD COLUMN IF NOT EXISTS duration_days INTEGER DEFAULT 14
-    """))
 
     db.execute(text("""
         CREATE TABLE IF NOT EXISTS platform_settings (
@@ -664,6 +640,7 @@ def _claim_stripe_event(db, event_id):
 # =====================
 # INIT
 # =====================
+
 init_db()
 
 db = SessionLocal()

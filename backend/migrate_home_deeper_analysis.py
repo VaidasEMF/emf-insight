@@ -9,7 +9,7 @@ def migrate_home_deeper_analysis():
     if engine.dialect.name != "postgresql":
         raise RuntimeError("This migration requires PostgreSQL.")
 
-        inspector = inspect(engine)
+    inspector = inspect(engine)
 
     required_tables = {
         "home_deeper_analyses",

@@ -8,6 +8,103 @@
 
     const HOME_MODE = "home";
 
+
+    function getHomeMeasurementFloors() {
+        const project = window.AppState?.project;
+
+        if (!project || !Array.isArray(project.floors)) {
+            return [];
+        }
+
+        const cycleData = project.activeMeasurementCycleData;
+        const cycleFloors = cycleData?.floors;
+
+        // No active cycle snapshot: use original Property floors.
+        if (
+            !project.activeMeasurementCycle ||
+            !cycleFloors ||
+            typeof cycleFloors !== "object"
+        ) {
+            return project.floors;
+        }
+
+        return project.floors.map(baseFloor => {
+            const cycleFloor = cycleFloors[String(baseFloor.id)];
+
+            if (!cycleFloor) {
+                return baseFloor;
+            }
+
+            // Property zones define the current zone structure.
+            // Cycle snapshot preserves existing measurement results.
+            const cycleZones = Array.isArray(cycleFloor.zones)
+                ? cycleFloor.zones
+                : [];
+
+            const zones = (baseFloor.zones || []).map(baseZone => {
+                const existingCycleZone = cycleZones.find(
+                    zone => zone.id === baseZone.id
+                );
+
+                const lifestyleType =
+                    baseZone.zoneType || baseZone.type;
+
+                if (
+                    ![
+                        "sleep",
+                        "rest",
+                        "relax",
+                        "work",
+                        "child",
+                        "bed",
+                        "work_area",
+                        "child_area"
+                    ].includes(lifestyleType)
+                ) {
+                    return { ...baseZone };
+                }
+
+                const generatedPoints =
+                    generateLifestyleMeasurementPoints(baseZone, baseFloor);
+
+                const previousPoints =
+                    existingCycleZone?.measurementPoints || [];
+
+                const measurementPoints = generatedPoints.map(point => {
+                    const previousPoint = previousPoints.find(
+                        item => item.id === point.id
+                    );
+
+                    if (!previousPoint) {
+                        return point;
+                    }
+
+                    return {
+                        ...point,
+                        ...previousPoint,
+                        x: point.x,
+                        y: point.y
+                    };
+                });
+
+                return {
+                    ...baseZone,
+                    ...(existingCycleZone || {}),
+                    ...baseZone,
+                    measurementPoints
+                };
+            });
+
+            // Preserve the same cycle-floor object between calls.
+            cycleFloor.image = baseFloor.image;
+            cycleFloor.zones = zones;
+
+            return cycleFloor;
+        });
+    }
+
+    window.getHomeMeasurementFloors = getHomeMeasurementFloors;
+
     function getHomeFloor() {
         if (window.AppMode?.current !== HOME_MODE) return null;
 
@@ -18,7 +115,7 @@
             ? project.currentFloorIndex
             : 0;
 
-        return project.floors?.[index] || null;
+        return getHomeMeasurementFloors()[index] || null;
     }
 
 
@@ -467,6 +564,20 @@
             return;
         }
 
+        // Always use the current zone object from the active Measurement Cycle.
+        const currentZone = floor.zones?.find(
+            item => item.id === zone.id
+        );
+
+        if (!currentZone) {
+            console.error("[GUIDED] Current Lifestyle Area not found.", {
+                zoneId: zone.id
+            });
+            return;
+        }
+
+        zone = currentZone;
+
         // Use existing points only. Never regenerate them here.
         const orderedZonePoints = getOrderedGuidedPoints([zone]);
 
@@ -480,7 +591,7 @@
         }
 
         const content =
-            document.getElementById("homeGuidedRightPanel");
+            document.getElementById("homeGuidedRightPanelContent");
 
         if (!content) return;
 
@@ -732,7 +843,12 @@
     cx="${p.x}"
     cy="${p.y}"
     r="${point.id === activePoint.id ? 19 : 15}"
-    fill="${point.measured ? '#06b6d4' : '#ffffff'}"
+    fill="${point.status === 'measured' || point.measured === true
+                    ? '#06b6d4'
+                    : point.status === 'partial'
+                        ? '#8b5cf6'
+                        : '#ffffff'
+                }"
     stroke="${point.id === activePoint.id ? '#f59e0b' : '#2563eb'}"
     stroke-width="${point.id === activePoint.id ? 5 : 3}"
 />
@@ -745,8 +861,8 @@
                                     font-weight="700"
                                     fill="#1f2937"
                                 >${allGuidedPoints.findIndex(
-                item => item.zone.id === zone.id && item.point.id === point.id
-            ) + 1}</text>
+                    item => item.zone.id === zone.id && item.point.id === point.id
+                ) + 1}</text>
                             </g>
                         `;
         }).join("")}
@@ -999,23 +1115,50 @@ margin-top:8px;
                     enteredCount++;
                 }
 
-                activePoint.readings = newReadings;
-                activePoint.measured =
+                // Resolve the latest objects from the active Measurement Cycle.
+                const latestFloor = getHomeFloor();
+
+                const latestZone = latestFloor?.zones?.find(
+                    item => item.id === zone.id
+                );
+
+                const latestPoint = latestZone?.measurementPoints?.find(
+                    item => item.id === activePoint.id
+                );
+
+                if (!latestZone || !latestPoint) {
+                    console.error("[GUIDED] Current measurement point not found.", {
+                        zoneId: zone.id,
+                        pointId: activePoint.id
+                    });
+                    return;
+                }
+
+                latestPoint.readings = newReadings;
+                latestPoint.measured =
                     enteredCount === selectedTypes.length;
 
-                activePoint.status =
+                latestPoint.status =
                     enteredCount === 0
                         ? "pending"
                         : enteredCount === selectedTypes.length
                             ? "measured"
                             : "partial";
 
-                if (activePoint.measured) {
-                    zone.measurementLocked = true;
+                if (latestPoint.measured) {
+                    latestZone.measurementLocked = true;
                 }
 
                 await saveHomeProject();
                 await saveActiveMeasurementCycleData();
+
+                console.log("[GUIDED SAVE DIAGNOSTIC]", {
+                    entered: activePoint.readings,
+                    cycle: getHomeFloor()
+                        ?.zones?.find(z => z.id === zone.id)
+                        ?.measurementPoints?.find(p => p.id === activePoint.id)
+                        ?.readings
+                });
 
                 window.renderFrame?.();
 
@@ -1198,17 +1341,71 @@ margin-top:8px;
                 gap:20px;
             ">
 
+                            <div style="
+                    background:white;
+                    border:1px solid #e2e8f0;
+                    border-radius:14px;
+                    padding:28px;
+                ">
+                    <div style="
+                        font-size:12px;
+                        font-weight:700;
+                        letter-spacing:1px;
+                        color:#0d9488;
+                        text-transform:uppercase;
+                        margin-bottom:10px;
+                    ">
+                        EMF INSIGHT · DEEPER UNDERSTANDING
+                    </div>
+
+                    <h1 style="
+                        font-size:28px;
+                        font-weight:750;
+                        color:#0f172a;
+                        margin:0 0 10px;
+                    ">
+                        ${reportData.credit_used === "home_deeper_repeat"
+                ? "Follow-up Analysis"
+                : "Initial Analysis"}
+                        · Measurement Cycle ${Number(reportData.measurement_cycle_number || 1)}
+                    </h1>
+
+                    <div style="
+                        font-size:13px;
+                        color:#64748b;
+                        display:flex;
+                        flex-wrap:wrap;
+                        gap:8px 20px;
+                    ">
+                        <span>Analysis #${Number(reportData.analysis_id || 0)}</span>
+                        <span>Coverage: ${Number(reportData.coverage_percent ?? 0)}%</span>
+                        <span>
+                            ${reportData.created_at
+                ? new Date(reportData.created_at).toLocaleDateString()
+                : "Date unavailable"}
+                        </span>
+                    </div>
+
+                    <p style="
+                        color:#475569;
+                        line-height:1.6;
+                        margin:18px 0 0;
+                    ">
+                        Your measurement-based analysis and personalised recommendations.
+                    </p>
+                </div>
+
                 ${sectionDefinitions.map(section => {
-            const sectionData = sections[section.key];
+                    const sectionData = sections[section.key];
 
-            if (
-                sectionData === undefined ||
-                sectionData === null
-            ) {
-                return "";
-            }
+                    if (
+                        sectionData === undefined ||
+                        sectionData === null
+                    ) {
+                        return "";
+                    }
 
-            return `
+                    return `
                         <section style="
                             background:white;
                             border:1px solid #e2e8f0;
@@ -1236,7 +1433,47 @@ margin-top:8px;
 
                         </section>
                     `;
-        }).join("")}
+                }).join("")}
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:12px;
+                    flex-wrap:wrap;
+                    padding:20px 0;
+                ">
+                    <button
+                        type="button"
+                        id="homeDeeperReportHistoryBack"
+                        style="
+                            padding:12px 18px;
+                            border:1px solid #cbd5e1;
+                            border-radius:8px;
+                            background:white;
+                            cursor:pointer;
+                            font-weight:600;
+                        "
+                    >
+                        ← Back to Analysis History
+                    </button>
+
+                    <button
+                        type="button"
+                        id="homeDeeperReportGeneratePDF"
+                        style="
+                            padding:12px 20px;
+                            border:none;
+                            border-radius:8px;
+                            background:#0d9488;
+                            color:white;
+                            cursor:pointer;
+                            font-weight:700;
+                        "
+                    >
+                        Generate PDF
+                    </button>
+                </div>
 
             </div>
         `;
@@ -1273,6 +1510,10 @@ margin-top:8px;
                 title: "Measurement Results",
                 subtitle: "Review your saved readings and measurement progress."
             },
+            deeperUnderstanding: {
+                title: "Deeper Understanding",
+                subtitle: "Your purchased analysis, report history and repeat analysis options."
+            },
             report: {
                 title: "Property Health Report",
                 subtitle: "Unlock a detailed analysis and personalised recommendations."
@@ -1285,6 +1526,14 @@ margin-top:8px;
 
         const selected = pages[page] || pages.overview;
         const activePage = pages[page] ? page : "overview";
+
+        // DEEPER REPORT — FULL WORKSPACE MODE
+        const canvasArea = document.querySelector(".canvas-area");
+
+        canvasArea?.classList.toggle(
+            "home-deeper-report-mode",
+            activePage === "deeperReport"
+        );
 
         const project = window.AppState?.project;
         const measurementState = project?.homeMeasurementState;
@@ -1333,9 +1582,11 @@ margin-top:8px;
             "guided",
             "completed",
             "results",
-            "report"
+            "report",
+            "deeperUnderstanding",
+            "deeperReport"
         ].includes(activePage)
-            ? document.getElementById("homeGuidedRightPanel")
+            ? document.getElementById("homeGuidedRightPanelContent")
             : workspace.querySelector("#homeMeasurementsPageContent");
 
         if (!title || !subtitle || !content) {
@@ -1728,15 +1979,17 @@ aria-pressed="${currentMethod === "buy_meter"}"
                     showPage("profile");
                 });
 
+
             // CONTINUE TO GUIDED MEASUREMENT
             content.querySelector("#homeMeasurementContinue")
-                ?.addEventListener("click", () => {
+                ?.addEventListener("click", async () => {
 
                     console.log("[COMPUTER CONTINUE CHECK]", {
                         mode: window.HomeMeasurements?.selectedMeasurementMode,
                         method: window.HomeMeasurements?.selectedMethod,
                         profile: window.AppState?.project?.homeMeasurementProfile
                     });
+
                     if (!window.HomeMeasurements?.selectedMethod) {
                         return;
                     }
@@ -1749,13 +2002,23 @@ aria-pressed="${currentMethod === "buy_meter"}"
                         Array.isArray(existingProfile.measurementTypes) &&
                         existingProfile.measurementTypes.includes("rf")
                     ) {
+                        const cycleReady =
+                            await ensureActiveMeasurementCycle();
+
+                        if (!cycleReady) {
+                            alert(
+                                "Unable to start or restore your Measurement Cycle. Please try again."
+                            );
+                            return;
+                        }
+
                         showPage("guided");
+
                     } else {
                         showPage("profile");
                     }
                 });
 
-            return;
         }
 
 
@@ -1935,9 +2198,46 @@ aria-pressed="${currentMethod === "buy_meter"}"
             const completion =
                 window.HomeMeasurements?.getHomeMeasurementCompletion?.() || null;
 
+            const activeCycle =
+                window.AppState?.project?.activeMeasurementCycle || null;
+
+            const cycleNumber = Number(activeCycle?.cycle_number || 1);
+
+            const cycleTitle = cycleNumber === 1
+                ? `Initial Measurement · Cycle ${cycleNumber}`
+                : `Follow-up Measurement · Cycle ${cycleNumber}`;
+
+            const cycleDescription = cycleNumber === 1
+                ? "Your initial property measurement."
+                : "A new measurement cycle. Your previous Deeper Understanding analysis is preserved.";
+
             content.innerHTML = `
                 <div class="home-measurements-placeholder">
                     <h2>Guided Measurement</h2>
+
+                    <div style="
+    margin:10px 0 12px;
+    padding:11px 12px;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    border-radius:9px;
+">
+    <div style="
+        font-size:13px;
+        font-weight:700;
+        color:#1d4ed8;
+    ">
+        ${cycleTitle}
+    </div>
+    <p style="
+        margin:4px 0 0;
+        font-size:11px;
+        line-height:1.45;
+        color:#475569;
+    ">
+        ${cycleDescription}
+    </p>
+</div>
 
                     <p>
                         Select a Lifestyle Area to begin your guided
@@ -2362,6 +2662,9 @@ ${window.AppState?.project?.homeMeasurementState
         // OVERVIEW, RESULTS AND REPORT PLACEHOLDERS
         // ==================================================
 
+        if (activePage === "method") {
+            return;
+        }
         // ==================================================
         // ALL LIFESTYLE AREAS COMPLETED
         // ==================================================
@@ -2571,70 +2874,133 @@ ${window.AppState?.project?.homeMeasurementState
             </button>
         `,
             results: `
-    <div style="padding:8px 0;">
+    <div style="padding:6px 0;">
 
-        <h2 style="margin:0 0 5px;">
-            Measurement Results
-        </h2>
+    <h2 style="margin:0 0 4px;">
+        Measurement Results
+    </h2>
 
-        <p style="color:#64748b;font-size:13px;margin:0 0 18px;">
-            Overview of EMF measurements in your Lifestyle Areas.
+    <p style="
+        color:#64748b;
+        font-size:12px;
+        line-height:1.45;
+        margin:0 0 12px;
+    ">
+        Overview of EMF measurements in your Lifestyle Areas.
+    </p>
+
+        <!-- CURRENT MEASUREMENT CYCLE -->
+    <div style="
+        margin-bottom:12px;
+        padding:11px 12px;
+        border:1px solid #bfdbfe;
+        border-radius:9px;
+        background:#eff6ff;
+    ">
+        <div style="
+            font-size:10px;
+            font-weight:700;
+            letter-spacing:0.4px;
+            color:#1d4ed8;
+        ">
+            ${Number(window.AppState?.project?.activeMeasurementCycle?.cycle_number || 1) > 1
+                    ? "FOLLOW-UP MEASUREMENT"
+                    : "INITIAL MEASUREMENT"}
+        </div>
+
+        <div style="
+            margin-top:4px;
+            font-size:15px;
+            font-weight:700;
+            color:#1e293b;
+        ">
+            Measurement Cycle ${Number(window.AppState?.project?.activeMeasurementCycle?.cycle_number || 1)}
+        </div>
+
+        <p style="
+            margin:4px 0 0;
+            font-size:11px;
+            line-height:1.45;
+            color:#475569;
+        ">
+            These results belong to this measurement cycle.
+            Previous analyses remain preserved in your history.
         </p>
 
-        <!-- MEASUREMENT SUMMARY -->
+        <button
+    type="button"
+    class="homeDeeperHistoryOpenReport"
+    data-analysis-id="${Number(window.homeDeeperFirstAnalysisId || 0)}"
+    style="
+        margin-top:9px;
+        padding:8px 12px;
+        border:1px solid #bfdbfe;
+        border-radius:7px;
+        background:#ffffff;
+        color:#087f8c;
+        font-size:12px;
+        font-weight:700;
+        cursor:pointer;
+    "
+>
+    ← View Previous Analysis · Cycle 1
+</button>
+    </div>
+
+    <!-- MEASUREMENT SUMMARY -->
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:7px;
+        margin-bottom:14px;
+    ">
         <div style="
-            display:grid;
-            grid-template-columns:repeat(2,minmax(0,1fr));
-            gap:10px;
-            margin-bottom:22px;
+            padding:10px 11px;
+            border:1px solid #dbe3ef;
+            border-radius:9px;
+            background:#ffffff;
         ">
-            <div style="
-                padding:16px;
-                border:1px solid #dbe3ef;
-                border-radius:10px;
-                background:#ffffff;
-            ">
-                <div style="font-size:12px;color:#64748b;">
-                    Lifestyle Areas
-                </div>
-                <strong style="font-size:25px;">
-                    ${resultsZones.length}
-                </strong>
+            <div style="font-size:11px;color:#64748b;">
+                Lifestyle Areas
             </div>
-
-            <div style="
-                padding:16px;
-                border:1px solid #dbe3ef;
-                border-radius:10px;
-                background:#ffffff;
-            ">
-                <div style="font-size:12px;color:#64748b;">
-                    Measurement Points
-                </div>
-                <strong style="font-size:25px;">
-                    ${measuredResultsPoints.length} / ${resultsPoints.length}
-                </strong>
-            </div>
-
-            <div style="
-                padding:16px;
-                border:1px solid #dbe3ef;
-                border-radius:10px;
-                background:#ffffff;
-                grid-column:1 / -1;
-            ">
-                <div style="font-size:12px;color:#64748b;">
-                    Measured EMF Types
-                </div>
-                <strong style="font-size:15px;">
-                    ${resultsMeasurementTypes.map(type =>
-                type === "rf" ? "RF" :
-                    type === "electric" ? "Electric" :
-                        type === "magnetic" ? "Magnetic" : type
-            ).join(" + ") || "Not selected"}
-                </strong>
-            </div>
+            <strong style="font-size:23px;line-height:1.3;">
+                ${resultsZones.length}
+            </strong>
         </div>
+
+        <div style="
+            padding:10px 11px;
+            border:1px solid #dbe3ef;
+            border-radius:9px;
+            background:#ffffff;
+        ">
+            <div style="font-size:11px;color:#64748b;">
+                Measurement Points
+            </div>
+            <strong style="font-size:23px;line-height:1.3;">
+                ${measuredResultsPoints.length} / ${resultsPoints.length}
+            </strong>
+        </div>
+
+        <div style="
+            padding:10px 11px;
+            border:1px solid #dbe3ef;
+            border-radius:9px;
+            background:#ffffff;
+            grid-column:1 / -1;
+        ">
+            <div style="font-size:11px;color:#64748b;">
+                Measured EMF Types
+            </div>
+            <strong style="font-size:14px;line-height:1.4;">
+                ${resultsMeasurementTypes.map(type =>
+                        type === "rf" ? "RF" :
+                            type === "electric" ? "Electric" :
+                                type === "magnetic" ? "Magnetic" : type
+                    ).join(" + ") || "Not selected"}
+            </strong>
+        </div>
+    </div>
 
         <!-- LIFESTYLE AREA RESULTS -->
         <h3 style="margin:0 0 12px;">
@@ -2691,10 +3057,10 @@ ${window.AppState?.project?.homeMeasurementState
     ` : ""}
 
     ${zone.averageRF === null &&
-                    zone.averageElectric === null &&
-                    zone.averageMagnetic === null
-                    ? "Measurement data unavailable"
-                    : ""}
+                            zone.averageElectric === null &&
+                            zone.averageMagnetic === null
+                            ? "Measurement data unavailable"
+                            : ""}
 </div>
                     </div>
                 </div>
@@ -2721,7 +3087,7 @@ ${window.AppState?.project?.homeMeasurementState
                 ← Back to Guided Measurement
             </button>
 
-            ${!resultsCompletion?.eligible ? `
+            ${!resultsCompletion?.eligible && window.homeDeeperAnalysisPurchased !== true ? `
                 <div style="
                     padding:18px;
                     border:1px solid #dbe3ef;
@@ -2866,6 +3232,52 @@ ${window.AppState?.project?.homeMeasurementState
         environment with an in-depth analysis.
     </p>
 
+        ${(() => {
+                    const analysis = Array.isArray(window.homeDeeperAnalyses)
+                        ? window.homeDeeperAnalyses[0]
+                        : null;
+
+                    if (!analysis) return "";
+
+                    const cycleNumber = analysis.measurement_cycle_number ?? "—";
+                    const coveragePercent = analysis.coverage_percent ?? "—";
+
+                    return `
+            <div style="
+                padding:10px 12px;
+                margin-bottom:10px;
+                border:1px solid #dbeafe;
+                border-radius:9px;
+                background:#eff6ff;
+            ">
+                <div style="
+                    font-size:11px;
+                    color:#64748b;
+                    margin-bottom:5px;
+                ">
+                    Analysis linked to
+                </div>
+
+                <div style="
+                    font-size:13px;
+                    font-weight:700;
+                    color:#1e40af;
+                ">
+                    Measurement Cycle ${cycleNumber}
+                </div>
+
+                <div style="
+                    margin-top:5px;
+                    font-size:12px;
+                    color:#334155;
+                ">
+                    Analysis coverage:
+                    <strong>${coveragePercent}%</strong>
+                </div>
+            </div>
+        `;
+                })()}
+
     <div style="
         display:flex;
         align-items:center;
@@ -2965,6 +3377,28 @@ ${window.AppState?.project?.homeMeasurementState
         </button>
     </div>
 
+        <div style="
+        margin-top:9px;
+        text-align:center;
+    ">
+        <button
+            type="button"
+            id="homeDeeperAdditionalInfo"
+            style="
+                padding:3px 6px;
+                border:0;
+                background:transparent;
+                color:#087f8c;
+                font-size:10px;
+                font-weight:600;
+                text-decoration:underline;
+                cursor:pointer;
+            "
+        >
+            More info about Additional Analysis
+        </button>
+    </div>
+
 </div>
 
             `}
@@ -3018,6 +3452,94 @@ ${window.AppState?.project?.homeMeasurementState
                 </div>
             `,
 
+
+            deeperUnderstanding: `
+    <div style="
+        max-width:1000px;
+        margin:0 auto;
+    ">
+
+        <div style="
+            padding:18px;
+            border:1px solid #cbdfe8;
+            border-radius:12px;
+            background:#ffffff;
+        ">
+
+            <!-- HEADER -->
+            <div style="
+                padding-bottom:16px;
+                border-bottom:1px solid #e2e8f0;
+            ">
+                <h2 style="
+                    margin:0 0 6px;
+                    font-size:20px;
+                    font-weight:800;
+                    color:#0f172a;
+                ">
+                    Deeper Understanding
+                </h2>
+
+                <p style="
+                    margin:0 0 10px;
+                    font-size:13px;
+                    color:#64748b;
+                ">
+                    Your purchased analysis and report history
+                </p>
+
+                <div id="homeDeeperOriginalPurchaseStatus">
+                    Loading purchase status...
+                </div>
+            </div>
+
+            <!-- ANALYSIS HISTORY -->
+            <div style="
+                padding:18px 0;
+                border-bottom:1px solid #e2e8f0;
+            ">
+                <h3 style="
+                    margin:0 0 14px;
+                    font-size:17px;
+                    color:#1e293b;
+                ">
+                    Analysis History
+                </h3>
+
+                <div id="homeDeeperAnalysisHistory">
+                    Loading saved analyses...
+                </div>
+            </div>
+
+            <!-- FOLLOW-UP MEASUREMENT -->
+            <div
+                id="homeDeeperRepeatAnalysisSection"
+                style="padding-top:18px;"
+            >
+                Loading Follow-up Measurement status...
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            id="homeDeeperModuleBack"
+            style="
+                margin-top:16px;
+                padding:10px 16px;
+                border:1px solid #cbd5e1;
+                border-radius:8px;
+                background:#ffffff;
+                cursor:pointer;
+            "
+        >
+            ← Back to Measurements
+        </button>
+
+    </div>
+`,
+
+
             deeperReport: `
                 <div style="max-width:1000px;margin:0 auto;">
 
@@ -3040,6 +3562,7 @@ ${window.AppState?.project?.homeMeasurementState
                         Loading your Deeper Understanding Report...
                     </div>
 
+
                 </div>
             `
         };
@@ -3050,17 +3573,843 @@ ${window.AppState?.project?.homeMeasurementState
             </div>
         `;
 
+        // DEEPER UNDERSTANDING — ORIGINAL PURCHASE STATUS
+        if (activePage === "deeperUnderstanding") {
+
+            const purchaseStatus = content.querySelector(
+                "#homeDeeperOriginalPurchaseStatus"
+            );
+
+            if (purchaseStatus) {
+                purchaseStatus.textContent = "Loading purchase status...";
+            }
+
+            (async () => {
+
+                try {
+
+                    await window.refreshHomeReportEntitlement?.();
+
+                    if (!purchaseStatus) return;
+
+                    if (window.homeDeeperAnalysisPurchased === true) {
+
+                        purchaseStatus.innerHTML = `
+                    <div style="
+                        font-size:16px;
+                        font-weight:800;
+                        color:#15803d;
+                    ">
+                        Paid · €49
+                    </div>
+                    <div style="
+                        margin-top:5px;
+                        font-size:12px;
+                        color:#64748b;
+                    ">
+                        Original Deeper Understanding purchase
+                    </div>
+                `;
+
+                    } else {
+
+                        purchaseStatus.textContent =
+                            "No original analysis purchase found.";
+
+                    }
+
+                } catch (err) {
+
+                    console.error(
+                        "DEEPER UNDERSTANDING PURCHASE STATUS FAILED:",
+                        err
+                    );
+
+                    if (purchaseStatus) {
+                        purchaseStatus.textContent =
+                            "Unable to load purchase status.";
+                    }
+
+                }
+
+            })();
+
+            // LOAD DEEPER ANALYSIS HISTORY
+            // LOAD FOLLOW-UP MEASUREMENT STATUS
+            const repeatAnalysisContainer = content.querySelector(
+                "#homeDeeperRepeatAnalysisSection"
+            );
+
+            if (repeatAnalysisContainer) {
+                repeatAnalysisContainer.textContent =
+                    "Loading Follow-up Measurement status...";
+            }
+
+            const historyContainer = content.querySelector(
+                "#homeDeeperAnalysisHistory"
+            );
+
+            (async () => {
+
+                try {
+
+                    const project = window.AppState?.project;
+
+                    const projectId =
+                        project?.project_id ||
+                        project?.id;
+
+                    const token = localStorage.getItem("token");
+
+                    if (!projectId || !token) {
+                        throw new Error("Project ID or authentication token missing.");
+                    }
+
+                    const apiBase =
+                        window.location.hostname === "localhost" ||
+                            window.location.hostname === "127.0.0.1"
+                            ? "http://127.0.0.1:8000"
+                            : "https://emf-insight.onrender.com";
+
+                    const response = await fetch(
+                        `${apiBase}/project/${projectId}/deeper-analyses`,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(
+                            `Unable to load analysis history: ${response.status}`
+                        );
+                    }
+
+                    const data = await response.json();
+                    const analyses = data.analyses || [];
+
+                    if (!historyContainer) return;
+
+                    if (!analyses.length) {
+                        historyContainer.textContent =
+                            "No saved analyses found.";
+                        return;
+                    }
+
+                    historyContainer.innerHTML = analyses.map(item => {
+
+                        const createdAt = item.created_at
+                            ? new Date(item.created_at).toLocaleDateString()
+                            : "Date unavailable";
+
+                        return `
+                <div style="
+                    padding:12px 0;
+                    border-bottom:1px solid #e2e8f0;
+                ">
+                    <div style="
+                        font-weight:700;
+                        color:#1e293b;
+                    ">
+                        Analysis #${Number(item.analysis_id)}
+                    </div>
+
+                    <div style="
+                        margin-top:5px;
+                        font-size:12px;
+                        color:#64748b;
+                    ">
+                        Cycle ${Number(item.measurement_cycle_number || 0)}
+                        · Coverage ${Number(item.coverage_percent || 0)}%
+                        · ${escapeHtml(createdAt)}
+                    </div>
+
+                    <button
+    type="button"
+    class="homeDeeperHistoryOpenReport"
+    data-analysis-id="${Number(item.analysis_id)}"
+    style="
+        margin-top:10px;
+        padding:8px 12px;
+        border:0;
+        border-radius:7px;
+        background:#087f8c;
+        color:#ffffff;
+        font-size:12px;
+        font-weight:700;
+        cursor:pointer;
+    "
+>
+    ↗ Open Report
+</button>
+                </div>
+            `;
+
+                    }).join("");
+
+                } catch (err) {
+
+                    console.error(
+                        "DEEPER ANALYSIS HISTORY LOAD FAILED:",
+                        err
+                    );
+
+                    if (historyContainer) {
+                        historyContainer.textContent =
+                            "Unable to load analysis history.";
+                    }
+
+                }
+
+            })();
+
+            // LOAD FOLLOW-UP MEASUREMENT DATA
+            (async () => {
+
+                try {
+                    const project = window.AppState?.project;
+
+                    const projectId =
+                        project?.project_id ||
+                        project?.id;
+
+                    const token = localStorage.getItem("token");
+
+                    if (!projectId || !token) {
+                        throw new Error(
+                            "Project ID or authentication token missing."
+                        );
+                    }
+
+                    const apiBase =
+                        window.location.hostname === "localhost" ||
+                            window.location.hostname === "127.0.0.1"
+                            ? "http://127.0.0.1:8000"
+                            : "https://emf-insight.onrender.com";
+
+                    const headers = {
+                        "Authorization": `Bearer ${token}`
+                    };
+
+                    const [cyclesResponse, analysesResponse] =
+                        await Promise.all([
+                            fetch(
+                                `${apiBase}/project/${projectId}/measurement-cycles`,
+                                { method: "GET", headers, cache: "no-store" }
+                            ),
+                            fetch(
+                                `${apiBase}/project/${projectId}/deeper-analyses`,
+                                { method: "GET", headers, cache: "no-store" }
+                            )
+                        ]);
+
+                    if (!cyclesResponse.ok || !analysesResponse.ok) {
+                        throw new Error(
+                            "Unable to load Follow-up Measurement data."
+                        );
+                    }
+
+                    const cyclesData = await cyclesResponse.json();
+                    const analysesData = await analysesResponse.json();
+
+                    const cycles = cyclesData.cycles || [];
+                    const analyses = analysesData.analyses || [];
+
+                    const firstAnalysis = analyses.find(
+                        item => item.credit_used === "home_deeper_first"
+                    );
+
+                    if (!firstAnalysis) {
+                        repeatAnalysisContainer.textContent =
+                            "Complete your first Deeper Understanding analysis before starting a Follow-up Measurement.";
+                        return;
+                    }
+
+                    window.homeDeeperFirstAnalysisId =
+                        Number(firstAnalysis.analysis_id);
+
+                    const usedCycleIds = new Set(
+                        analyses
+                            .map(item => Number(item.measurement_cycle_id))
+                            .filter(Boolean)
+                    );
+
+                    const followUpCycles = cycles.filter(
+                        cycle =>
+                            Number(cycle.cycle_number) >
+                            Number(firstAnalysis.measurement_cycle_number || 0)
+                    );
+
+                    const activeCycle = followUpCycles.find(
+                        cycle => cycle.cycle_status === "in_progress"
+                    );
+
+                    const readyCycle = followUpCycles.find(
+                        cycle =>
+                            cycle.cycle_status === "completed" &&
+                            cycle.completion?.eligible === true &&
+                            !usedCycleIds.has(Number(cycle.cycle_id))
+                    );
+
+                    const nextCycleNumber = Math.max(
+                        Number(firstAnalysis.measurement_cycle_number || 0),
+                        ...followUpCycles.map(cycle => Number(cycle.cycle_number || 0))
+                    ) + 1;
+
+                    if (activeCycle) {
+
+                        const coverage = Number(
+                            activeCycle.completion?.overall_percent || 0
+                        );
+
+                        repeatAnalysisContainer.innerHTML = `
+        <div style="
+            padding:18px;
+            border:1px solid #bfdbfe;
+            border-radius:12px;
+            background:#eff6ff;
+        ">
+            <div style="
+                font-size:12px;
+                font-weight:700;
+                color:#1d4ed8;
+                letter-spacing:0.4px;
+            ">
+                FOLLOW-UP MEASUREMENT IN PROGRESS
+            </div>
+
+            <h3 style="
+                margin:12px 0 8px;
+                font-size:17px;
+                color:#1e293b;
+            ">
+                Measurement Cycle ${activeCycle.cycle_number}
+            </h3>
+
+            <p style="
+                margin:0 0 14px;
+                font-size:13px;
+                line-height:1.6;
+                color:#64748b;
+            ">
+                Continue your measurements to assess whether
+                your environment has improved. Your previous
+                Deeper Understanding analysis remains unchanged.
+            </p>
+
+            <div style="
+                padding:14px;
+                border-radius:9px;
+                background:#ffffff;
+                border:1px solid #bfdbfe;
+            ">
+                <div style="
+                    font-size:11px;
+                    color:#64748b;
+                    font-weight:700;
+                ">
+                    MEASUREMENT PROGRESS
+                </div>
+
+                <div style="
+                    margin-top:7px;
+                    font-size:22px;
+                    font-weight:700;
+                    color:#1d4ed8;
+                ">
+                    ${coverage.toFixed(0)}%
+                </div>
+            </div>
+
+            <div style="
+    margin-top:8px;
+    font-size:11px;
+    line-height:1.4;
+    color:#64748b;
+">
+    Required: ≥ 60% overall and ≥ 50% per area
+</div>
+            <button
+                type="button"
+                id="homeContinueFollowUpMeasurement"
+                style="
+                    width:100%;
+                    margin-top:12px;
+                    padding:13px;
+                    border:0;
+                    border-radius:9px;
+                    background:#087f8c;
+                    color:#ffffff;
+                    font-weight:700;
+                    cursor:pointer;
+                "
+            >
+                Continue Follow-up Measurement →
+            </button>
+
+            <p style="
+                margin:10px 0 0;
+                text-align:center;
+                font-size:11px;
+                line-height:1.5;
+                color:#64748b;
+            ">
+                Follow-up Analysis (€29) will become available
+                after the required measurements are completed.
+            </p>
+        </div>
+    `;
+
+                        repeatAnalysisContainer
+                            .querySelector("#homeContinueFollowUpMeasurement")
+                            ?.addEventListener("click", async (event) => {
+
+                                const button = event.currentTarget;
+
+                                if (button.disabled) return;
+
+                                button.disabled = true;
+                                button.textContent = "Opening Measurement Cycle...";
+
+                                const cycleReady = await ensureActiveMeasurementCycle();
+
+                                if (!cycleReady) {
+                                    button.disabled = false;
+                                    button.textContent =
+                                        "Continue Follow-up Measurement →";
+
+                                    alert(
+                                        "Unable to continue Follow-up Measurement. Please try again."
+                                    );
+                                    return;
+                                }
+
+                                showPage("guided");
+                            });
+
+                    } else if (readyCycle) {
+
+
+                        const coverage = Number(
+                            readyCycle.completion.overall_percent
+                        );
+
+                        repeatAnalysisContainer.innerHTML = `
+        <div style="
+            margin-top:20px;
+            padding:18px;
+            border:1px solid #bbf7d0;
+            border-radius:10px;
+            background:#f0fdf4;
+        ">
+            <div style="
+                font-size:12px;
+                font-weight:700;
+                color:#15803d;
+            ">
+                3. Ready for analysis
+            </div>
+
+            <h3 style="
+                margin:10px 0 6px;
+                font-size:16px;
+                color:#1e293b;
+            ">
+                Your new measurements are complete
+            </h3>
+
+            <div style="
+                margin:12px 0;
+                font-size:24px;
+                font-weight:700;
+                color:#15803d;
+            ">
+                ${coverage}%
+            </div>
+
+            <p style="
+                margin:0 0 14px;
+                font-size:13px;
+                color:#64748b;
+            ">
+                Your follow-up measurements meet the requirements
+                for a new Deeper Understanding analysis.
+            </p>
+
+            <button
+                type="button"
+                id="homeGetFollowUpAnalysis"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:0;
+                    border-radius:8px;
+                    background:#087f8c;
+                    color:white;
+                    font-weight:700;
+                    cursor:pointer;
+                "
+            >
+                Get Follow-up Analysis · €29 →
+            </button>
+        </div>
+    `;
+
+                        repeatAnalysisContainer
+                            .querySelector("#homeGetFollowUpAnalysis")
+                            ?.addEventListener("click", () => {
+
+                                if (typeof window.buyPlan !== "function") {
+                                    alert("Payment service is currently unavailable.");
+                                    return;
+                                }
+
+                                window.buyPlan("home_deeper_repeat");
+                            });
+
+                    } else if (
+                        followUpCycles.every(cycle =>
+                            usedCycleIds.has(Number(cycle.cycle_id))
+                        )
+                    ) {
+
+                        repeatAnalysisContainer.innerHTML = `
+        <div style="
+            margin-top:20px;
+            padding:18px;
+            border:1px solid #e2e8f0;
+            border-radius:10px;
+            background:#f8fafc;
+        ">
+            <h3 style="
+                margin:0 0 8px;
+                font-size:17px;
+                color:#1e293b;
+            ">
+                Follow-up Measurement
+            </h3>
+
+            <p style="
+                margin:0 0 14px;
+                font-size:13px;
+                color:#64748b;
+                line-height:1.5;
+            ">
+                Start a new Measurement Cycle to measure your
+                property again and qualify for a Follow-up Analysis.
+            </p>
+
+            <button
+                type="button"
+                id="homeStartFollowUpMeasurement"
+                style="
+                    padding:11px 16px;
+                    border:0;
+                    border-radius:8px;
+                    background:#087f8c;
+                    color:#ffffff;
+                    font-weight:700;
+                    cursor:pointer;
+                "
+            >
+                Start Follow-up Measurement →
+            </button>
+        </div>
+    `;
+
+                        const startButton = repeatAnalysisContainer.querySelector(
+                            "#homeStartFollowUpMeasurement"
+                        );
+
+                        startButton?.addEventListener("click", async () => {
+
+                            if (startButton.disabled) return;
+
+                            startButton.disabled = true;
+                            startButton.textContent = "Starting Measurement Cycle...";
+
+                            const cycleReady = await ensureActiveMeasurementCycle();
+
+                            if (!cycleReady) {
+                                startButton.disabled = false;
+                                startButton.textContent =
+                                    "Start Follow-up Measurement →";
+
+                                alert(
+                                    "Unable to start Follow-up Measurement. Please try again."
+                                );
+                                return;
+                            }
+
+                            showPage("guided");
+                        });
+                    }
+
+                    console.log("[HOME FOLLOW-UP STATUS]", {
+                        firstAnalysisCycleId:
+                            firstAnalysis.measurement_cycle_id,
+                        activeCycle,
+                        readyCycle,
+                        followUpCycles
+                    });
+
+                } catch (error) {
+
+                    console.error(
+                        "[HOME FOLLOW-UP STATUS LOAD FAILED]",
+                        error
+                    );
+
+                    repeatAnalysisContainer.textContent =
+                        "Unable to load Follow-up Measurement status.";
+
+                }
+
+            })();
+
+            content.querySelector("#homeDeeperModuleBack")
+                ?.addEventListener("click", () => {
+                    showPage("results");
+                });
+        }
+
+        // OPEN SELECTED SAVED ANALYSIS — GET ONLY
+
+        if (!content.dataset.homeDeeperHistoryListenerAttached) {
+            content.addEventListener("click", async (event) => {
+
+                const button = event.target.closest(
+                    ".homeDeeperHistoryOpenReport"
+                );
+
+                if (!button) return;
+
+                let analysisId = Number(button.dataset.analysisId || 0);
+
+                const project = window.AppState?.project;
+                const projectId = project?.project_id || project?.id;
+                const token = localStorage.getItem("token");
+
+                if (!projectId || !token) {
+                    alert("Unable to identify the project or user session.");
+                    return;
+                }
+
+                const apiBase =
+                    window.location.hostname === "localhost" ||
+                        window.location.hostname === "127.0.0.1"
+                        ? "http://127.0.0.1:8000"
+                        : "https://emf-insight.onrender.com";
+
+                try {
+
+                    button.disabled = true;
+                    button.textContent = "Opening report...";
+
+                    if (!analysisId) {
+
+                        const historyResponse = await fetch(
+                            `${apiBase}/project/${projectId}/deeper-analyses`,
+                            {
+                                method: "GET",
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                },
+                                cache: "no-store"
+                            }
+                        );
+
+                        const historyData = await historyResponse.json();
+
+                        if (!historyResponse.ok) {
+                            throw new Error("Unable to load analysis history.");
+                        }
+
+                        const firstAnalysis = (historyData.analyses || []).find(
+                            item => item.credit_used === "home_deeper_first"
+                        );
+
+                        analysisId = Number(firstAnalysis?.analysis_id || 0);
+
+                        if (!analysisId) {
+                            throw new Error("Original Deeper Understanding analysis not found.");
+                        }
+
+                        button.dataset.analysisId = String(analysisId);
+                    }
+
+                    const response = await fetch(
+                        `${apiBase}/project/${projectId}/deeper-analysis/${analysisId}`,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                    const reportData = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            reportData.detail?.message ||
+                            reportData.detail ||
+                            "Unable to load selected report."
+                        );
+                    }
+
+                    if (!reportData.analysis) {
+                        throw new Error("Report data is empty.");
+                    }
+
+                    window.homeDeeperSavedReport = reportData;
+
+                    showPage("deeperReport");
+
+                } catch (err) {
+
+                    console.error(
+                        "SAVED DEEPER REPORT OPEN FAILED:",
+                        err
+                    );
+
+                    alert(err.message || "Unable to open report.");
+
+                    button.disabled = false;
+                    button.textContent = "↗ Open Report";
+                }
+
+            });
+
+            content.dataset.homeDeeperHistoryListenerAttached = "true";
+        }
+
+        // OVERVIEW — CHOOSE MEASUREMENT METHOD
+        content.querySelector("#homeOverviewChooseMethod")
+            ?.addEventListener("click", () => {
+                showPage("method");
+            });
+
         // RENDER SAVED DEEPER UNDERSTANDING REPORT
         if (activePage === "deeperReport") {
+
             renderHomeDeeperReport(
                 window.homeDeeperSavedReport
             );
+
+            // BACK TO ANALYSIS HISTORY
+            content.querySelector("#homeDeeperReportHistoryBack")
+                ?.addEventListener("click", () => {
+                    showPage("deeperUnderstanding");
+                });
+
+            // GENERATE PDF FROM SAVED ANALYSIS
+            content.querySelector("#homeDeeperReportGeneratePDF")
+                ?.addEventListener("click", async (event) => {
+
+                    const button = event.currentTarget;
+
+                    const reportData = window.homeDeeperSavedReport;
+
+                    const project = window.AppState?.project;
+
+                    const projectId =
+                        project?.project_id ||
+                        project?.id;
+
+                    const analysisId = Number(
+                        reportData?.analysis_id || 0
+                    );
+
+                    const token = localStorage.getItem("token");
+
+                    if (!projectId || !analysisId) {
+                        alert("Saved analysis information is missing.");
+                        return;
+                    }
+
+                    if (!token) {
+                        alert("Please log in again.");
+                        return;
+                    }
+
+                    const apiBase =
+                        window.location.hostname === "localhost" ||
+                            window.location.hostname === "127.0.0.1"
+                            ? "http://127.0.0.1:8000"
+                            : "https://emf-insight.onrender.com";
+
+                    const originalText = button.textContent;
+
+                    button.disabled = true;
+                    button.textContent = "Generating PDF...";
+
+                    try {
+
+                        const response = await fetch(
+                            `${apiBase}/project/${projectId}/deeper-analysis/${analysisId}/pdf`,
+                            {
+                                method: "GET",
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                },
+                                cache: "no-store"
+                            }
+                        );
+
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+
+                            throw new Error(
+                                errorData.detail ||
+                                `PDF generation failed (${response.status}).`
+                            );
+                        }
+
+                        const blob = await response.blob();
+
+                        const url = URL.createObjectURL(blob);
+
+                        const link = document.createElement("a");
+
+                        link.href = url;
+                        link.download =
+                            `EMF_Insight_Deeper_Analysis_${analysisId}.pdf`;
+
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+
+                        setTimeout(() => {
+                            URL.revokeObjectURL(url);
+                        }, 1000);
+
+                    } catch (error) {
+
+                        console.error(
+                            "DEEPER ANALYSIS PDF ERROR:",
+                            error
+                        );
+
+                        alert(error.message || "Could not generate PDF.");
+
+                    } finally {
+
+                        button.disabled = false;
+                        button.textContent = originalText;
+
+                    }
+                });
         }
 
         // DEEPER REPORT NAVIGATION
         content.querySelector("#homeDeeperReportBack")
             ?.addEventListener("click", () => {
-                showPage("results");
+                showPage("deeperUnderstanding");
             });
 
 
@@ -3103,6 +4452,10 @@ ${window.AppState?.project?.homeMeasurementState
                 try {
                     reportButton.disabled = true;
                     reportButton.textContent = "Opening report...";
+
+                    if (typeof window.refreshHomeReportEntitlement === "function") {
+                        await window.refreshHomeReportEntitlement();
+                    }
 
                     // 1. LOAD SAVED ANALYSES
                     const listResponse = await fetch(
@@ -3201,6 +4554,153 @@ ${window.AppState?.project?.homeMeasurementState
                 }
 
                 window.buyPlan("home_deeper_repeat");
+            });
+
+        // DEEPER UNDERSTANDING — ADDITIONAL ANALYSIS INFO
+        content.querySelector("#homeDeeperAdditionalInfo")
+            ?.addEventListener("click", () => {
+
+                document.getElementById("homeDeeperAdditionalInfoModal")?.remove();
+
+                const modal = document.createElement("div");
+                modal.id = "homeDeeperAdditionalInfoModal";
+
+                modal.style.cssText = `
+                    position:fixed;
+                    inset:0;
+                    z-index:10000;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    padding:20px;
+                    background:rgba(15,23,42,0.55);
+                `;
+
+                modal.innerHTML = `
+                    <div style="
+                        width:100%;
+                        max-width:520px;
+                        max-height:85vh;
+                        overflow-y:auto;
+                        position:relative;
+                        padding:26px;
+                        background:#ffffff;
+                        border-radius:14px;
+                        box-shadow:0 20px 60px rgba(0,0,0,0.2);
+                        color:#334155;
+                        font-size:13px;
+                        line-height:1.6;
+                    ">
+                        <button
+                            type="button"
+                            id="homeDeeperInfoClose"
+                            style="
+                                position:absolute;
+                                top:12px;
+                                right:14px;
+                                border:0;
+                                background:transparent;
+                                color:#64748b;
+                                font-size:23px;
+                                cursor:pointer;
+                            "
+                        >×</button>
+
+                        <h3 style="
+                            margin:0 28px 18px 0;
+                            color:#164e63;
+                            font-size:19px;
+                        ">Repeat Analysis – €29</h3>
+
+                        <p><strong>Existing Property</strong></p>
+
+                        <p>
+                            Your first Deeper Understanding report gives you
+                            a detailed assessment of your property's EMF environment.
+                        </p>
+
+                        <p>
+                            Over time, you may make changes to your home to reduce
+                            identified EMF exposure, such as:
+                        </p>
+
+                        <ul>
+                            <li>Relocating or replacing electrical devices.</li>
+                            <li>Changing your sleeping or working environment.</li>
+                            <li>Installing EMF shielding materials or other protective solutions.</li>
+                        </ul>
+
+                        <p><strong>Want to see whether these changes made a difference?</strong></p>
+
+                        <ol>
+                            <li>Return to your existing Property project.</li>
+                            <li>Start a new Guided Measurement Cycle.</li>
+                            <li>Complete the required measurement coverage.</li>
+                            <li>Finish your Measurement Cycle.</li>
+                            <li>Purchase Repeat Analysis for €29.</li>
+                        </ol>
+
+                        <p>
+                            Your new report will help you compare your latest
+                            measurements with your previous assessment and
+                            understand what has changed.
+                        </p>
+
+                        <p><strong>Important</strong></p>
+
+                        <ul>
+                            <li>€29 applies only to a repeat analysis of an existing Property project.</li>
+                            <li>A new Property project requires a first analysis purchase of €49.</li>
+                            <li>Additional measurements within the same cycle are free.</li>
+                            <li>You do not need to purchase another report if you have not started and completed a new measurement cycle.</li>
+                        </ul>
+
+                        <div style="text-align:right;margin-top:22px;">
+                            <button
+                                type="button"
+                                id="homeDeeperInfoGotIt"
+                                style="
+                                    padding:10px 24px;
+                                    border:0;
+                                    border-radius:8px;
+                                    background:#087f8c;
+                                    color:#ffffff;
+                                    font-size:13px;
+                                    font-weight:700;
+                                    cursor:pointer;
+                                "
+                            >Got it</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                const closeInfoModal = () => {
+                    document.removeEventListener("keydown", handleInfoKeydown);
+                    modal.remove();
+                };
+
+                const handleInfoKeydown = event => {
+                    if (event.key === "Escape") {
+                        event.preventDefault();
+                        closeInfoModal();
+                    }
+                };
+
+                document.addEventListener("keydown", handleInfoKeydown);
+
+                modal.querySelector("#homeDeeperInfoClose")
+                    ?.addEventListener("click", closeInfoModal);
+
+                modal.querySelector("#homeDeeperInfoGotIt")
+                    ?.addEventListener("click", closeInfoModal);
+
+                modal.addEventListener("click", event => {
+                    if (event.target === modal) {
+                        closeInfoModal();
+                    }
+                });
             });
 
         // SIMPLE PROPERTY REPORT — PRICING AND CHECKOUT
@@ -3371,7 +4871,58 @@ ${window.AppState?.project?.homeMeasurementState
         }
     }
 
+    async function loadHomeDeeperAnalyses() {
+        window.homeDeeperAnalyses = [];
 
+        const project = window.AppState?.project;
+        const projectId = project?.project_id || project?.id;
+        const token = localStorage.getItem("token");
+
+        if (!projectId || !token) return;
+
+        const apiBase =
+            window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1"
+                ? "http://127.0.0.1:8000"
+                : "https://emf-insight.onrender.com";
+
+        try {
+            const response = await fetch(
+                `${apiBase}/project/${projectId}/deeper-analyses`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    },
+                    cache: "no-store"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to load Deeper Analyses: ${response.status}`
+                );
+            }
+
+            const data = await response.json();
+
+            window.homeDeeperAnalyses =
+                Array.isArray(data.analyses)
+                    ? data.analyses
+                    : [];
+
+            console.log(
+                "[HOME DEEPER ANALYSES] Loaded:",
+                window.homeDeeperAnalyses
+            );
+
+        } catch (error) {
+            console.error(
+                "[HOME DEEPER ANALYSES] Loading error:",
+                error
+            );
+        }
+    }
 
     function closeWorkspace() {
         const workspace = document.getElementById("homeMeasurementsWorkspace");
@@ -3398,6 +4949,8 @@ ${window.AppState?.project?.homeMeasurementState
         }
 
         const project = window.AppState?.project;
+
+        await loadHomeDeeperAnalyses();
 
         if (project && !project.homeMeasurementState) {
             project.homeMeasurementState = {
@@ -3537,6 +5090,233 @@ ${window.AppState?.project?.homeMeasurementState
         return result;
     }
 
+    async function initializeActiveMeasurementCycleData() {
+        const project = window.AppState?.project;
+
+        if (
+            !project ||
+            !Array.isArray(project.floors) ||
+            !project.activeMeasurementCycle
+        ) {
+            return false;
+        }
+
+        const lifestyleTypes = [
+            "sleep",
+            "rest",
+            "relax",
+            "work",
+            "child",
+            "bed",
+            "work_area",
+            "child_area"
+        ];
+
+        const floors = {};
+
+        for (const floor of project.floors) {
+            if (!floor?.id) return false;
+
+            const { image, ...floorData } = floor;
+
+            const zones = (floor.zones || []).map(zone => {
+                const lifestyleType = zone.zoneType || zone.type;
+
+                if (!lifestyleTypes.includes(lifestyleType)) {
+                    return { ...zone };
+                }
+
+                return {
+                    ...zone,
+                    measurementPoints:
+                        generateLifestyleMeasurementPoints(zone, floor)
+                };
+            });
+
+            floors[String(floor.id)] = {
+                ...floorData,
+                zones
+            };
+        }
+
+        const measurementProfile = project.homeMeasurementProfile;
+
+        if (
+            !measurementProfile ||
+            !Array.isArray(measurementProfile.measurementTypes) ||
+            measurementProfile.measurementTypes.length === 0
+        ) {
+            return false;
+        }
+
+        const payload = {
+            schemaVersion: 1,
+            homeMeasurementProfile: {
+                ...measurementProfile,
+                measurementTypes: [...measurementProfile.measurementTypes]
+            },
+            floors
+        };
+
+        const projectId = project.project_id || project.id;
+        const token = localStorage.getItem("token");
+
+        if (!projectId || !token) return false;
+
+        const apiBase =
+            window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1"
+                ? "http://127.0.0.1:8000"
+                : "https://emf-insight.onrender.com";
+
+        try {
+            const response = await fetch(
+                `${apiBase}/project/${projectId}/measurement-cycles/active/data`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Cycle initialization failed: ${response.status} ${await response.text()}`
+                );
+            }
+
+            await response.json();
+
+            project.activeMeasurementCycleData = payload;
+
+            console.log("[HOME CYCLE INITIALIZED]", {
+                cycleId: project.activeMeasurementCycle.cycle_id,
+                cycleNumber: project.activeMeasurementCycle.cycle_number,
+                floors: Object.keys(floors).length
+            });
+
+            return true;
+
+        } catch (error) {
+            console.error("[HOME CYCLE INITIALIZATION FAILED]", error);
+            return false;
+        }
+    }
+
+    async function ensureActiveMeasurementCycle() {
+        if (window.AppMode?.current !== HOME_MODE) {
+            return false;
+        }
+
+        const project = window.AppState?.project;
+
+        if (!project || !Array.isArray(project.floors)) {
+            console.error("[HOME CYCLE START] Project unavailable");
+            return false;
+        }
+
+        const projectId = project.project_id || project.id;
+        const token = localStorage.getItem("token");
+
+        if (!projectId || !token) {
+            console.error("[HOME CYCLE START] Project ID or token missing");
+            return false;
+        }
+
+        const apiBase =
+            window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1"
+                ? "http://127.0.0.1:8000"
+                : "https://emf-insight.onrender.com";
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        };
+
+        try {
+            // 1. CHECK EXISTING ACTIVE CYCLE
+            const activeResponse = await fetch(
+                `${apiBase}/project/${projectId}/measurement-cycles/active`,
+                {
+                    method: "GET",
+                    headers
+                }
+            );
+
+            if (!activeResponse.ok) {
+                throw new Error(
+                    `Active cycle check failed: ${activeResponse.status}`
+                );
+            }
+
+            const activeResult = await activeResponse.json();
+
+            let isNewCycle = false;
+
+            let activeCycle = activeResult?.active_cycle || null;
+
+            // 2. CREATE NEW CYCLE ONLY IF NONE EXISTS
+            if (!activeCycle) {
+                const createResponse = await fetch(
+                    `${apiBase}/project/${projectId}/measurement-cycles`,
+                    {
+                        method: "POST",
+                        headers
+                    }
+                );
+
+                if (!createResponse.ok) {
+                    const errorText = await createResponse.text();
+
+                    throw new Error(
+                        `Cycle creation failed: ${createResponse.status} ${errorText}`
+                    );
+                }
+
+                activeCycle = await createResponse.json();
+
+                isNewCycle = true;
+
+                if (!activeCycle?.cycle_id) {
+                    throw new Error("Created Measurement Cycle ID is missing");
+                }
+
+                console.log("[HOME CYCLE START] New cycle created", {
+                    cycleId: activeCycle.cycle_id,
+                    cycleNumber: activeCycle.cycle_number
+                });
+            } else {
+                console.log("[HOME CYCLE START] Existing cycle restored", {
+                    cycleId: activeCycle.cycle_id,
+                    cycleNumber: activeCycle.cycle_number
+                });
+            }
+
+            // 3. UPDATE FRONTEND STATE
+            project.activeMeasurementCycle = activeCycle;
+
+            // 4. INITIALIZE ONLY A NEW CYCLE
+            if (isNewCycle) {
+                const initialized = await initializeActiveMeasurementCycleData();
+
+                if (!initialized) {
+                    throw new Error("Initial Measurement Cycle data could not be initialized");
+                }
+            }
+
+            return true;
+
+        } catch (error) {
+            console.error("[HOME CYCLE START FAILED]", error);
+            return false;
+        }
+    }
+
+
     async function saveActiveMeasurementCycleData() {
         if (window.AppMode?.current !== HOME_MODE) {
             return false;
@@ -3576,7 +5356,7 @@ ${window.AppState?.project?.homeMeasurementState
 
         const floors = {};
 
-        for (const floor of project.floors) {
+        for (const floor of getHomeMeasurementFloors()) {
             if (!floor?.id) {
                 console.error("[HOME CYCLE SAVE] Floor ID missing", floor);
                 return false;
@@ -3835,6 +5615,11 @@ ${window.AppState?.project?.homeMeasurementState
         }
 
         const lifestyleTypes = [
+            "sleep",
+            "rest",
+            "relax",
+            "work",
+            "child",
             "bed",
             "work_area",
             "child_area"
@@ -3842,9 +5627,11 @@ ${window.AppState?.project?.homeMeasurementState
 
         const areas = [];
 
-        project.floors.forEach((floor, floorIndex) => {
+        getHomeMeasurementFloors().forEach((floor, floorIndex) => {
             (floor.zones || []).forEach(zone => {
-                if (!lifestyleTypes.includes(zone.type)) return;
+                const lifestyleType = zone.zoneType || zone.type;
+
+                if (!lifestyleTypes.includes(lifestyleType)) return;
 
                 const expectedPoints =
                     generateLifestyleMeasurementPoints(zone, floor);
@@ -3875,7 +5662,7 @@ ${window.AppState?.project?.homeMeasurementState
                     floorId: floor.id,
                     floorName: floor.name || `Floor ${floorIndex + 1}`,
                     zoneId: zone.id,
-                    type: zone.type,
+                    type: lifestyleType,
                     totalPoints: totalCount,
                     measuredPoints: measuredCount,
                     remainingPoints: totalCount - measuredCount,
@@ -4334,6 +6121,15 @@ ${window.AppState?.project?.homeMeasurementState
 
             window.renderFrame?.();
 
+            // Refresh Guided panel when the saved point belongs
+            // to the currently active Lifestyle Area.
+            const guidedState =
+                window.HomeMeasurements?.guidedMeasurementState;
+
+            if (guidedState?.zoneId === zoneId) {
+                openGuidedLifestyleArea(zone, pointId);
+            }
+
             console.log("[HOME MEASUREMENTS] Canvas readings saved", {
                 zoneId,
                 pointId,
@@ -4402,10 +6198,12 @@ ${window.AppState?.project?.homeMeasurementState
             return;
         }
 
-        openWorkspace();
+        loadHomeDeeperAnalyses().then(() => {
+            openWorkspace();
 
-        console.log("[HOME MEASUREMENTS] Workspace restored", {
-            status
+            console.log("[HOME MEASUREMENTS] Workspace restored", {
+                status
+            });
         });
     }
 
@@ -4471,12 +6269,89 @@ ${window.AppState?.project?.homeMeasurementState
         ctx.restore();
     };
 
+    function renderHomeDeeperUnderstandingAccess() {
+
+        const container = document.getElementById(
+            "homeDeeperUnderstandingAccess"
+        );
+
+        if (!container) return;
+
+        if (
+            window.AppMode?.current !== HOME_MODE ||
+            window.homeDeeperAnalysisPurchased !== true
+        ) {
+            container.innerHTML = "";
+            return;
+        }
+
+        container.innerHTML = `
+        <div style="
+            padding:14px;
+            margin:0 0 14px;
+            border:1px solid #b8e1e5;
+            border-radius:10px;
+            background:#f0fafa;
+        ">
+            <div style="
+                font-size:14px;
+                font-weight:800;
+                color:#164e63;
+            ">
+                ◈ Deeper Understanding
+            </div>
+
+            <div style="
+                margin-top:5px;
+                font-size:11px;
+                color:#475569;
+            ">
+                Your purchased analysis and report history
+            </div>
+
+            <div style="
+                margin-top:9px;
+                font-size:12px;
+                font-weight:800;
+                color:#15803d;
+            ">
+                Paid · €49
+            </div>
+
+            <button
+                type="button"
+                id="homeOpenDeeperUnderstanding"
+                style="
+                    width:100%;
+                    margin-top:11px;
+                    padding:10px;
+                    border:0;
+                    border-radius:7px;
+                    background:#087f8c;
+                    color:#ffffff;
+                    font-size:12px;
+                    font-weight:700;
+                    cursor:pointer;
+                "
+            >
+                Open Deeper Understanding →
+            </button>
+        </div>
+    `;
+
+        container.querySelector("#homeOpenDeeperUnderstanding")
+            ?.addEventListener("click", () => {
+                showPage("deeperUnderstanding");
+            });
+    }
+
     window.HomeMeasurements = {
         ...window.HomeMeasurements,
         start,
         openWorkspace,
         restoreWorkspace,
         showPage,
+        renderHomeDeeperUnderstandingAccess,
         saveHomeMeasurementProfile,
         closeWorkspace,
         openRoom,

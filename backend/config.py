@@ -10,9 +10,23 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 
-load_dotenv(
-    BASE_DIR / ".env"
-)
+ENVIRONMENT = os.getenv("EMF_ENV", "production").lower()
+
+if ENVIRONMENT == "staging":
+    ENV_FILE = BASE_DIR / ".env.staging"
+elif ENVIRONMENT == "production":
+    ENV_FILE = BASE_DIR / ".env"
+else:
+    raise RuntimeError(
+        f"Unsupported EMF_ENV: {ENVIRONMENT}"
+    )
+
+if not ENV_FILE.exists():
+    raise RuntimeError(
+        f"Environment file not found: {ENV_FILE}"
+    )
+
+load_dotenv(ENV_FILE)
 
 
 # ==================================================

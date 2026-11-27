@@ -2311,7 +2311,12 @@ function drawHomeMeasurementPointsLayer() {
         }
     }
 
-    const floor = project?.floors?.[project.currentFloorIndex || 0];
+    const floor = isHomeMode
+        ? window.getHomeMeasurementFloors?.()?.[
+        project.currentFloorIndex || 0
+        ] || project?.floors?.[project.currentFloorIndex || 0]
+        : project?.floors?.[project.currentFloorIndex || 0];
+
     // Keep progress calculation active, but hide Canvas points when disabled.
     if (
         isProfessionalHomeAssessment &&
@@ -2326,7 +2331,14 @@ function drawHomeMeasurementPointsLayer() {
 
     const zones = Array.isArray(floor.zones) ? floor.zones : [];
 
-
+    console.log("[HOME CANVAS POINT STATUSES]", zones.flatMap(zone =>
+        (zone.measurementPoints || []).map(point => ({
+            zoneId: zone.id,
+            pointId: point.id,
+            status: point.status,
+            measured: point.measured
+        }))
+    ));
     canvasCtx.save();
 
     let globalPointNumber = 0;

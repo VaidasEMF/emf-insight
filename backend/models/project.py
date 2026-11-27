@@ -54,6 +54,16 @@ class Project(Base):
         nullable=False,
     )
 
+    # =====================
+    # PROPERTY RELATION
+    # =====================
+
+    property_id: Mapped[int | None] = mapped_column(
+        ForeignKey("properties.id"),
+        nullable=True,
+        index=True,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -69,6 +79,11 @@ class Project(Base):
 
     user = relationship(
         "User",
+        back_populates="projects",
+    )
+
+    property = relationship(
+        "Property",
         back_populates="projects",
     )
 

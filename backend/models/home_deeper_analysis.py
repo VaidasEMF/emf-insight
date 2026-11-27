@@ -52,6 +52,16 @@ class HomeDeeperAnalysis(Base):
         index=True,
     )
 
+    measurement_cycle_number: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    coverage_percent: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
     credit_product_key: Mapped[str] = mapped_column(
         String(50),
         nullable=False,

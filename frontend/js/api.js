@@ -6121,6 +6121,8 @@ async function refreshHomeReportEntitlement() {
 
         updateEMFProductContext();
 
+        window.HomeMeasurements?.renderHomeDeeperUnderstandingAccess?.();
+
         console.log(
             "HOME ENTITLEMENT REFRESHED:",
             {
@@ -6147,7 +6149,8 @@ async function refreshHomeReportEntitlement() {
     }
 }
 
-
+window.refreshHomeReportEntitlement =
+    refreshHomeReportEntitlement;
 
 
 // =====================================================

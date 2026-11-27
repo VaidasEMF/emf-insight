@@ -11,6 +11,9 @@ from models.property import Property
 from models.property_health_record import PropertyHealthRecord
 from models.assessment import Assessment
 from models.home_deeper_analysis import HomeDeeperAnalysis
+from engine.deeper_analysis_pdf import (
+    build_deeper_analysis_pdf,
+)
 from services.professional_assessment_access import (
     get_professional_project_access,
     require_active_edit,
@@ -45,6 +48,8 @@ from io import BytesIO
 from models.measurement_cycle import MeasurementCycle
 from models.measurement_cycle_floor import MeasurementCycleFloor
 from models.measurement_cycle_data import MeasurementCycleData
+
+from sqlalchemy.orm.attributes import flag_modified
 
 router = APIRouter()
 
@@ -397,6 +402,9 @@ def create_project(
                         f"PROP-{created_year}-{property_record.id:06d}"
                     )
 
+            # Link Home Project to its canonical Property
+            project.property_id = property_record.id
+
             # ======================================
             # PROPERTY HEALTH RECORD
             # ======================================
@@ -446,7 +454,9 @@ def create_project(
 
             # Store canonical PHR ID in project data
             project_data["propertyHealthRecordId"] = health_record.phr_uid
-            project.data = project_data
+
+            project.data = dict(project_data)
+            flag_modified(project, "data")
 
             # ======================================
             # ASSESSMENT
@@ -875,7 +885,7 @@ def create_measurement_cycle(
             )
 
         # =====================
-        # CHECK ACTIVE CYCLE
+        # CHECK ACTIVE MEASUREMENT CYCLE
         # =====================
 
         active_cycle = (
@@ -1102,13 +1112,14 @@ def get_active_measurement_cycle(
                 detail="Measurement Cycles are available only for Home Wellness projects",
             )
 
-        # FIND ACTIVE CYCLE
+        # FIND ACTIVE MEASUREMENT CYCLE
         cycle = (
             db.query(MeasurementCycle)
             .filter(
                 MeasurementCycle.project_id == project_id,
                 MeasurementCycle.status == "in_progress",
             )
+            .order_by(MeasurementCycle.cycle_number.desc())
             .first()
         )
 
@@ -1156,6 +1167,142 @@ def get_active_measurement_cycle(
     except Exception:
         raise
 
+# =================================================
+# GET ACTIVE MEASUREMENT CYCLE COMPLETION PREVIEW
+# =================================================
+
+@router.get(
+    "/project/{project_id}/measurement-cycles/active/completion-preview"
+)
+def get_active_measurement_cycle_completion_preview(
+    project_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        # LOAD PROJECT
+        project = (
+            db.query(Project)
+            .filter(Project.id == project_id)
+            .first()
+        )
+
+        if not project:
+            raise HTTPException(404, "Project not found")
+
+        # OWNERSHIP CHECK
+        if project.user_id != current_user.id:
+            raise HTTPException(403, "Forbidden")
+
+        # HOME PROJECT VALIDATION
+        project_data = project.data or {}
+
+        if not isinstance(project_data, dict):
+            raise HTTPException(422, "Invalid project data")
+
+        if project_data.get("type") != "home":
+            raise HTTPException(
+                400,
+                "Measurement Cycles are available only for Home Wellness projects",
+            )
+
+        # LOAD ACTIVE CYCLE
+        cycle = (
+            db.query(MeasurementCycle)
+            .filter(
+                MeasurementCycle.project_id == project_id,
+                MeasurementCycle.status == "in_progress",
+            )
+            .first()
+        )
+
+        if not cycle:
+            return {
+                "status": "ok",
+                "active_cycle": None,
+            }
+
+        # LOAD CYCLE FLOOR LINKS
+        cycle_floors = (
+            db.query(MeasurementCycleFloor)
+            .filter(
+                MeasurementCycleFloor.measurement_cycle_id == cycle.id
+            )
+            .all()
+        )
+
+        expected_floor_ids = {
+            str(item.floor_id)
+            for item in cycle_floors
+        }
+
+        # LOAD CYCLE DATA
+        cycle_data = (
+            db.query(MeasurementCycleData)
+            .filter(
+                MeasurementCycleData.measurement_cycle_id == cycle.id
+            )
+            .first()
+        )
+
+        if not cycle_data or cycle_data.schema_version != 1:
+            raise HTTPException(
+                422,
+                "Measurement Cycle data is missing or invalid",
+            )
+
+        document = cycle_data.data or {}
+
+        if not isinstance(document, dict):
+            raise HTTPException(
+                422,
+                "Invalid Measurement Cycle data document",
+            )
+
+        floors_data = document.get("floors")
+
+        if not isinstance(floors_data, dict):
+            raise HTTPException(
+                422,
+                "Measurement Cycle floors data is missing",
+            )
+
+        saved_floor_ids = {
+            str(floor_id)
+            for floor_id in floors_data.keys()
+        }
+
+        if saved_floor_ids != expected_floor_ids:
+            raise HTTPException(
+                status_code=409,
+                detail="Measurement Cycle floor data is incomplete",
+            )
+
+        # CALCULATE COMPLETION WITHOUT MODIFYING CYCLE
+        completion = _calculate_measurement_cycle_completion(
+            floors_data
+        )
+
+        return {
+            "status": "ok",
+            "active_cycle": {
+                "cycle_id": cycle.id,
+                "cycle_number": cycle.cycle_number,
+                "cycle_status": cycle.status,
+                "eligible": completion["eligible"],
+                "overall_percent": completion["overall_percent"],
+                "measured_points": completion["measured_points"],
+                "total_points": completion["total_points"],
+                "areas": completion["areas"],
+            },
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
 
 # =================================================
 # GET MEASUREMENT CYCLE HISTORY
@@ -2356,6 +2503,9 @@ def create_home_deeper_analysis(
 
         measurement_cycle_id = None
 
+        measurement_cycle_number = None
+        coverage_percent = None
+
         if credit.product_key == "home_deeper_repeat":
 
             if not credit.stripe_session_id:
@@ -2460,6 +2610,94 @@ def create_home_deeper_analysis(
                     409,
                     "Measurement Cycle data is incomplete",
                 )
+            completion = _calculate_measurement_cycle_completion(
+                cycle_payload["floors"]
+            )
+
+            if not completion["eligible"]:
+                raise HTTPException(
+                    409,
+                    "Measurement Cycle has not reached the required analysis coverage",
+                )
+
+            measurement_cycle_number = cycle.cycle_number
+            coverage_percent = completion["overall_percent"]
+
+            analysis_input = {
+                **project_data,
+                **cycle_payload,
+                "floors": list(cycle_payload["floors"].values()),
+                "type": "home",
+            }
+
+        else:
+            # FIRST ANALYSIS — USE ACTIVE MEASUREMENT CYCLE
+
+            cycle = (
+                db.query(MeasurementCycle)
+                .filter(
+                    MeasurementCycle.project_id == project_id,
+                    MeasurementCycle.property_id == property_record.id,
+                    MeasurementCycle.property_health_record_id == health_record.id,
+                    MeasurementCycle.status == "in_progress",
+                )
+                .with_for_update()
+                .first()
+            )
+
+            if not cycle:
+                raise HTTPException(
+                    409,
+                    "No active Measurement Cycle found for first analysis",
+                )
+
+            cycle_data = (
+                db.query(MeasurementCycleData)
+                .filter(
+                    MeasurementCycleData.measurement_cycle_id == cycle.id
+                )
+                .with_for_update()
+                .first()
+            )
+
+            if (
+                not cycle_data
+                or cycle_data.schema_version != 1
+                or not isinstance(cycle_data.data, dict)
+            ):
+                raise HTTPException(
+                    409,
+                    "Measurement Cycle data is missing or invalid",
+                )
+
+            cycle_payload = cycle_data.data
+
+            if (
+                not isinstance(cycle_payload.get("floors"), dict)
+                or not isinstance(cycle_payload.get("homeMeasurementProfile"), dict)
+            ):
+                raise HTTPException(
+                    409,
+                    "Measurement Cycle data is incomplete",
+                )
+
+            completion = _calculate_measurement_cycle_completion(
+                cycle_payload["floors"]
+            )
+
+            measurement_cycle_number = cycle.cycle_number
+            coverage_percent = completion["overall_percent"]
+
+            if not completion["eligible"]:
+                raise HTTPException(
+                    409,
+                    "Measurement Cycle has not reached the required analysis coverage",
+                )
+
+            measurement_cycle_number = cycle.cycle_number
+            coverage_percent = completion["overall_percent"]
+
+            measurement_cycle_id = cycle.id
 
             analysis_input = {
                 **project_data,
@@ -2476,8 +2714,31 @@ def create_home_deeper_analysis(
             run_deeper_analysis,
         )
 
-        if credit.product_key == "home_deeper_first":
-            analysis_input = project_data
+        print(
+            "[DEEPER ANALYSIS INPUT CHECK]",
+            {
+                "project_id": project_id,
+                "measurement_cycle_id": measurement_cycle_id,
+                "measurement_cycle_number": measurement_cycle_number,
+                "coverage_percent": coverage_percent,
+                "floor_count": len(analysis_input.get("floors", [])),
+                "zones": [
+                    {
+                        "zone_id": zone.get("id"),
+                        "zone_type": zone.get("zoneType"),
+                        "points": [
+                            {
+                                "id": point.get("id"),
+                                "status": point.get("status")
+                            }
+                            for point in zone.get("measurementPoints", [])
+                        ]
+                    }
+                    for floor in analysis_input.get("floors", [])
+                    for zone in floor.get("zones", [])
+                ]
+            }
+        )
 
         result = run_deeper_analysis(analysis_input)
 
@@ -2502,6 +2763,8 @@ def create_home_deeper_analysis(
             property_id=property_record.id,
             property_health_record_id=health_record.id,
             measurement_cycle_id=measurement_cycle_id,
+            measurement_cycle_number=measurement_cycle_number,
+            coverage_percent=coverage_percent,
             credit_product_key=credit.product_key,
             analysis_data=result.get("analysis"),
             warnings=result.get("warnings", []),
@@ -2629,6 +2892,9 @@ def get_home_deeper_analysis(
         "status": "ok",
         "project_id": project_id,
         "analysis_id": saved_analysis.id,
+        "measurement_cycle_id": saved_analysis.measurement_cycle_id,
+        "measurement_cycle_number": saved_analysis.measurement_cycle_number,
+        "coverage_percent": saved_analysis.coverage_percent,
         "analysis": saved_analysis.analysis_data,
         "warnings": saved_analysis.warnings or [],
         "credit_used": saved_analysis.credit_product_key,
@@ -2637,6 +2903,102 @@ def get_home_deeper_analysis(
             if saved_analysis.created_at else None
         ),
     }
+
+
+# ==================================================
+# GENERATE SAVED HOME DEEPER ANALYSIS PDF
+# ==================================================
+
+@router.get("/project/{project_id}/deeper-analysis/{analysis_id}/pdf")
+def generate_home_deeper_analysis_pdf(
+    project_id: int,
+    analysis_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    # LOAD PROJECT
+    project = (
+        db.query(Project)
+        .filter(Project.id == project_id)
+        .first()
+    )
+
+    if not project:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    # OWNERSHIP CHECK
+    if project.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden",
+        )
+
+    project_data = project.data or {}
+
+    if project_data.get("type") != "home":
+        raise HTTPException(
+            status_code=400,
+            detail="Deeper Analysis is available only for Home Wellness projects",
+        )
+
+    # LOAD SAVED ANALYSIS
+    saved_analysis = (
+        db.query(HomeDeeperAnalysis)
+        .filter(
+            HomeDeeperAnalysis.id == analysis_id,
+            HomeDeeperAnalysis.project_id == project_id,
+        )
+        .first()
+    )
+
+    if not saved_analysis:
+        raise HTTPException(
+            status_code=404,
+            detail="Deeper Analysis report not found",
+        )
+
+    # BUILD REPORT DATA FROM SAVED ANALYSIS
+    report_data = {
+        "analysis_id": saved_analysis.id,
+        "measurement_cycle_id": saved_analysis.measurement_cycle_id,
+        "measurement_cycle_number": saved_analysis.measurement_cycle_number,
+        "coverage_percent": saved_analysis.coverage_percent,
+        "analysis": saved_analysis.analysis_data,
+        "warnings": saved_analysis.warnings or [],
+        "credit_used": saved_analysis.credit_product_key,
+        "created_at": (
+            saved_analysis.created_at.isoformat()
+            if saved_analysis.created_at else None
+        ),
+    }
+
+    # GENERATE PDF
+    try:
+        pdf_content = build_deeper_analysis_pdf(report_data)
+    except Exception as exc:
+        print(
+            "DEEPER ANALYSIS PDF ERROR:",
+            str(exc),
+            flush=True,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Could not generate Deeper Analysis PDF",
+        )
+
+    filename = f"EMF_Insight_Deeper_Analysis_{analysis_id}.pdf"
+
+    return StreamingResponse(
+        BytesIO(pdf_content),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"'
+        },
+    )
+
 
 # ==================================================
 # LIST SAVED HOME DEEPER ANALYSES
@@ -2707,14 +3069,17 @@ def get_home_deeper_analyses(
         "status": "ok",
         "project_id": project_id,
         "analyses": [
-            {
-                "analysis_id": item.id,
-                "credit_used": item.credit_product_key,
-                "created_at": (
-                    item.created_at.isoformat()
-                    if item.created_at else None
-                ),
-            }
+                       {
+                            "analysis_id": item.id,
+                            "credit_used": item.credit_product_key,
+                            "measurement_cycle_id": item.measurement_cycle_id,
+                            "measurement_cycle_number": item.measurement_cycle_number,
+                            "coverage_percent": item.coverage_percent,
+                            "created_at": (
+                                item.created_at.isoformat()
+                                if item.created_at else None
+                            ),
+                        }
             for item in analyses
         ],
     }

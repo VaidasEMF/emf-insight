@@ -29163,6 +29163,26 @@
       box-sizing: border-box;
     }
 
+    /* DEEPER UNDERSTANDING — FULL REPORT VIEW */
+
+    .canvas-area.home-deeper-report-mode {
+      grid-template-columns: 52px minmax(0, 1fr) !important;
+    }
+
+    .canvas-area.home-deeper-report-mode #homeGuidedRightPanel {
+      grid-column: 2;
+      width: 100%;
+      max-width: none;
+    }
+
+    .canvas-area.home-deeper-report-mode #canvasWrap {
+      display: none !important;
+    }
+
+    .canvas-area.home-deeper-report-mode #homeDeeperUnderstandingAccess {
+      display: none !important;
+    }
+
     /* LEFT / RIGHT PANELS */
 
     .home-guided-panel {
@@ -39589,6 +39609,11 @@ return false;
 
               <!-- HOME GUIDED MEASUREMENT — RIGHT PANEL -->
               <aside id="homeGuidedRightPanel" class="home-guided-panel">
+
+                <div id="homeDeeperUnderstandingAccess"></div>
+
+                <div id="homeGuidedRightPanelContent"></div>
+
               </aside>
 
 

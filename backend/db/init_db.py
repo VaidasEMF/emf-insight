@@ -45,45 +45,93 @@ def init_db():
                 ADD COLUMN IF NOT EXISTS phr_reference VARCHAR(30)
             """))
 
-
     if engine.dialect.name == "postgresql":
         with engine.begin() as connection:
+
             # ==========================================
             # HOME DEEPER ANALYSIS → PHR / CYCLE LINKS
             # ==========================================
 
-            connection.execute(text("""
-                ALTER TABLE home_deeper_analyses
-                ADD COLUMN IF NOT EXISTS property_id INTEGER
-                REFERENCES properties(id)
-            """))
+            existing_columns = set(
+                connection.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_schema = current_schema()
+                      AND table_name = 'home_deeper_analyses'
+                """)).scalars().all()
+            )
 
-            connection.execute(text("""
-                ALTER TABLE home_deeper_analyses
-                ADD COLUMN IF NOT EXISTS property_health_record_id INTEGER
-                REFERENCES property_health_records(id)
-            """))
+            required_columns = {
+                "property_id",
+                "property_health_record_id",
+                "measurement_cycle_id",
+                "measurement_cycle_number",
+                "coverage_percent",
+            }
 
-            connection.execute(text("""
-                ALTER TABLE home_deeper_analyses
-                ADD COLUMN IF NOT EXISTS measurement_cycle_id INTEGER
-                REFERENCES measurement_cycles(id)
-            """))
+            missing_columns = required_columns - existing_columns
 
-            connection.execute(text("""
-                CREATE INDEX IF NOT EXISTS ix_home_deeper_analyses_property_id
-                ON home_deeper_analyses (property_id)
-            """))
+            if missing_columns:
 
-            connection.execute(text("""
-                CREATE INDEX IF NOT EXISTS ix_home_deeper_analyses_property_health_record_id
-                ON home_deeper_analyses (property_health_record_id)
-            """))
+                connection.execute(text("""
+                    ALTER TABLE home_deeper_analyses
+                    ADD COLUMN IF NOT EXISTS property_id INTEGER
+                    REFERENCES properties(id)
+                """))
 
-            connection.execute(text("""
-                CREATE INDEX IF NOT EXISTS ix_home_deeper_analyses_measurement_cycle_id
-                ON home_deeper_analyses (measurement_cycle_id)
-            """))
+                connection.execute(text("""
+                    ALTER TABLE home_deeper_analyses
+                    ADD COLUMN IF NOT EXISTS property_health_record_id INTEGER
+                    REFERENCES property_health_records(id)
+                """))
+
+                connection.execute(text("""
+                    ALTER TABLE home_deeper_analyses
+                    ADD COLUMN IF NOT EXISTS measurement_cycle_id INTEGER
+                    REFERENCES measurement_cycles(id)
+                """))
+
+                connection.execute(text("""
+                    ALTER TABLE home_deeper_analyses
+                    ADD COLUMN IF NOT EXISTS measurement_cycle_number INTEGER
+                """))
+
+                connection.execute(text("""
+                    ALTER TABLE home_deeper_analyses
+                    ADD COLUMN IF NOT EXISTS coverage_percent INTEGER
+                """))
+
+            # ==========================================
+            # CREATE ONLY MISSING INDEXES
+            # ==========================================
+
+            existing_indexes = set(
+                connection.execute(text("""
+                    SELECT indexname
+                    FROM pg_indexes
+                    WHERE schemaname = current_schema()
+                      AND tablename = 'home_deeper_analyses'
+                """)).scalars().all()
+            )
+
+            required_indexes = {
+                "ix_home_deeper_analyses_property_id": "property_id",
+                "ix_home_deeper_analyses_property_health_record_id": "property_health_record_id",
+                "ix_home_deeper_analyses_measurement_cycle_id": "measurement_cycle_id",
+            }
+
+            for index_name, column_name in required_indexes.items():
+                if index_name not in existing_indexes:
+                    connection.execute(text(f"""
+                        CREATE INDEX {index_name}
+                        ON home_deeper_analyses ({column_name})
+                    """))
+
+            # ==========================================
+            # REPORTS
+
+            # ==========================================
+
             connection.execute(text("""
                 ALTER TABLE reports
                 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP
@@ -119,6 +167,10 @@ def init_db():
                 ADD COLUMN IF NOT EXISTS report_type VARCHAR(50)
             """))
 
+            # ==========================================
+            # PROJECTS
+            # ==========================================
+
             connection.execute(text("""
                 ALTER TABLE projects
                 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP
@@ -131,6 +183,45 @@ def init_db():
                 NOT NULL DEFAULT CURRENT_TIMESTAMP
             """))
 
+            # ==========================================
+            # PROJECT -> PROPERTY RELATION
+            # ==========================================
+
+            connection.execute(text("""
+                ALTER TABLE projects
+                ADD COLUMN IF NOT EXISTS property_id INTEGER
+            """))
+
+            connection.execute(text("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1
+                        FROM pg_constraint
+                        WHERE conname = 'fk_projects_property_id'
+                    ) THEN
+                        ALTER TABLE projects
+                        ADD CONSTRAINT fk_projects_property_id
+                        FOREIGN KEY (property_id)
+                        REFERENCES properties(id);
+                    END IF;
+                END
+                $$
+            """))
+
+            connection.execute(text("""
+                CREATE INDEX IF NOT EXISTS ix_projects_property_id
+                ON projects(property_id)
+            """))
+
+            connection.execute(text("""
+                UPDATE projects p
+                SET property_id = pr.id
+                FROM properties pr
+                WHERE p.data->>'type' = 'home'
+                  AND p.data->>'propertyId' = pr.property_uid
+                  AND p.property_id IS NULL
+            """))
 
      # ==================================================
     # PROFESSIONAL REQUESTS
@@ -186,6 +277,21 @@ def init_db():
             connection.execute(text("""
                 ALTER TABLE assessments
                 ADD COLUMN IF NOT EXISTS professional_request_id INTEGER
+            """))
+
+            # ==========================================
+            # PROFESSIONAL REQUEST CONTACTS
+            # ==========================================
+
+            connection.execute(text("""
+                CREATE TABLE IF NOT EXISTS professional_request_contacts (
+                    id SERIAL PRIMARY KEY,
+                    request_id INTEGER NOT NULL,
+                    professional_user_id VARCHAR(255) NOT NULL,
+                    unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    expires_at TIMESTAMP NOT NULL,
+                    duration_days INTEGER NOT NULL DEFAULT 14
+                )
             """))
 
             # =====================
