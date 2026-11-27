@@ -10,24 +10,30 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 
-ENVIRONMENT = os.getenv("EMF_ENV", "production").lower()
+ENVIRONMENT = os.getenv("EMF_ENV", "production").strip().lower()
 
 if ENVIRONMENT == "staging":
     ENV_FILE = BASE_DIR / ".env.staging"
+
+    if not ENV_FILE.is_file():
+        raise RuntimeError(
+            f"Staging environment file not found: {ENV_FILE}"
+        )
+
+    load_dotenv(ENV_FILE, override=False)
+
 elif ENVIRONMENT == "production":
     ENV_FILE = BASE_DIR / ".env"
+
+    # Production on Render uses Environment Variables.
+    # Local production may additionally use a .env file.
+    if ENV_FILE.is_file():
+        load_dotenv(ENV_FILE, override=False)
+
 else:
     raise RuntimeError(
         f"Unsupported EMF_ENV: {ENVIRONMENT}"
     )
-
-if not ENV_FILE.exists():
-    raise RuntimeError(
-        f"Environment file not found: {ENV_FILE}"
-    )
-
-load_dotenv(ENV_FILE)
-
 
 # ==================================================
 # JWT
